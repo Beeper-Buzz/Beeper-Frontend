@@ -1,7 +1,7 @@
 import React from "react";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
-import { Layout, Header, InfoBox, ProductList } from "../components";
+import { Layout, Header, Splash, InfoBox, ProductList } from "../components";
 import { fetchPosts, fetchProducts } from "../hooks";
 
 const Home = () => {
@@ -9,6 +9,7 @@ const Home = () => {
     <Layout>
       <Header />
       <InfoBox>ℹ️ This page shows how to use SSR with React-Query.</InfoBox>
+      <Splash />
       <ProductList />
     </Layout>
   );
