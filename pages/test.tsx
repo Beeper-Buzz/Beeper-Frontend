@@ -16,7 +16,7 @@ const Test = () => {
             </MainMenu>
             <main id={'page-wrap'} className={'page-wrap'}>
                 <div style={{flex:1}}></div>
-            <Footer showContact={true} showLegal={true} showSocial={true} styles={{color:'#000'}} links={[{type:'legal',text:"hello world",url:'http://localhost:3000',icon:
+            <Footer showContact={true} showLegal={true} showSocial={true} styles={{color:'#000',position:'fixed',bottom:0}} links={[{type:'legal',text:"hello world",url:'http://localhost:3000',icon:
                     (()=>(<i className="fa fa-facebook-official icon" aria-hidden="true"></i>))},{type:'contact',text:"hello world",url:'http://localhost:3000',icon:
                     (()=>(<i className="fa fa-facebook-official icon" aria-hidden="true"></i>))},{type:'social',text:"hello world",url:'http://localhost:3000',icon:
                     (()=>(<i className="fa fa-facebook-official icon" aria-hidden="true"></i>))},{type:'social',text:"hello world",url:'http://localhost:3000',icon:

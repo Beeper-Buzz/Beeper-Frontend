@@ -12,7 +12,7 @@ import {
 import BurgerIcon from './BurgerIcon';
 import CrossIcon from './CrossIcon';
 
-export default styles => {
+    const MenuFactory=styles => {
     if (!styles) {
         throw new Error('No styles supplied');
     }
@@ -490,3 +490,4 @@ export default styles => {
 
     return Menu;
 };
+    export default MenuFactory;
