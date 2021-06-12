@@ -105,6 +105,9 @@ export const MainMenu = (props: MainMenuProps) => {
                 .pc-hidden {
                   display: none;
                 }
+                .mobile-hidden{
+                display: flex;
+                }
               }
               @media screen and (max-width: 767px) {
                 .mobile-hidden {
