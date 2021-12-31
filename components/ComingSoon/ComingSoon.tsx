@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  NotifyForm,
-  ProductTeaser,
-  SocialLinks,
-  LegalLinks
-} from "../components";
+import { NotifyForm, ProductTeaser, SocialLinks, Logo, LogoBlob } from "../components";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
 import { useMutation, useQueryClient } from "react-query";
@@ -16,7 +11,6 @@ import "pure-react-carousel/dist/react-carousel.es.css";
 
 import {
   Container,
-  Logo,
   LogoText,
   ProductImageCarousel,
   CarouselBackground,
@@ -31,40 +25,19 @@ import {
   Device
 } from "./ComingSoon.styles";
 
-const siteTitle = process.env.NEXT_PUBLIC_SITE_TITLE || "";
-const siteDesc = process.env.NEXT_PUBLIC_SITE_DESC || "";
-const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH;
-const previewMode =
-  process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === "true" ? true : false;
-const comingSoonText = process.env.NEXT_PUBLIC_COMING_SOON_TEXT || "";
-const mailerUrl = process.env.NEXT_PUBLIC_MAILCHIMP_URL || "";
-const mailerId = process.env.NEXT_PUBLIC_MAILCHIMP_ID || "";
-const mailerUser = process.env.NEXT_PUBLIC_MAILCHIMP_U || "";
-const spreeApiUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
-
-interface ProductImage {
-  id: string;
-  type: string;
-  attributes: {
-    styles: Array<{ url: string }>;
-  };
-}
-
-interface Product {
-  id: string;
-  relationships?: {
-    images?: {
-      data: Array<{ id: string }>;
-    };
-  };
-}
-
-interface ProductsData {
-  data: Product[];
-  included?: ProductImage[];
-}
-
 export const ComingSoon = () => {
+  const isServer = typeof window === 'undefined';
+  const siteTitle = process.env.NEXT_PUBLIC_SITE_TITLE || "";
+  const siteDesc = process.env.NEXT_PUBLIC_SITE_DESC || "";
+  const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH;
+  const previewMode =
+    process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === "true" ? true : false;
+  const comingSoonText = process.env.NEXT_PUBLIC_COMING_SOON_TEXT || "";
+  const mailerUrl = process.env.NEXT_PUBLIC_MAILCHIMP_URL || "";
+  const mailerId = process.env.NEXT_PUBLIC_MAILCHIMP_ID || "";
+  const mailerUser = process.env.NEXT_PUBLIC_MAILCHIMP_U || "";
+  const spreeApiUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
+
   const mailChimpUrl = `${mailerUrl}?u=${mailerId}&id=${mailerUser}`;
   const [isSlideshow, setIsSlideshow] = useState(false);
 
