@@ -53,7 +53,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   }, [router.events]);
 
   const renderContent = (theme: any) => {
-    // const darkMode = (process.env.IS_DARK_MODE === "true");
     const darkMode = theme.isDarkMode ? theme.isDarkMode : false;
 
     if (isMaint && isMaint === "true") {

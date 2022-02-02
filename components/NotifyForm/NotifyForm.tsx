@@ -188,7 +188,7 @@ export const NotifyForm = () => {
             <NotifyText>{message}</NotifyText>
           )}
         </FormWrapper>
-        <MailTo id="mailto" href={`mailto:${process.env.CONTACT_EMAIL}`}>
+        <MailTo id="mailto" href={`mailto:${process.env.COMPANY_EMAIL}`}>
           Got Questions? We’d love to hear from you.
         </MailTo>
       </Container>
