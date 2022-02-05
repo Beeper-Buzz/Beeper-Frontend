@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { ButtonBack, ButtonNext } from "pure-react-carousel";
+import { Slider, Slide, ImageWithZoom } from "pure-react-carousel";
 
 export const NotFoundContainer = styled.div`
   display: flex;
@@ -38,6 +39,14 @@ export const ProductImageCarousel = styled.div`
     width: 100%;
   }
 `;
+
+export const StyledSlider = styled(Slider)``;
+
+export const StyledSlide = styled(Slide)`
+  width: 100% !important;
+`;
+
+export const StyledImageWithZoom = styled(ImageWithZoom)``;
 
 export const CarouselNav = styled.div`
   width: 100%;

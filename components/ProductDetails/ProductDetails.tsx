@@ -23,7 +23,7 @@ import LatestProducts from "../Home/LatestProducts";
 import PolProductList from "../PolProductList";
 import { useMediaQuery } from "react-responsive";
 import homeData from "../Home/home.json";
-import { CarouselProvider, Slider, Slide, ImageWithZoom } from "pure-react-carousel";
+import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 // import ProductCard from "../components";
 
@@ -35,6 +35,9 @@ import {
   ProductImageCarousel,
   ProductInfoBox,
   ProductDescription,
+  StyledSlider,
+  StyledSlide,
+  StyledImageWithZoom,
   CarouselNav,
   CarouselBackButton,
   CarouselNextButton,
@@ -88,6 +91,7 @@ export const ProductDetails = ({ wholesale }: any) => {
     isError,
     error: productError
   } = useProduct(`${productSlug.replace("/", "")}`);
+  const foundImgs = thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "image");
   const thisProductId = thisProduct?.data?.id || "";
   const queryClient = useQueryClient();
   const [colorOptions, setColorOptions] = useState<any>(productColors);
@@ -145,7 +149,7 @@ export const ProductDetails = ({ wholesale }: any) => {
 
   const handleKeyPress = (event: KeyboardEvent) => {
     const thisProductId = thisProduct?.data?.id;
-    console.log(thisProductId);
+    // console.log(thisProductId);
     const productId: number = parseInt(`${thisProductId}`);
     const { key } = event;
 
@@ -191,12 +195,12 @@ export const ProductDetails = ({ wholesale }: any) => {
     //   }
     // });
     const foundVariants = thisProduct?.included?.filter((elem) => elem.type === "variant");
-    console.log("PRODUCT: ", thisProduct, "VARIANTS: ", foundVariants);
+    // console.log("PRODUCT: ", thisProduct, "VARIANTS: ", foundVariants);
 
     if (foundVariants && foundVariants.length) {
       return foundVariants?.map((item, index) => {
         const optionText = item.attributes.options_text;
-        console.log("row: ", item);
+        // console.log("row: ", item);
         return (
           <ColorsRow key={`${index}-row`}>
             <ColorsCell>{item.attributes.options_text}</ColorsCell>
@@ -218,6 +222,25 @@ export const ProductDetails = ({ wholesale }: any) => {
       });
     }
   }, [colorOptions, thisProduct]);
+
+  const renderProductImgs = useCallback(() => {
+    const foundImgs = thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "image");
+    // console.log("rendered imgs: ", foundImgs);
+    if (foundImgs && foundImgs.length < 1) {
+      return <Loading />
+    }
+    return foundImgs && foundImgs.map((image, index) => {
+      // const img600 = image.attributes.styles.filter((e: any) => e['width'] == '600').url;
+      const imgUrl = image.attributes.styles[9].url
+      const imgSrc = `${process.env.SPREE_API_URL}${imgUrl}`;
+      // console.log(imgSrc);
+      return (
+        <StyledSlide key={`image-${index}`} index={index} style={{ height: "500px" }}>
+          <StyledImageWithZoom src={imgSrc} />
+        </StyledSlide>
+      )
+    });
+  }, [thisProduct]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -281,22 +304,13 @@ export const ProductDetails = ({ wholesale }: any) => {
       ? `http://localhost:8080${imageSource}`
       : "https://via.placeholder.com/400x600";
     // const source = "https://via.placeholder.com/400x600";
-
+    
     // const productImgs = thisProduct.relationships?.images?.data[0]?.id;
-    // const foundImg = thisProduct?.included.filter((e: any) => e["id"] == productImg);
+    // const foundImgs = thisProduct && thisProduct?.included.filter((e: any) => e["type"] === "image");
     // const imgUrl = foundImg[0]?.attributes?.styles[4].url;
     // const imgSrc = productImg ? `${process.env.SPREE_API_URL}${imgUrl}` : defaultImg;
-
-    // const renderProductImgs = () => {
-    //   return productImgs.map((item, index) => {
-
-    //     return (
-    //       <Slide index={0} style={{ height: "500px" }}>
-    //         <ImageWithZoom src={source} />
-    //       </Slide>
-    //     )
-    //   });
-    // }
+    
+    // console.log("foundImgs: ", foundImgs);
 
     return (
       <Layout>
@@ -305,18 +319,21 @@ export const ProductDetails = ({ wholesale }: any) => {
             <CarouselProvider
               naturalSlideWidth={600}
               naturalSlideHeight={600}
-              totalSlides={3}
+              totalSlides={foundImgs ? foundImgs.length : 3}
+              // totalSlides={3}
               isIntrinsicHeight
               touchEnabled
+              infinite
             >
-              <Slider className="slider">
-                <Slide index={1} style={{ height: "500px" }}>
+              <StyledSlider className="slider">
+                {/* <Slide index={1} style={{ height: "500px" }}>
                   <ImageWithZoom src={source} />
                 </Slide>
                 <Slide index={2} style={{ height: "500px" }}>
                   <ImageWithZoom src={source} />
-                </Slide>
-              </Slider>
+                </Slide> */}
+                {renderProductImgs()}
+              </StyledSlider>
 
               <CarouselNav>
                 <CarouselBackButton>
