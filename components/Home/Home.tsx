@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useQuery } from "react-query";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
@@ -15,8 +15,40 @@ import { useMediaQuery } from "react-responsive";
 import MobileLatest from "./MobileLatest";
 import { Loading } from "../Loading";
 import homeData from "./home.json";
+import { VideoJS } from "..";
+
 export const Home = (props: any) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
+
+  const playerRef = useRef(null);
+
+  const videoJsOptions = {
+    autoplay: true,
+    // playsInline: true,
+    controls: false,
+    responsive: true,
+    // preload: 'auto',
+    fluid: true,
+    sources: [
+      {
+        src: "pol-fw-21.mp4",
+        type: "video/mp4"
+      }
+    ]
+  };
+
+  const handlePlayerReady = ({ player }: any) => {
+    playerRef.current = player;
+
+    // you can handle player events here
+    // player.on('waiting', () => {
+    //   console.log('player is waiting');
+    // });
+
+    // player.on('dispose', () => {
+    //   console.log('player will dispose');
+    // });
+  };
 
   const {
     error: productsError,
@@ -66,8 +98,10 @@ export const Home = (props: any) => {
       <Content>
         {/* {memberList} */}
         <StreamList data={streamsData?.response_data} title={"Live-Shopping"} />
+        {!productsAreLoading && polProductList}
         {/* {mobileMemberList} */}
         {advertList}
+        <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
         {advertListMobile}
         {!productsAreLoading && polProductList}
         {banner}

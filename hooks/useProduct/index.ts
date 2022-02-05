@@ -22,13 +22,21 @@ const fetchProduct = async (slug: string): Promise<IProduct> => {
     headers: myHeaders
   })
     .then((res) => {
-      return res;
+      if (res.status >= 200 && res.status <= 299) {
+        return res.json();
+      } else {
+        // Promise.reject("Product request failed");
+        console.log("Uh oh RES: ", res.statusText);
+        Promise.reject();
+        throw new Error(res.statusText);
+      }
     })
     .catch((err) => {
-      console.log(err);
-      throw new Error("Product request failed");
+      console.log("Uh oh ERR: ", err);
+      throw new Error(`Product request failed: ${err.statusText}`);
     });
-  return response.json();
+
+  return response;
 
   // const response = await spreeClient.products.show(
   //   {
