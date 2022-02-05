@@ -40,12 +40,13 @@ export const ProductImageCarousel = styled.div`
   }
 `;
 
+// These have default styles
+// These are overrides and need !important
 export const StyledSlider = styled(Slider)``;
-
 export const StyledSlide = styled(Slide)`
   width: 100% !important;
+  height: 500px !important;
 `;
-
 export const StyledImageWithZoom = styled(ImageWithZoom)``;
 
 export const CarouselNav = styled.div`
@@ -97,6 +98,20 @@ export const Detail = styled.h3`
 `;
 
 export const Price = styled.h1``;
+
+export const VariantList = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+export const Variant = styled.div`
+  display: block;
+  height: 30px;
+  align-items: center;
+  border: 1px solid ${(p) => p.theme.colors.black.light};
+  margin: 0 10px 0 0;
+  background: ${p => p.color};
+`;
 
 export const SizesTitle = styled.p`
   text-align: left;

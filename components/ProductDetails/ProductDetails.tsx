@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
+import Head from 'next/head';
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
@@ -43,6 +44,8 @@ import {
   CarouselNextButton,
   Detail,
   Price,
+  VariantList,
+  Variant,
   SizesTitle,
   SizesPerPack,
   Size,
@@ -224,23 +227,49 @@ export const ProductDetails = ({ wholesale }: any) => {
   }, [colorOptions, thisProduct]);
 
   const renderProductImgs = useCallback(() => {
-    const foundImgs = thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "image");
+    const foundImgs =
+      thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "image");
+    const primaryImg = foundImgs && foundImgs[0].attributes.styles[9].url;
     // console.log("rendered imgs: ", foundImgs);
     if (foundImgs && foundImgs.length < 1) {
-      return <Loading />
+      return <Loading />;
     }
-    return foundImgs && foundImgs.map((image, index) => {
-      // const img600 = image.attributes.styles.filter((e: any) => e['width'] == '600').url;
-      const imgUrl = image.attributes.styles[9].url
-      const imgSrc = `${process.env.SPREE_API_URL}${imgUrl}`;
-      // console.log(imgSrc);
+    if (foundImgs && foundImgs.length == 1) { 
       return (
-        <StyledSlide key={`image-${index}`} index={index} style={{ height: "500px" }}>
-          <StyledImageWithZoom src={imgSrc} />
+        <StyledSlide index={0}>
+          <StyledImageWithZoom src={primaryImg} />
         </StyledSlide>
       )
-    });
+    }
+    return (
+      foundImgs &&
+      foundImgs.map((image, index) => {
+        // const img600 = image.attributes.styles.filter((e: any) => e['width'] == '600').url;
+        const imgUrl = image.attributes.styles[9].url;
+        const imgSrc = `${process.env.SPREE_API_URL}${imgUrl}`;
+        // console.log(imgSrc);
+        return (
+          <StyledSlide key={`image-${index}`} index={index}>
+            <StyledImageWithZoom src={imgSrc} />
+          </StyledSlide>
+        );
+      })
+    );
   }, [thisProduct]);
+
+  const renderVariants = useCallback(() => {
+    const foundOptions = thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "option_value");
+    const foundColors = foundOptions && foundOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
+    return (
+      <VariantList>
+        {foundColors?.map((option, index) => {
+          const optionColor = option.attributes.presentation;
+          console.log("Option: ", optionColor);
+          return <Variant color={optionColor} />;
+        })}
+      </VariantList>
+    );
+  }, []);
 
   useEffect(() => {
     if (isSuccess) {
@@ -304,26 +333,29 @@ export const ProductDetails = ({ wholesale }: any) => {
       ? `http://localhost:8080${imageSource}`
       : "https://via.placeholder.com/400x600";
     // const source = "https://via.placeholder.com/400x600";
-    
+
     // const productImgs = thisProduct.relationships?.images?.data[0]?.id;
     // const foundImgs = thisProduct && thisProduct?.included.filter((e: any) => e["type"] === "image");
     // const imgUrl = foundImg[0]?.attributes?.styles[4].url;
     // const imgSrc = productImg ? `${process.env.SPREE_API_URL}${imgUrl}` : defaultImg;
-    
+
     // console.log("foundImgs: ", foundImgs);
 
     return (
       <Layout>
+        <Head>
+          <title>{thisProduct?.data.attributes.name} - {process.env.SITE_TITLE}</title>
+        </Head>
         <ProductContainer className="product-container">
           <ProductImageCarousel>
             <CarouselProvider
               naturalSlideWidth={600}
               naturalSlideHeight={600}
-              totalSlides={foundImgs ? foundImgs.length : 3}
+              totalSlides={foundImgs ? foundImgs.length : 1}
               // totalSlides={3}
               isIntrinsicHeight
               touchEnabled
-              infinite
+              infinite={foundImgs ? true : false}
             >
               <StyledSlider className="slider">
                 {/* <Slide index={1} style={{ height: "500px" }}>
@@ -354,6 +386,8 @@ export const ProductDetails = ({ wholesale }: any) => {
               {wholesale && <p>Price Per Pack</p>}
               <Price>${thisProduct?.data?.attributes?.price}</Price>
 
+              {renderVariants()}
+              
               {wholesale && (
                 <>
                   <SizesTitle>Sizes Per Pack</SizesTitle>

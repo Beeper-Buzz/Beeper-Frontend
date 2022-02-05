@@ -24,10 +24,11 @@ export const Home = (props: any) => {
 
   const videoJsOptions = {
     autoplay: true,
-    // playsInline: true,
+    playsInline: true,
     controls: false,
     responsive: true,
-    // preload: 'auto',
+    preload: 'auto',
+    muted: true,
     fluid: true,
     sources: [
       {
