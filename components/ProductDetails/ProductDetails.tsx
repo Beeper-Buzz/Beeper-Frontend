@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
-import Head from 'next/head';
+import Head from "next/head";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
@@ -234,12 +234,12 @@ export const ProductDetails = ({ wholesale }: any) => {
     if (foundImgs && foundImgs.length < 1) {
       return <Loading />;
     }
-    if (foundImgs && foundImgs.length == 1) { 
+    if (foundImgs && foundImgs.length == 1) {
       return (
         <StyledSlide index={0}>
           <StyledImageWithZoom src={primaryImg} />
         </StyledSlide>
-      )
+      );
     }
     return (
       foundImgs &&
@@ -258,8 +258,10 @@ export const ProductDetails = ({ wholesale }: any) => {
   }, [thisProduct]);
 
   const renderVariants = useCallback(() => {
-    const foundOptions = thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "option_value");
-    const foundColors = foundOptions && foundOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
+    const foundOptions =
+      thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "option_value");
+    const foundColors =
+      foundOptions && foundOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
     return (
       <VariantList>
         {foundColors?.map((option, index) => {
@@ -344,7 +346,9 @@ export const ProductDetails = ({ wholesale }: any) => {
     return (
       <Layout>
         <Head>
-          <title>{thisProduct?.data.attributes.name} - {process.env.SITE_TITLE}</title>
+          <title>
+            {thisProduct?.data.attributes.name} - {process.env.SITE_TITLE}
+          </title>
         </Head>
         <ProductContainer className="product-container">
           <ProductImageCarousel>
@@ -387,7 +391,7 @@ export const ProductDetails = ({ wholesale }: any) => {
               <Price>${thisProduct?.data?.attributes?.price}</Price>
 
               {renderVariants()}
-              
+
               {wholesale && (
                 <>
                   <SizesTitle>Sizes Per Pack</SizesTitle>

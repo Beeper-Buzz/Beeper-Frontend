@@ -110,7 +110,7 @@ export const Variant = styled.div`
   align-items: center;
   border: 1px solid ${(p) => p.theme.colors.black.light};
   margin: 0 10px 0 0;
-  background: ${p => p.color};
+  background: ${(p) => p.color};
 `;
 
 export const SizesTitle = styled.p`
