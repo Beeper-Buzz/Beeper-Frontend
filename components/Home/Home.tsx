@@ -27,7 +27,7 @@ export const Home = (props: any) => {
     playsInline: true,
     controls: false,
     responsive: true,
-    preload: 'auto',
+    preload: "auto",
     muted: true,
     fluid: true,
     sources: [
