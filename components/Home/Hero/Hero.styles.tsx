@@ -11,7 +11,7 @@ export const Container = styled.div`
   position: relative;
   @media (max-width: 768px) {
     height: calc(100vh - ${pxIphone(60)});
-    background-image: url("/bannerMo.jpg");
+    background-image: url("/pol-hero-mo.jpg");
   }
 `;
 export const HeroTitle = styled(LargeTitle)`
