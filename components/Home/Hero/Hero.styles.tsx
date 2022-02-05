@@ -6,12 +6,12 @@ export const Container = styled.div`
   display: flex;
   justify-content: left;
   height: ${pxPC(719)};
-  background-image: url(/banner.png);
+  background-image: url(/pol-hero.jpg);
   background-size: cover;
   position: relative;
   @media (max-width: 768px) {
     height: calc(100vh - ${pxIphone(60)});
-    background-image: url("/bannerMo.png");
+    background-image: url("/bannerMo.jpg");
   }
 `;
 export const HeroTitle = styled(LargeTitle)`
