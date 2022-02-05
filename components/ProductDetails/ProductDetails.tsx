@@ -3,6 +3,8 @@ import { useRouter } from "next/router";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
+import Lottie from "react-lottie";
+import girlAnimation from "../../data/girl.json";
 import {
   fetchStreams,
   fetchProducts,
@@ -26,6 +28,9 @@ import "pure-react-carousel/dist/react-carousel.es.css";
 // import ProductCard from "../components";
 
 import {
+  NotFoundContainer,
+  NotFoundTitle,
+  NotFoundSubtitle,
   ProductContainer,
   ProductImageCarousel,
   ProductInfoBox,
@@ -76,10 +81,25 @@ export const ProductDetails = ({ wholesale }: any) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { asPath: productSlug } = router;
   // console.log(productSlug);
-  const { data: thisProduct, isLoading, isSuccess } = useProduct(`${productSlug.replace("/", "")}`);
+  const {
+    data: thisProduct,
+    isLoading,
+    isSuccess,
+    isError,
+    error: productError
+  } = useProduct(`${productSlug.replace("/", "")}`);
   const thisProductId = thisProduct?.data?.id || "";
   const queryClient = useQueryClient();
   const [colorOptions, setColorOptions] = useState<any>(productColors);
+
+  const animationOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: girlAnimation,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice"
+    }
+  };
 
   const {
     error: productsError,
@@ -124,7 +144,7 @@ export const ProductDetails = ({ wholesale }: any) => {
   };
 
   const handleKeyPress = (event: KeyboardEvent) => {
-    const thisProductId = thisProduct?.data.id;
+    const thisProductId = thisProduct?.data?.id;
     console.log(thisProductId);
     const productId: number = parseInt(`${thisProductId}`);
     const { key } = event;
@@ -229,12 +249,19 @@ export const ProductDetails = ({ wholesale }: any) => {
     );
   }
 
-  if (!thisProduct) {
+  if (isError) {
     return (
       <Layout>
-        <LoadingWrapper>
-          <h3>No Product Found</h3>
-        </LoadingWrapper>
+        <NotFoundContainer>
+          <Lottie
+            options={animationOptions}
+            width={300}
+            height={300}
+            style={{ pointerEvents: "none" }}
+          />
+          <NotFoundTitle>404</NotFoundTitle>
+          <NotFoundSubtitle>Whoops, keep looking...</NotFoundSubtitle>
+        </NotFoundContainer>
       </Layout>
     );
   }
@@ -395,10 +422,9 @@ export const ProductDetails = ({ wholesale }: any) => {
               </p>
             </div>
           </ProductInfoBox>
+          {similarProducts ? similarProducts : <></>}
+          {recommendedProducts ? recommendedProducts : <></>}
         </ProductContainer>
-
-        {similarProducts ? similarProducts : <></>}
-        {recommendedProducts ? recommendedProducts : <></>}
       </Layout>
     );
   }
