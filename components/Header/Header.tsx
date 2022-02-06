@@ -52,11 +52,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const toggleAccount = () => setAccountVisible((isVisible) => !isVisible);
   const isMaint = process.env.IS_MAINT_MODE;
 
-  const {
-    data: cartData,
-    isLoading: cartIsLoading,
-    isError: cartHasError
-  } = useCart();
+  const { data: cartData, isLoading: cartIsLoading, isError: cartHasError } = useCart();
 
   const handleAccount = (event: any) => {
     setAccountElem(event.currentTarget);
