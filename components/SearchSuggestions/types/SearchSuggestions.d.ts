@@ -1,4 +1,4 @@
-export interface AutoCompleteProps {
+export interface SearchSuggestionsProps {
   id?: string;
   labelId?: string;
   isVisible?: boolean;

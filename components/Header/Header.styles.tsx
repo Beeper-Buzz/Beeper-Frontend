@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Badge, Popover } from "@material-ui/core";
+import { Popover } from "@material-ui/core";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import { pxIphone } from "../../utils";
@@ -112,9 +112,19 @@ export const HeaderOptions = styled.div`
 `;
 
 export const CartToggle = styled.div`
-  margin: 10px 10px 0 0;
+  margin: -10px 3px 0 0;
   color: ${(p) =>
     p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+
+  @media (min-width: ${(p) => p.theme.breakpoints.values.xs}px) {
+    & span.MuiBadge-root span.MuiBadge-badge {
+      top: 5px !important;
+    }
+  }
+
+  @media (max-width: ${(p) => p.theme.breakpoints.values.xs}px) {
+    margin: 10px 10px 0 0;
+  }
 `;
 
 export const HeaderAccount = styled.div`
@@ -125,21 +135,45 @@ export const HeaderAccount = styled.div`
   justify-content: space-around;
   color: ${(p) =>
     p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
-  @media (max-width: 768px) {
+  @media (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
     display: none;
   }
 `;
 
 export const AccountEmail = styled.div`
+  font-family: ${(p) => p.theme.typography.titleMD.fontFamily};
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0 10px;
+  cursor: pointer;
 `;
 
 export const AccountMenu = styled(Popover)`
-  padding: 20px 10px;
-  border: 1px solid red;
+  font-family: ${(p) => p.theme.typography.titleMD.fontFamily};
+  text-align: right;
+  & div.MuiPaper-root {
+    width: 160px;
+    padding: 20px;
+    top: 45px !important;
+    left: auto !important;
+    right: 105px;
+    background-color: ${(p) =>
+    p.theme.isDarkMode ? p.theme.colors.gray.dark : p.theme.colors.white.primary};
+  }
+`;
+
+export const AccountOption = styled.div`
+  cursor: pointer;
+  margin: 5px 0;
+  &:first-of-type {
+    margin: 0;
+  }
+
+  & > a {
+    color: ${(p) =>
+    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+  }
 `;
 
 export const ArrowDown = styled(ArrowDropDownIcon)`

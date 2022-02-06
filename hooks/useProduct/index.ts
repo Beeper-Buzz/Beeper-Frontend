@@ -22,17 +22,18 @@ const fetchProduct = async (slug: string): Promise<IProduct> => {
     headers: myHeaders
   })
     .then((res) => {
+      // console.log(res.status);
       if (res.status >= 200 && res.status <= 299) {
         return res.json();
-      } else {
-        // Promise.reject("Product request failed");
-        console.log("Uh oh RES: ", res.statusText);
-        Promise.reject();
-        throw new Error(res.statusText);
       }
+      // else {
+      //   // Promise.reject("Product request failed");
+      //   // console.log("Uh oh RES: ", res.statusText);
+      //   throw new Error(res.statusText);
+      // }
     })
     .catch((err) => {
-      console.log("Uh oh ERR: ", err);
+      // console.log("Uh oh ERR: ", err);
       throw new Error(`Product request failed: ${err.statusText}`);
     });
 

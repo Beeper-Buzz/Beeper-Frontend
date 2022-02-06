@@ -57,20 +57,21 @@ export const ThreeDot = styled.div`
   align-items: center;
   margin-top: ${pxPC(3)};
 `;
-const Dot = styled.div`
+export const Dot = styled.div`
   width: ${pxPC(12)};
   height: ${pxPC(12)};
   border-radius: 50%;
   border: 1px solid
     ${(p) => (p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary)};
   margin-right: ${pxPC(8)};
+  background: ${(p) => p.color};
 `;
-export const Dot1 = styled(Dot)`
-  background: #cbc8bf;
-`;
-export const Dot2 = styled(Dot)`
-  background: #979d93;
-`;
-export const Dot3 = styled(Dot)`
-  background: #979d93;
-`;
+// export const Dot1 = styled(Dot)`
+//   background: #cbc8bf;
+// `;
+// export const Dot2 = styled(Dot)`
+//   background: #979d93;
+// `;
+// export const Dot3 = styled(Dot)`
+//   background: #979d93;
+// `;
