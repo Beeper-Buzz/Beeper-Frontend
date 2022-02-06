@@ -48,8 +48,13 @@ export const ProductList: React.FC<ProductListProps> = () => {
           const imageId =
             Array.isArray(product.relationships.images.data) &&
             product.relationships.images.data[0]?.id;
-          const imageSource = products?.included?.find((image) => image.id === imageId)?.attributes
+          const imageSource = products?.included?.find((image: any) => image.id === imageId)?.attributes
             .styles[2].url;
+          const productColorOptions =
+            products && products?.included?.filter((e: any) => e["type"] === "option_value");
+          const productVariantColors =
+            productColorOptions &&
+            productColorOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
           const source = imageSource
             ? `${process.env.SPREE_API_URL}/${imageSource}`
             : "https://via.placeholder.com/150";

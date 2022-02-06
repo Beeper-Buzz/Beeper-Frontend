@@ -1,7 +1,12 @@
 import styled from "@emotion/styled";
 
 export const CartWrapper = styled.div`
-  padding: 0 10px 0 0;
+  font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
+  padding: 0 5px 0 0;
+
+  @media (max-width: ${(p) => p.theme.breakpoints.values.xs}px) {
+    padding: 0 10px 0 0;
+  }
 `;
 
 export const CartTitle = styled.h2`
@@ -16,6 +21,7 @@ export const CartButton = styled.div`
   }
 
   > i {
+    font-size: 1em;
     color: ${(p) =>
       p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
   }

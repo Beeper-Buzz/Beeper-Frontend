@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { addItemToCart } from "../../hooks/useCart";
 import { QueryKeys } from "../../hooks/queryKeys";
 import * as tracking from "../../config/tracking";
-import LatestProducts from "../Home/LatestProducts";
+import Featured from "../Home/Featured";
 import PolProductList from "../PolProductList";
 import { useMediaQuery } from "react-responsive";
 import homeData from "../Home/home.json";
@@ -61,10 +61,10 @@ export const Category = () => {
     1
   );
 
-  const polProductList = isMobile ? null : <PolProductList data={productData} title={"HOTDIGS"} />;
-  const latestProducts = isMobile ? null : (
-    <LatestProducts data={homeData.latestProducts} title="" />
+  const polProductList = isMobile ? null : (
+    <PolProductList products={productData} title={"HOTDIGS"} />
   );
+  const latestProducts = isMobile ? null : <Featured data={homeData.latestProducts} title="" />;
 
   React.useEffect(() => {
     if (isSuccess) {

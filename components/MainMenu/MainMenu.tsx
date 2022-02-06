@@ -50,18 +50,18 @@ export const MainMenu = (props: MainMenuProps) => {
   );
 
   useEffect(() => {
-    if (menuItemsIsSuccess && menuLocationIsSuccess) {
-      console.log(
-        menusData,
-        "MENU LOCATION",
-        menuLocationData?.response_data,
-        "MENU ITEMS",
-        menuItemsData?.response_data
-      );
-    }
+    // if (menuItemsIsSuccess && menuLocationIsSuccess) {
+    //   console.log(
+    //     menusData,
+    //     "MENU LOCATION",
+    //     menuLocationData?.response_data,
+    //     "MENU ITEMS",
+    //     menuItemsData?.response_data
+    //   );
+    // }
   }, []);
 
-  if (menuItemsIsLoading) return <>Loading...</>;
+  if (menuItemsIsLoading) return null;
 
   return (
     <>

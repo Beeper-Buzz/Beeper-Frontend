@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import { IProduct } from "@spree/storefront-api-v2-sdk/types/interfaces/Product";
 // import { useDispatch } from 'react-redux';
 // import { commonOperations } from '@common/ducks';
-import { StyledSuggestionLink, StyledSuggestionContent } from "./AutoComplete.styles";
+import { StyledSuggestionLink, StyledSuggestionContent } from "./SearchSuggestions.styles";
 const formatWithHighlight = (text: string, query: string | undefined) => {
   if (!query) return text;
 

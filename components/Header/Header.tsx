@@ -2,10 +2,11 @@ import React, { useEffect, useState, useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { Badge, Popover } from "@material-ui/core";
+import { Badge } from "@material-ui/core";
 import Sticky from "react-sticky-el";
 import { HeaderProps } from "./types";
 import { useAuth } from "../../config/auth";
+import { useCart } from "../../hooks/useCart";
 import { MyLogo } from "../Layout/Layout";
 import SearchBar from "../SearchBar";
 import { MainMenu } from "../MainMenu";
@@ -31,7 +32,8 @@ import {
   ShoppingCart,
   FavoriteIcon,
   AccountEmail,
-  AccountMenu
+  AccountMenu,
+  AccountOption
 } from "./Header.styles";
 
 const dummyCategories = ["Best Sellers", "Latest", "Seasonal", "Luxury", "On Sale", "Coming Soon"];
@@ -48,8 +50,13 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const accountId = accountVisible ? "simple-popover" : undefined;
   const toggleCart = () => setCartVisible((isVisible) => !isVisible);
   const toggleAccount = () => setAccountVisible((isVisible) => !isVisible);
-
   const isMaint = process.env.IS_MAINT_MODE;
+
+  const {
+    data: cartData,
+    isLoading: cartIsLoading,
+    isError: cartHasError
+  } = useCart();
 
   const handleAccount = (event: any) => {
     setAccountElem(event.currentTarget);
@@ -96,19 +103,23 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                 onClose={handleCloseAccount}
                 anchorOrigin={{
                   vertical: "bottom",
-                  horizontal: "right"
+                  horizontal: "center"
                 }}
                 transformOrigin={{
                   vertical: "top",
-                  horizontal: "right"
+                  horizontal: "center"
                 }}
               >
-                <ul>
-                  <li>Account Settings</li>
-                  <li>Need Help?</li>
-                </ul>
+                <AccountOption>
+                  <div>Account Settings</div>
+                </AccountOption>
+                <AccountOption>
+                  <div>Need Help?</div>
+                </AccountOption>
                 <hr />
-                <div onClick={logout}>LOGOUT</div>
+                <AccountOption>
+                  <div onClick={logout}>Logout</div>
+                </AccountOption>
               </AccountMenu>
               {/* <UserIconMo src={"/user.png"} /> */}
               <Badge badgeContent={4} color="secondary">
@@ -126,7 +137,10 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
             </HeaderOptions>
           )}
           <CartToggle>
-            <Badge badgeContent={4} color="primary">
+            <Badge
+              badgeContent={cartData ? cartData.data.attributes.item_count : 0}
+              color="primary"
+            >
               <CartSidebar isVisible={cartVisible} toggle={toggleCart} />
             </Badge>
           </CartToggle>

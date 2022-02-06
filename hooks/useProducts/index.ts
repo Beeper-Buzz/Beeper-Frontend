@@ -11,8 +11,9 @@ const fetchProducts = async (page: number = 1) => {
       bearerToken: token ? token.access_token : undefined
     },
     {
+      sort: "created_at",
       // include: 'primary_variant,variants,images,option_types,variants.option_values'
-      include: "images"
+      include: "images,variants,option_types,variants.option_values"
     }
   );
   if (response.isSuccess()) {

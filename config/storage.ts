@@ -27,13 +27,13 @@ const storage = {
   },
   setToken: (token: IOAuthToken) => window.localStorage.setItem("token", JSON.stringify(token)),
   getGuestOrderToken: (): IToken | undefined => {
-    const token = window.localStorage.getItem("token");
+    const token = window.localStorage.getItem("guestOrderToken");
     if (token) {
       return JSON.parse(token);
     }
   },
-  setGuestOrderToken: (token: IToken) => {
-    window.localStorage.setItem("guestOrderToekn", JSON.stringify(token));
+  setGuestOrderToken: (token: string) => {
+    window.localStorage.setItem("guestOrderToken", JSON.stringify(token));
   },
   clearToken: () => window.localStorage.removeItem("token")
 };

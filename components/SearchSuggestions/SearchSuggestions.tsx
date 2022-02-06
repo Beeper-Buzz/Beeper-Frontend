@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useProducts } from "../../hooks/useProducts";
-import { StyledAutoComplete } from "./AutoComplete.styles";
+import { StyledSearchSuggestions } from "./SearchSuggestions.styles";
 import Suggestion from "./Suggestion";
-import { AutoCompleteProps } from "./types";
+import { SearchSuggestionsProps } from "./types";
 
-const AutoComplete = ({
+const SearchSuggestions = ({
   id,
   labelId,
   isVisible,
@@ -13,7 +13,7 @@ const AutoComplete = ({
   toggleVisibility,
   onSelect,
   query
-}: AutoCompleteProps) => {
+}: SearchSuggestionsProps) => {
   const {
     error,
     status,
@@ -39,15 +39,15 @@ const AutoComplete = ({
 
   if (error) {
     return (
-      <StyledAutoComplete role="listbox" aria-labelledby={labelId} id={id}>
+      <StyledSearchSuggestions role="listbox" aria-labelledby={labelId} id={id}>
         <h1>Error {status}</h1>
-      </StyledAutoComplete>
+      </StyledSearchSuggestions>
     );
   }
 
   setIsSearchLoading();
   return (
-    <StyledAutoComplete role="listbox" aria-labelledby={labelId} id={id}>
+    <StyledSearchSuggestions role="listbox" aria-labelledby={labelId} id={id}>
       {isVisible &&
         data?.data?.map((item: any, index: any) => {
           return (
@@ -60,8 +60,8 @@ const AutoComplete = ({
             />
           );
         })}
-    </StyledAutoComplete>
+    </StyledSearchSuggestions>
   );
 };
 
-export default AutoComplete;
+export default SearchSuggestions;

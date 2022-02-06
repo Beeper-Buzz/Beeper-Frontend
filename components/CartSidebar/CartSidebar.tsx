@@ -1,5 +1,5 @@
-import * as React from "react";
 import { slide as BurgerMenu } from "react-burger-menu";
+import { Loading } from "..";
 import { useCart } from "../../hooks/useCart";
 import { cartStyles } from "./cartStyles";
 
@@ -11,13 +11,22 @@ interface Props {
 }
 
 export const CartSidebar = ({ isVisible, toggle }: Props) => {
-  const { data, isLoading, isError } = useCart();
+  const { data: cartData, isLoading: cartIsLoading, isError: cartHasError } = useCart();
 
-  if (isLoading) {
-    return <div className="cart-modal">Loading Cart...</div>;
+  const renderCartItems = () => {
+    if (Array.isArray(cartData?.data?.relationships?.variants?.data)) {
+      return cartData?.data?.relationships?.variants?.data?.map((item, index): any => {
+        return <li key={`cart-item-${index}`}>item: {item.id} | qty: </li>;
+      })
+    }
+    return null;
   }
 
-  if (isError) {
+  if (cartIsLoading) {
+    return null;
+  }
+
+  if (cartHasError) {
     return <div className="cart-modal">Cart failed to load.</div>;
   }
 
@@ -26,25 +35,19 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
     display_item_total,
     included_tax_total,
     display_total
-  } = data?.data?.attributes || {};
+  } = cartData?.data?.attributes || {};
 
   return (
     <CartWrapper>
       <CartButton onClick={toggle}>
         <i className="btb bt-lg bt-shopping-cart" />
       </CartButton>
-      {/* {isVisible && (
-        <div className="cart-modal">
-          <CartTitle>Cart</CartTitle>
-          <div>{item_count} items in your cart</div>
-          <div>Subtotal: {display_item_total}</div>
-          <div>Tax: {included_tax_total}</div>
-          <div>Total: {display_total}</div>
-        </div>
-      )} */}
       <BurgerMenu right isOpen={isVisible} onOpen={toggle} styles={cartStyles} onClose={toggle}>
         <CartTitle>Cart</CartTitle>
         <div>{item_count} items in your cart</div>
+        <div>
+          {renderCartItems()}
+        </div>
         <div>Subtotal: {display_item_total}</div>
         <div>Tax: {included_tax_total}</div>
         <div>Total: {display_total}</div>
