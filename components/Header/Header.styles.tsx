@@ -159,7 +159,7 @@ export const AccountMenu = styled(Popover)`
     left: auto !important;
     right: 105px;
     background-color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.gray.dark : p.theme.colors.white.primary};
+      p.theme.isDarkMode ? p.theme.colors.gray.dark : p.theme.colors.white.primary};
   }
 `;
 
@@ -172,7 +172,7 @@ export const AccountOption = styled.div`
 
   & > a {
     color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+      p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
   }
 `;
 

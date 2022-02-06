@@ -297,12 +297,14 @@ export const ProductDetails = ({ wholesale }: any) => {
     return (
       <>
         {productProperties?.map((property: any, index: any) => {
-          return <div key={`property-${index}`}>
-            <PropertyName>{property.attributes.name}</PropertyName>: {property.attributes.value}
-          </div>
+          return (
+            <div key={`property-${index}`}>
+              <PropertyName>{property.attributes.name}</PropertyName>: {property.attributes.value}
+            </div>
+          );
         })}
       </>
-    )
+    );
   }, [productProperties]);
 
   useEffect(() => {
@@ -462,7 +464,7 @@ export const ProductDetails = ({ wholesale }: any) => {
               <BuyButton className="" onClick={() => handleAddToCart(addItem)}>
                 add to cart
               </BuyButton>
-              <div style={{textAlign: 'left'}}>
+              <div style={{ textAlign: "left" }}>
                 <Detail>Model Info</Detail>
                 {renderProperties()}
               </div>

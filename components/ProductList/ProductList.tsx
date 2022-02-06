@@ -48,8 +48,8 @@ export const ProductList: React.FC<ProductListProps> = () => {
           const imageId =
             Array.isArray(product.relationships.images.data) &&
             product.relationships.images.data[0]?.id;
-          const imageSource = products?.included?.find((image: any) => image.id === imageId)?.attributes
-            .styles[2].url;
+          const imageSource = products?.included?.find((image: any) => image.id === imageId)
+            ?.attributes.styles[2].url;
           const productColorOptions =
             products && products?.included?.filter((e: any) => e["type"] === "option_value");
           const productVariantColors =
