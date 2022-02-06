@@ -17,10 +17,10 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
     if (Array.isArray(cartData?.data?.relationships?.variants?.data)) {
       return cartData?.data?.relationships?.variants?.data?.map((item, index): any => {
         return <li key={`cart-item-${index}`}>item: {item.id} | qty: </li>;
-      })
+      });
     }
     return null;
-  }
+  };
 
   if (cartIsLoading) {
     return null;
@@ -45,9 +45,7 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
       <BurgerMenu right isOpen={isVisible} onOpen={toggle} styles={cartStyles} onClose={toggle}>
         <CartTitle>Cart</CartTitle>
         <div>{item_count} items in your cart</div>
-        <div>
-          {renderCartItems()}
-        </div>
+        <div>{renderCartItems()}</div>
         <div>Subtotal: {display_item_total}</div>
         <div>Tax: {included_tax_total}</div>
         <div>Total: {display_total}</div>
