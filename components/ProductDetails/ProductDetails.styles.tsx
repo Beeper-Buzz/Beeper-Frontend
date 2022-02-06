@@ -2,26 +2,6 @@ import styled from "@emotion/styled";
 import { ButtonBack, ButtonNext } from "pure-react-carousel";
 import { Slider, Slide, ImageWithZoom } from "pure-react-carousel";
 
-export const NotFoundContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: space-around;
-  min-height: 80vh;
-  font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
-`;
-
-export const NotFoundTitle = styled.h1`
-  width: 100%;
-
-  text-align: center;
-`;
-
-export const NotFoundSubtitle = styled.h2`
-  width: 100%;
-  text-align: center;
-`;
-
 export const ProductContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -87,6 +67,8 @@ export const ProductInfoBox = styled.div`
 export const ProductDescription = styled.div`
   text-align: center;
   max-width: 400px;
+  color: ${(p) =>
+    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
 `;
 
 export const Detail = styled.h3`
@@ -100,17 +82,25 @@ export const Detail = styled.h3`
 export const Price = styled.h1``;
 
 export const VariantList = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const Variant = styled.div`
   display: block;
+  width: 30px;
   height: 30px;
   align-items: center;
   border: 1px solid ${(p) => p.theme.colors.black.light};
   margin: 0 10px 0 0;
   background: ${(p) => p.color};
+
+  &:last-of-type {
+    margin: 0;
+  }
 `;
 
 export const SizesTitle = styled.p`
@@ -140,21 +130,10 @@ export const SizeQty = styled.div`
 
 export const SizeTitle = styled.div`
   padding: 3px 0 0 0;
-  background: ${(p) => p.theme.colors.gray.background};
+  background: ${(p) =>
+    p.theme.isDarkMode ? p.theme.colors.gray.dark : p.theme.colors.gray.background};
   text-transform: uppercase;
 `;
-
-// export const ColorsTable = styled.table``;
-
-// export const ColorsHead = styled.thead``;
-
-// export const ColorsTH = styled.th``;
-
-// export const ColorsBody = styled.tbody``;
-
-// export const ColorsRow = styled.tr``;
-
-// export const ColorsCell = styled.td``;
 
 export const ColorsTable = styled.div`
   margin: 40px 0 40px 0;
@@ -181,6 +160,9 @@ export const ColorsRow = styled.div`
 `;
 
 export const ColorsCell = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 4px 6px;
   & input {
     width: 100%;
@@ -202,4 +184,9 @@ export const ColorsCell = styled.div`
 
 export const BuyButton = styled.button`
   font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
+`;
+
+export const PropertyName = styled.span`
+  color: ${(p) =>
+    p.theme.isDarkMode ? p.theme.colors.gray.primary : p.theme.colors.black.primary};
 `;

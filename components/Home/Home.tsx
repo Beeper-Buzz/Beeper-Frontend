@@ -7,7 +7,7 @@ import { fetchStreams, fetchProducts, useProducts, useStreams } from "../../hook
 import Hero from "./Hero";
 import Banner from "./Banner";
 import { Content } from "./Home.styles";
-import LatestProducts from "./LatestProducts";
+import Featured from "./Featured";
 import MemberList from "./MemberList";
 import { StreamList } from "../StreamList";
 import PolProductList from "../PolProductList";
@@ -71,13 +71,12 @@ export const Home = (props: any) => {
 
   const memberList = isMobile ? null : <MemberList data={homeData.memberList} />;
   const mobileMemberList = !isMobile ? null : <MemberList data={homeData.memberList} />;
-  const advertList = isMobile ? null : <LatestProducts data={homeData.latestProducts} title="" />;
   const advertListMobile = isMobile ? (
-    <MobileLatest data={productsData} title={""}></MobileLatest>
+    <MobileLatest products={productsData} title={""}></MobileLatest>
   ) : null;
   const polProductList = isMobile ? null : (
     // <PolProductList data={homeData.hotDigs} title={"New Drops This Week"} />
-    <PolProductList data={productsData} title={"New Drops This Week"} />
+    <PolProductList products={productsData} title={"New Drops This Week"} />
   );
   const banner = isMobile ? null : <Banner data={homeData.bigHotDig} />;
 
@@ -101,7 +100,7 @@ export const Home = (props: any) => {
         <StreamList data={streamsData?.response_data} title={"Live-Shopping"} />
         {!productsAreLoading && polProductList}
         {/* {mobileMemberList} */}
-        {advertList}
+        <Featured data={homeData.latestProducts} title="" />;
         <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
         {advertListMobile}
         {!productsAreLoading && polProductList}

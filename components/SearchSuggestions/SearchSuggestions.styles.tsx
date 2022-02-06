@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export interface StyledAutoCompleteProps {
+export interface StyledSearchSuggestionsProps {
   theme?: {
     colors: {
       blue: { primary: string };
@@ -8,14 +8,14 @@ export interface StyledAutoCompleteProps {
     };
   };
 }
-export const StyledAutoComplete = styled.div<StyledAutoCompleteProps>`
+export const StyledSearchSuggestions = styled.div<StyledSearchSuggestionsProps>`
   position: absolute;
   display: block;
   width: 100%;
   max-height: 245px;
 
   background: white;
-  border-radius: 0px 0px 3px 3px;
+  border-radius: 0px 0px 12px 12px;
   box-shadow: 0 7px 13px 1px rgba(24, 41, 60, 0.1);
   overflow-y: auto;
   overflow-x: hidden;
@@ -23,26 +23,26 @@ export const StyledAutoComplete = styled.div<StyledAutoCompleteProps>`
 
   &::-webkit-scrollbar {
     width: 20px;
-    border-radius: 0 0 3px 0;
+    border-radius: 0 0 12px 0;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.black.light : p.theme.colors.white.light};
+      p.theme.isDarkMode ? p.theme.colors.black.light : p.theme.colors.white.primary};
   }
 
   &::-webkit-scrollbar-thumb {
     border-radius: 12px;
     height: 80px;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.black.medium : p.theme.colors.white.medium};
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.33);
+      p.theme.isDarkMode ? p.theme.colors.black.medium : p.theme.colors.gray.background};
+    /* box-shadow: 0 2px 12px rgba(0, 0, 0, 0.33); */
     transition: 1s all ease-in-out;
     &:active {
       transition: 1s all ease-in-out;
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.22);
+      /* box-shadow: 0 2px 20px rgba(0, 0, 0, 0.22); */
     }
   }
 
   &::-webkit-scrollbar-track {
-    border-radius: 8px;
+    border-radius: 12px;
     background-color: ${(p) =>
       p.theme.isDarkMode ? p.theme.colors.gray.dark : p.theme.colors.gray.light};
   }
@@ -64,6 +64,7 @@ export const StyledSuggestionLink = styled.div<StyledSuggestionLinkProps>`
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px 12px 30px;
+  font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
   background-color: ${(p) =>
     p.theme.isDarkMode ? p.theme.colors.black.primary : p.theme.colors.white.primary};
   color: ${(p) =>
@@ -77,7 +78,7 @@ export const StyledSuggestionLink = styled.div<StyledSuggestionLinkProps>`
   &:hover {
     text-decoration: none;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.gray.medium : p.theme.colors.gray.primary};
+      p.theme.isDarkMode ? p.theme.colors.gray.medium : p.theme.colors.gray.background};
     color: ${(p) =>
       p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
   }

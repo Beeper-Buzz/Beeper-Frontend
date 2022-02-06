@@ -21,7 +21,7 @@ import {
   SearchBarWrapper,
   ButtonWrapper
 } from "./SearchBar.styles";
-import AutoComplete from "../AutoComplete";
+import AutoComplete from "../SearchSuggestions";
 import { useRouter } from "next/router";
 import { useOnClickOutside } from "../../hooks";
 import { SearchBarProps } from "./types";
@@ -47,7 +47,6 @@ const SearchBar = ({
     const { value } = e.target;
     if (value.length === 0) handleSearchClear();
     setQuery(value);
-
     setIsAutocompleteVisible(true);
   };
 

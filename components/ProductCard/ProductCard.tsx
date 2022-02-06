@@ -13,14 +13,15 @@ import {
   // ProductRate,
   Price,
   ThreeDot,
-  Dot1,
-  Dot2,
-  Dot3
+  Dot
+  // Dot1,
+  // Dot2,
+  // Dot3
 } from "./ProductCard.styles";
 
-export const ProductCard = ({ imgSrc, item }: any) => {
+export const ProductCard = ({ imgSrc, item, opts }: any) => {
   const router = useRouter();
-  // console.log(item);
+  // console.log("Card: ", item);
   return (
     <ProductCardWrapper onClick={(e) => router.push(`${item.attributes.slug}`)}>
       <>
@@ -32,9 +33,10 @@ export const ProductCard = ({ imgSrc, item }: any) => {
             <ProductTitle>{item.attributes.name}</ProductTitle>
             {/* <ProductDesc>{item.attributes.description}</ProductDesc> */}
             <ThreeDot>
-              <Dot1 as={"span"}></Dot1>
-              <Dot2 as={"span"}></Dot2>
-              <Dot3 as={"span"}></Dot3>
+              {opts.slice(0, 5).map((opt: any, index: any) => {
+                // console.log("opt: ", opt);
+                return <Dot key={`color-${index}`} as={"span"} color={opt.attributes.presentation}></Dot>;
+              })}
             </ThreeDot>
           </ProductFooterLeft>
           <ProductFooterRight>
