@@ -46,12 +46,16 @@ const PolProductList: React.FC<PolProductListProps> = (props) => {
             let productOptionIds = optionTypes.map((i: any) => i.id);
             let allOptions =
               products && products?.included?.filter((e: any) => e.type == "option_value");
-            let productVariantColors =
-              allOptions ? allOptions?.filter((e: any) => e.attributes.presentation.includes("#")) : null;
-            let foundOptions = productVariantColors !== null ? productVariantColors.filter((i: any) => {
-              // console.log("foundOption: ", i.relationships.option_type.data.id);
-              return productOptionIds.includes(i.relationships.option_type.data.id);
-            }) : null;
+            let productVariantColors = allOptions
+              ? allOptions?.filter((e: any) => e.attributes.presentation.includes("#"))
+              : null;
+            let foundOptions =
+              productVariantColors !== null
+                ? productVariantColors.filter((i: any) => {
+                    // console.log("foundOption: ", i.relationships.option_type.data.id);
+                    return productOptionIds.includes(i.relationships.option_type.data.id);
+                  })
+                : null;
             // console.log("list: ", products, productVariantColors, foundOptions);
             return (
               <SwiperSlide key={index}>
