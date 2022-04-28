@@ -14,6 +14,10 @@ export const LoadingWrapper = styled.div`
   }
 `;
 
+export const LoadingIcon = styled.i`
+  margin: 0 auto;
+`;
+
 export const Loading = () => {
   const animationOptions = {
     loop: true,

@@ -61,7 +61,7 @@ export const MainMenu = (props: MainMenuProps) => {
     // }
   }, []);
 
-  if (menuItemsIsLoading) return null;
+  if (menuItemsIsLoading || menuLocationIsLoading) return null;
 
   return (
     <>
@@ -69,7 +69,7 @@ export const MainMenu = (props: MainMenuProps) => {
         <MobileMenu
           showMenuHeader={showMenuHeader}
           onMenuItemClick={onMenuItemClick}
-          menusData={menuItemsData?.response_data}
+          menusData={menuItemsData ? menuItemsData?.response_data : []}
         />
       </HiddenOnDesktop>
       <HiddenOnMobile>
@@ -78,7 +78,7 @@ export const MainMenu = (props: MainMenuProps) => {
             onMenuItemClick={onMenuItemClick}
             pcWrapClassName={classnames(pcWrapClassName)}
             pcMenuItemClassName={pcMenuItemClassName}
-            menusData={menuItemsData?.response_data}
+            menusData={menuItemsData ? menuItemsData?.response_data : []}
             // menusData={menusData}
           />
         ) : null}
