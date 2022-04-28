@@ -2,17 +2,12 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+### Running Locally:
 
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+- `cp .env.example .env.development`
+- Replace `.env.development` with variables from Aaron
+- `yarn dev`
+- Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## NextJS
 

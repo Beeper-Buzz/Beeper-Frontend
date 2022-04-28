@@ -40,8 +40,8 @@ import {
   CarouselNextButton,
   Detail,
   Price,
-  VariantList,
-  Variant,
+  VariantSwatchList,
+  VariantSwatch,
   SizesTitle,
   SizesPerPack,
   Size,
@@ -56,6 +56,8 @@ import {
   BuyButton,
   PropertyName
 } from "./ProductDetails.styles";
+import { boolean } from "yup";
+import { size } from "polished";
 
 const settings = {
   speed: 500,
@@ -79,7 +81,11 @@ const productColors: ColorOptionType[] = [
   }
 ];
 
-export const ProductDetails = ({ wholesale }: any) => {
+interface ProductDetailsProps {
+  wholesale?: boolean;
+}
+
+export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
   const router = useRouter();
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { asPath: productSlug } = router;
@@ -102,10 +108,40 @@ export const ProductDetails = ({ wholesale }: any) => {
     thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "product_property");
   const thisProductId = thisProduct?.data?.id || "";
   const queryClient = useQueryClient();
+  const [packQtys, setPackQtys] = useState([
+    {
+      name: "XS",
+      qty: 2
+    },
+    {
+      name: "S",
+      qty: 2
+    },
+    {
+      name: "M",
+      qty: 2
+    },
+    {
+      name: "L",
+      qty: 2
+    },
+    {
+      name: "XL",
+      qty: 2
+    }
+  ]);
+
+  const totalPackQty = (sizes: any) => {
+    let qty = 0;
+    sizes.map((i: any) => qty + i.qty);
+    return qty;
+  };
+
   const [colorOptions, setColorOptions] = useState<any>(productVariantColors);
+  const [chosenVariants, setChoseVariants] = useState([]);
   const [addItem, setAddItem] = useState<any>({
-    variant_id: "236",
-    quantity: 3
+    variant_id: thisProduct?.data.id,
+    quantity: wholesale ? totalPackQty(packQtys) : 1
     // public_metadata: {
     //   first_item_order: true
     // },
@@ -124,12 +160,10 @@ export const ProductDetails = ({ wholesale }: any) => {
     data: productsData,
     isLoading: productsAreLoading,
     isSuccess: productsAreSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } = useProducts(
-    1
-  );
+  } = useProducts(1);
   const randomNextProductId = productsAreSuccess
-    ? productsData.data[Math.floor(Math.random() * productsData.data?.length)].id
-    : 1;
+    ? productsData?.data[Math.floor(Math.random() * productsData?.data?.length)].id
+    : "";
 
   const {
     error: variantsError,
@@ -139,12 +173,14 @@ export const ProductDetails = ({ wholesale }: any) => {
     isSuccess: variantsAreSuccess
   } = useVariants(1, thisProductId);
 
-  const similarProducts = isMobile ? null : (
-    <PolProductList products={productsData} title={"Similar Products"} />
-  );
-  const recommendedProducts = isMobile ? null : (
-    <PolProductList products={productsData} title={"Recommended for You"} />
-  );
+  const similarProducts =
+    productsData && !isMobile ? (
+      <PolProductList products={productsData} title={"Similar Products"} />
+    ) : null;
+  const recommendedProducts =
+    productsData && !isMobile ? (
+      <PolProductList products={productsData} title={"Recommended for You"} />
+    ) : null;
   // const latestProducts = isMobile ? null : (
   //   <Featured data={homeData.latestProducts} title="" />
   // );
@@ -153,6 +189,11 @@ export const ProductDetails = ({ wholesale }: any) => {
       queryClient.invalidateQueries(QueryKeys.CART);
     }
   });
+
+  const addAllToCart = () =>
+    useCallback(() => {
+      chosenVariants.forEach((i) => handleAddToCart(i));
+    }, [chosenVariants]);
 
   const setColorQtys = (arr: any) => {
     return arr.map(({ item, index }: any) => {
@@ -170,30 +211,34 @@ export const ProductDetails = ({ wholesale }: any) => {
       case "ArrowLeft":
         const prevProductId = productId - 1;
 
-        fetchProduct(`${prevProductId}`)
-          .then((nextProduct) => {
-            router.push(`/${nextProduct?.data?.attributes?.slug}`);
-          })
-          .catch(() => {
-            /* product not found */
-            fetchProduct(randomNextProductId).then((nextProduct) => {
+        if (randomNextProductId) {
+          fetchProduct(`${prevProductId}`)
+            .then((nextProduct) => {
               router.push(`/${nextProduct?.data?.attributes?.slug}`);
+            })
+            .catch(() => {
+              /* product not found */
+              fetchProduct(randomNextProductId).then((nextProduct) => {
+                router.push(`/${nextProduct?.data?.attributes?.slug}`);
+              });
             });
-          });
+        }
         break;
       case "ArrowRight":
         const nextProductId = productId + 1;
 
-        fetchProduct(`${nextProductId}`)
-          .then((nextProduct) => {
-            router.push(`/${nextProduct?.data?.attributes?.slug}`);
-          })
-          .catch(() => {
-            /* product not found */
-            fetchProduct(randomNextProductId).then((nextProduct) => {
+        if (randomNextProductId) {
+          fetchProduct(`${nextProductId}`)
+            .then((nextProduct) => {
               router.push(`/${nextProduct?.data?.attributes?.slug}`);
+            })
+            .catch(() => {
+              /* product not found */
+              fetchProduct(randomNextProductId).then((nextProduct) => {
+                router.push(`/${nextProduct?.data?.attributes?.slug}`);
+              });
             });
-          });
+        }
         break;
       default:
         break;
@@ -228,7 +273,7 @@ export const ProductDetails = ({ wholesale }: any) => {
           <ColorsRow key={`${index}-row`}>
             {/* <ColorsCell>{item.attributes.options_text}</ColorsCell> */}
             <ColorsCell>
-              <Variant color={item.attributes.presentation} />
+              <VariantSwatch color={item.attributes.presentation} />
             </ColorsCell>
             <ColorsCell>-</ColorsCell>
             <ColorsCell>
@@ -281,15 +326,15 @@ export const ProductDetails = ({ wholesale }: any) => {
     );
   }, [thisProduct]);
 
-  const renderVariants = useCallback(() => {
+  const renderVariantSwatches = useCallback(() => {
     return (
-      <VariantList>
+      <VariantSwatchList>
         {productVariantColors?.map((option: any, index: any) => {
           const optionColor = option.attributes.presentation;
           // console.log("Option: ", optionColor);
-          return <Variant key={`variant-${index}`} color={optionColor} />;
+          return <VariantSwatch key={`variant-${index}`} color={optionColor} />;
         })}
-      </VariantList>
+      </VariantSwatchList>
     );
   }, [productVariantColors]);
 
@@ -306,6 +351,22 @@ export const ProductDetails = ({ wholesale }: any) => {
       </>
     );
   }, [productProperties]);
+
+  const renderPackQtys = useCallback(() => {
+    return packQtys.map((i, index) => {
+      return (
+        <Size>
+          <SizeQty>{i.qty}</SizeQty>
+          <SizeTitle>{i.name}</SizeTitle>
+        </Size>
+      );
+    });
+  }, [packQtys]);
+
+  const handleAddToCart = (i: any) => {
+    console.log("ITEM: ", i);
+    addToCart.mutate(i);
+  };
 
   useEffect(() => {
     if (isSuccess) {
@@ -347,8 +408,6 @@ export const ProductDetails = ({ wholesale }: any) => {
     //   variant_id: Array.isArray(variants) ? variants[0].id : "",
     //   quantity: 1
     // }
-
-    const handleAddToCart = (i: any) => addToCart.mutate(i);
 
     return (
       <Layout>
@@ -392,7 +451,7 @@ export const ProductDetails = ({ wholesale }: any) => {
           <ProductInfoBox>
             <ProductDescription>
               <h2>{thisProduct?.data?.attributes?.name}</h2>
-              {renderVariants()}
+              {renderVariantSwatches()}
               <p>{thisProduct?.data?.attributes?.description}</p>
               <hr />
               {wholesale && <p>Price Per Pack</p>}
@@ -401,28 +460,7 @@ export const ProductDetails = ({ wholesale }: any) => {
               {wholesale && (
                 <>
                   <SizesTitle>Sizes Per Pack</SizesTitle>
-                  <SizesPerPack>
-                    <Size>
-                      <SizeQty>2</SizeQty>
-                      <SizeTitle>xs</SizeTitle>
-                    </Size>
-                    <Size>
-                      <SizeQty>2</SizeQty>
-                      <SizeTitle>sm</SizeTitle>
-                    </Size>
-                    <Size>
-                      <SizeQty>2</SizeQty>
-                      <SizeTitle>md</SizeTitle>
-                    </Size>
-                    <Size>
-                      <SizeQty>2</SizeQty>
-                      <SizeTitle>lg</SizeTitle>
-                    </Size>
-                    <Size>
-                      <SizeQty>2</SizeQty>
-                      <SizeTitle>xl</SizeTitle>
-                    </Size>
-                  </SizesPerPack>
+                  <SizesPerPack>{renderPackQtys()}</SizesPerPack>
                 </>
               )}
 

@@ -81,7 +81,7 @@ export const Detail = styled.h3`
 
 export const Price = styled.h1``;
 
-export const VariantList = styled.div`
+export const VariantSwatchList = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -89,7 +89,7 @@ export const VariantList = styled.div`
   align-items: center;
 `;
 
-export const Variant = styled.div`
+export const VariantSwatch = styled.div`
   display: block;
   width: 30px;
   height: 30px;

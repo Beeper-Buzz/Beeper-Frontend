@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { LoadingIcon } from "..";
 import { useProducts } from "../../hooks/useProducts";
 import { StyledSearchSuggestions } from "./SearchSuggestions.styles";
 import Suggestion from "./Suggestion";
@@ -34,13 +35,17 @@ const SearchSuggestions = ({
 
   if (isLoading) {
     setIsSearchLoading();
-    return null;
-  }
-
-  if (error) {
     return (
       <StyledSearchSuggestions role="listbox" aria-labelledby={labelId} id={id}>
-        <h1>Error {status}</h1>
+        <LoadingIcon className="bts bt-spinner bt-pulse" />
+      </StyledSearchSuggestions>
+    );
+  }
+
+  if (error && isVisible) {
+    return (
+      <StyledSearchSuggestions role="listbox" aria-labelledby={labelId} id={id}>
+        <p>Error {status}</p>
       </StyledSearchSuggestions>
     );
   }
