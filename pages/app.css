@@ -8,12 +8,8 @@
 }
 @font-face {
   font-family: "Anonymous";
-  src: url("../font/Anonymous/Anonymous.eot");
-  src: url("../font/Anonymous/Anonymous.eot?#iefix") format("embedded-opentype"),
-    url("../font/Anonymous/Anonymous.woff2") format("woff2"),
-    url("../font/Anonymous/Anonymous.woff") format("woff"),
-    url("../font/Anonymous/Anonymous.ttf") format("truetype"),
-    url("../font/Anonymous/Anonymous.svg#Anonymous") format("svg");
+  src: url("../font/Anonymous/Anonymous.woff") format("woff"),
+    url("../font/Anonymous/Anonymous.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
