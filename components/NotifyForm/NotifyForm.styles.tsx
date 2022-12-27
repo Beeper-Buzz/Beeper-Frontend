@@ -1,4 +1,4 @@
-import styled from "@emotion/styled/";
+import styled from "@emotion/styled";
 
 //Emotion styling
 export const Container = styled.div`
