@@ -8,6 +8,7 @@ import Collapse from "@material-ui/core/Collapse";
 import { SocialLinks } from "../";
 import { menuStyles, darkMenuStyles } from "./menuStyles";
 import { useTheme } from "@emotion/react";
+import { useRouter } from "next/router";
 
 import { MenuToggle, MenuFooter } from "./MainMenu.styles";
 
@@ -33,6 +34,7 @@ const MenuItem = styled(StyledListItem, {
 `;
 
 export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) => {
+  const router = useRouter();
   const currYear = new Date().getFullYear();
   const [open, setOpen] = useState(false);
   const toggleMenu = () => setOpen((value: any) => !value);
@@ -133,7 +135,14 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
       ) : null}
       {/* {renderMenuItems(menuItemsData && menuItemsData?.response_data.menu_location_listing[0], "", 0)} */}
       {renderMenuItems(menusData, "", 0)}
-      <MenuItem paddingLeft={"10px"} onClick={() => console.log("login")} button>
+      <MenuItem
+        paddingLeft={"10px"}
+        onClick={() => {
+          toggleMenu();
+          router.push("/login");
+        }}
+        button
+      >
         <hr />
         Login
       </MenuItem>

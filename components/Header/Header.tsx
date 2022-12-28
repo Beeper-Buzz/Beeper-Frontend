@@ -39,6 +39,7 @@ import {
 const dummyCategories = ["Best Sellers", "Latest", "Seasonal", "Luxury", "On Sale", "Coming Soon"];
 
 export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
+  const router = useRouter();
   const { pathname } = useRouter();
   const { user, logout } = useAuth();
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -80,7 +81,12 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           </LeftSide>
         )}
         <LogoDiv>
-          <LinkDiv isActive>
+          <LinkDiv
+            isActive
+            onClick={() => {
+              router.push("/");
+            }}
+          >
             <MyLogo imageFile={logoPath} darkMode={darkMode} />
           </LinkDiv>
         </LogoDiv>
