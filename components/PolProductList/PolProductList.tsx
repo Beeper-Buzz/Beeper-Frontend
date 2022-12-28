@@ -24,6 +24,7 @@ const PolProductList: React.FC<PolProductListProps> = (props) => {
         <Title>{props.title}</Title>
         <Swiper
           // loop={true}
+          wrapperTag="div"
           spaceBetween={20}
           slidesPerView={4}
           watchSlidesVisibility={true}

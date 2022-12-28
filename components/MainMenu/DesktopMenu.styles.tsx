@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import Link from "next/link";
-export interface MyMenuItemProps {
+export interface MenuItemProps {
   isActive: boolean;
 }
 
@@ -20,7 +20,7 @@ export const Container = styled.div`
   font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
 `;
 
-export const MyMenuItem = styled.div<any>`
+export const MenuItem = styled.div<MenuItemProps>`
   font-size: 14px;
   line-height: 150%;
   color: ${(p) =>

@@ -143,7 +143,7 @@ export const ColorsHead = styled.div``;
 
 export const ColorsTH = styled.div`
   display: grid;
-  grid-template-columns: 40% 20% 20% 20%;
+  grid-template-columns: 30% 25% 20% 20%;
   background: ${(p) => p.theme.colors.brand.primary};
   color: ${(p) => p.theme.colors.white.primary};
 `;
@@ -156,7 +156,7 @@ export const ColorsBody = styled.div`
 
 export const ColorsRow = styled.div`
   display: grid;
-  grid-template-columns: 37.5% 5% 5% 5% 20% 25%;
+  grid-template-columns: 30% 5% 15% 5% 20% 25%;
 `;
 
 export const ColorsCell = styled.div`
@@ -165,8 +165,9 @@ export const ColorsCell = styled.div`
   align-items: center;
   padding: 4px 6px;
   & input {
-    width: 100%;
-    border: 0;
+    width: 80px;
+    border: 1px solid ${(p: any) => p.theme.colors.white.primary};
+    color: ${(p: any) => p.isDarkMode ? p.theme.colors.black.primary : p.theme.colors.white.primary} !important;
     background: transparent;
     &:focus {
       outline: none;
