@@ -33,8 +33,7 @@ export const StreamCard = ({ isPast, item }: any) => {
           {!isPast ? <StreamMask /> : null}
           {!isPast ? (
             <StreamChecked>
-              {isPast ? "Streamed" : "Streaming"} Soon &nbsp;&nbsp;&nbsp;{" "}
-              {moment(item.start_date).fromNow()} &nbsp;&nbsp;&nbsp; Check Back Soon
+              {"Streaming " + moment(item.start_date).fromNow()}
             </StreamChecked>
           ) : null}
           {isPast ? (
