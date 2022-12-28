@@ -16,7 +16,7 @@ import {
 const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
   let timer: any;
   const { pcWrapClassName, menusData, pcMenuItemClassName, onMenuItemClick } = props;
-  const desktopMenu = menusData?.menu_location_listing[0].menu_item_listing;
+  const desktopMenu = (menusData && menusData?.menu_location_listing[0]?.menu_item_listing) || [];
   const [currentKey, setCurrentKey] = useState();
   const handleMouseEnter = useCallback((item: any) => {
     if (timer) {
