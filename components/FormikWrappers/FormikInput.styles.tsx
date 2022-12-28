@@ -1,7 +1,29 @@
 import styled from "@emotion/styled";
 import { TextField, Checkbox } from "@material-ui/core";
 
-export const BasicField = styled(TextField)``;
+export const BasicField = styled(TextField)`
+  ${(p: any) =>
+    p.selectedTheme === "dark" &&
+    `
+    & label.Mui-focused {
+      color: "green"
+    }
+    & .MuiInput-underline:after {
+      borderBottomColor: "green"
+    }
+    & .MuiOutlinedInput-root {
+      & fieldset {
+        borderColor: "red"
+      }
+      &:hover fieldset {
+        borderColor: "yellow"
+      }
+      &.Mui-focused fieldset {
+        borderColor: "green"
+      }
+    }
+  `}};
+`;
 
 export const Error = styled.div`
   color: ${(props: any) => props.theme.colors.red.primary};

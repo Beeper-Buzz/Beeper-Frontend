@@ -9,15 +9,17 @@ export const FormikInput = ({
   form: { touched, errors },
   styles,
   ...props
-}: any) => (
-  <>
-    <BasicField
-      selectedTheme="dark"
-      {...props}
-      {...fields}
-      invalid={Boolean(touched[fields.name] && errors[fields.name])}
-      variant="outlined"
-    />
-    {touched[fields.name] && errors[fields.name] ? <Error>{errors[fields.name]}</Error> : ""}
-  </>
-);
+}: any) => {
+  return (
+    <>
+      <TextField
+        // selectedTheme="dark"
+        {...props}
+        {...fields}
+        invalid={Boolean(touched[fields.name] && errors[fields.name])}
+        // variant="outlined"
+      />
+      {touched[fields.name] && errors[fields.name] ? <Error>{errors[fields.name]}</Error> : ""}
+    </>
+  );
+};

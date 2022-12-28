@@ -50,7 +50,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const accountId = accountVisible ? "simple-popover" : undefined;
   const toggleCart = () => setCartVisible((isVisible) => !isVisible);
   const toggleAccount = () => setAccountVisible((isVisible) => !isVisible);
-  const isMaint = process.env.IS_MAINT_MODE;
+  const isMaint = process.env.IS_MAINT_MODE || "false";
+  const logoPath = process.env.LOGO_PATH || "/images/logo.png";
 
   const { data: cartData, isLoading: cartIsLoading, isError: cartHasError } = useCart();
 
@@ -79,11 +80,9 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           </LeftSide>
         )}
         <LogoDiv>
-          <Link href="/">
-            <LinkDiv isActive>
-              <MyLogo imageFile="/pol-logo.png" darkMode={darkMode} />
-            </LinkDiv>
-          </Link>
+          <LinkDiv isActive>
+            <MyLogo imageFile={logoPath} darkMode={darkMode} />
+          </LinkDiv>
         </LogoDiv>
         <RightSide>
           {isMobile ? null : <SearchBar darkMode={darkMode} />}
@@ -124,12 +123,12 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
             </HeaderAccount>
           ) : (
             <HeaderOptions>
-              <Link href="/login">
-                <LinkDiv isActive={pathname === "/login"}>LOG IN</LinkDiv>
-              </Link>
-              <Link href="/authenticate/signup">
-                <LinkDiv isActive={pathname === "/authenticate/signup"}>SIGN UP</LinkDiv>
-              </Link>
+              <LinkDiv href="/login" isActive={pathname !== "/login"}>
+                LOGIN
+              </LinkDiv>
+              <LinkDiv href="/authenticate/signup" isActive={pathname !== "/authenticate/signup"}>
+                SIGN UP
+              </LinkDiv>
             </HeaderOptions>
           )}
           <CartToggle>

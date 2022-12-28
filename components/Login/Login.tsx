@@ -36,31 +36,7 @@ export const Login = () => {
         {({ isSubmitting }) => (
           <FormWrapper>
             <InputWrapper>
-              <Field
-                type="email"
-                name="username"
-                component={FormikInput}
-                label="Email"
-                style={{
-                  "& label.Mui-focused": {
-                    color: "green"
-                  },
-                  "& .MuiInput-underline:after": {
-                    borderBottomColor: "green"
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "red"
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "yellow"
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "green"
-                    }
-                  }
-                }}
-              />
+              <Field type="email" name="username" component={FormikInput} label="Email" />
             </InputWrapper>
             <InputWrapper>
               <Field type="password" name="password" component={FormikInput} label="Password" />
@@ -69,13 +45,9 @@ export const Login = () => {
               Submit
             </button>
             <Subtext>
-              <Link href="/authenticate/signup">
-                <a>Register</a>
-              </Link>
+              <Link href="/authenticate/signup">Register</Link>
               &nbsp;&nbsp;|&nbsp;&nbsp;
-              <Link href="/reset-password">
-                <a>Reset Password</a>
-              </Link>
+              <Link href="/reset-password">Reset Password</Link>
             </Subtext>
           </FormWrapper>
         )}
