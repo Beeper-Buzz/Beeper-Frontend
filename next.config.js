@@ -38,6 +38,7 @@ const envFile = path.join(__dirname, `.env.${DEPLOY_ENV_MAPPING[DEPLOY_ENV]}`);
 loadEnvVariables();
 const isLocalDevEnvironment = !process.env.DEPLOY_ENV;
 module.exports = {
+  swcMinify: true,
   webpack: (config, { webpack }) => {
     config.plugins = config.plugins || [];
     config.plugins = [

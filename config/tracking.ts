@@ -41,17 +41,21 @@ const googleAnalyticsProvider: TrackingProvider = {
   },
 
   trackPageview: (url: string): void => {
-    window.gtag("config", GA_TRACKING_CODE, {
-      page_path: url
-    });
+    if (typeof window !== "undefined") {
+      window.gtag("config", GA_TRACKING_CODE, {
+        page_path: url
+      });
+    }
   },
 
   trackEvent: ({ action, category, label }: TrackingEvent): void => {
-    window.gtag("event", action, {
-      event_category: category,
-      event_label: label,
-      value: 0
-    });
+    if (typeof window !== "undefined") {
+      window.gtag("event", action, {
+        event_category: category,
+        event_label: label,
+        value: 0
+      });
+    }
   }
 };
 

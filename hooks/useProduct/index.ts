@@ -22,7 +22,7 @@ const fetchProduct = async (slug: string): Promise<IProduct> => {
     headers: myHeaders
   })
     .then((res) => {
-      // console.log(res.status);
+      console.log("FOUND PRODUCT: ", res.status);
       if (res.status >= 200 && res.status <= 299) {
         return res.json();
       }
@@ -33,7 +33,7 @@ const fetchProduct = async (slug: string): Promise<IProduct> => {
       // }
     })
     .catch((err) => {
-      // console.log("Uh oh ERR: ", err);
+      console.log("Uh oh ERR: ", err);
       throw new Error(`Product request failed: ${err.statusText}`);
     });
 
