@@ -136,7 +136,10 @@ class MyDocument extends Document {
           <meta property="article:section" content="General" />
           <meta property="article:published_time" content="2017-04-15T15:00:03-04:00" />
           {/* CHANGEME */}
-          <meta property="og:image" content={`${process.env.NEXT_PUBLIC_APP_URL}/open-graph-instinct-dna.jpg`} />
+          <meta
+            property="og:image"
+            content={`${process.env.NEXT_PUBLIC_APP_URL}/open-graph-instinct-dna.jpg`}
+          />
           <meta property="og:image:width" content="406" />
           <meta property="og:image:height" content="406" />
           <meta name="twitter:card" content="summary" />
