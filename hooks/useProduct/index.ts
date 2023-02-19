@@ -9,7 +9,7 @@ const fetchProduct = async (slug: string): Promise<IProduct> => {
   const spreeUrl = process.env.SPREE_API_URL || undefined;
   const productUrl = `${spreeUrl}/api/v2/storefront/products/${slug}?include=default_variant,variants,option_types,product_properties,taxons,images,variants.option_values`;
   const response = await fetch(productUrl.toString(), {
-    method: "GET",
+    method: "GET"
   })
     .then((res) => {
       // console.log("FOUND PRODUCT: ", res.status);

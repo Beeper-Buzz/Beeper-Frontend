@@ -35,23 +35,23 @@ const MyDiv = styled.div`
   align-items: center;
   display: flex;
 `;
-export const ProductList: React.FC<ProductListProps> = (props: Any) => {
+export const ProductList: React.FC<ProductListProps> = (props: any) => {
   const router = useRouter();
   const { products, title } = props;
   // const { data: products, isLoading, isSuccess } = useProducts(1);
   // if (isLoading) return <MyDiv>Loading</MyDiv>;
-  
+
   // if (!isSuccess) {
-    //   return <MyDiv>Could not load products</MyDiv>;
-    // }
-    
+  //   return <MyDiv>Could not load products</MyDiv>;
+  // }
+
   if (!products) return <MyDiv>Loading</MyDiv>;
 
   return (
     <MySection>
       <MyH1>{title}</MyH1>
       <ProductsRow>
-        {products?.data?.map((product) => {
+        {products?.data?.map((product: any) => {
           const defaultImg =
             "https://static-assets.strikinglycdn.com/images/ecommerce/ecommerce-default-image.png";
           const productImg = product.relationships?.images?.data[0]?.id;
