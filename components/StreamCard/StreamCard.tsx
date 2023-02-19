@@ -32,9 +32,7 @@ export const StreamCard = ({ isPast, item }: any) => {
         <StreamImgWrapper>
           {!isPast ? <StreamMask /> : null}
           {!isPast ? (
-            <StreamChecked>
-              {"Streaming " + moment(item.start_date).fromNow()}
-            </StreamChecked>
+            <StreamChecked>{"Streaming " + moment(item.start_date).fromNow()}</StreamChecked>
           ) : null}
           {isPast ? (
             <StreamStatusWrapper>

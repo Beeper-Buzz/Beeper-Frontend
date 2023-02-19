@@ -167,7 +167,8 @@ export const ColorsCell = styled.div`
   & input {
     width: 80px;
     border: 1px solid ${(p: any) => p.theme.colors.white.primary};
-    color: ${(p: any) => p.isDarkMode ? p.theme.colors.black.primary : p.theme.colors.white.primary} !important;
+    color: ${(p: any) =>
+      p.isDarkMode ? p.theme.colors.black.primary : p.theme.colors.white.primary} !important;
     background: transparent;
     &:focus {
       outline: none;
