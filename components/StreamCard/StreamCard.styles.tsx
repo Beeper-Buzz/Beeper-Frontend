@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import Link from "next/link";
-import { pxPC, pxIphone } from "../../utils";
+import { pxPC, pxIphone } from "../../utilities/device-sizes";
 import { PriceText, XlargeTitle, XsmallText } from "../../styles/BaseStyles";
 
 export const StreamCardWrapper = styled.div`

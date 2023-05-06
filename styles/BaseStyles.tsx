@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { pxIphone, pxPC } from "../utils";
+import { pxIphone, pxPC } from "../utilities/device-sizes";
 export const ProductTitle = styled.div`
   font-size: ${pxPC(16)};
   line-height: ${pxPC(20)};

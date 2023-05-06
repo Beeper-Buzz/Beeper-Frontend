@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { pxPC } from "../../../utils";
+import { pxPC } from "../../../utilities/device-sizes";
 import { XlargeTitle } from "../../../styles/BaseStyles";
 import { ButtonBase } from "@material-ui/core";
 export const FeaturedContainer = styled.div`

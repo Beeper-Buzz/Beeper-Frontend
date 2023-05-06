@@ -16,7 +16,7 @@ import * as tracking from "../config/tracking";
 import { ThemeProvider } from "@emotion/react";
 import { theme } from "../styles/theme";
 import { GlobalStyles } from "../styles/global-styles";
-import { pxIphone } from "../utils";
+import { pxIphone } from "../utilities/device-sizes";
 import "../styles/fonts.css";
 import "../public/fonts/black-tie/black-tie.css";
 import "swiper/swiper.scss";

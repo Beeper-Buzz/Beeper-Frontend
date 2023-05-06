@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import styled from "@emotion/styled";
 import { ButtonBase } from "@material-ui/core";
-import { pxPC } from "../../utils";
+import { pxPC } from "../../utilities/device-sizes";
 import AccountPageLayout from "./AccountPageLayout";
 import data from "./otherhistory.json";
 const MyTable = styled.div`

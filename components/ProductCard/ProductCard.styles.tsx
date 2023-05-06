@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import Link from "next/link";
 import Rating from "@material-ui/lab/Rating";
-import { pxPC } from "../../utils";
+import { pxPC } from "../../utilities/device-sizes";
 import { XlargeTitle, DescText, PriceText } from "../../styles/BaseStyles";
 
 export const ProductCardWrapper = styled.div`
