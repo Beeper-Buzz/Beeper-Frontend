@@ -47,6 +47,9 @@ We manage our global styles in several files:
 - heroku buildpacks:add <https://github.com/heroku/heroku-buildpack-nodejs> -a app-name
 - heroku buildpacks:add heroku/nodejs -a app-name
 
+Unset all Heroku env vars:
+`heroku config:unset $(heroku config --shell | sed 's/=.*//' | xargs) -a app-name`
+
 POL Admin Interface & API
 <http://dna-admin-dev.instinct.is/>
 <http://dna-admin-staging.instinct.is/>
