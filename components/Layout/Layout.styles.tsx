@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { pxIphone } from "../../utils";
+import { pxIphone } from "../../utilities/device-sizes";
 
 // export const LayoutContainer = styled.main`
 //   width: 100%;

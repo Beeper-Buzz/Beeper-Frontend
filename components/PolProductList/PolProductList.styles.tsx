@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import Rating from "@material-ui/lab/Rating";
-import { pxPC } from "../../utils";
+import { pxPC } from "../../utilities/device-sizes";
 import { XlargeTitle, ProductTitle, DescText, PriceText } from "../../styles/BaseStyles";
 export const Container = styled.div`
   margin-top: ${pxPC(30)};

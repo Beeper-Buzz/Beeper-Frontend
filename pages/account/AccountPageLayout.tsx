@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import styled from "@emotion/styled";
 import { InputBase, ButtonBase } from "@material-ui/core";
-import { pxPC } from "../../utils";
+import { pxPC } from "../../utilities/device-sizes";
 import { Layout } from "../../components";
 import data from "./otherhistory.json";
 const Content = styled.div`
