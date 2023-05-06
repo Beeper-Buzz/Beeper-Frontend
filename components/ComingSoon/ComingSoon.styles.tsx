@@ -20,6 +20,14 @@ export const Logo = styled.img`
   }
 `;
 
+export const ProductImageCarousel = styled.div`
+  width: 60%;
+  height: auto;
+  @media screen and (max-width: 800px) {
+    width: 100%;
+  }
+`;
+
 export const Text = styled.div`
   text-align: center;
   width: 425px;

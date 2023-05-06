@@ -8,7 +8,7 @@ export const GlobalStyles = ({ theme, children }: any) => (
       @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
 
       html {
-        overflow: hidden;
+        /* overflow: hidden; */
         width: 100%;
         height: 100%;
       }
