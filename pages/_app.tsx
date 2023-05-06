@@ -34,6 +34,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const isMaint = process.env.IS_MAINT_MODE || "true";
 
   useEffect(() => {
+    console.log("MAINT? ", isMaint);
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement?.removeChild(jssStyles);
