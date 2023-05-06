@@ -33,7 +33,11 @@ const MenuItem = styled(StyledListItem, {
   }
 `;
 
-export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) => {
+export const MobileMenu = ({
+  showMenuHeader,
+  onMenuItemClick,
+  menusData
+}: any) => {
   const router = useRouter();
   const currYear = new Date().getFullYear();
   const [open, setOpen] = useState(false);
@@ -61,7 +65,11 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
     [onMenuItemClick]
   );
 
-  const renderMenuItems = (localMenuData: any[], parentKeyPath: string, level: number) => {
+  const renderMenuItems = (
+    localMenuData: any[],
+    parentKeyPath: string,
+    level: number
+  ) => {
     const paddingLeft = level * 20 + "px";
     // const isArray = Array.isArray(localMenuData);
     // console.log(isArray, localMenuData);
@@ -69,7 +77,9 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
     //   ? localMenuData
     //   : menusData?.menu_location_listing[0].menu_item_listing;
     const menuItems =
-      menusData.length > 0 ? menusData?.menu_location_listing[0].menu_item_listing : [];
+      menusData.length > 0
+        ? menusData?.menu_location_listing[0].menu_item_listing
+        : [];
     // console.log('local menu: ', localMenuData);
     if (menusData.length) {
       return (
@@ -95,12 +105,22 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
                     {item &&
                       subItems &&
                       subItems.length != 0 &&
-                      (keyPath.indexOf(pathSlug) != -1 ? <ExpandLess /> : <ExpandMore />)}
+                      (keyPath.indexOf(pathSlug) != -1 ? (
+                        <ExpandLess />
+                      ) : (
+                        <ExpandMore />
+                      ))}
                   </MenuItem>
                 }
                 {item && subItems && subItems.length != 0 && (
-                  <Collapse timeout="auto" unmountOnExit in={keyPath.indexOf(pathSlug) != -1}>
-                    {level < 2 ? renderMenuItems(subItems, pathSlug, level + 1) : null}
+                  <Collapse
+                    timeout="auto"
+                    unmountOnExit
+                    in={keyPath.indexOf(pathSlug) != -1}
+                  >
+                    {level < 2
+                      ? renderMenuItems(subItems, pathSlug, level + 1)
+                      : null}
                     {/* <h1>hey</h1> */}
                     {subItems.map(({ item, i }: any) => {
                       return <Fragment key={`${pathSlug}-2`}>{item}</Fragment>;
@@ -149,8 +169,8 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
       <SocialLinks />
       <MenuFooter>
         <div>
-          <a href="/privacy">Privacy Policy</a> - <a href="/terms">Terms &amp; Conditions</a> -
-          RETURN POLICY
+          <a href="/privacy">Privacy Policy</a> -{" "}
+          <a href="/terms">Terms &amp; Conditions</a> - RETURN POLICY
         </div>
         <div>All Materials Copyright © {currYear} POL Clothing</div>
       </MenuFooter>

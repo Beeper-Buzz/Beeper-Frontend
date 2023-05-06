@@ -1,7 +1,11 @@
 import Lottie from "react-lottie";
 import { Layout } from "../components";
 import girlAnimation from "../../data/girl.json";
-import { NotFoundContainer, NotFoundTitle, NotFoundSubtitle } from "./FourOhFour.styles";
+import {
+  NotFoundContainer,
+  NotFoundTitle,
+  NotFoundSubtitle
+} from "./FourOhFour.styles";
 
 const animationOptions = {
   loop: true,

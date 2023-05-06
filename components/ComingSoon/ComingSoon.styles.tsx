@@ -8,6 +8,10 @@ export const Container = styled.div`
   align-items: center;
   width: auto;
   min-height: 100vh;
+  background-color: ${(p) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.black.primary
+      : p.theme.colors.white.primary};
 `;
 
 export const Logo = styled.img`
@@ -18,6 +22,18 @@ export const Logo = styled.img`
     width: 90%;
     height: auto;
   }
+`;
+
+export const LogoText = styled.div`
+  font-family: ${(p: any) => p.theme.typography.titleLG.fontFamily};
+  font-weight: ${(p: any) => p.theme.typography.titleLG.fontWeight};
+  font-size: ${(p: any) => p.theme.typography.titleLG.fontSize};
+  line-height: ${(p: any) => p.theme.typography.titleLG.lineHeight};
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
+  margin: 40px 0 20px 0;
 `;
 
 export const ProductImageCarousel = styled.div`
@@ -32,10 +48,12 @@ export const Text = styled.div`
   text-align: center;
   width: 425px;
   top: 400px;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 21.4598px;
-  line-height: 28px;
-  color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+  font-family: ${(p: any) => p.theme.typography.titleMD.fontFamily};
+  font-weight: ${(p: any) => p.theme.typography.titleMD.fontWeight};
+  font-size: ${(p: any) => p.theme.typography.titleMD.fontSize};
+  line-height: ${(p: any) => p.theme.typography.titleMD.lineHeight};
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;

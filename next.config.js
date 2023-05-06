@@ -28,7 +28,8 @@ Module.prototype.require = function (modulePath) {
 
   return originalRequire.call(this, modulePath);
 };
-const DEPLOY_ENV = process.env.DEPLOY_ENV && process.env.DEPLOY_ENV.toLowerCase();
+const DEPLOY_ENV =
+  process.env.DEPLOY_ENV && process.env.DEPLOY_ENV.toLowerCase();
 const DEPLOY_ENV_MAPPING = {
   dev: "development",
   staging: "staging",
@@ -53,7 +54,10 @@ module.exports = {
       alias: {
         ...config.resolve.alias,
         react$: resolveFrom(path.resolve("node_modules"), "react"),
-        "react-query$": resolveFrom(path.resolve("node_modules"), "react-query"),
+        "react-query$": resolveFrom(
+          path.resolve("node_modules"),
+          "react-query"
+        ),
         "react-dom$": resolveFrom(path.resolve("node_modules"), "react-dom")
       }
     };

@@ -20,6 +20,10 @@ export const FormikIncome = ({
       {...fields}
       invalid={touched[fields.name] && errors[fields.name] ? 1 : 0}
     />
-    {touched[fields.name] && errors[fields.name] ? <Error>{errors[fields.name]}</Error> : ""}
+    {touched[fields.name] && errors[fields.name] ? (
+      <Error>{errors[fields.name]}</Error>
+    ) : (
+      ""
+    )}
   </>
 );

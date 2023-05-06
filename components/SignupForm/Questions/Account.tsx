@@ -93,11 +93,21 @@ export const Account = () => {
         <Subtitle>{parse(subtitle)}</Subtitle>
         <Description>{parse(description)}</Description>
         <InputWrapper>
-          <Field name="phoneNumber" id="phoneNumber" component={FormikPhone} label="Phone" />
+          <Field
+            name="phoneNumber"
+            id="phoneNumber"
+            component={FormikPhone}
+            label="Phone"
+          />
         </InputWrapper>
 
         <InputWrapper>
-          <Field name="email" id="email" component={FormikInput} label="Email" />
+          <Field
+            name="email"
+            id="email"
+            component={FormikInput}
+            label="Email"
+          />
         </InputWrapper>
 
         <InputWrapper>

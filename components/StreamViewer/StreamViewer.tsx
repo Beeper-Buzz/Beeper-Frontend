@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 
-import { StreamViewerWrapper, StreamVideo, StreamHeaderFade } from "./StreamViewer.styles";
+import {
+  StreamViewerWrapper,
+  StreamVideo,
+  StreamHeaderFade
+} from "./StreamViewer.styles";
 
 export const StreamViewer = ({ props }: any) => {
   const router = useRouter();

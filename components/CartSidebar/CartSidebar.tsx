@@ -11,13 +11,19 @@ interface Props {
 }
 
 export const CartSidebar = ({ isVisible, toggle }: Props) => {
-  const { data: cartData, isLoading: cartIsLoading, isError: cartHasError } = useCart();
+  const {
+    data: cartData,
+    isLoading: cartIsLoading,
+    isError: cartHasError
+  } = useCart();
 
   const renderCartItems = () => {
     if (Array.isArray(cartData?.data?.relationships?.variants?.data)) {
-      return cartData?.data?.relationships?.variants?.data?.map((item, index): any => {
-        return <li key={`cart-item-${index}`}>item: {item.id} | qty: </li>;
-      });
+      return cartData?.data?.relationships?.variants?.data?.map(
+        (item, index): any => {
+          return <li key={`cart-item-${index}`}>item: {item.id} | qty: </li>;
+        }
+      );
     }
     return null;
   };
@@ -28,7 +34,13 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
         <CartButton onClick={toggle}>
           <i className="btb bt-lg bt-shopping-cart" />
         </CartButton>
-        <BurgerMenu right isOpen={isVisible} onOpen={toggle} styles={cartStyles} onClose={toggle}>
+        <BurgerMenu
+          right
+          isOpen={isVisible}
+          onOpen={toggle}
+          styles={cartStyles}
+          onClose={toggle}
+        >
           <LoadingWrapper>
             <Loading />
           </LoadingWrapper>
@@ -53,7 +65,13 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
         <CartButton onClick={toggle}>
           <i className="btb bt-lg bt-shopping-cart" />
         </CartButton>
-        <BurgerMenu right isOpen={isVisible} onOpen={toggle} styles={cartStyles} onClose={toggle}>
+        <BurgerMenu
+          right
+          isOpen={isVisible}
+          onOpen={toggle}
+          styles={cartStyles}
+          onClose={toggle}
+        >
           <CartTitle>Cart</CartTitle>
           <p>Cart Error</p>
         </BurgerMenu>
@@ -84,7 +102,13 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
         <CartButton onClick={toggle}>
           <i className="btb bt-lg bt-shopping-cart" />
         </CartButton>
-        <BurgerMenu right isOpen={isVisible} onOpen={toggle} styles={cartStyles} onClose={toggle}>
+        <BurgerMenu
+          right
+          isOpen={isVisible}
+          onOpen={toggle}
+          styles={cartStyles}
+          onClose={toggle}
+        >
           <CartTitle>Cart</CartTitle>
           <div>{item_count} items in your cart</div>
           <div>{renderCartItems()}</div>

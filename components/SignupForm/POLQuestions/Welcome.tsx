@@ -7,7 +7,12 @@ import { Carousel } from "react-responsive-carousel";
 
 // Local
 import TipBot from "../../TipBot";
-import { QuestionWrapper, InputGroupWrapper, Title, Description } from "./Questions.styles";
+import {
+  QuestionWrapper,
+  InputGroupWrapper,
+  Title,
+  Description
+} from "./Questions.styles";
 
 interface GenericThemeType {
   theme?: any;
@@ -95,7 +100,8 @@ export const Welcome = () => {
             <ColorizedCart className="bts bt-shopping-cart" />
             <Title>LiveStream Shopping</Title>
             <Description>
-              Chat it up with our models while they show off our new &amp; trending products.
+              Chat it up with our models while they show off our new &amp;
+              trending products.
             </Description>
           </div>
         </Carousel>

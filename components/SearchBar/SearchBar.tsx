@@ -152,7 +152,9 @@ const SearchBar = ({
             <StyledInputPrefix darkMode={darkMode}>
               <i
                 onClick={toggleSearch}
-                className={isSearchLoading ? "bts bt-spinner bt-pulse" : "btr bt-search"}
+                className={
+                  isSearchLoading ? "bts bt-spinner bt-pulse" : "btr bt-search"
+                }
               ></i>
             </StyledInputPrefix>
             <StyledInput
@@ -170,7 +172,10 @@ const SearchBar = ({
               autoComplete="off"
             />
             {query && (
-              <StyledInputPostfix onClick={handleSearchClear} darkMode={darkMode}>
+              <StyledInputPostfix
+                onClick={handleSearchClear}
+                darkMode={darkMode}
+              >
                 <i className="btr bt-times"></i>
               </StyledInputPostfix>
             )}

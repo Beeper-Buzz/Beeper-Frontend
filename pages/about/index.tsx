@@ -19,7 +19,9 @@ const PageTitle = styled.div`
   font-size: 33px;
   line-height: 41px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-transform: uppercase;
   transform: rotate(-90deg);
   font-family: "Bebas Neue";
@@ -30,7 +32,9 @@ const PageTitle = styled.div`
     width: ${pxPC(86)};
     height: 3px;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
     top: 40%;
   }
 `;
@@ -38,7 +42,9 @@ const SectionOneTitle = styled.div`
   font-size: 33px;
   line-height: 41px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Bebas Neue";
   text-align: center;
   text-transform: uppercase;
@@ -47,7 +53,9 @@ const SectionOneText = styled.div`
   width: ${pxPC(344)};
   margin-top: ${pxPC(20)};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: Roboto;
   font-size: 18px;
   line-height: 18px;
@@ -62,7 +70,9 @@ const SectionTwoTitle = styled.div`
   font-size: 33px;
   line-height: 41px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Bebas Neue";
   text-align: center;
   text-transform: uppercase;
@@ -71,7 +81,9 @@ const SectionTwoText = styled.div`
   width: ${pxPC(344)};
   margin-top: ${pxPC(20)};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: Roboto;
   font-size: 18px;
   line-height: 18px;
@@ -80,7 +92,9 @@ const SectionThreeTitle = styled.div`
   font-size: 33px;
   line-height: 41px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Bebas Neue";
   text-align: center;
   text-transform: uppercase;
@@ -98,7 +112,9 @@ const SectionFourTitle = styled.div`
   font-size: 33px;
   line-height: 41px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Bebas Neue";
   text-align: center;
   text-transform: uppercase;
@@ -123,16 +139,16 @@ const About = () => {
         <PageTitle>About POL</PageTitle>
         <SectionOneTitle>Who we Are</SectionOneTitle>
         <SectionOneText>
-          POL Clothing is a wholesale supplier to boutiques all over the world. POL focuses on
-          coming together at the crossroads of fashion and business and creating styles inspired by
-          the world around us.
+          POL Clothing is a wholesale supplier to boutiques all over the world.
+          POL focuses on coming together at the crossroads of fashion and
+          business and creating styles inspired by the world around us.
         </SectionOneText>
         <Arrow src={"/Arrow.png"} />
         <SectionTwoTitle>Our Mission</SectionTwoTitle>
         <SectionTwoText>
-          POL Clothing is a wholesale supplier to boutiques all over the world. POL focuses on
-          coming together at the crossroads of fashion and business and creating styles inspired by
-          the world around us.
+          POL Clothing is a wholesale supplier to boutiques all over the world.
+          POL focuses on coming together at the crossroads of fashion and
+          business and creating styles inspired by the world around us.
         </SectionTwoText>
         <Arrow src={"/Arrow.png"} />
         <SectionThreeTitle>Our Values</SectionThreeTitle>

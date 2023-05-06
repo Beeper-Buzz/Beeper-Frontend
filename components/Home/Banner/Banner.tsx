@@ -1,5 +1,10 @@
 import React from "react";
-import { BannerContainer, BannerTitle, BannerImg, BannerBtn } from "./Banner.styles";
+import {
+  BannerContainer,
+  BannerTitle,
+  BannerImg,
+  BannerBtn
+} from "./Banner.styles";
 export type bannerData = {
   img: string;
 };

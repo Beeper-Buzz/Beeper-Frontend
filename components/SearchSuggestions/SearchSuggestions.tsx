@@ -21,8 +21,13 @@ const SearchSuggestions = ({
     data,
     isLoading,
     isSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } =
-    useProducts(1);
+  }: {
+    error: any;
+    status: any;
+    data: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+  } = useProducts(1);
   const [page, setPage] = useState(1);
   const [suggestions, setSuggestions] = useState([]);
   // const [error, setError] = useState('');

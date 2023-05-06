@@ -34,6 +34,10 @@ export const StreamHeaderFade = styled.div`
   width: 100%;
   height: 200px;
   background: rgb(255, 255, 255);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
   pointer-event: none;
 `;

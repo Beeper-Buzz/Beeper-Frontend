@@ -1,4 +1,7 @@
-import { IOAuthToken, IToken } from "@spree/storefront-api-v2-sdk/types/interfaces/Token";
+import {
+  IOAuthToken,
+  IToken
+} from "@spree/storefront-api-v2-sdk/types/interfaces/Token";
 import { spreeClient } from "./spree";
 
 const storage = {
@@ -25,7 +28,8 @@ const storage = {
       return JSON.parse(token);
     }
   },
-  setToken: (token: IOAuthToken) => window.localStorage.setItem("token", JSON.stringify(token)),
+  setToken: (token: IOAuthToken) =>
+    window.localStorage.setItem("token", JSON.stringify(token)),
   getGuestOrderToken: (): IToken | undefined => {
     const token = window.localStorage.getItem("guestOrderToken");
     if (token) {

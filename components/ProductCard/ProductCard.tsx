@@ -36,7 +36,11 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
               {opts.slice(0, 5).map((opt: any, index: any) => {
                 // console.log("opt: ", opt);
                 return (
-                  <Dot key={`color-${index}`} as={"span"} color={opt.attributes.presentation}></Dot>
+                  <Dot
+                    key={`color-${index}`}
+                    as={"span"}
+                    color={opt.attributes.presentation}
+                  ></Dot>
                 );
               })}
             </ThreeDot>

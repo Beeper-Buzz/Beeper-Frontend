@@ -6,7 +6,11 @@ import { Field, useFormikContext } from "formik";
 // Local
 import TipBot from "../../TipBot";
 import { FormikDateOfBirth } from "../../FormikWrappers";
-import { QuestionWrapper, InputGroupWrapper, InputWrapper } from "./Questions.styles";
+import {
+  QuestionWrapper,
+  InputGroupWrapper,
+  InputWrapper
+} from "./Questions.styles";
 
 export const DateOfBirth = () => {
   // const { errors, touched } = useFormikContext();

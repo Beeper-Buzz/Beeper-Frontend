@@ -18,7 +18,10 @@ export const SocialListItem = styled.li<FooterStateType>`
   display: inline-block;
   margin: 0 10px;
   & a {
-    color: ${(p) => (p.darkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary)};
+    color: ${(p) =>
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
   }
   & a:hover {
     color: ${(p) => p.theme.colors.brand.primary};

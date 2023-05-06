@@ -54,7 +54,10 @@ const TipBot = ({ speech }: any) => {
       {isMobile ? (
         <BubbleWrapperMobile speechReady={speechReady}>
           {speechReady ? (
-            <animated.div style={speechProps} dangerouslySetInnerHTML={speech} />
+            <animated.div
+              style={speechProps}
+              dangerouslySetInnerHTML={speech}
+            />
           ) : (
             <>
               {/* <animated.div key={1} style={bubbleProps}>

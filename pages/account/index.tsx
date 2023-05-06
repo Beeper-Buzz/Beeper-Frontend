@@ -15,7 +15,9 @@ const PageTitle = styled.div`
   font-size: 33px;
   line-height: 41px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-transform: uppercase;
   transform: rotate(-90deg);
   font-family: "Bebas Neue";
@@ -26,7 +28,9 @@ const PageTitle = styled.div`
     width: ${pxPC(86)};
     height: 3px;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
     top: 40%;
   }
 `;
@@ -40,7 +44,10 @@ const MyInput = styled(InputBase)`
   width: ${pxPC(312)};
   height: 24px;
   border-bottom: 2px solid
-    ${(p) => (p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary)};
+    ${(p) =>
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
 `;
 const MyInputLabel = styled.div`
   margin-left: ${pxPC(19)};
@@ -48,7 +55,9 @@ const MyInputLabel = styled.div`
   line-height: 24px;
   height: 24px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Bebas Neue";
   text-transform: uppercase;
 `;
@@ -89,7 +98,9 @@ const FormItem = styled.div`
 const FormInput = styled(InputBase)`
   font-size: 14px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   border-bottom: 1px solid #707070;
   width: 100%;
 `;
@@ -97,7 +108,9 @@ const FormLabel = styled.div`
   font-size: 14px;
   line-height: 125%;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   margin-top: ${pxPC(13)};
   width: 100%;
 `;
@@ -117,8 +130,8 @@ const Account = () => {
               <FormItem>
                 <FormInput />
                 <FormLabel>
-                  Look at your order history, manage your current orders, track deliveries, or
-                  request a return.
+                  Look at your order history, manage your current orders, track
+                  deliveries, or request a return.
                 </FormLabel>
               </FormItem>
               <FormItem>
@@ -130,7 +143,8 @@ const Account = () => {
               <FormItem>
                 <FormInput />
                 <FormLabel>
-                  Add or edit your e-mail address, password, and payment details.
+                  Add or edit your e-mail address, password, and payment
+                  details.
                 </FormLabel>
               </FormItem>
             </LeftCol>
@@ -138,9 +152,9 @@ const Account = () => {
               <FormItem>
                 <FormInput />
                 <FormLabel>
-                  Want it? Manifest it. This is a place for you to explore your personal fashion
-                  palette. And who knows? Maybe pieces of this style board will even end up in your
-                  closet.
+                  Want it? Manifest it. This is a place for you to explore your
+                  personal fashion palette. And who knows? Maybe pieces of this
+                  style board will even end up in your closet.
                 </FormLabel>
               </FormItem>
               <FormItem>

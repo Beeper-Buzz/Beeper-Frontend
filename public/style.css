@@ -2,8 +2,8 @@
   font-family: "james";
   src: url("fonts/JamesFajardo.eot");
   src: url("fonts/JamesFajardo.eot?#iefix") format("embedded-opentype"),
-    /* //  url('fonts/JamesFajardo.woff2') format('woff2'), */ url("fonts/JamesFajardo.woff")
-      format("woff"),
+    /* //  url('fonts/JamesFajardo.woff2') format('woff2'), */
+      url("fonts/JamesFajardo.woff") format("woff"),
     url("fonts/JamesFajardo.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
@@ -146,7 +146,11 @@ button:focus {
     rgba(102, 0, 88, 1) 100%
   );
   /* Chrome10-25,Safari5.1-6 */
-  background: radial-gradient(ellipse at center, rgba(46, 4, 232, 0) 0%, rgba(102, 0, 88, 1) 100%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(46, 4, 232, 0) 0%,
+    rgba(102, 0, 88, 1) 100%
+  );
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   /* // filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#002e04e8', endColorstr='#660058', GradientType=1 );
         IE6-9 fallback on horizontal gradient */

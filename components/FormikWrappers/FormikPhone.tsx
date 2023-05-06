@@ -24,6 +24,10 @@ export const FormikPhone = ({
     >
       {(inputProps: any) => <TextField variant="outlined" {...props} />}
     </InputMask>
-    {touched[fields.name] && errors[fields.name] ? <Error>{errors[fields.name]}</Error> : ""}
+    {touched[fields.name] && errors[fields.name] ? (
+      <Error>{errors[fields.name]}</Error>
+    ) : (
+      ""
+    )}
   </>
 );

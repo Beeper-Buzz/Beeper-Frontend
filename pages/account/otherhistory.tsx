@@ -15,7 +15,10 @@ const MyTable = styled.div`
 const MyTableTitle = styled.div`
   font-size: 14px;
   line-height: 150%;
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Bebas Neue";
   text-transform: uppercase;
   border-bottom: 2px solid #000;
@@ -26,7 +29,10 @@ const MyTableItem = styled.div`
   font-family: Roboto Condensed;
   font-size: 14px;
   line-height: 125%;
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   border-bottom: 2px solid #000;
   text-align: left;
   display: flex;
@@ -37,7 +43,10 @@ const MyButton = styled(ButtonBase)`
   height: ${pxPC(33)};
   border: 1px solid #000 !important;
   line-height: ${pxPC(33)};
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-size: 20px;
   font-family: "Bebas Neue";
   text-transform: uppercase;

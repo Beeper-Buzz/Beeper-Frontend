@@ -4,7 +4,10 @@ import { useField } from "formik";
 
 import { TextField } from "@material-ui/core";
 
-import PlacesAutocomplete, { geocodeByAddress, getLatLng } from "react-places-autocomplete";
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng
+} from "react-places-autocomplete";
 
 import {
   Error,

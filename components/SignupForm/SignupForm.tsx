@@ -108,7 +108,9 @@ const FormWrapper: React.FC<any> = ({
       return (
         <WizardForm canGoBack={canGoBack}>
           <InitialTitle>
-            {isMobile && !canGoBack && <h1>Welcome! Let's get you started..</h1>}
+            {isMobile && !canGoBack && (
+              <h1>Welcome! Let's get you started..</h1>
+            )}
           </InitialTitle>
           {children}
           <WizardActions>

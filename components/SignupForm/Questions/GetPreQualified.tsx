@@ -7,7 +7,12 @@ import { Carousel } from "react-responsive-carousel";
 
 // Local
 import TipBot from "../../TipBot";
-import { QuestionWrapper, InputGroupWrapper, Title, Description } from "./Questions.styles";
+import {
+  QuestionWrapper,
+  InputGroupWrapper,
+  Title,
+  Description
+} from "./Questions.styles";
 
 interface GenericThemeType {
   theme?: any;

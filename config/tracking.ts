@@ -77,7 +77,11 @@ export const trackPageview = (url: string): void => {
   }
 };
 
-export const trackEvent = ({ action, category, label }: TrackingEvent): void => {
+export const trackEvent = ({
+  action,
+  category,
+  label
+}: TrackingEvent): void => {
   if (!TRACKING_ON) {
     return;
   }
@@ -85,7 +89,11 @@ export const trackEvent = ({ action, category, label }: TrackingEvent): void => 
   for (let provider of trackingProviders) {
     if (provider.isActive()) {
       if (TRACKING_VERBOSE) {
-        console.log(provider.getName() + " - trackEvent", { action, category, label });
+        console.log(provider.getName() + " - trackEvent", {
+          action,
+          category,
+          label
+        });
       }
 
       provider.trackEvent({ action, category, label });

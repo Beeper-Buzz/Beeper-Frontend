@@ -23,7 +23,9 @@ export const CartButton = styled.div`
   > i {
     font-size: 1em;
     color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
   }
 
   &:hover {

@@ -34,7 +34,10 @@ const ProductFooterRight = styled.div``;
 const ProductTitle = styled.div`
   font-size: 19px;
   line-height: 23px;
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Bebas Neue";
   text-transform: uppercase;
   align-self: flex-start;
@@ -44,13 +47,19 @@ const PriceText = styled.div`
   line-height: 23px;
   font-family: "Bebas Neue";
   margin-top: ${pxPC(10.96)};
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: right;
 `;
 const ProductDesc = styled.div`
   font-size: 16px;
   line-height: 19px;
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: Roboto Condensed;
 `;
 const ProductRate = styled(Rating)`

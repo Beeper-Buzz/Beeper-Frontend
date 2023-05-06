@@ -90,14 +90,19 @@ export const Questions: QuestionsType[] = [
       email: ""
     },
     validationSchema: object().shape({
-      firstName: string().defined(Static.errors.isRequired).required(Static.errors.isRequired),
+      firstName: string()
+        .defined(Static.errors.isRequired)
+        .required(Static.errors.isRequired),
       middleName: string(),
-      lastName: string().defined(Static.errors.isRequired).required(Static.errors.isRequired),
+      lastName: string()
+        .defined(Static.errors.isRequired)
+        .required(Static.errors.isRequired),
       suffix: string(),
       dateOfBirth: date()
         .transform((currentValue, originalValue) =>
           toShortDateZeroFill(currentValue) === originalValue ||
-          toShortDateZeroFill(currentValue) === toShortDateZeroFill(originalValue)
+          toShortDateZeroFill(currentValue) ===
+            toShortDateZeroFill(originalValue)
             ? currentValue
             : new Date("")
         )
@@ -166,10 +171,22 @@ export const Questions: QuestionsType[] = [
       passwordConfirm: string()
         .required(Static.errors.isRequired)
         .oneOf([ref("password"), null], "Passwords must match"),
-      acceptSignatureTerms: bool().oneOf([true], "Accept Terms & Conditions is required"),
-      acceptPrivacyTerms: bool().oneOf([true], "Accept Terms & Conditions is required"),
-      acceptReportingTerms: bool().oneOf([true], "Accept Terms & Conditions is required"),
-      acceptAuthorizeTerms: bool().oneOf([true], "Accept Terms & Conditions is required")
+      acceptSignatureTerms: bool().oneOf(
+        [true],
+        "Accept Terms & Conditions is required"
+      ),
+      acceptPrivacyTerms: bool().oneOf(
+        [true],
+        "Accept Terms & Conditions is required"
+      ),
+      acceptReportingTerms: bool().oneOf(
+        [true],
+        "Accept Terms & Conditions is required"
+      ),
+      acceptAuthorizeTerms: bool().oneOf(
+        [true],
+        "Accept Terms & Conditions is required"
+      )
     }),
     actionLabel: "Signup",
     onAction: (sectionValues: any) => {

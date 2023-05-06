@@ -68,7 +68,9 @@ export const ProductDescription = styled.div`
   text-align: center;
   max-width: 400px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 
 export const Detail = styled.h3`
@@ -131,7 +133,9 @@ export const SizeQty = styled.div`
 export const SizeTitle = styled.div`
   padding: 3px 0 0 0;
   background: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.gray.dark : p.theme.colors.gray.background};
+    p.theme.isDarkMode
+      ? p.theme.colors.gray.dark
+      : p.theme.colors.gray.background};
   text-transform: uppercase;
 `;
 
@@ -168,7 +172,9 @@ export const ColorsCell = styled.div`
     width: 80px;
     border: 1px solid ${(p: any) => p.theme.colors.white.primary};
     color: ${(p: any) =>
-      p.isDarkMode ? p.theme.colors.black.primary : p.theme.colors.white.primary} !important;
+      p.isDarkMode
+        ? p.theme.colors.black.primary
+        : p.theme.colors.white.primary} !important;
     background: transparent;
     &:focus {
       outline: none;
@@ -190,5 +196,7 @@ export const BuyButton = styled.button`
 
 export const PropertyName = styled.span`
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.gray.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.gray.primary
+      : p.theme.colors.black.primary};
 `;

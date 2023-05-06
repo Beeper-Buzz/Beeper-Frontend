@@ -4,7 +4,10 @@ import Avatar from "@material-ui/core/Avatar";
 export const Title = styled.div`
   font-size: 33px;
   line-height: 41px;
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: center;
   font-family: "Bebas Neue";
   margin-top: 19px;
@@ -29,7 +32,10 @@ export const MemberName = styled.div`
   margin-top: ${pxPC(9)};
   white-space: nowrap;
   font-size: ${pxPC(18)};
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   line-height: ${pxPC(22)};
   text-align: center;
   font-family: "Bebas Neue";

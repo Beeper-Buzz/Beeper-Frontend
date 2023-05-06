@@ -5,7 +5,10 @@ import { menuDataItem } from "../types";
 import styled from "@emotion/styled";
 export const NewDigWrap = styled.div`
   display: flex;
-  background-color: #fff;
+  background-color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.black.primary
+      : p.theme.colors.white.primary};
   padding-top: 23px;
   padding-bottom: 23px;
   transform: translate3d(0px, 0px, 100px);
@@ -27,7 +30,10 @@ export const ColumnItem = styled.div`
   font-family: Roboto Condensed;
   font-size: 14px;
   line-height: 16px;
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-transform: capitalize;
   margin-bottom: 5px;
   cursor: pointer;
@@ -36,7 +42,9 @@ export const Divider = styled.div`
   width: 1px;
   height: 262px;
   background-color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 export const ImgWrapper = styled.div`
   margin-left: 116px;
@@ -46,7 +54,10 @@ export const ColumnTitle = styled.div`
   font-family: "Roboto CondensedBold";
   font-size: 14px;
   line-height: 16px;
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-transform: uppercase;
   margin-bottom: 15px;
 `;
@@ -54,7 +65,10 @@ export const ImageTitle = styled.div`
   font-size: 14px;
   line-height: 16px;
   font-family: "Roboto CondensedBold";
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-transform: uppercase;
 `;
 export const ImageInnerWrapper = styled.div`
@@ -118,7 +132,9 @@ export const menusData: menuDataItem[] = [
     name: "HOT DIGS",
     key: "hotdigs",
     icon: () => <AccessAlarmIcon style={{ color: "#fff" }} />,
-    pcIcon: () => <AccessAlarmIcon style={{ color: "#fff", marginRight: "5px" }} />
+    pcIcon: () => (
+      <AccessAlarmIcon style={{ color: "#fff", marginRight: "5px" }} />
+    )
   },
   {
     name: "NEW DIGS",
@@ -134,7 +150,9 @@ export const menusData: menuDataItem[] = [
         name: "TOPS",
         key: "tops",
         icon: () => <LaptopMacIcon style={{ color: "#fff" }} />,
-        pcIcon: () => <AccessAlarmIcon style={{ color: "#000", marginRight: "5px" }} />
+        pcIcon: () => (
+          <AccessAlarmIcon style={{ color: "#000", marginRight: "5px" }} />
+        )
       },
       {
         name: "BOTTOMS",

@@ -86,13 +86,15 @@ export const TermsCheckbox = styled(Checkbox)<TermsCheckboxType>`
   flex-basis: 5%;
 
   > .checkbox-label {
-    color: ${(p: any) => (p.accepted ? p.theme.colors.brand.dark : p.theme.colors.red.primary)};
+    color: ${(p: any) =>
+      p.accepted ? p.theme.colors.brand.dark : p.theme.colors.red.primary};
   }
 
   .checkbox-style {
     border-color: ${(p: any) =>
       p.accepted ? p.theme.colors.brand.dark : p.theme.colors.red.primary};
-    stroke: ${(p: any) => (p.accepted ? p.theme.colors.brand.dark : p.theme.colors.red.primary)};
+    stroke: ${(p: any) =>
+      p.accepted ? p.theme.colors.brand.dark : p.theme.colors.red.primary};
   }
 `;
 

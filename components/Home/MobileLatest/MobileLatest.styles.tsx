@@ -9,7 +9,9 @@ export const Container = styled.div`
 export const LatestTitle = styled.div`
   text-align: center;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-size: 44px;
   height: 67px;
   font-family: "Bebas Neue";

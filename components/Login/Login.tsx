@@ -9,7 +9,12 @@ import { useAuth } from "../../config/auth";
 
 import { FormikInput } from "../FormikWrappers";
 
-import { LoginWrapper, FormWrapper, InputWrapper, Subtext } from "./Login.styles";
+import {
+  LoginWrapper,
+  FormWrapper,
+  InputWrapper,
+  Subtext
+} from "./Login.styles";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
