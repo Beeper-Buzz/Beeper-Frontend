@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { InputBase } from "@material-ui/core";
-import { pxPC } from "../../utils";
+import { pxPC } from "../../utilities/device-sizes";
 import { Layout } from "../../components";
 
 const Content = styled.div`

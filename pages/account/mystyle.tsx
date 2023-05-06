@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import styled from "@emotion/styled";
 import Rating from "@material-ui/lab/Rating";
-import { pxPC } from "../../utils";
+import { pxPC } from "../../utilities/device-sizes";
 import AccountPageLayout from "./AccountPageLayout";
 import data from "./mystyle.json";
 const { list } = data;

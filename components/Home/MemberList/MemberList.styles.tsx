@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { pxIphone, pxPC } from "../../../utils";
+import { pxIphone, pxPC } from "../../../utilities/device-sizes";
 import Avatar from "@material-ui/core/Avatar";
 export const Title = styled.div`
   font-size: 33px;

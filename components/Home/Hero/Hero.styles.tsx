@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { LargeTitle, BtnTitle } from "../../../styles/BaseStyles";
 import ButtonBase from "@material-ui/core/ButtonBase";
-import { pxIphone, pxPC } from "../../../utils";
+import { pxIphone, pxPC } from "../../../utilities/device-sizes";
 export const Container = styled.div`
   display: flex;
   justify-content: left;

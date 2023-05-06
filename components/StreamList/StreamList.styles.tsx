@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { pxPC, pxIphone } from "../../utils";
+import { pxPC, pxIphone } from "../../utilities/device-sizes";
 import { PriceText, ProductTitle, XlargeTitle, XsmallText } from "../../styles/BaseStyles";
 export const Title = styled(XlargeTitle)`
   font-family: "Bebas Neue";
