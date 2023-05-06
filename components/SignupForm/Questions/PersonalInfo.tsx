@@ -27,7 +27,12 @@ export const PersonalInfo = () => {
       <TipBot speech={speechMarkup()} />
       <InputGroupWrapper>
         <InputWrapper>
-          <Field name="firstName" id="firstName" component={FormikInput} label="First Name" />
+          <Field
+            name="firstName"
+            id="firstName"
+            component={FormikInput}
+            label="First Name"
+          />
         </InputWrapper>
         {/* <InputWrapper>
           <Field
@@ -38,7 +43,12 @@ export const PersonalInfo = () => {
           />
         </InputWrapper> */}
         <InputWrapper>
-          <Field name="lastName" id="lastName" component={FormikInput} label="Last Name" />
+          <Field
+            name="lastName"
+            id="lastName"
+            component={FormikInput}
+            label="Last Name"
+          />
         </InputWrapper>
         {/* <InputWrapper>
           <Field

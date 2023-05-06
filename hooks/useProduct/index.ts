@@ -27,7 +27,9 @@ const fetchProduct = async (slug: string): Promise<IProduct> => {
 };
 
 const useProduct = (id: string) => {
-  return useQuery<IProduct, false>([QueryKeys.PRODUCT, id], () => fetchProduct(id));
+  return useQuery<IProduct, false>([QueryKeys.PRODUCT, id], () =>
+    fetchProduct(id)
+  );
 };
 
 export { useProduct, fetchProduct };

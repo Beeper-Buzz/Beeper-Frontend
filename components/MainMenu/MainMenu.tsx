@@ -2,7 +2,12 @@ import React, { useEffect, useCallback, useState } from "react";
 import classnames from "classnames";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
-import { fetchMenuLocation, fetchMenuItems, useMenuLocation, useMenuItems } from "../../hooks";
+import {
+  fetchMenuLocation,
+  fetchMenuItems,
+  useMenuLocation,
+  useMenuItems
+} from "../../hooks";
 import { MainMenuProps, menuDataItem } from "./types";
 import DesktopMenu from "./DesktopMenu";
 
@@ -45,9 +50,13 @@ export const MainMenu = (props: MainMenuProps) => {
     data: menuItemsData,
     isLoading: menuItemsIsLoading,
     isSuccess: menuItemsIsSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } = useMenuItems(
-    1
-  );
+  }: {
+    error: any;
+    status: any;
+    data: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+  } = useMenuItems(1);
 
   useEffect(() => {
     // if (menuItemsIsSuccess && menuLocationIsSuccess) {
@@ -93,7 +102,9 @@ export async function getServerSideProps() {
   const queryClient = new QueryClient();
 
   // await queryClient.prefetchQuery(["posts", 1], () => fetchPosts(1));
-  await queryClient.prefetchQuery(["menu_location", 1], () => fetchMenuLocation(1));
+  await queryClient.prefetchQuery(["menu_location", 1], () =>
+    fetchMenuLocation(1)
+  );
   await queryClient.prefetchQuery(["menu_items", 1], () => fetchMenuItems(0));
 
   return {

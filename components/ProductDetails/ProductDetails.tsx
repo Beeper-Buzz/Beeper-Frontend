@@ -99,18 +99,22 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
     error: productError
   } = useProduct(`${productSlug.toLowerCase().replace("/", "")}`);
   const productImgs =
-    thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "image");
+    thisProduct &&
+    thisProduct?.included?.filter((e: any) => e["type"] === "image");
   const productOptions =
-    thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "option_value");
+    thisProduct &&
+    thisProduct?.included?.filter((e: any) => e["type"] === "option_value");
   const productColors =
-    productOptions && productOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
+    productOptions &&
+    productOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
   const productSizes =
     productOptions &&
     productOptions?.filter((e: any) =>
       e.attributes.presentation.includes("XS" || "S" || "M" || "L" || "XL")
     );
   const productProperties =
-    thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "product_property");
+    thisProduct &&
+    thisProduct?.included?.filter((e: any) => e["type"] === "product_property");
   const thisProductId = thisProduct?.data?.id || "";
   const {
     error: productsError,
@@ -120,7 +124,8 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
     isSuccess: productsAreSuccess
   } = useProducts(1);
   const randomNextProductId = productsAreSuccess
-    ? productsData?.data[Math.floor(Math.random() * productsData?.data?.length)].id
+    ? productsData?.data[Math.floor(Math.random() * productsData?.data?.length)]
+        .id
     : "";
 
   const {
@@ -182,12 +187,20 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
 
   const renderSimilarProducts = () => {
     if (productsAreLoading) return <p>Loading...</p>;
-    return !isMobile && <ProductList products={productsData} title={"Similar Products"} />;
+    return (
+      !isMobile && (
+        <ProductList products={productsData} title={"Similar Products"} />
+      )
+    );
   };
 
   const recommendedProducts = () => {
     if (productsAreLoading) return <p>Loading...</p>;
-    return !isMobile && <ProductList products={productsData} title={"Recommended For You"} />;
+    return (
+      !isMobile && (
+        <ProductList products={productsData} title={"Recommended For You"} />
+      )
+    );
   };
   // const latestProducts = isMobile ? null : (
   //   <Featured data={homeData.latestProducts} title="" />
@@ -201,7 +214,8 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
   const findVariantsWithOptionId = (optionId: number) => {
     debugger;
     let foundVariants: any = [];
-    foundVariants = variantsData && variantsData?.relationships?.option_value?.data;
+    foundVariants =
+      variantsData && variantsData?.relationships?.option_value?.data;
     const foundVariant = foundVariants?.filter((i: any) => i.id === optionId);
     if (foundVariant) {
       return foundVariant;
@@ -210,7 +224,9 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
   };
 
   const incrementVariantQty = (optionId: number) => {
-    const chosenOption = productOptions?.find((i) => i.id === optionId.toString());
+    const chosenOption = productOptions?.find(
+      (i) => i.id === optionId.toString()
+    );
     const foundVariants = findVariantsWithOptionId(optionId);
     // const chosenVariant = variantsData && variantsData?.find((i) => i.relationships?.option_values?.data['id'] === optionId);
     if (chosenVariants.length > 0) {
@@ -297,7 +313,9 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
     const newValue = e.target ? e.target.value : e;
     console.log("newValue: ", newValue);
     const chosenPacks =
-      (chosenVariants.length && chosenVariants[variantId]?.quantity + newValue) || null;
+      (chosenVariants.length &&
+        chosenVariants[variantId]?.quantity + newValue) ||
+      null;
     console.log("chosenPacks: ", chosenPacks);
     setChosenVariants((prevState: any) => {
       return {
@@ -311,7 +329,9 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
     const [chosenVariantQty, setChosenVariantQty] = useState(0);
 
     useEffect(() => {
-      const foundVariants = thisProduct?.included?.filter((elem) => elem.type === "variant");
+      const foundVariants = thisProduct?.included?.filter(
+        (elem) => elem.type === "variant"
+      );
       console.log("VARIANTS: ", foundVariants);
     }, [thisProduct]);
 
@@ -346,7 +366,11 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
             />
           </ColorsCell>
           <ColorsCell>
-            <button onClick={() => handleIncrementVariantQty(parseInt(item.id))}>+</button>
+            <button
+              onClick={() => handleIncrementVariantQty(parseInt(item.id))}
+            >
+              +
+            </button>
           </ColorsCell>
           <ColorsCell>{chosenVariantQty}</ColorsCell>
           <ColorsCell>${item.attributes.price}</ColorsCell>
@@ -357,7 +381,8 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
 
   const renderProductImgs = useCallback(() => {
     const productImgs =
-      thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "image");
+      thisProduct &&
+      thisProduct?.included?.filter((e: any) => e["type"] === "image");
     const primaryImg = productImgs && productImgs[0]?.attributes.styles[9].url;
     // console.log("rendered imgs: ", productImgs);
     if (productImgs && productImgs.length < 1) {

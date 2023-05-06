@@ -108,10 +108,14 @@ export const GlobalStyles = ({ theme, children }: any) => (
         outline: none;
       }
       i {
-        color: ${theme.isDarkMode ? theme.colors.white.primary : theme.colors.black.primary};
+        color: ${theme.isDarkMode
+          ? theme.colors.white.primary
+          : theme.colors.black.primary};
       }
       .pc-menu-item {
-        color: ${theme.isDarkMode ? theme.colors.white.primary : theme.colors.black.primary};
+        color: ${theme.isDarkMode
+          ? theme.colors.white.primary
+          : theme.colors.black.primary};
         font-family: "Bebas Neue";
         font-size: 14px;
         margin-right: 82px !important;

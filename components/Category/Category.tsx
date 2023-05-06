@@ -2,7 +2,12 @@ import * as React from "react";
 import { useRouter } from "next/router";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
-import { fetchStreams, fetchProducts, useProducts, useStreams } from "../../hooks";
+import {
+  fetchStreams,
+  fetchProducts,
+  useProducts,
+  useStreams
+} from "../../hooks";
 import { Layout } from "../components";
 import { useProduct, fetchProduct } from "../../hooks/useProduct";
 import { useMutation, useQueryClient } from "react-query";
@@ -57,14 +62,20 @@ export const Category = () => {
     data: productData,
     isLoading: productsAreLoading,
     isSuccess: productIsSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } = useProducts(
-    1
-  );
+  }: {
+    error: any;
+    status: any;
+    data: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+  } = useProducts(1);
 
   const polProductList = isMobile ? null : (
     <PolProductList products={productData} title={"HOTDIGS"} />
   );
-  const latestProducts = isMobile ? null : <Featured data={homeData.latestProducts} title="" />;
+  const latestProducts = isMobile ? null : (
+    <Featured data={homeData.latestProducts} title="" />
+  );
 
   React.useEffect(() => {
     if (isSuccess) {
@@ -117,7 +128,8 @@ export const Category = () => {
     };
 
     const imageSource =
-      Array.isArray(data?.included) && data?.included[0]?.attributes?.styles?.[2].url;
+      Array.isArray(data?.included) &&
+      data?.included[0]?.attributes?.styles?.[2].url;
     const source = imageSource
       ? `http://localhost:8080${imageSource}`
       : "https://via.placeholder.com/400x600";
@@ -125,7 +137,11 @@ export const Category = () => {
 
     return (
       <Layout>
-        <ProductContainer tabIndex={-1} onKeyDown={handleKeyPress} className="product-container">
+        <ProductContainer
+          tabIndex={-1}
+          onKeyDown={handleKeyPress}
+          className="product-container"
+        >
           {/* <div className="slider-wrapper">
             <Slider {...settings}>
               <div className="slick-slide" key="1">
@@ -231,7 +247,8 @@ export const Category = () => {
               height: auto;
               border-radius: 8px;
               box-shadow: 0 13px 27px -5px hsla(240, 30.1%, 28%, 0.25),
-                0 8px 16px -8px hsla(0, 0%, 0%, 0.3), 0 -6px 16px -6px hsla(0, 0%, 0%, 0.03);
+                0 8px 16px -8px hsla(0, 0%, 0%, 0.3),
+                0 -6px 16px -6px hsla(0, 0%, 0%, 0.03);
             }
             .slick-slide-label {
               color: #fff;

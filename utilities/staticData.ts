@@ -31,7 +31,8 @@ const Static = {
     annualIncomeMin: "Annual Income must be at least $4,000",
     annualIncomeMax: "Annual Income cannot be greater than $9,999,999",
     phoneNumberValid: "Please enter a valid Phone Number",
-    passwordValid: "Password must contain a letter AND a number or special character",
+    passwordValid:
+      "Password must contain a letter AND a number or special character",
     passwordMin: `Password must be at least ${constants.MIN_PASSWORD_LENGTH} characters`,
     passwordMax: `Password cannot be greater than ${constants.MAX_PASSWORD_LENGTH} characters`,
     passwordMatch: "Passwords do not match",

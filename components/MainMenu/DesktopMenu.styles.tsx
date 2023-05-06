@@ -24,7 +24,9 @@ export const MenuItem = styled.div<MenuItemProps>`
   font-size: 14px;
   line-height: 150%;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: center;
   display: flex;
   justify-content: center;
@@ -37,26 +39,32 @@ export const MenuItem = styled.div<MenuItemProps>`
     width: 120%;
     height: 1px;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.black.primary : p.theme.colors.white.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.black.primary
+        : p.theme.colors.white.primary};
     content: "";
     position: absolute;
     bottom: 0;
     display: ${(props) => (props.isActive ? "block" : "none")};
-    transfrom: ${(props) => (props.isActive ? "translateX(0)" : "translateX(-100%)")};
+    transfrom: ${(props) =>
+      props.isActive ? "translateX(0)" : "translateX(-100%)"};
   }
 `;
 
 export const DropDown = styled.div<DropDownProps>`
   position: absolute;
   background-color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.black.primary : p.theme.colors.white.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.black.primary
+      : p.theme.colors.white.primary};
   left: 0;
   top: 100%;
   width: 100%;
   z-index: 10000;
   transition: all 1s linear;
   display: ${(props) => (props.isActive ? "flex" : "none")};
-  transform: ${(props) => (props.isActive ? "translateY(0)" : "translateY(-100%)")};
+  transform: ${(props) =>
+    props.isActive ? "translateY(0)" : "translateY(-100%)"};
   box-shadow: 0 6px 12px rgb(0 0 0 / 5%);
   flex-direction: row;
   justify-content: center;
@@ -71,17 +79,23 @@ export const DropDownColumn = styled.div`
 
 export const DropDownHeader = styled.h4`
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 
 export const DropDownLink = styled.a`
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary} !important;
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary} !important;
 `;
 
 export const DropDownAdvert = styled.div`
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   margin: 0 20px;
   padding: 10px;
 `;

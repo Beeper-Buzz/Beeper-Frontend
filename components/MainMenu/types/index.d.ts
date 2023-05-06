@@ -60,7 +60,10 @@ export interface MainMenuProps {
   isOpen?: boolean;
   itemClassName?: string;
   itemListClassName?: string;
-  itemListElement?: "div" | "nav" | FunctionComponent<{ className: string; style: object }>;
+  itemListElement?:
+    | "div"
+    | "nav"
+    | FunctionComponent<{ className: string; style: object }>;
   menuClassName?: string;
   menuFooter?: boolean;
   morphShapeClassName?: string;

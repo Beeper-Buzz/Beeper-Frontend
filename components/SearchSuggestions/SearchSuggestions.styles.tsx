@@ -25,14 +25,18 @@ export const StyledSearchSuggestions = styled.div<StyledSearchSuggestionsProps>`
     width: 20px;
     border-radius: 0 0 12px 0;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.black.light : p.theme.colors.white.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.black.light
+        : p.theme.colors.white.primary};
   }
 
   &::-webkit-scrollbar-thumb {
     border-radius: 12px;
     height: 80px;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.black.medium : p.theme.colors.gray.background};
+      p.theme.isDarkMode
+        ? p.theme.colors.black.medium
+        : p.theme.colors.gray.background};
     /* box-shadow: 0 2px 12px rgba(0, 0, 0, 0.33); */
     transition: 1s all ease-in-out;
     &:active {
@@ -44,7 +48,9 @@ export const StyledSearchSuggestions = styled.div<StyledSearchSuggestionsProps>`
   &::-webkit-scrollbar-track {
     border-radius: 12px;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.gray.dark : p.theme.colors.gray.light};
+      p.theme.isDarkMode
+        ? p.theme.colors.gray.dark
+        : p.theme.colors.gray.light};
   }
 `;
 export interface StyledSuggestionLinkProps {
@@ -66,9 +72,13 @@ export const StyledSuggestionLink = styled.div<StyledSuggestionLinkProps>`
   padding: 12px 16px 12px 30px;
   font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
   background-color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.black.primary : p.theme.colors.white.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.black.primary
+      : p.theme.colors.white.primary};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 
   font-size: 14px;
   font-weight: 700;
@@ -78,9 +88,13 @@ export const StyledSuggestionLink = styled.div<StyledSuggestionLinkProps>`
   &:hover {
     text-decoration: none;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.gray.medium : p.theme.colors.gray.background};
+      p.theme.isDarkMode
+        ? p.theme.colors.gray.medium
+        : p.theme.colors.gray.background};
     color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
   }
 
   mark {

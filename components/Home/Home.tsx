@@ -3,7 +3,12 @@ import { useQuery } from "react-query";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
 import { Layout, InfoBox, ProductList } from "../components";
-import { fetchStreams, fetchProducts, useProducts, useStreams } from "../../hooks";
+import {
+  fetchStreams,
+  fetchProducts,
+  useProducts,
+  useStreams
+} from "../../hooks";
 import Hero from "./Hero";
 import Banner from "./Banner";
 import { Content } from "./Home.styles";
@@ -57,9 +62,13 @@ export const Home = (props: any) => {
     data: productsData,
     isLoading: productsAreLoading,
     isSuccess: productsIsSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } = useProducts(
-    1
-  );
+  }: {
+    error: any;
+    status: any;
+    data: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+  } = useProducts(1);
 
   const {
     error: streamsError,
@@ -67,10 +76,20 @@ export const Home = (props: any) => {
     data: streamsData,
     isLoading: streamsAreLoading,
     isSuccess: streamsAreSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } = useStreams(1);
+  }: {
+    error: any;
+    status: any;
+    data: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+  } = useStreams(1);
 
-  const memberList = isMobile ? null : <MemberList data={homeData.memberList} />;
-  const mobileMemberList = !isMobile ? null : <MemberList data={homeData.memberList} />;
+  const memberList = isMobile ? null : (
+    <MemberList data={homeData.memberList} />
+  );
+  const mobileMemberList = !isMobile ? null : (
+    <MemberList data={homeData.memberList} />
+  );
   const advertListMobile = isMobile ? (
     <MobileLatest products={productsData} title={""}></MobileLatest>
   ) : null;

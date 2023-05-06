@@ -53,9 +53,12 @@ export const theme = {
   background: {
     ambient: "linear-gradient(180deg, #EB8B8B 0%, #CC8BEB 100%)",
     brand: "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 51.56%)",
-    yellow: "linear-gradient(180deg, rgba(248, 207, 81, 0.64) 0%, rgba(248, 207, 81, 0) 100%)",
-    OmniscientPink: "linear-gradient(180deg, #EB8B8B 0%, rgba(235, 139, 139, 0) 100%)",
-    AmbientVectors: "linear-gradient(142.27deg, #EB8B8B 21.81%, #DC8BBA 43.8%, #CC8BEB 66.99%)",
+    yellow:
+      "linear-gradient(180deg, rgba(248, 207, 81, 0.64) 0%, rgba(248, 207, 81, 0) 100%)",
+    OmniscientPink:
+      "linear-gradient(180deg, #EB8B8B 0%, rgba(235, 139, 139, 0) 100%)",
+    AmbientVectors:
+      "linear-gradient(142.27deg, #EB8B8B 21.81%, #DC8BBA 43.8%, #CC8BEB 66.99%)",
     AmbientVectorsReversed: "linear-gradient(180deg, #EB8B8B 0%, #CC8BEB 100%)"
   },
   effect: {
@@ -74,7 +77,8 @@ export const theme = {
       background: "#c4c4c4"
     },
     BrandGlowSecondarySM: {
-      boxShadow: "2px 3px 2px 1px rgba(122, 73, 152, 0.25), 0px -1px 2px #D8B5B5",
+      boxShadow:
+        "2px 3px 2px 1px rgba(122, 73, 152, 0.25), 0px -1px 2px #D8B5B5",
       background: "#C4C4C4"
     },
     Skeuomorphism: {
@@ -118,6 +122,13 @@ export const theme = {
       lineHeight: "1.5rem",
       color: "#000"
     },
+    titleXS: {
+      fontFamily: "Bebas Neue",
+      fontWeight: "normal",
+      fontSize: "10px",
+      lineHeight: "0.9rem",
+      color: "#000"
+    },
     bodyMD: {
       fontFamily: "Anonymous",
       fontWeight: "normal",
@@ -132,11 +143,11 @@ export const theme = {
       lineHeight: "16px",
       color: "#000"
     },
-    bodyXXS: {
+    bodyXS: {
       fontFamily: "Anonymous",
       fontWeight: "normal",
-      fontSize: "6px",
-      lineHeight: "8px",
+      fontSize: "9px",
+      lineHeight: "0.9rem",
       color: "#000"
     }
   },

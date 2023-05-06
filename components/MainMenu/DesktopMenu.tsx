@@ -17,7 +17,13 @@ import {
 const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
   const router = useRouter();
   let timer: any;
-  const { pcWrapClassName, menusData, menusLoading, pcMenuItemClassName, onMenuItemClick } = props;
+  const {
+    pcWrapClassName,
+    menusData,
+    menusLoading,
+    pcMenuItemClassName,
+    onMenuItemClick
+  } = props;
   const menuItems =
     menusData && menusData.menu_location_listing
       ? menusData?.menu_location_listing[0]?.menu_item_listing
@@ -72,7 +78,9 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
             >
               {item.childrens?.map((item: any, index: any) => (
                 <DropDownColumn key={`${index}-column`}>
-                  <DropDownHeader key={`${index}-header`}>{item.name}</DropDownHeader>
+                  <DropDownHeader key={`${index}-header`}>
+                    {item.name}
+                  </DropDownHeader>
                   {item.childrens?.map((item: any, index: any) => (
                     <DropDownLink href={item.url} key={`${index}-link`}>
                       {item.name}

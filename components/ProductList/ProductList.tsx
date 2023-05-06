@@ -61,8 +61,13 @@ export const ProductList: React.FC<ProductListProps> = (props: any) => {
           const foundImg = allImages
             ? allImages.filter((e: any) => e["id"] == productImg)
             : undefined;
-          const imgUrl = foundImg !== undefined ? foundImg[0]?.attributes?.styles[4]?.url : "";
-          const imgSrc = productImg ? `${process.env.SPREE_API_URL}${imgUrl}` : defaultImg;
+          const imgUrl =
+            foundImg !== undefined
+              ? foundImg[0]?.attributes?.styles[4]?.url
+              : "";
+          const imgSrc = productImg
+            ? `${process.env.SPREE_API_URL}${imgUrl}`
+            : defaultImg;
           return (
             <div
               key={product.id}

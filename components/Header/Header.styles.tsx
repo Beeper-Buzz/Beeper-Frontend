@@ -112,7 +112,9 @@ export const HeaderOptions = styled.div`
     font-weight: ${(p) => p.theme.typography.titleMD.fontWeight};
     line-height: ${(p) => p.theme.typography.titleMD.lineHeight};
     color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
   }
   @media (max-width: 768px) {
     display: none;
@@ -122,7 +124,9 @@ export const HeaderOptions = styled.div`
 export const CartToggle = styled.div`
   margin: -10px 3px 0 0;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 
   @media (min-width: ${(p) => p.theme.breakpoints.values.xs}px) {
     & span.MuiBadge-root span.MuiBadge-badge {
@@ -142,7 +146,9 @@ export const HeaderAccount = styled.div`
   margin: 0 20px;
   justify-content: space-around;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   @media (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
     display: none;
   }
@@ -167,7 +173,9 @@ export const AccountMenu = styled(Popover)`
     left: auto !important;
     right: 105px;
     background-color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.gray.dark : p.theme.colors.white.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.gray.dark
+        : p.theme.colors.white.primary};
   }
 `;
 
@@ -180,14 +188,18 @@ export const AccountOption = styled.div`
 
   & > a {
     color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
   }
 `;
 
 export const ArrowDown = styled(ArrowDropDownIcon)`
   margin-left: 5px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   @media (max-width: 768px) {
     display: none !important;
   }
@@ -205,7 +217,9 @@ export const ShoppingCart = styled.img`
 export const FavoriteIcon = styled(FavoriteBorderIcon)`
   font-size: 12px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   margin-right: 13px;
   @media (max-width: 768px) {
     display: none !important;
