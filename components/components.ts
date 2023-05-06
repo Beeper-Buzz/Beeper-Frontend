@@ -17,6 +17,7 @@ export * from "./PolProductList";
 export * from "./ProductCard";
 export * from "./ProductDetails";
 export * from "./ProductList";
+export * from "./ProductTeaser";
 export * from "./ResetPassword";
 export * from "./SignupForm";
 export * from "./SocialLinks";
