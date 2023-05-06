@@ -110,7 +110,8 @@ export const Questions: QuestionsType[] = [
       dateOfBirth: date()
         .transform((currentValue, originalValue) =>
           toShortDateZeroFill(currentValue) === originalValue ||
-          toShortDateZeroFill(currentValue) === toShortDateZeroFill(originalValue)
+          toShortDateZeroFill(currentValue) ===
+            toShortDateZeroFill(originalValue)
             ? currentValue
             : new Date("")
         )
@@ -192,7 +193,9 @@ export const Questions: QuestionsType[] = [
     actionLabel: "Next",
     onAction: (sectionValues: any) => {
       window.scrollTo(0, 0);
-      const incomeNumber = parseFloat(sectionValues.yearlyIncome.replace(/\$|,/g, ""));
+      const incomeNumber = parseFloat(
+        sectionValues.yearlyIncome.replace(/\$|,/g, "")
+      );
       // console.log("THE MONEY: ", incomeNumber);
       if (incomeNumber < 4000) {
         Alert.fire({
@@ -239,10 +242,22 @@ export const Questions: QuestionsType[] = [
       passwordConfirm: string()
         .required(Static.errors.isRequired)
         .oneOf([ref("password"), null], "Passwords must match"),
-      acceptSignatureTerms: bool().oneOf([true], "Accept Terms & Conditions is required"),
-      acceptPrivacyTerms: bool().oneOf([true], "Accept Terms & Conditions is required"),
-      acceptReportingTerms: bool().oneOf([true], "Accept Terms & Conditions is required"),
-      acceptAuthorizeTerms: bool().oneOf([true], "Accept Terms & Conditions is required")
+      acceptSignatureTerms: bool().oneOf(
+        [true],
+        "Accept Terms & Conditions is required"
+      ),
+      acceptPrivacyTerms: bool().oneOf(
+        [true],
+        "Accept Terms & Conditions is required"
+      ),
+      acceptReportingTerms: bool().oneOf(
+        [true],
+        "Accept Terms & Conditions is required"
+      ),
+      acceptAuthorizeTerms: bool().oneOf(
+        [true],
+        "Accept Terms & Conditions is required"
+      )
     }),
     actionLabel: "Signup",
     onAction: (sectionValues: any) => {

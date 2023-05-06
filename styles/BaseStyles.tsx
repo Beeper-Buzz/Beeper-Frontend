@@ -4,7 +4,9 @@ export const ProductTitle = styled.div`
   font-size: ${pxPC(16)};
   line-height: ${pxPC(20)};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Bebas Neue";
   text-align: left;
 `;
@@ -12,14 +14,18 @@ export const PriceText = styled.div`
   font-size: ${pxPC(16)};
   line-height: ${pxPC(20)};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Bebas Neue";
   text-align: center;
 `;
 export const Title = styled.div`
   font-size: ${pxPC(18)};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   line-height: ${pxPC(22)};
   text-align: center;
   font-family: "Bebas Neue";
@@ -31,7 +37,9 @@ export const BigTitle = styled.div`
   font-weight: bold;
   text-align: center;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 export const LargeTitle = styled.div`
   font-family: "Bebas Neue";
@@ -39,7 +47,9 @@ export const LargeTitle = styled.div`
   line-height: ${pxPC(48)};
   text-align: center;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 export const XlargeTitle = styled.div`
   font-family: "Bebas Neue";
@@ -47,7 +57,9 @@ export const XlargeTitle = styled.div`
   line-height: ${pxPC(54)};
   text-align: center;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   @media (max-width: 375px) {
     font-size: ${pxIphone(24)};
     line-height: ${pxIphone(29)};
@@ -79,7 +91,9 @@ export const XsmallText = styled.div`
   font-size: ${pxPC(6)};
   line-height: ${pxPC(8)};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: center;
 `;
 export const WhiteText = styled.div`
@@ -93,7 +107,9 @@ export const DescText = styled.div`
   line-height: ${pxPC(19)};
   font-weight: 300;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   font-family: "Roboto";
 `;
 export const SubText = styled.div`

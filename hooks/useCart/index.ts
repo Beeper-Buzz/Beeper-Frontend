@@ -17,7 +17,9 @@ export const showCart = async () => {
     if (getCart.isSuccess()) {
       return getCart.success();
     } else {
-      const newCart = await spreeClient.cart.create({ bearerToken: token.access_token });
+      const newCart = await spreeClient.cart.create({
+        bearerToken: token.access_token
+      });
       if (newCart.isSuccess()) {
         return newCart.success();
       } else {
@@ -27,7 +29,9 @@ export const showCart = async () => {
   } else {
     const guestOrderToken = await storage.getGuestOrderToken();
     if (guestOrderToken) {
-      const response = await spreeClient.cart.show({ orderToken: guestOrderToken as any });
+      const response = await spreeClient.cart.show({
+        orderToken: guestOrderToken as any
+      });
       if (response.isSuccess()) {
         console.log("cart: ", response.success());
         return response.success();
@@ -92,7 +96,10 @@ export const addItemToCart = async (item: AddItem) => {
     }
     throw new Error("NO CART TOKENS FOUND, COULD NOT ADD ITEM");
   }
-  const response = await spreeClient.cart.addItem({ bearerToken: orderToken.access_token }, item);
+  const response = await spreeClient.cart.addItem(
+    { bearerToken: orderToken.access_token },
+    item
+  );
   if (response.isSuccess()) {
     return response.success();
   } else {

@@ -154,7 +154,7 @@ declare module "@emotion/react" {
         lineHeight: string;
         color: string;
       };
-      bodyXXS: {
+      bodyXS: {
         fontFamily: string;
         fontWeight: string;
         fontSize: string;

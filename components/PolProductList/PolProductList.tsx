@@ -1,7 +1,12 @@
 import React, { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { IProducts } from "@spree/storefront-api-v2-sdk/types/interfaces/Product";
-import { fetchStreams, fetchProducts, useProducts, useStreams } from "../../hooks";
+import {
+  fetchStreams,
+  fetchProducts,
+  useProducts,
+  useStreams
+} from "../../hooks";
 import { ProductCard } from "../ProductCard";
 import { Container, Title } from "./PolProductList.styles";
 
@@ -40,21 +45,31 @@ const PolProductList: React.FC<PolProductListProps> = (props) => {
             const foundImg = allImages
               ? allImages.filter((e: any) => e["id"] == productImg)
               : undefined;
-            const imgUrl = foundImg !== undefined ? foundImg[0]?.attributes?.styles[4]?.url : "";
-            const imgSrc = productImg ? `${process.env.SPREE_API_URL}${imgUrl}` : defaultImg;
+            const imgUrl =
+              foundImg !== undefined
+                ? foundImg[0]?.attributes?.styles[4]?.url
+                : "";
+            const imgSrc = productImg
+              ? `${process.env.SPREE_API_URL}${imgUrl}`
+              : defaultImg;
 
             let optionTypes = item.relationships?.option_types?.data;
             let productOptionIds = optionTypes.map((i: any) => i.id);
             let allOptions =
-              products && products?.included?.filter((e: any) => e.type == "option_value");
+              products &&
+              products?.included?.filter((e: any) => e.type == "option_value");
             let productVariantColors = allOptions
-              ? allOptions?.filter((e: any) => e.attributes.presentation.includes("#"))
+              ? allOptions?.filter((e: any) =>
+                  e.attributes.presentation.includes("#")
+                )
               : null;
             let foundOptions =
               productVariantColors !== null
                 ? productVariantColors.filter((i: any) => {
                     // console.log("foundOption: ", i.relationships.option_type.data.id);
-                    return productOptionIds.includes(i.relationships.option_type.data.id);
+                    return productOptionIds.includes(
+                      i.relationships.option_type.data.id
+                    );
                   })
                 : null;
             // console.log("list: ", products, productVariantColors, foundOptions);

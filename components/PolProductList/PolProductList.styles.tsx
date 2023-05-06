@@ -1,7 +1,12 @@
 import styled from "@emotion/styled";
 import Rating from "@material-ui/lab/Rating";
 import { pxPC } from "../../utilities/device-sizes";
-import { XlargeTitle, ProductTitle, DescText, PriceText } from "../../styles/BaseStyles";
+import {
+  XlargeTitle,
+  ProductTitle,
+  DescText,
+  PriceText
+} from "../../styles/BaseStyles";
 export const Container = styled.div`
   margin-top: ${pxPC(30)};
 
@@ -12,7 +17,9 @@ export const Container = styled.div`
 export const Title = styled(XlargeTitle)`
   margin-bottom: ${pxPC(26)};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 export const ProductBox = styled.div`
   margin-top: ${pxPC(30)};
@@ -74,7 +81,10 @@ const Dot = styled.div`
   height: ${pxPC(12)};
   border-radius: 50%;
   border: 1px solid
-    ${(p) => (p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary)};
+    ${(p) =>
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
   margin-right: ${pxPC(8)};
 `;
 export const Dot1 = styled(Dot)`

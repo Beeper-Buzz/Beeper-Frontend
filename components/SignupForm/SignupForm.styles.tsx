@@ -157,7 +157,8 @@ export const WizardForm = styled.div<WizardFormType>`
     padding-top: 0;
   }
 
-  @media (min-width: ${(props) => props.theme.breakpoints.values.sm}px) and (max-width: ${(props) =>
+  @media (min-width: ${(props) =>
+      props.theme.breakpoints.values.sm}px) and (max-width: ${(props) =>
       props.theme.breakpoints.values.md}px) {
     margin-top: ${(props) => (props.canGoBack ? "120px" : "165px")};
     padding-top: 0;

@@ -1,6 +1,11 @@
 import styled from "@emotion/styled";
 import { pxPC, pxIphone } from "../../utilities/device-sizes";
-import { PriceText, ProductTitle, XlargeTitle, XsmallText } from "../../styles/BaseStyles";
+import {
+  PriceText,
+  ProductTitle,
+  XlargeTitle,
+  XsmallText
+} from "../../styles/BaseStyles";
 export const Title = styled(XlargeTitle)`
   font-family: "Bebas Neue";
   margin-bottom: ${pxPC(30)};
@@ -38,7 +43,10 @@ export const ProductMask = styled.div`
   right: 0;
   top: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.66); ;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.black.primary
+      : p.theme.colors.white.primary};
 `;
 export const MaskTitle = styled.div`
   position: absolute;
@@ -53,7 +61,7 @@ export const MaskTitle = styled.div`
   line-height: 30px;
   font-family: "Bebas Neue";
   text-align: center;
-  color: #707070;
+  color: ${(p: any) => p.theme.colors.gray.medium};
   @media (max-width: 375px) {
     font-size: 19px;
     line-height: 23px;
@@ -112,7 +120,10 @@ export const MyProductSubTitle = styled.div`
   font-size: 8px;
   line-height: 9px;
   text-decoration: underline;
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: center;
 `;
 export const MyProductSubText = styled.div`
@@ -120,13 +131,19 @@ export const MyProductSubText = styled.div`
   font-family: Roboto Condensed;
   font-size: 8px;
   line-height: 9px;
-  color: rgba(0, 0, 0, 0.33);
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 export const ProductPrice = styled(PriceText)`
   font-family: Roboto Condensed;
   font-size: 7.9px;
   line-height: 9px;
   text-align: center;
-  color: #000;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   margin-left: auto;
 `;

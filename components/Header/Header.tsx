@@ -36,7 +36,14 @@ import {
   AccountOption
 } from "./Header.styles";
 
-const dummyCategories = ["Best Sellers", "Latest", "Seasonal", "Luxury", "On Sale", "Coming Soon"];
+const dummyCategories = [
+  "Best Sellers",
+  "Latest",
+  "Seasonal",
+  "Luxury",
+  "On Sale",
+  "Coming Soon"
+];
 
 export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const router = useRouter();
@@ -54,7 +61,11 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const isMaint = process.env.IS_MAINT_MODE || "false";
   const logoPath = process.env.LOGO_PATH || "/images/logo.png";
 
-  const { data: cartData, isLoading: cartIsLoading, isError: cartHasError } = useCart();
+  const {
+    data: cartData,
+    isLoading: cartIsLoading,
+    isError: cartHasError
+  } = useCart();
 
   const handleAccount = (event: any) => {
     setAccountElem(event.currentTarget);
@@ -94,7 +105,10 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           {isMobile ? null : <SearchBar darkMode={darkMode} />}
           {user ? (
             <HeaderAccount>
-              <AccountEmail aria-describedby={accountId} onClick={handleAccount}>
+              <AccountEmail
+                aria-describedby={accountId}
+                onClick={handleAccount}
+              >
                 {user.data.attributes.email}
                 <ArrowDown />
               </AccountEmail>
@@ -132,7 +146,10 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
               <LinkDiv href="/login" isActive={pathname !== "/login"}>
                 LOGIN
               </LinkDiv>
-              <LinkDiv href="/authenticate/signup" isActive={pathname !== "/authenticate/signup"}>
+              <LinkDiv
+                href="/authenticate/signup"
+                isActive={pathname !== "/authenticate/signup"}
+              >
                 SIGN UP
               </LinkDiv>
             </HeaderOptions>

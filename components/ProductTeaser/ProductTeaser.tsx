@@ -20,8 +20,16 @@ const MyImg = styled.img`
   width: 240px;
   object-fit: contain;
 `;
-const MyH1 = styled.h1`
+const MyH1 = styled.p`
   font-size: 20px;
+  font-family: ${(p: any) => p.theme.typography.bodyXS.fontFamily};
+  font-weight: ${(p: any) => p.theme.typography.bodyXS.fontWeight};
+  font-size: ${(p: any) => p.theme.typography.bodyXS.fontSize};
+  line-height: ${(p: any) => p.theme.typography.bodyXS.lineHeight};
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 const MySection = styled.section`
   width: 100%;
@@ -61,8 +69,13 @@ export const ProductTeaser: React.FC<ProductListProps> = (props: any) => {
           const foundImg = allImages
             ? allImages.filter((e: any) => e["id"] == productImg)
             : undefined;
-          const imgUrl = foundImg !== undefined ? foundImg[0]?.attributes?.styles[4]?.url : "";
-          const imgSrc = productImg ? `${process.env.SPREE_API_URL}${imgUrl}` : defaultImg;
+          const imgUrl =
+            foundImg !== undefined
+              ? foundImg[0]?.attributes?.styles[4]?.url
+              : "";
+          const imgSrc = productImg
+            ? `${process.env.SPREE_API_URL}${imgUrl}`
+            : defaultImg;
           return (
             <div
               key={product.id}

@@ -96,7 +96,9 @@ export const NotifyForm = () => {
                 placeholder={question.placeholder}
                 value={switchQuestionValue(question.id)}
                 name="text"
-                onChange={(e: any) => switchQuestionSetter(question.id, e.target.value)}
+                onChange={(e: any) =>
+                  switchQuestionSetter(question.id, e.target.value)
+                }
               />
               <Button id="signup-button" type="submit">
                 {question.buttonText}
@@ -136,7 +138,9 @@ export const NotifyForm = () => {
       return;
     } else {
       const nextQuestionIndex =
-        currentQuestion < notifyQuestions.length ? currentQuestion + 1 : currentQuestion;
+        currentQuestion < notifyQuestions.length
+          ? currentQuestion + 1
+          : currentQuestion;
       setStatus("success");
       setMessage("Thanks so much! We'll keep you posted.");
       setCurrentQuestion(nextQuestionIndex);
@@ -160,13 +164,20 @@ export const NotifyForm = () => {
         <FormWrapper index={currentQuestion}>
           <form
             onSubmit={(e: any) =>
-              currentQuestion < 1 ? handleSubmit(e, true) : handleSubmit(e, false)
+              currentQuestion < 1
+                ? handleSubmit(e, true)
+                : handleSubmit(e, false)
             }
           >
-            {currentQuestion < notifyQuestions.length ? renderQuestions(currentQuestion) : null}
+            {currentQuestion < notifyQuestions.length
+              ? renderQuestions(currentQuestion)
+              : null}
             {/* MailChimp anti-spam fields, real people should not fill this in and expect good things - do not remove this or risk form bot signups */}
 
-            <div style={{ position: "absolute", left: "-5000px" }} aria-hidden="true">
+            <div
+              style={{ position: "absolute", left: "-5000px" }}
+              aria-hidden="true"
+            >
               <input
                 type="text"
                 name="b_eb05e4f830c2a04be30171b01_8281a64779"
@@ -178,16 +189,21 @@ export const NotifyForm = () => {
           </form>
           {/* MailChimp Status */}
           {status === "sending" && (
-            <NotifyText className="mc__alert mc__alert--sending">sending...</NotifyText>
+            <NotifyText className="mc__alert mc__alert--sending">
+              sending...
+            </NotifyText>
           )}
           {status === "error" && (
             <NotifyText>
-              {message === "Bad Request" ? `${message} or Email already exists` : message}
+              {message === "Bad Request"
+                ? `${message} or Email already exists`
+                : message}
             </NotifyText>
           )}
-          {status === "success" && currentQuestion >= notifyQuestions.length && (
-            <NotifyText>{message}</NotifyText>
-          )}
+          {status === "success" &&
+            currentQuestion >= notifyQuestions.length && (
+              <NotifyText>{message}</NotifyText>
+            )}
         </FormWrapper>
         <MailTo id="mailto" href={`mailto:${process.env.COMPANY_EMAIL}`}>
           Got Questions? We’d love to hear from you.

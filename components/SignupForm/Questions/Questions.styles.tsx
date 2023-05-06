@@ -111,7 +111,9 @@ export const TermsStatement = styled.p<TermsStatementType>`
   text-align: left;
   flex-basis: 100%;
   color: ${(props) =>
-    props.accepted ? props.theme.colors.brand.primary : props.theme.colors.red.primary};
+    props.accepted
+      ? props.theme.colors.brand.primary
+      : props.theme.colors.red.primary};
   height: auto;
   overflow-y: scroll;
   margin: 0;
@@ -123,7 +125,9 @@ export const TermsStatement = styled.p<TermsStatementType>`
     font-weight: 700;
     text-decoration: underline;
     color: ${(props) =>
-      props.accepted ? props.theme.colors.brand.primary : props.theme.colors.red.primary};
+      props.accepted
+        ? props.theme.colors.brand.primary
+        : props.theme.colors.red.primary};
   }
 
   @media (max-width: ${(props) => props.theme.breakpoints.values.sm}px) {

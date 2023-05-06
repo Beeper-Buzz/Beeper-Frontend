@@ -17,6 +17,10 @@ export const FormikDateOfBirth = ({
       {...fields}
       invalid={Boolean(touched[fields.name] && errors[fields.name]).toString()}
     />
-    {touched[fields.name] && errors[fields.name] ? <Error>{errors[fields.name]}</Error> : ""}
+    {touched[fields.name] && errors[fields.name] ? (
+      <Error>{errors[fields.name]}</Error>
+    ) : (
+      ""
+    )}
   </>
 );

@@ -40,10 +40,12 @@ export const FeaturedButton = styled(ButtonBase)`
   left: 0;
   right: 0;
   margin: auto !important;
-  color: #fff !important;
   font-family: "Bebas Neue";
   /* font-size: ${pxPC(18)};
   line-height: ${pxPC(22)}; */
-  color: #fff;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: center;
 `;

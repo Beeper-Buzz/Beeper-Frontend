@@ -34,11 +34,13 @@ export const HeroBtn = styled(ButtonBase)`
   height: ${pxPC(37)};
   background: #eb8b8b !important;
   margin-top: ${pxPC(22)}!important;
-  color: #fff !important;
   font-family: "Bebas Neue";
   font-size: ${pxPC(18)};
   line-height: ${pxPC(22)};
-  color: #fff;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: center;
   @media (max-width: 768px) {
     width: 50vw;

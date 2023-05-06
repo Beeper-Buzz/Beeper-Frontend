@@ -8,9 +8,11 @@ import { fetchProducts, useProducts } from "../../hooks";
 
 import "pure-react-carousel/dist/react-carousel.es.css";
 
-import { Container, Logo, Text } from "./ComingSoon.styles";
+import { Container, Logo, LogoText, Text } from "./ComingSoon.styles";
 
-const logoPath = process.env.LOGO_PATH || "";
+const siteTitle = process.env.SITE_TITLE || "";
+const siteDesc = process.env.SITE_DESC || "";
+const logoPath = process.env.LOGO_PATH;
 const previewMode = process.env.IS_PREVIEW_MODE === "true" ? true : false;
 const comingSoonText = process.env.COMING_SOON_TEXT || "";
 const mailerUrl = process.env.MAILCHIMP_URL || "";
@@ -27,11 +29,16 @@ export const ComingSoon = () => {
     data: productsData,
     isLoading: productsAreLoading,
     isSuccess: productsSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } = useProducts(
-    1
-  );
+  }: {
+    error: any;
+    status: any;
+    data: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+  } = useProducts(1);
 
   useEffect(() => {
+    console.log("LOGO PATH: ", logoPath);
     if (productsSuccess) {
       queryClient.setQueryData(["products", 1], productsData);
     }
@@ -40,9 +47,16 @@ export const ComingSoon = () => {
   return (
     <>
       <Container>
-        <Logo src={logoPath} />
-        {previewMode && <ProductTeaser products={productsData} title={""} />}
-        <Text>{comingSoonText}</Text>
+        {logoPath ? (
+          <Logo src={logoPath} />
+        ) : siteTitle ? (
+          <LogoText>{siteTitle}</LogoText>
+        ) : null}
+        {siteDesc && <Text>{siteDesc}</Text>}
+        {previewMode && (
+          <ProductTeaser products={productsData} title={""} />
+        )}
+        {comingSoonText !== "" && <Text>{comingSoonText}</Text>}
         <NotifyForm />
         <SocialLinks />
       </Container>

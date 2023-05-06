@@ -23,7 +23,9 @@ const fetchProducts = async (page: number = 1) => {
   }
 };
 const useProducts = (page: number) => {
-  return useQuery<IProducts, false>([QueryKeys.PRODUCTS, page], () => fetchProducts(page));
+  return useQuery<IProducts, false>([QueryKeys.PRODUCTS, page], () =>
+    fetchProducts(page)
+  );
 };
 
 export { useProducts, fetchProducts };

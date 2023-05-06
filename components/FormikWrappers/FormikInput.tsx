@@ -21,7 +21,11 @@ export const FormikInput = ({
         invalid={Boolean(touched[fields.name] && errors[fields.name])}
         // variant="outlined"
       />
-      {touched[fields.name] && errors[fields.name] ? <Error>{errors[fields.name]}</Error> : ""}
+      {touched[fields.name] && errors[fields.name] ? (
+        <Error>{errors[fields.name]}</Error>
+      ) : (
+        ""
+      )}
     </>
   );
 };
