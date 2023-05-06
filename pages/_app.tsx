@@ -31,7 +31,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
   const [wholesale, setWholesale] = useState(true);
   const router = useRouter();
-  const isMaint = process.env.IS_MAINT_MODE;
+  const isMaint = process.env.IS_MAINT_MODE || "true";
 
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");

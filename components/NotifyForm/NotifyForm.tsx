@@ -171,6 +171,7 @@ export const NotifyForm = () => {
                 type="text"
                 name="b_eb05e4f830c2a04be30171b01_8281a64779"
                 tabIndex={-1}
+                onChange={(e: any) => null}
                 value=""
               />
             </div>
