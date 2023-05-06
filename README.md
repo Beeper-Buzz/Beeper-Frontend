@@ -39,7 +39,13 @@ We manage our global styles in several files:
   of a `next` build error. Try running `$(npm bin)/next build` to see the
   exact error.
 
-## Deploy URLS
+## Deployment
+
+- Create pipeline in Heroku
+- add Github repo
+- Create app
+- heroku buildpacks:add <https://github.com/heroku/heroku-buildpack-nodejs> -a app-name
+- heroku buildpacks:add heroku/nodejs -a app-name
 
 POL Admin Interface & API
 <http://dna-admin-dev.instinct.is/>
