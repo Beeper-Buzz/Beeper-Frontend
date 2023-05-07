@@ -53,9 +53,7 @@ export const ComingSoon = () => {
           <LogoText>{siteTitle}</LogoText>
         ) : null}
         {siteDesc && <Text>{siteDesc}</Text>}
-        {previewMode && (
-          <ProductTeaser products={productsData} title={""} />
-        )}
+        {previewMode && <ProductTeaser products={productsData} title={""} />}
         {comingSoonText !== "" && <Text>{comingSoonText}</Text>}
         <NotifyForm />
         <SocialLinks />
