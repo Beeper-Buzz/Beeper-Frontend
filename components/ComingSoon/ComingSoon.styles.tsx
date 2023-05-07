@@ -1,4 +1,65 @@
 import styled from "@emotion/styled";
+import { transparentize } from "polished";
+import { ButtonBack, ButtonNext } from "pure-react-carousel";
+import { Slider, Slide, ImageWithZoom } from "pure-react-carousel";
+
+export const ProductImageCarousel = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+`;
+
+export const CarouselBackground = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: ${(p: any) =>
+    p.isDarkMode
+      ? transparentize(0.88, p.theme.colors.black.primary)
+      : transparentize(0.88, p.theme.colors.white.primary)};
+`;
+
+export const StyledSlider = styled(Slider)``;
+export const StyledSlide = styled(Slide)`
+  width: 100% !important;
+  height: 500px !important;
+`;
+export const StyledImageWithZoom = styled(ImageWithZoom)``;
+
+export const CarouselNav = styled.div`
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const CarouselBackButton = styled(ButtonBack)`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-left: 10px;
+  opacity: 0.11;
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+export const CarouselNextButton = styled(ButtonNext)`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+  opacity: 0.11;
+  &:hover {
+    opacity: 1;
+  }
+`;
 
 export const Container = styled.div`
   display: flex;
@@ -34,14 +95,6 @@ export const LogoText = styled.div`
       ? p.theme.colors.white.primary
       : p.theme.colors.black.primary};
   margin: 40px 0 20px 0;
-`;
-
-export const ProductImageCarousel = styled.div`
-  width: 60%;
-  height: auto;
-  @media screen and (max-width: 800px) {
-    width: 100%;
-  }
 `;
 
 export const Text = styled.div`
