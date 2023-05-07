@@ -1,48 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 // import Link from "next/link";
 import { useRouter } from "next/router";
 // import { useProducts } from "../../hooks/useProducts";
 import { ProductListProps } from "./types";
 import styled from "@emotion/styled";
 
-const ProductsRow = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-`;
-const ProductContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-const MyImg = styled.img`
-  height: 300px;
-  width: 240px;
-  object-fit: contain;
-`;
-const MyH1 = styled.p`
-  font-size: 20px;
-  font-family: ${(p: any) => p.theme.typography.bodyXS.fontFamily};
-  font-weight: ${(p: any) => p.theme.typography.bodyXS.fontWeight};
-  font-size: ${(p: any) => p.theme.typography.bodyXS.fontSize};
-  line-height: ${(p: any) => p.theme.typography.bodyXS.lineHeight};
-  color: ${(p: any) =>
-    p.theme.isDarkMode
-      ? p.theme.colors.white.primary
-      : p.theme.colors.black.primary};
-`;
-const MySection = styled.section`
-  width: 100%;
-  padding-bottom: 20px;
-`;
-const MyLi = styled.li`
-  display: block;
-  margin-bottom: 10px;
-`;
-const MyDiv = styled.div`
-  align-items: center;
-  display: flex;
-`;
+import {
+  ProductsRow,
+  ProductContainer,
+  MyImg,
+  MyH1,
+  MySection,
+  MyLi,
+  MyDiv
+} from "./productteaser-styles";
+
 export const ProductTeaser: React.FC<ProductListProps> = (props: any) => {
   const router = useRouter();
   const { products, title } = props;
@@ -52,6 +24,10 @@ export const ProductTeaser: React.FC<ProductListProps> = (props: any) => {
   // if (!isSuccess) {
   //   return <MyDiv>Could not load products</MyDiv>;
   // }
+
+  useEffect(() => {
+    // console.log('PRODS: ', products)
+  }, []);
 
   if (!products) return <MyDiv>Loading</MyDiv>;
 
@@ -88,7 +64,7 @@ export const ProductTeaser: React.FC<ProductListProps> = (props: any) => {
               // }}
             >
               <ProductContainer>
-                <MyImg src={imgSrc} />
+                <MyImg src={imgSrc} onClick={props.openSlideshow(true)} />
                 <MyH1>{product.attributes.name}</MyH1>
               </ProductContainer>
             </div>
