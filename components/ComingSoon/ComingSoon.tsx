@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { NotifyForm, ProductTeaser, SocialLinks } from "../components";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
@@ -35,7 +35,6 @@ const mailerUser = process.env.MAILCHIMP_U || "";
 export const ComingSoon = () => {
   const mailChimpUrl = `${mailerUrl}?u=${mailerId}&id=${mailerUser}`;
   const [isSlideshow, setIsSlideshow] = useState(false);
-  const [slideshowImgs, setSlideshowImgs] = useState<any>([]);
 
   const queryClient = useQueryClient();
   const {
@@ -52,32 +51,35 @@ export const ComingSoon = () => {
     isSuccess: boolean;
   } = useProducts(1);
 
-  const productImgs = () => {
-    if (productsSuccess) {
-      productsData.map((i: any) => {
-        const productImg = i.relationships.images.data[0];
-        console.log("IMGS: ", productImg);
-        setSlideshowImgs([...slideshowImgs, productImg]);
-        return null;
-      });
-    }
-  };
-
-  const renderProductImages = () => {
-    slideshowImgs &&
-      slideshowImgs.map((image: any, index: any) => {
-        const imgUrl = image.attributes.styles[9].url;
-        const imgSrc = `${process.env.SPREE_API_URL}${imgUrl}`;
+  const renderProductImgs = useCallback(() => {
+    return productsData.data.map((i: any) => {
+      const productImg = i.relationships?.images?.data[0]?.id;
+      const allImages = productsData
+        ? productsData?.included?.filter((e: any) => e.type == "image")
+        : [];
+      const foundImg = allImages
+        ? allImages.filter((e: any) => e["id"] == productImg)
+        : undefined;
+      const imgUrl =
+        foundImg !== undefined ? foundImg[0]?.attributes?.styles[4]?.url : "";
+      const imgSrc = productImg ? `${process.env.SPREE_API_URL}${imgUrl}` : "";
+      return allImages?.map((image: any, index: any) => {
+        const imgSrc = image?.attributes?.styles[9]?.url || "";
+        const imgUrl = `${process.env.SPREE_API_URL}${imgSrc}`;
         return (
-          <StyledSlide key={`image-${index}`} index={index}>
-            <StyledImageWithZoom src={imgSrc} />
+          <StyledSlide
+            key={`image-${index}`}
+            index={index}
+            onClick={() => setIsSlideshow(false)}
+          >
+            <StyledImageWithZoom src={imgUrl} />
           </StyledSlide>
         );
       });
-  };
+    });
+  }, [productsData]);
 
   useEffect(() => {
-    console.log("LOGO PATH: ", logoPath);
     if (productsSuccess) {
       queryClient.setQueryData(["products", 1], productsData);
     }
@@ -108,14 +110,13 @@ export const ComingSoon = () => {
             <CarouselProvider
               naturalSlideWidth={600}
               naturalSlideHeight={600}
-              totalSlides={slideshowImgs ? slideshowImgs.length : 1}
-              // totalSlides={3}
-              isIntrinsicHeight
+              totalSlides={productsData.data ? productsData.data.length : 1}
+              // isIntrinsicHeight
               touchEnabled
-              infinite={slideshowImgs ? true : false}
+              infinite={productsData.data ? true : false}
             >
               <StyledSlider className="slider">
-                (renderProductImages())
+                {renderProductImgs()}
               </StyledSlider>
 
               <CarouselNav>

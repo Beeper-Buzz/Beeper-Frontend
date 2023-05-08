@@ -1,5 +1,5 @@
-export interface ProductListProps {
+export interface ProductTeaserProps {
   products: any;
   title: string;
-  openSlideshow: (e) => void;
+  openSlideshow: (e: any) => void;
 }

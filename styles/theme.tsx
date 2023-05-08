@@ -1,6 +1,7 @@
 import { lighten } from "polished";
+const darkMode = process.env.DARK_MODE || "false";
 export const theme = {
-  isDarkMode: true,
+  isDarkMode: darkMode === "true",
   colors: {
     gray: {
       dark: "#333",

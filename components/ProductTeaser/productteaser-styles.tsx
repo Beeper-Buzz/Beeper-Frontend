@@ -10,13 +10,13 @@ export const ProductContainer = styled.div`
   align-items: center;
   justify-content: center;
 `;
-export const MyImg = styled.img`
+export const ProductImg = styled.img`
   height: 300px;
   width: 240px;
   object-fit: contain;
   cursor: pointer;
 `;
-export const MyH1 = styled.p`
+export const ProductTitle = styled.p`
   font-size: 20px;
   font-family: ${(p: any) => p.theme.typography.bodyXS.fontFamily};
   font-weight: ${(p: any) => p.theme.typography.bodyXS.fontWeight};
@@ -27,14 +27,11 @@ export const MyH1 = styled.p`
       ? p.theme.colors.white.primary
       : p.theme.colors.black.primary};
 `;
-export const MySection = styled.section`
+export const ProductSection = styled.section`
   width: 100%;
   padding-bottom: 20px;
 `;
-export const MyLi = styled.li`
-  display: block;
-  margin-bottom: 10px;
-`;
+
 export const MyDiv = styled.div`
   align-items: center;
   display: flex;
