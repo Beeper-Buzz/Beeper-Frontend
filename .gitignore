@@ -44,3 +44,5 @@ envvars.txt
 .env.DNA.production
 .env.DNA.staging
 .env.DNA.test
+
+tsconfig.tsbuildinfo
