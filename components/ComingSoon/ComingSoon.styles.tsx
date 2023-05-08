@@ -4,7 +4,7 @@ import { ButtonBack, ButtonNext } from "pure-react-carousel";
 import { Slider, Slide, ImageWithZoom } from "pure-react-carousel";
 
 export const ProductImageCarousel = styled.div`
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   left: 0;
@@ -12,27 +12,33 @@ export const ProductImageCarousel = styled.div`
 `;
 
 export const CarouselBackground = styled.div`
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   left: 0;
   top: 0;
   background: ${(p: any) =>
     p.isDarkMode
-      ? transparentize(0.88, p.theme.colors.black.primary)
-      : transparentize(0.88, p.theme.colors.white.primary)};
+      ? transparentize(0.95, p.theme.colors.black.primary)
+      : transparentize(0.95, p.theme.colors.white.primary)};
 `;
 
-export const StyledSlider = styled(Slider)``;
+export const StyledSlider = styled(Slider)`
+  background: ${(p: any) =>
+    p.isDarkMode
+      ? transparentize(0.95, p.theme.colors.black.primary)
+      : transparentize(0.95, p.theme.colors.white.primary)};
+`;
+
 export const StyledSlide = styled(Slide)`
-  width: 100% !important;
-  height: 500px !important;
+  /* width: 60vw;
+  height: 500px; */
 `;
 export const StyledImageWithZoom = styled(ImageWithZoom)``;
 
 export const CarouselNav = styled.div`
   width: 100%;
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 50%;
   display: flex;

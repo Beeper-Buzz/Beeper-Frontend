@@ -1,39 +1,23 @@
-import React, { useEffect } from "react";
-// import Link from "next/link";
-import { useRouter } from "next/router";
-// import { useProducts } from "../../hooks/useProducts";
-import { ProductListProps } from "./types";
-import styled from "@emotion/styled";
+import React from "react";
+import { ProductTeaserProps } from "./types";
+import { Loading } from "..";
 
 import {
   ProductsRow,
   ProductContainer,
-  MyImg,
-  MyH1,
-  MySection,
-  MyLi,
-  MyDiv
+  ProductImg,
+  ProductTitle,
+  ProductSection
 } from "./productteaser-styles";
 
-export const ProductTeaser: React.FC<ProductListProps> = (props: any) => {
-  const router = useRouter();
-  const { products, title } = props;
-  // const { data: products, isLoading, isSuccess } = useProducts(1);
-  // if (isLoading) return <MyDiv>Loading</MyDiv>;
+export const ProductTeaser: React.FC<ProductTeaserProps> = (props: any) => {
+  const { products, title, openSlideshow } = props;
 
-  // if (!isSuccess) {
-  //   return <MyDiv>Could not load products</MyDiv>;
-  // }
-
-  useEffect(() => {
-    // console.log('PRODS: ', products)
-  }, []);
-
-  if (!products) return <MyDiv>Loading</MyDiv>;
+  if (!products) return <Loading />;
 
   return (
-    <MySection>
-      <MyH1>{title}</MyH1>
+    <ProductSection>
+      <ProductTitle>{title}</ProductTitle>
       <ProductsRow>
         {products?.data?.map((product: any) => {
           const defaultImg =
@@ -53,24 +37,18 @@ export const ProductTeaser: React.FC<ProductListProps> = (props: any) => {
             ? `${process.env.SPREE_API_URL}${imgUrl}`
             : defaultImg;
           return (
-            <div
-              key={product.id}
-              onClick={() => router.push(`/${product.attributes.slug}`)}
-              // href={{
-              //   pathname: `[slug]`,
-              //   query: {
-              //     slug: product.attributes.slug
-              //   }
-              // }}
-            >
+            <div key={product.id}>
               <ProductContainer>
-                <MyImg src={imgSrc} onClick={props.openSlideshow(true)} />
-                <MyH1>{product.attributes.name}</MyH1>
+                <ProductImg
+                  src={imgSrc}
+                  onClick={(e: any) => openSlideshow(true)}
+                />
+                <ProductTitle>{product.attributes.name}</ProductTitle>
               </ProductContainer>
             </div>
           );
         })}
       </ProductsRow>
-    </MySection>
+    </ProductSection>
   );
 };
