@@ -5,6 +5,7 @@ import { dehydrate } from "react-query/hydration";
 import { useMutation, useQueryClient } from "react-query";
 import { fetchProducts, useProducts } from "../../hooks";
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 
@@ -51,7 +52,7 @@ export const ComingSoon = () => {
     isSuccess: boolean;
   } = useProducts(1);
 
-  const renderProductImgs = useCallback(() => {
+  const renderProductSlides = useCallback(() => {
     return productsData.data.map((i: any) => {
       const productImg = i.relationships?.images?.data[0]?.id;
       const allImages = productsData
@@ -79,6 +80,36 @@ export const ComingSoon = () => {
     });
   }, [productsData]);
 
+  const renderProductThumbnails = useCallback(
+    (productsData: any, setIsSlideshow: any) => {
+      return productsData?.data?.map((i: any) => {
+        const productImg = i.relationships?.images?.data[0]?.id;
+        const allImages = productsData
+          ? productsData?.included?.filter((e: any) => e.type == "image")
+          : [];
+        const foundImg = allImages
+          ? allImages.filter((e: any) => e["id"] == productImg)
+          : undefined;
+        console.log("foundImg: ", foundImg);
+        const imgUrl =
+          foundImg !== undefined ? foundImg[0]?.attributes?.styles[3]?.url : "";
+        const imgSrc = productImg
+          ? `${process.env.SPREE_API_URL}${imgUrl}` || ""
+          : "";
+        return (
+          <div
+            key={`image-${i.id}`}
+            onClick={() => setIsSlideshow(true)}
+            style={{ cursor: "pointer" }}
+          >
+            <img src={imgSrc} />
+          </div>
+        );
+      });
+    },
+    [productsData]
+  );
+
   useEffect(() => {
     if (productsSuccess) {
       queryClient.setQueryData(["products", 1], productsData);
@@ -94,12 +125,21 @@ export const ComingSoon = () => {
           <LogoText>{siteTitle}</LogoText>
         ) : null}
         {siteDesc && <Text>{siteDesc}</Text>}
-        {previewMode && (
+        {/* {previewMode && (
           <ProductTeaser
             products={productsData}
             title={""}
             openSlideshow={(e: any) => setIsSlideshow(e)}
           />
+        )} */}
+        {previewMode && (
+          <ResponsiveMasonry
+            columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
+          >
+            <Masonry>
+              {renderProductThumbnails(productsData, setIsSlideshow)}
+            </Masonry>
+          </ResponsiveMasonry>
         )}
         {comingSoonText !== "" && <Text>{comingSoonText}</Text>}
         <NotifyForm />
@@ -116,7 +156,7 @@ export const ComingSoon = () => {
               infinite={productsData.data ? true : false}
             >
               <StyledSlider className="slider">
-                {renderProductImgs()}
+                {renderProductSlides()}
               </StyledSlider>
 
               <CarouselNav>

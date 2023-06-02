@@ -1010,6 +1010,13 @@
     "@types/google.maps" "*"
     "@types/react" "*"
 
+"@types/react-responsive-masonry@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/react-responsive-masonry/-/react-responsive-masonry-2.1.0.tgz#0aa746f829c520b83697e1e4b7b2aa39c247622f"
+  integrity sha512-gbo9TMKGsgkER/AKycuTtpUJA4Rmzfm5ol7jBzNOdgjpZFBS/SmaNTVAa0qDDRu3xKEuCOcip+RtbC7TaXllnA==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-responsive@^8.0.2":
   version "8.0.5"
   resolved "https://registry.yarnpkg.com/@types/react-responsive/-/react-responsive-8.0.5.tgz#77769862d2a0711434feb972be08e3e6c334440a"
@@ -5809,6 +5816,11 @@ react-responsive-carousel@^3.2.21:
     classnames "^2.2.5"
     prop-types "^15.5.8"
     react-easy-swipe "^0.0.21"
+
+react-responsive-masonry@2.1.7:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/react-responsive-masonry/-/react-responsive-masonry-2.1.7.tgz#9b4a8d63b296a6265bea720c9d7da89754548346"
+  integrity sha512-/jOqnTVNtO8zRJMTl6ZXBex7EFYEIFBLVlkIFjiCT7omfm0CgNF2z4ST8RIr0v2ut15NWAQs7Q3kJJPhMoe3Ew==
 
 react-responsive@^8.2.0:
   version "8.2.0"

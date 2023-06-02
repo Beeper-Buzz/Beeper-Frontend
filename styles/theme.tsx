@@ -89,63 +89,63 @@ export const theme = {
   },
   typography: {
     titleXXL: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody Light",
       fontWeight: "bold",
       fontSize: "72px",
       lineHeight: "86px",
       color: "#000"
     },
     titleXL: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody Light",
       fontWeight: "bold",
       fontSize: "33.8681px",
       lineHeight: "41px",
       color: "#000"
     },
     titleLG: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody Light",
       fontWeight: "bold",
       fontSize: "24px",
       lineHeight: "30px",
       color: "#000"
     },
     titleMD: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "bold",
       fontSize: "20px",
       lineHeight: "24px",
       color: "#000"
     },
     titleSM: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "normal",
       fontSize: "14px",
       lineHeight: "1.5rem",
       color: "#000"
     },
     titleXS: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "normal",
       fontSize: "10px",
       lineHeight: "0.9rem",
       color: "#000"
     },
     bodyMD: {
-      fontFamily: "Anonymous",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "normal",
       fontSize: "18px",
       lineHeight: "20px",
       color: "#000"
     },
     bodySM: {
-      fontFamily: "Anonymous",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "normal",
       fontSize: "14px",
       lineHeight: "16px",
       color: "#000"
     },
     bodyXS: {
-      fontFamily: "Anonymous",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "normal",
       fontSize: "9px",
       lineHeight: "0.9rem",

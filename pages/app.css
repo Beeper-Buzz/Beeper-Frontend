@@ -1,15 +1,27 @@
 @font-face {
-  font-family: Bebas;
-  src: url("../font/Bebas/Bebas.ttf");
+  font-family: "Bebas";
+  src: url("../public/fonts/Bebas/Bebas.ttf");
 }
 @font-face {
-  font-family: Bebas Neue;
-  src: url("../font/Bebas Neue/BebasNeue.otf");
+  font-family: "Bebas Neue";
+  src: url("../public/fonts/Bebas Neue/BebasNeue.otf");
 }
 @font-face {
   font-family: "Anonymous";
-  src: url("../font/Anonymous/Anonymous.woff") format("woff"),
-    url("../font/Anonymous/Anonymous.ttf") format("truetype");
+  src: url("../public/fonts/Anonymous/Anonymous.woff") format("woff"),
+    url("../public/fonts/Anonymous/Anonymous.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Anybody Light";
+  src: url("../public/fonts/Anybody/Anybody-Light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Anybody ExtraLight";
+  src: url("../public/fonts/Anybody/Anybody-ExtraLight.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
