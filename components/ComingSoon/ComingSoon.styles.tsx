@@ -24,6 +24,7 @@ export const CarouselBackground = styled.div`
 `;
 
 export const StyledSlider = styled(Slider)`
+  height: 100vh;
   background: ${(p: any) =>
     p.isDarkMode
       ? transparentize(0.95, p.theme.colors.black.primary)
@@ -33,6 +34,7 @@ export const StyledSlider = styled(Slider)`
 export const StyledSlide = styled(Slide)`
   /* width: 60vw;
   height: 500px; */
+  height: 100vh;
 `;
 export const StyledImageWithZoom = styled(ImageWithZoom)``;
 
@@ -71,9 +73,9 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  justify-content: center;
-  align-items: center;
-  width: auto;
+  /* justify-content: center;
+  align-items: center; */
+  /* width: auto; */
   min-height: 100vh;
   background-color: ${(p) =>
     p.theme.isDarkMode

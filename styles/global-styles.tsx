@@ -1,5 +1,5 @@
 import React from "react";
-import { Global, css } from "@emotion/react";
+import { Global, css, SerializedStyles } from "@emotion/react";
 import { saturate } from "polished";
 
 export const GlobalStyles = ({ theme, children }: any) => (
@@ -116,8 +116,9 @@ export const GlobalStyles = ({ theme, children }: any) => (
         color: ${theme.isDarkMode
           ? theme.colors.white.primary
           : theme.colors.black.primary};
-        font-family: "Bebas Neue";
-        font-size: 14px;
+        font-family: ${(p: any) => p.theme.typography.bodySM.fontFamily};
+        font-weight: ${(p: any) => p.theme.typography.bodySM.fontWeight};
+        font-size: ${(p: any) => p.theme.typography.bodySM.fontSize};
         margin-right: 82px !important;
       }
       .pc-menu-wrap {
@@ -133,6 +134,6 @@ export const GlobalStyles = ({ theme, children }: any) => (
             : theme.colors.black.primary} !important;
         }
       }
-    `}
+    ` as SerializedStyles}
   />
 );
