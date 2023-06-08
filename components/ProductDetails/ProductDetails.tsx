@@ -400,7 +400,7 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
       productImgs.map((image, index) => {
         // const img600 = image.attributes.styles.filter((e: any) => e['width'] == '600').url;
         const imgUrl = image.attributes.styles[9].url;
-        const imgSrc = `${process.env.SPREE_API_URL}${imgUrl}`;
+        const imgSrc = `${process.env.NEXT_PUBLIC_SPREE_API_URL}${imgUrl}`;
         // console.log(imgSrc);
         return (
           <StyledSlide key={`image-${index}`} index={index}>
@@ -501,7 +501,7 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
       <Layout>
         <Head>
           <title>
-            {thisProduct?.data.attributes.name} - {process.env.SITE_TITLE}
+            {thisProduct?.data.attributes.name} - {process.env.NEXT_PUBLIC_SITE_TITLE}
           </title>
         </Head>
         <ProductContainer className="product-container">

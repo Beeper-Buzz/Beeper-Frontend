@@ -71,7 +71,7 @@ class MyDocument extends Document {
     const OpenGraphObject = `
       "@context": "http://schema.org",
       "@type": "Organization",
-      "url": "htt{process.env.SITE_URL},
+      "url": "htt{process.env.NEXT_PUBLIC_SITE_URL},
       "contactPoint": [{
         "@type": "ContactPoint",
         "telephone": "+1-917-300-8103",
@@ -103,20 +103,20 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <meta charSet="utf-8" />
-          <meta name="description" content={process.env.PAGE_DESC} />
+          <meta name="description" content={process.env.NEXT_PUBLIC_PAGE_DESC} />
           <meta name="keywords" content="" />
           <meta name="robots" content="noodp" />
           <meta property="og:locale" content="en_US" />
           <meta property="og:type" content="website" />
-          <meta property="og:title" content={process.env.PAGE_TITLE} />
-          <meta property="og:site_name" content={process.env.SITE_TITLE} />
-          <meta property="og:description" content={process.env.PAGE_DESC} />
-          <meta property="og:url" content={process.env.SITE_URL} />
+          <meta property="og:title" content={process.env.NEXT_PUBLIC_PAGE_TITLE} />
+          <meta property="og:site_name" content={process.env.NEXT_PUBLIC_SITE_TITLE} />
+          <meta property="og:description" content={process.env.NEXT_PUBLIC_PAGE_DESC} />
+          <meta property="og:url" content={process.env.NEXT_PUBLIC_SITE_URL} />
 
           {/* CHANGEME */}
           <meta
             property="og:image"
-            content={`${process.env.SITE_URL}/images/og-changeme.jpg`}
+            content={`${process.env.NEXT_PUBLIC_SITE_URL}/images/og-changeme.jpg`}
           />
           <meta property="og:image:width" content="600" />
           <meta property="og:image:height" content="529" />
@@ -133,20 +133,20 @@ class MyDocument extends Document {
           />
 
           <meta name="twitter:card" content="summary" />
-          <meta name="twitter:description" content={process.env.PAGE_DESC} />
-          <meta name="twitter:title" content={process.env.SITE_TITLE} />
-          <meta name="twitter:site" content={process.env.SITE_URL} />
+          <meta name="twitter:description" content={process.env.NEXT_PUBLIC_PAGE_DESC} />
+          <meta name="twitter:title" content={process.env.NEXT_PUBLIC_SITE_TITLE} />
+          <meta name="twitter:site" content={process.env.NEXT_PUBLIC_SITE_URL} />
           {/* CHANGEME */}
           <meta
             name="twitter:image"
-            content={`${process.env.SITE_URL}/images/Beeper-OG.jpg`}
+            content={`${process.env.NEXT_PUBLIC_SITE_URL}/images/Beeper-OG.jpg`}
           />
           {/* CHANGEME */}
           <meta name="twitter:creator" content="@aaronsmulktis" />
 
           <link rel="icon" href="/img/favicon.ico" />
-          <link rel="canonical" href={process.env.SITE_URL} />
-          <link rel="pingback" href={process.env.SITE_URL} />
+          <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL} />
+          <link rel="pingback" href={process.env.NEXT_PUBLIC_SITE_URL} />
           <link
             href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css"
             rel="stylesheet"

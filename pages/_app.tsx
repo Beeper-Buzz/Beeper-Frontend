@@ -31,7 +31,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
   const [wholesale, setWholesale] = useState(true);
   const router = useRouter();
-  const isMaint = process.env.IS_MAINT_MODE || "true";
+  const isMaint = process.env.NEXT_PUBLIC_IS_MAINT_MODE || "true";
 
   useEffect(() => {
     console.log("MAINT? ", isMaint);
@@ -86,7 +86,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           <ThemeProvider theme={theme}>
             <GlobalStyles theme={theme} />
             <Head>
-              <title>{process.env.PAGE_TITLE}</title>
+              <title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
               <meta
                 name="viewport"
                 content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0, minimal-ui"
