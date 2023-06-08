@@ -212,12 +212,12 @@ export const Account = () => {
                 )}
               </Field>
               <TermsStatement accepted={authorizeTerms}>
-                That by providing my phone number, {process.env.SITE_TITLE}, or{" "}
-                {process.env.SITE_TITLE}&apos;s authorized representatives*, may call and/or send
+                That by providing my phone number, {process.env.NEXT_PUBLIC_SITE_TITLE}, or{" "}
+                {process.env.NEXT_PUBLIC_SITE_TITLE}&apos;s authorized representatives*, may call and/or send
                 text messages (including by using equipment to automatically dial telephone numbers)
                 about my interest in a purchase, for marketing/sales purposes, or for any other
                 servicing or informational purpose related to my account. You do not have to consent
-                to receiving calls or texts to purchase from {process.env.SITE_TITLE}.
+                to receiving calls or texts to purchase from {process.env.NEXT_PUBLIC_SITE_TITLE}.
                 <br />
                 <strong>
                   *Including, but not limited to, Bridgecrest Credit Company, GO Financial and
@@ -229,7 +229,7 @@ export const Account = () => {
             {/* <Term>
               <Field type="checkbox" name="acceptConstentTerms" component={FormikCheckbox} className={'form-check-input ' + (errors.acceptTerms && touched.acceptTerms ? ' is-invalid' : '')} />
               <TermsStatement accepted={Terms}>
-                Consumer Report: By clicking &quot;GET TERMS&quot;, I give {process.env.SITE_TITLE} written consent to obtain consumer reports from one or more consumer reporting agencies to show me credit options I prequalify for when financing with {process.env.SITE_TITLE}. Retrieving my pre-qualification credit terms generates a soft credit inquiry, which is visible only to me and does not affect my credit score.
+                Consumer Report: By clicking &quot;GET TERMS&quot;, I give {process.env.NEXT_PUBLIC_SITE_TITLE} written consent to obtain consumer reports from one or more consumer reporting agencies to show me credit options I prequalify for when financing with {process.env.NEXT_PUBLIC_SITE_TITLE}. Retrieving my pre-qualification credit terms generates a soft credit inquiry, which is visible only to me and does not affect my credit score.
               </TermsStatement>
             </Term> */}
           </Carousel>

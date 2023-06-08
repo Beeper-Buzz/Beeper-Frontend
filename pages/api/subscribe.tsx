@@ -5,14 +5,14 @@ import mailchimp from "@mailchimp/mailchimp_marketing";
 import { AddListMemberBody } from "mailchimp__mailchimp_marketing";
 
 mailchimp.setConfig({
-  apiKey: process.env.MAILCHIMP_API_KEY,
-  server: process.env.MAILCHIMP_USERNAME
+  apiKey: process.env.NEXT_PUBLIC_MAILCHIMP_API_KEY,
+  server: process.env.NEXT_PUBLIC_MAILCHIMP_USERNAME
 });
 
 export default async (req: any, res: any) => {
   console.log("REQ: ", req.body);
   const { email, firstName, lastName, phone, newContact } = req.body;
-  const mailchimpId = `${process.env.MAILCHIMP_AUDIENCE_ID}`;
+  const mailchimpId = `${process.env.NEXT_PUBLIC_MAILCHIMP_AUDIENCE_ID}`;
 
   if (!email) {
     return res.status(400).json({ error: "Email is required" });

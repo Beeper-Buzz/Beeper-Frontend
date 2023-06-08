@@ -62,7 +62,7 @@ export const ColorizedCart = styled.i<GenericThemeType>`
   }
 `;
 
-const partnerName = process.env.SITE_TITLE;
+const partnerName = process.env.NEXT_PUBLIC_SITE_TITLE;
 
 export const GetPreQualified = () => {
   // const { errors, touched } = useFormikContext();

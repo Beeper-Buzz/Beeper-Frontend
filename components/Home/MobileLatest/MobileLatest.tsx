@@ -27,7 +27,7 @@ const MobileLatest: React.FC<MobileLatestProps> = (props) => {
           const foundImg = allImages.filter((e: any) => e["id"] == productImg);
           const imgUrl = foundImg[0]?.attributes?.styles[4]?.url;
           const imgSrc = productImg
-            ? `${process.env.SPREE_API_URL}${imgUrl}`
+            ? `${process.env.NEXT_PUBLIC_SPREE_API_URL}${imgUrl}`
             : defaultImg;
 
           let optionTypes = item.relationships?.option_types?.data;
