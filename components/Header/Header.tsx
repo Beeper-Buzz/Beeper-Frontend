@@ -58,8 +58,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const accountId = accountVisible ? "simple-popover" : undefined;
   const toggleCart = () => setCartVisible((isVisible) => !isVisible);
   const toggleAccount = () => setAccountVisible((isVisible) => !isVisible);
-  const isMaint = process.env.IS_MAINT_MODE || "false";
-  const logoPath = process.env.LOGO_PATH || "/images/logo.png";
+  const isMaint = process.env.NEXT_PUBLIC_IS_MAINT_MODE || "false";
+  const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH || "/images/logo.png";
 
   const {
     data: cartData,
