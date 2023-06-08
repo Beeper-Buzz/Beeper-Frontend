@@ -34,7 +34,7 @@ export const ProductTeaser: React.FC<ProductTeaserProps> = (props: any) => {
               ? foundImg[0]?.attributes?.styles[4]?.url
               : "";
           const imgSrc = productImg
-            ? `${process.env.SPREE_API_URL}${imgUrl}`
+            ? `${process.env.NEXT_PUBLIC_SPREE_API_URL}${imgUrl}`
             : defaultImg;
           return (
             <div key={product.id}>

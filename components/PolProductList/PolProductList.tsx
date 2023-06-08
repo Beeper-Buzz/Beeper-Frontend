@@ -50,7 +50,7 @@ const PolProductList: React.FC<PolProductListProps> = (props) => {
                 ? foundImg[0]?.attributes?.styles[4]?.url
                 : "";
             const imgSrc = productImg
-              ? `${process.env.SPREE_API_URL}${imgUrl}`
+              ? `${process.env.NEXT_PUBLIC_SPREE_API_URL}${imgUrl}`
               : defaultImg;
 
             let optionTypes = item.relationships?.option_types?.data;

@@ -6,7 +6,7 @@ import { QueryKeys } from "../queryKeys";
 const fetchProduct = async (slug: string): Promise<IProduct> => {
   const storage = (await import("../../config/storage")).default;
   const token = await storage.getToken();
-  const spreeUrl = process.env.SPREE_API_URL || undefined;
+  const spreeUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || undefined;
   const productUrl = `${spreeUrl}/api/v2/storefront/products/${slug}?include=default_variant,variants,option_types,product_properties,taxons,images,variants.option_values`;
   const response = await fetch(productUrl.toString(), {
     method: "GET"

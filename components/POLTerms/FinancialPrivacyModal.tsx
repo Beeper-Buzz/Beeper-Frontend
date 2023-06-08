@@ -4,7 +4,7 @@ import React from "react";
 // import { Close } from '@carvana/icons';
 
 export const PolFinancialPrivacyModal = () => {
-  const entityName = process.env.ENTITY_NAME;
+  const entityName = process.env.NEXT_PUBLIC_ENTITY_NAME;
   const currYear = new Date().getFullYear();
   return (
     <div className="fp-modal-container">

@@ -1,5 +1,5 @@
 import { lighten } from "polished";
-const darkMode = process.env.DARK_MODE || "false";
+const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "false";
 export const theme = {
   isDarkMode: darkMode === "true",
   colors: {

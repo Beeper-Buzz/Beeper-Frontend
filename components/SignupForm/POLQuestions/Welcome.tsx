@@ -62,8 +62,8 @@ export const ColorizedCart = styled.i<GenericThemeType>`
   }
 `;
 
-const partnerName = process.env.SITE_TITLE;
-const shortName = process.env.SHORT_TITLE;
+const partnerName = process.env.NEXT_PUBLIC_SITE_TITLE;
+const shortName = process.env.NEXT_PUBLIC_SHORT_TITLE;
 
 export const Welcome = () => {
   // const { errors, touched } = useFormikContext();
