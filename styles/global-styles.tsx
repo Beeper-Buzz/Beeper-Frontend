@@ -1,3 +1,5 @@
+// disable eslint rule for parentheses around functions
+// eslint-disable-next-line func-names
 import React from "react";
 import { Global, css, SerializedStyles } from "@emotion/react";
 import { saturate } from "polished";
