@@ -103,14 +103,26 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <meta charSet="utf-8" />
-          <meta name="description" content={process.env.NEXT_PUBLIC_PAGE_DESC} />
+          <meta
+            name="description"
+            content={process.env.NEXT_PUBLIC_PAGE_DESC}
+          />
           <meta name="keywords" content="" />
           <meta name="robots" content="noodp" />
           <meta property="og:locale" content="en_US" />
           <meta property="og:type" content="website" />
-          <meta property="og:title" content={process.env.NEXT_PUBLIC_PAGE_TITLE} />
-          <meta property="og:site_name" content={process.env.NEXT_PUBLIC_SITE_TITLE} />
-          <meta property="og:description" content={process.env.NEXT_PUBLIC_PAGE_DESC} />
+          <meta
+            property="og:title"
+            content={process.env.NEXT_PUBLIC_PAGE_TITLE}
+          />
+          <meta
+            property="og:site_name"
+            content={process.env.NEXT_PUBLIC_SITE_TITLE}
+          />
+          <meta
+            property="og:description"
+            content={process.env.NEXT_PUBLIC_PAGE_DESC}
+          />
           <meta property="og:url" content={process.env.NEXT_PUBLIC_SITE_URL} />
 
           {/* CHANGEME */}
@@ -133,9 +145,18 @@ class MyDocument extends Document {
           />
 
           <meta name="twitter:card" content="summary" />
-          <meta name="twitter:description" content={process.env.NEXT_PUBLIC_PAGE_DESC} />
-          <meta name="twitter:title" content={process.env.NEXT_PUBLIC_SITE_TITLE} />
-          <meta name="twitter:site" content={process.env.NEXT_PUBLIC_SITE_URL} />
+          <meta
+            name="twitter:description"
+            content={process.env.NEXT_PUBLIC_PAGE_DESC}
+          />
+          <meta
+            name="twitter:title"
+            content={process.env.NEXT_PUBLIC_SITE_TITLE}
+          />
+          <meta
+            name="twitter:site"
+            content={process.env.NEXT_PUBLIC_SITE_URL}
+          />
           {/* CHANGEME */}
           <meta
             name="twitter:image"
