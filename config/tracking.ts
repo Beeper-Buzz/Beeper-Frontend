@@ -1,6 +1,6 @@
-export const GA_TRACKING_CODE = process.env.GA_TRACKING_CODE;
-export const GA_DEBUG_MODE = process.env.GA_DEBUG_MODE;
-export const FB_PIXEL_ID = process.env.FB_PIXEL_ID;
+export const GA_TRACKING_CODE = process.env.NEXT_PUBLIC_GA_TRACKING_CODE;
+export const GA_DEBUG_MODE = process.env.NEXT_PUBLIC_GA_DEBUG_MODE;
+export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
 
 export enum Action {
   PRESS_ENTER = "press-enter",
@@ -13,11 +13,11 @@ export enum Category {
   PRODUCT_DETAIL = "product-detail"
 }
 
-const TRACKING_ON = process.env.TRACKING !== "off";
-const TRACKING_VERBOSE = process.env.TRACKING_VERBOSE === "on";
+const TRACKING_ON = process.env.NEXT_PUBLIC_TRACKING !== "off";
+const TRACKING_VERBOSE = process.env.NEXT_PUBLIC_TRACKING_VERBOSE === "on";
 
-const TRACKING_GA_ON = process.env.TRACKING_PROVIDER_GA !== "off";
-const TRACKING_KM_ON = process.env.TRACKING_PROVIDER_KM !== "off";
+const TRACKING_GA_ON = process.env.NEXT_PUBLIC_TRACKING_PROVIDER_GA !== "off";
+const TRACKING_KM_ON = process.env.NEXT_PUBLIC_TRACKING_PROVIDER_KM !== "off";
 
 type TrackingEvent = {
   action: string;
