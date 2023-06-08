@@ -5,7 +5,7 @@ import { saturate } from "polished";
 export const GlobalStyles = ({ theme, children }: any) => (
   <Global
     styles={
-      css`
+      css(`
         @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
 
         html {
@@ -135,7 +135,7 @@ export const GlobalStyles = ({ theme, children }: any) => (
               : theme.colors.black.primary} !important;
           }
         }
-      ` as SerializedStyles
+      `) as SerializedStyles
     }
   />
 );
