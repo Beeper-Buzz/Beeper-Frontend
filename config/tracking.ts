@@ -1,5 +1,6 @@
 export const GA_TRACKING_CODE = process.env.GA_TRACKING_CODE;
 export const GA_DEBUG_MODE = process.env.GA_DEBUG_MODE;
+export const FB_PIXEL_ID = process.env.FB_PIXEL_ID;
 
 export enum Action {
   PRESS_ENTER = "press-enter",
