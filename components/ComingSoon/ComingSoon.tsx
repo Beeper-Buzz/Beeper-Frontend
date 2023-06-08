@@ -27,7 +27,8 @@ import {
 const siteTitle = process.env.NEXT_PUBLIC_SITE_TITLE || "";
 const siteDesc = process.env.NEXT_PUBLIC_SITE_DESC || "";
 const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH;
-const previewMode = process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === "true" ? true : false;
+const previewMode =
+  process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === "true" ? true : false;
 const comingSoonText = process.env.NEXT_PUBLIC_COMING_SOON_TEXT || "";
 const mailerUrl = process.env.NEXT_PUBLIC_MAILCHIMP_URL || "";
 const mailerId = process.env.NEXT_PUBLIC_MAILCHIMP_ID || "";
@@ -94,9 +95,7 @@ export const ComingSoon = () => {
         console.log("foundImg: ", foundImg);
         const imgUrl =
           foundImg !== undefined ? foundImg[0]?.attributes?.styles[3]?.url : "";
-        const imgSrc = productImg
-          ? `${spreeApiUrl}${imgUrl}` || ""
-          : "";
+        const imgSrc = productImg ? `${spreeApiUrl}${imgUrl}` || "" : "";
         return (
           <div
             key={`image-${i.id}`}
