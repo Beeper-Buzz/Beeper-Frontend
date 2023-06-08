@@ -501,7 +501,8 @@ export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
       <Layout>
         <Head>
           <title>
-            {thisProduct?.data.attributes.name} - {process.env.NEXT_PUBLIC_SITE_TITLE}
+            {thisProduct?.data.attributes.name} -{" "}
+            {process.env.NEXT_PUBLIC_SITE_TITLE}
           </title>
         </Head>
         <ProductContainer className="product-container">

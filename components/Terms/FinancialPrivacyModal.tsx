@@ -68,8 +68,8 @@ export const FinancialPrivacyModal = () => {
                 information to run their everyday business. In the section
                 below, we list the reasons financial companies can share their
                 customers’ personal information; the reasons{" "}
-                {process.env.NEXT_PUBLIC_SITE_TITLE} chooses to share; and whether you can
-                limit this sharing.
+                {process.env.NEXT_PUBLIC_SITE_TITLE} chooses to share; and
+                whether you can limit this sharing.
               </td>
             </tr>
           </tbody>
@@ -161,7 +161,8 @@ export const FinancialPrivacyModal = () => {
               <td className="right">
                 <ul>
                   <li>
-                    Call <strong>{process.env.NEXT_PUBLIC_COMPANY_PHONE}</strong>, or
+                    Call{" "}
+                    <strong>{process.env.NEXT_PUBLIC_COMPANY_PHONE}</strong>, or
                   </li>
                   <li>
                     Email{" "}
@@ -187,7 +188,8 @@ export const FinancialPrivacyModal = () => {
             <tr className="fp-modal-table-content two">
               <td className="left">Questions?</td>
               <td className="right">
-                Call <strong>{process.env.NEXT_PUBLIC_COMPANY_PHONE}</strong> or go to{" "}
+                Call <strong>{process.env.NEXT_PUBLIC_COMPANY_PHONE}</strong> or
+                go to{" "}
                 <a href={process.env.NEXT_PUBLIC_COMPANY_LEGAL_URL}>
                   www.{process.env.NEXT_PUBLIC_COMPANY_LEGAL_URL}
                 </a>
