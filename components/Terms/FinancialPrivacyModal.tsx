@@ -161,8 +161,7 @@ export const FinancialPrivacyModal = () => {
               <td className="right">
                 <ul>
                   <li>
-                    Call{" "}
-                    <strong>{process.env.NEXT_PUBLIC_PHONE}</strong>, or
+                    Call <strong>{process.env.NEXT_PUBLIC_PHONE}</strong>, or
                   </li>
                   <li>
                     Email{" "}
@@ -188,8 +187,7 @@ export const FinancialPrivacyModal = () => {
             <tr className="fp-modal-table-content two">
               <td className="left">Questions?</td>
               <td className="right">
-                Call <strong>{process.env.NEXT_PUBLIC_PHONE}</strong> or
-                go to{" "}
+                Call <strong>{process.env.NEXT_PUBLIC_PHONE}</strong> or go to{" "}
                 <a href={process.env.NEXT_PUBLIC_LEGAL_URL}>
                   www.{process.env.NEXT_PUBLIC_LEGAL_URL}
                 </a>
