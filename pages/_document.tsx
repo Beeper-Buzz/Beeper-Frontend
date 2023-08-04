@@ -69,14 +69,23 @@ class MyDocument extends Document {
   }
   render() {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://instinct.is";
-    const siteTitle = process.env.NEXT_PUBLIC_PAGE_TITLE || process.env.NEXT_PUBLIC_SITE_TITLE || "Instinct";
-    const siteDesc = process.env.NEXT_PUBLIC_PAGE_DESC || process.env.NEXT_PUBLIC_SITE_DESC || "Instinct is a digital agency that helps brands and businesses create meaningful relationships with their customers.";
+    const siteTitle =
+      process.env.NEXT_PUBLIC_PAGE_TITLE ||
+      process.env.NEXT_PUBLIC_SITE_TITLE ||
+      "Instinct";
+    const siteDesc =
+      process.env.NEXT_PUBLIC_PAGE_DESC ||
+      process.env.NEXT_PUBLIC_SITE_DESC ||
+      "Instinct is a digital agency that helps brands and businesses create meaningful relationships with their customers.";
     const sitePhone = process.env.NEXT_PUBLIC_PHONE || "+1-917-300-8103";
-    const ogImgPath = process.env.NEXT_PUBLIC_OG_IMG_PATH || "/images/open-graph-instinct-dna.png";
+    const ogImgPath =
+      process.env.NEXT_PUBLIC_OG_IMG_PATH ||
+      "/images/open-graph-instinct-dna.png";
     const ogImgWidth = process.env.NEXT_PUBLIC_OG_IMG_WIDTH || "600";
     const ogImgHeight = process.env.NEXT_PUBLIC_OG_IMG_HEIGHT || "529";
     const twitterSlug = process.env.NEXT_PUBLIC_TWITTER_SLUG || "aaronsmulktis";
-    const facebookSlug = process.env.NEXT_PUBLIC_FACEBOOK_SLUG || "materialinstinct";
+    const facebookSlug =
+      process.env.NEXT_PUBLIC_FACEBOOK_SLUG || "materialinstinct";
 
     const OpenGraphObject = `
       "@context": "http://schema.org",
@@ -113,32 +122,17 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <meta charSet="utf-8" />
-          <meta
-            name="description"
-            content={siteDesc}
-          />
+          <meta name="description" content={siteDesc} />
           <meta name="keywords" content="" />
           <meta name="robots" content="noodp" />
           <meta property="og:locale" content="en_US" />
           <meta property="og:type" content="website" />
-          <meta
-            property="og:title"
-            content={siteTitle}
-          />
-          <meta
-            property="og:site_name"
-            content={siteTitle}
-          />
-          <meta
-            property="og:description"
-            content={siteDesc}
-          />
+          <meta property="og:title" content={siteTitle} />
+          <meta property="og:site_name" content={siteTitle} />
+          <meta property="og:description" content={siteDesc} />
           <meta property="og:url" content={siteUrl} />
 
-          <meta
-            property="og:image"
-            content={`${siteUrl}${ogImgPath}`}
-          />
+          <meta property="og:image" content={`${siteUrl}${ogImgPath}`} />
           <meta property="og:image:width" content={ogImgWidth} />
           <meta property="og:image:height" content={ogImgHeight} />
 
@@ -153,22 +147,10 @@ class MyDocument extends Document {
           />
 
           <meta name="twitter:card" content="summary" />
-          <meta
-            name="twitter:description"
-            content={siteDesc}
-          />
-          <meta
-            name="twitter:title"
-            content={siteTitle}
-          />
-          <meta
-            name="twitter:site"
-            content={siteUrl}
-          />
-          <meta
-            name="twitter:image"
-            content={`${siteUrl}${ogImgPath}`}
-          />
+          <meta name="twitter:description" content={siteDesc} />
+          <meta name="twitter:title" content={siteTitle} />
+          <meta name="twitter:site" content={siteUrl} />
+          <meta name="twitter:image" content={`${siteUrl}${ogImgPath}`} />
 
           <meta name="twitter:creator" content={`@${twitterSlug}`} />
 
