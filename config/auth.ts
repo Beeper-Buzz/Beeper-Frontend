@@ -60,13 +60,8 @@ const authConfig = {
 
       return response.success();
     } else {
-<<<<<<< HEAD
-      console.warn(response.fail());
-      return null;
-=======
       console.warn("FAILED REGISTER: ", response.fail());
       Promise.reject(response.fail());
->>>>>>> 6452f9e (Fix login function, setup react-query-auth hooks for getting the user object, logging in, registering, and logging out.)
     }
   },
   logoutFn: async () => {
@@ -75,11 +70,7 @@ const authConfig = {
   }
 };
 
-<<<<<<< HEAD
 export const { AuthProvider, useAuth } = initReactQueryAuth<
   IAccount | null,
   string
 >(authConfig);
-=======
-export const { AuthProvider, useAuth } = initReactQueryAuth<IAccount | null, string>(authConfig);
->>>>>>> 6452f9e (Fix login function, setup react-query-auth hooks for getting the user object, logging in, registering, and logging out.)
