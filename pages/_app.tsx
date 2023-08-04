@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import type { AppProps /*, AppContext */ } from "next/app";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-<<<<<<< HEAD
 import { AuthProvider } from "../config/auth";
 import { MainMenu, Header, ComingSoon } from "../components";
 import styled from "@emotion/styled";
@@ -25,14 +24,6 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "../components/Terms/ElectronicSignaturesModal.css";
 import "../components/Terms/FinancialPrivacyModal.css";
 import "./app.css";
-=======
-import { Header } from "../components";
-
-// Styles
-import { jsx, ThemeProvider } from "@emotion/react";
-import { theme } from "../styles/theme";
-import { GlobalStyles } from "../styles/global-styles";
->>>>>>> 6a9f19e (Create intiial sticky header config)
 
 import { AppWrapper } from "./_app.styles";
 
