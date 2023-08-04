@@ -60,7 +60,11 @@ export const MobileMenu = (props: MobileMenuProps) => {
       }
     });
   }, []);
-  const getSubMenuOrItems = (menusData: menuDataItem[], parentKeyPath: string, level: number) => {
+  const getSubMenuOrItems = (
+    menusData: menuDataItem[],
+    parentKeyPath: string,
+    level: number
+  ) => {
     const pl = level * 40 + "px";
     return (
       <SiderMenu disablePadding>
@@ -70,8 +74,13 @@ export const MobileMenu = (props: MobileMenuProps) => {
               {
                 <MenuItem
                   pl={pl}
-                  onClick={handleClick.bind(null, parentKeyPath + "/" + item.key, item.key)}
-                  button>
+                  onClick={handleClick.bind(
+                    null,
+                    parentKeyPath + "/" + item.key,
+                    item.key
+                  )}
+                  button
+                >
                   <ListItemIcon>{item.icon ? item.icon() : null}</ListItemIcon>
                   <ListItemText primary={item.name} />
                   {item &&
@@ -88,8 +97,13 @@ export const MobileMenu = (props: MobileMenuProps) => {
                 <Collapse
                   timeout="auto"
                   unmountOnExit
-                  in={keyPath.indexOf(parentKeyPath + "/" + item.key) != -1}>
-                  {getSubMenuOrItems(item.children, parentKeyPath + "/" + item.key, level + 1)}
+                  in={keyPath.indexOf(parentKeyPath + "/" + item.key) != -1}
+                >
+                  {getSubMenuOrItems(
+                    item.children,
+                    parentKeyPath + "/" + item.key,
+                    level + 1
+                  )}
                 </Collapse>
               )}
             </Fragment>
