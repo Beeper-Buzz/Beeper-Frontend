@@ -11,7 +11,7 @@ export const NewsletterForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log("Submitted!");
-    setEmail("")
+    setEmail("");
   };
 
   return (
