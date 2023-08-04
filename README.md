@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# DNA Frontend
 
 ## Getting Started
 
@@ -8,15 +8,6 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 - Replace `.env.development` with variables from Aaron
 - `yarn dev`
 - Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## NextJS
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
 ## Styles
 
@@ -86,12 +77,6 @@ Done!
 - `git checkout main`
 - `git pull upstream main`
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
 # TODO
 
 - Move data fetching into on `getInitialProps`
@@ -103,7 +88,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 - ~~State Mgmt~~ (hooks/useContext... no Redux, yet)
 - ~~Request Mgmt~~ (React Query)
 - ~~Search~~ (Fuse.js)
-- Pusher / API Integration
+- Pusher (real-time sockets)
 - ~~Styled Components~~ (@emotion/styled)
 - Moving Letters
 - UI Sounds (proprietary: "npm install beeper")

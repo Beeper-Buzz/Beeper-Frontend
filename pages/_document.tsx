@@ -68,13 +68,23 @@ class MyDocument extends Document {
     }
   }
   render() {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://instinct.is";
+    const siteTitle = process.env.NEXT_PUBLIC_PAGE_TITLE || process.env.NEXT_PUBLIC_SITE_TITLE || "Instinct";
+    const siteDesc = process.env.NEXT_PUBLIC_PAGE_DESC || process.env.NEXT_PUBLIC_SITE_DESC || "Instinct is a digital agency that helps brands and businesses create meaningful relationships with their customers.";
+    const sitePhone = process.env.NEXT_PUBLIC_PHONE || "+1-917-300-8103";
+    const ogImgPath = process.env.NEXT_PUBLIC_OG_IMG_PATH || "/images/open-graph-instinct-dna.png";
+    const ogImgWidth = process.env.NEXT_PUBLIC_OG_IMG_WIDTH || "600";
+    const ogImgHeight = process.env.NEXT_PUBLIC_OG_IMG_HEIGHT || "529";
+    const twitterSlug = process.env.NEXT_PUBLIC_TWITTER_SLUG || "aaronsmulktis";
+    const facebookSlug = process.env.NEXT_PUBLIC_FACEBOOK_SLUG || "materialinstinct";
+
     const OpenGraphObject = `
       "@context": "http://schema.org",
       "@type": "Organization",
-      "url": "htt{process.env.NEXT_PUBLIC_SITE_URL},
+      "url": "${siteUrl}",
       "contactPoint": [{
         "@type": "ContactPoint",
-        "telephone": "+1-917-300-8103",
+        "telephone": "${sitePhone}",
         "contactType": "General Inquiry"
       }]
     `;
@@ -105,7 +115,7 @@ class MyDocument extends Document {
           <meta charSet="utf-8" />
           <meta
             name="description"
-            content={process.env.NEXT_PUBLIC_PAGE_DESC}
+            content={siteDesc}
           />
           <meta name="keywords" content="" />
           <meta name="robots" content="noodp" />
@@ -113,30 +123,28 @@ class MyDocument extends Document {
           <meta property="og:type" content="website" />
           <meta
             property="og:title"
-            content={process.env.NEXT_PUBLIC_PAGE_TITLE}
+            content={siteTitle}
           />
           <meta
             property="og:site_name"
-            content={process.env.NEXT_PUBLIC_SITE_TITLE}
+            content={siteTitle}
           />
           <meta
             property="og:description"
-            content={process.env.NEXT_PUBLIC_PAGE_DESC}
+            content={siteDesc}
           />
-          <meta property="og:url" content={process.env.NEXT_PUBLIC_SITE_URL} />
+          <meta property="og:url" content={siteUrl} />
 
-          {/* CHANGEME */}
           <meta
             property="og:image"
-            content={`${process.env.NEXT_PUBLIC_SITE_URL}/images/og-changeme.jpg`}
+            content={`${siteUrl}${ogImgPath}`}
           />
-          <meta property="og:image:width" content="600" />
-          <meta property="og:image:height" content="529" />
+          <meta property="og:image:width" content={ogImgWidth} />
+          <meta property="og:image:height" content={ogImgHeight} />
 
-          {/* CHANGEME */}
           <meta
             property="article:publisher"
-            content="https://www.facebook.com/materialinstinct/"
+            content={`https://www.facebook.com/${facebookSlug}`}
           />
           <meta property="article:section" content="General" />
           <meta
@@ -147,27 +155,26 @@ class MyDocument extends Document {
           <meta name="twitter:card" content="summary" />
           <meta
             name="twitter:description"
-            content={process.env.NEXT_PUBLIC_PAGE_DESC}
+            content={siteDesc}
           />
           <meta
             name="twitter:title"
-            content={process.env.NEXT_PUBLIC_SITE_TITLE}
+            content={siteTitle}
           />
           <meta
             name="twitter:site"
-            content={process.env.NEXT_PUBLIC_SITE_URL}
+            content={siteUrl}
           />
-          {/* CHANGEME */}
           <meta
             name="twitter:image"
-            content={`${process.env.NEXT_PUBLIC_SITE_URL}/images/Beeper-OG.jpg`}
+            content={`${siteUrl}${ogImgPath}`}
           />
-          {/* CHANGEME */}
-          <meta name="twitter:creator" content="@aaronsmulktis" />
+
+          <meta name="twitter:creator" content={`@${twitterSlug}`} />
 
           <link rel="icon" href="/img/favicon.ico" />
-          <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL} />
-          <link rel="pingback" href={process.env.NEXT_PUBLIC_SITE_URL} />
+          <link rel="canonical" href={siteUrl} />
+          <link rel="pingback" href={siteUrl} />
           <link
             href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css"
             rel="stylesheet"
