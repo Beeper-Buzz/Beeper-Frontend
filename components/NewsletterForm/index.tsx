@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 
 export const NewsletterForm = () => {
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState("");
 
-  const handleChange = event => {
-    console.log(event.target.value)
-    setEmail(event.target.value)
-  }
+  const handleChange = (event) => {
+    console.log(event.target.value);
+    setEmail(event.target.value);
+  };
 
-  const handleSubmit = event => {
-    event.preventDefault()
-    console.log("Submitted!")
-  }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("Submitted!");
+    setEmail("")
+  };
 
   return (
     <div>
