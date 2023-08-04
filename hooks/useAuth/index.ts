@@ -1,6 +1,4 @@
-import { AuthTokenAttr } from "@spree/storefront-api-v2-sdk/types/interfaces/Authentication";
 import { spreeClient } from "../../config/spree";
-
 interface SpreeUser {
   email: string;
   password: string;

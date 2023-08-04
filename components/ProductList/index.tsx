@@ -33,6 +33,7 @@ export const ProductList = () => {
   return (
     <section>
       <div className="products-row">
+<<<<<<< HEAD
         {data?.data?.map((product, index) => {
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -41,6 +42,17 @@ export const ProductList = () => {
               (image) => image.id === product.relationships.images.data[0].id
             )?.attributes.styles[2].url
           }`;
+=======
+        {data?.data?.map((product) => {
+          const imageId =
+            Array.isArray(product.relationships.images.data) &&
+            product.relationships.images.data[0]?.id;
+          const imageSource = data?.included?.find((image) => image.id === imageId)?.attributes
+            .styles[2].url;
+          const source = imageSource
+            ? `https://pol-admin-staging.instinct.is/${imageSource}`
+            : "https://via.placeholder.com/150";
+>>>>>>> 6452f9e (Fix login function, setup react-query-auth hooks for getting the user object, logging in, registering, and logging out.)
           return (
             <Link
               key={product.id}
