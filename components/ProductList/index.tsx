@@ -1,4 +1,3 @@
-export { ProductList } from "./ProductList";
 import React from "react";
 import Link from "next/link";
 import { useProducts } from "../../hooks/useProducts";
@@ -10,12 +9,15 @@ export const ProductList = () => {
   return (
     <section>
       <div className="products-row">
-        {data?.data?.map((product, index) => {
-          const source = `https://qa.dna-admin.instinct.is/${
-            data.included.find(
-              (image) => image.id === product.relationships.images.data[0].id
-            )?.attributes.styles[2].url
-          }`;
+        {data?.data?.map((product) => {
+          const imageId =
+            Array.isArray(product.relationships.images.data) &&
+            product.relationships.images.data[0]?.id;
+          const imageSource = data?.included?.find((image) => image.id === imageId)?.attributes
+            .styles[2].url;
+          const source = imageSource
+            ? `https://pol-admin-staging.instinct.is/${imageSource}`
+            : "https://via.placeholder.com/150";
           return (
             <Link
               key={product.id}

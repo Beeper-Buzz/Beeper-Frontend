@@ -154,6 +154,7 @@ const authConfig = {
       return response.success();
     } else {
       constants.IS_DEBUG && console.warn(response.fail());
+      Promise.reject(response.fail());
       return null;
     }
   },
