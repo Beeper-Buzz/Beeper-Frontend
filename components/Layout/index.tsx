@@ -4,6 +4,7 @@ export { Layout } from "./Layout";
 import React from "react";
 
 export const Layout = ({ children }) => {
+  console.log('children: ', children)
   return (
     <main>
       {children}
