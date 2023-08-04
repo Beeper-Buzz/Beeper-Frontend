@@ -20,7 +20,8 @@ const MySubMenuItem = styled.div`
   width: 100%;
 `;
 const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
-  const { pcWrapClassName, menusData, pcMenuItemClassName, onMenuItemClick } = props;
+  const { pcWrapClassName, menusData, pcMenuItemClassName, onMenuItemClick } =
+    props;
   const [keyPathMap, setKeyPathMap] = useState({});
   const handleClick = useCallback((keyPath, event) => {
     setKeyPathMap((pre) => {
@@ -39,11 +40,20 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
     }
     setKeyPathMap({});
   }, []);
-  const getSubMenuOrItems = (menusData: menuDataItem[], parentKeyPath: string, level: number) => {
+  const getSubMenuOrItems = (
+    menusData: menuDataItem[],
+    parentKeyPath: string,
+    level: number
+  ) => {
     return menusData.map((item, index) => {
       return (
-        <MyMenuItem className={pcMenuItemClassName} key={parentKeyPath + "/" + item.key}>
-          <MySubMenuItem onClick={handleClick.bind(null, parentKeyPath + "/" + item.key)}>
+        <MyMenuItem
+          className={pcMenuItemClassName}
+          key={parentKeyPath + "/" + item.key}
+        >
+          <MySubMenuItem
+            onClick={handleClick.bind(null, parentKeyPath + "/" + item.key)}
+          >
             {item.pcIcon && item.pcIcon()}
             {item.name}
           </MySubMenuItem>
@@ -62,8 +72,17 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
               onClose={handleClose.bind(null, `${parentKeyPath}/${item.key}`)}
               keepMounted
               id={`${parentKeyPath}/${item.key}`}
-              anchorEl={keyPathMap[`${parentKeyPath}/${item.key}` as keyof typeof keyPathMap]}
-              open={Boolean(keyPathMap[`${parentKeyPath}/${item.key}` as keyof typeof keyPathMap])}>
+              anchorEl={
+                keyPathMap[
+                  `${parentKeyPath}/${item.key}` as keyof typeof keyPathMap
+                ]
+              }
+              open={Boolean(
+                keyPathMap[
+                  `${parentKeyPath}/${item.key}` as keyof typeof keyPathMap
+                ]
+              )}
+            >
               {item.children.map((v, i) => {
                 return (
                   <MenuItem
@@ -72,7 +91,8 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
                       `${parentKeyPath}/${item.key}/${v.key}`,
                       v.key
                     )}
-                    key={parentKeyPath + "/" + item.key + "/" + v.key}>
+                    key={parentKeyPath + "/" + item.key + "/" + v.key}
+                  >
                     {v.pcIcon && v.pcIcon()}
                     {v.name}
                   </MenuItem>
@@ -84,6 +104,10 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
       );
     });
   };
-  return <Container className={pcWrapClassName}>{getSubMenuOrItems(menusData, "", 0)}</Container>;
+  return (
+    <Container className={pcWrapClassName}>
+      {getSubMenuOrItems(menusData, "", 0)}
+    </Container>
+  );
 };
 export default DesktopMenu;

@@ -7,7 +7,9 @@ export const menusData: menuDataItem[] = [
     name: "HOT DIGS",
     key: "hotdigs",
     icon: () => <AccessAlarmIcon style={{ color: "#fff" }} />,
-    pcIcon: () => <AccessAlarmIcon style={{ color: "#fff", marginRight: "5px" }} />
+    pcIcon: () => (
+      <AccessAlarmIcon style={{ color: "#fff", marginRight: "5px" }} />
+    )
   },
   {
     name: "NEW DIGS",
@@ -22,7 +24,9 @@ export const menusData: menuDataItem[] = [
         name: "TOPS",
         key: "tops",
         icon: () => <LaptopMacIcon style={{ color: "#fff" }} />,
-        pcIcon: () => <AccessAlarmIcon style={{ color: "#000", marginRight: "5px" }} />
+        pcIcon: () => (
+          <AccessAlarmIcon style={{ color: "#000", marginRight: "5px" }} />
+        )
       },
       {
         name: "BOTTOMS",

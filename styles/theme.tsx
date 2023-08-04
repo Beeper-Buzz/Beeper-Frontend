@@ -68,7 +68,8 @@ export const theme = {
   gradients: {
     rainbow:
       "linear-gradient(90deg, #FF0000 0%, #FF9900 14.04%, #FAFF00 28.08%, #00FF19 42.12%, #00F0FF 55.64%, #000AFF 70.2%, #EB00FF 84.76%, #FF0000 99.84%)",
-    pinkhaze: "linear-gradient(180deg, rgba(157, 22, 95, 0.5) 0%, rgba(157, 22, 95, 0) 100%)"
+    pinkhaze:
+      "linear-gradient(180deg, rgba(157, 22, 95, 0.5) 0%, rgba(157, 22, 95, 0) 100%)"
   },
   background: {
     ambient: "linear-gradient(180deg, #EB8B8B 0%, #CC8BEB 100%)",
