@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 export { ProductList } from "./ProductList";
 =======
 import React from "react";
@@ -9,6 +10,10 @@ import { useProducts } from "../../hooks/useProducts";
 import React from 'react';
 import { useProducts } from '../../hooks/useProducts';
 >>>>>>> 2b6f558 (Add prettier and eslint configs)
+=======
+import React from "react";
+import { useProducts } from "../../hooks/useProducts";
+>>>>>>> 83b1bed (Change to double quotes to minimze merge conflicts)
 
 export const ProductList = () => {
   const { data, isLoading, isFetching } = useProducts(1);
@@ -164,7 +169,7 @@ export const ProductList = () => {
           border-style: solid;
           border-width: 6px 4px 0 4px;
           border-color: #ffffff transparent transparent transparent;
-          content: '';
+          content: "";
           height: 0;
           margin-right: 5px;
           width: 0;

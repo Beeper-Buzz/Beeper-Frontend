@@ -1,5 +1,5 @@
-import React from 'react';
-import { Layout, Header, InfoBox, PostList } from '../components';
+import React from "react";
+import { Layout, Header, InfoBox, PostList } from "../components";
 
 const ClientOnly = () => {
   return (
