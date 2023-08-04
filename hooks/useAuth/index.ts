@@ -32,7 +32,7 @@ export const login = async (user: LoginUser) => {
   try {
     const response = await spreeClient.authentication.getToken({
       username: user.email,
-      password: user.password,
+      password: user.password
     });
     if (response.isSuccess()) {
       const data = response.success();
