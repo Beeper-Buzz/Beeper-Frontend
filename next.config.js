@@ -24,8 +24,9 @@ Module.prototype.require = function (modulePath) {
     } catch (err) {
       // ignored
     }
+  }
 
-    return originalRequire.call(this, modulePath);
+  return originalRequire.call(this, modulePath);
 };
 const DEPLOY_ENV =
   process.env.DEPLOY_ENV && process.env.DEPLOY_ENV.toLowerCase();
