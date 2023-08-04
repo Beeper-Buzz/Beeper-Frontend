@@ -1,7 +1,7 @@
 import React from 'react'
 import BurgerMenu from './BurgerMenu'
 
-const HamburgerMenu=props=>{
+export const HamburgerMenu=props=>{
     const {animationType,children,...others}=props
         const Menu=BurgerMenu[animationType]
         return (
@@ -87,6 +87,4 @@ const HamburgerMenu=props=>{
             </Menu>
         )
 
-
 }
-export default HamburgerMenu
