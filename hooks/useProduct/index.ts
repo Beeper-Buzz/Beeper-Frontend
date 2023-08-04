@@ -1,4 +1,5 @@
 import { useQuery } from "react-query";
+
 import { IProduct } from "@spree/storefront-api-v2-sdk/types/interfaces/Product";
 import { spreeClient } from "../../config/spree";
 import { QueryKeys } from "../queryKeys";
