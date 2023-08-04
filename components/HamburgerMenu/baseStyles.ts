@@ -56,7 +56,8 @@ const styles = {
         return {
             height: '100%',
             boxSizing: 'border-box',
-            overflow: 'auto'
+            overflow: 'auto',
+            overflowY:'hidden'
         };
     },
 
