@@ -8,7 +8,7 @@ classnames
 pageWrapId - the id of the element wrapping the rest of content on your page
 (except elements with fixed positioning),placed after the component
 example:
-<Menu pageWrapId="page-wrap" />
+<MainMenu pageWrapId="page-wrap" />
 <main id="page-wrap">
 .
 .
@@ -17,7 +17,7 @@ example:
 2. outerContainerId - the id of the element containing everything,including the menu component
 example:
 <div id="outer-container">
-<Menu pageWrapId="page-wrap" outerContainerId="outer-container" />
+<MainMenu pageWrapId="page-wrap" outerContainerId="outer-container" />
 <main id="page-wrap">
 .
 .
@@ -29,19 +29,19 @@ To have it open from the right, use the right prop.
 It's just a boolean so you don't need to specify a value. 
 Then set the position of the button using CSS.
 example:
-<Menu right />
+<MainMenu right />
 4. width
 You can specify the width of the menu with the width prop. The default is 300.
-<Menu width={200} />
-<Menu width={'280px'} />
-<Menu width={‘20%’} />
+<MainMenu width={200} />
+<MainMenu width={'280px'} />
+<MainMenu width={‘20%’} />
 5. isOpen
 You can control whether the sidebar is open or closed with the isOpen prop. 
 This is useful if you need to close the menu after a user clicks on an item in it,
 for example, or if you want to open the menu from some other button in addition to the standard burger icon.
 The default value is false.
 example:
-<Menu isOpen={true} />
+<MainMenu isOpen={true} />
 6. onOpen
 If you keep the menu state yourself it might be convenient
 to pass a custom function to be used when the user triggers 
@@ -49,7 +49,7 @@ something that should open the menu.
 Called when:
  the user clicks on the burger icon
 example:
-<Menu onOpen={handleOnOpen} />
+<MainMenu onOpen={handleOnOpen} />
 Note: The menu will NOT open automatically 
 if you pass this prop,
 so you must handle it yourself.
@@ -62,7 +62,7 @@ Called when:
 The user clicks on the cross icon
 The user clicks on the overlay
 The user hits the escape key
-<Menu onClose={ handleOnClose } />
+<MainMenu onClose={ handleOnClose } />
 Note: The menu will NOT close automatically 
 if you pass this prop, 
 so you must handle it yourself.
@@ -76,7 +76,7 @@ var isMenuOpen = function(state) {
   return state.isOpen;
 };
 
-<Menu onStateChange={ isMenuOpen } />
+<MainMenu onStateChange={ isMenuOpen } />
 9. disableCloseOnEsc
 By default, the menu will close when the Escape key 
 is pressed. To disable this behavior, you can pass 
@@ -86,7 +86,7 @@ for example if you're implementing a responsive
 menu that behaves differently depending on the 
 browser width.
 
-<Menu disableCloseOnEsc />
+<MainMenu disableCloseOnEsc />
 10. customOnKeyDown
 For more control over global keypress functionality,
 you can override the handler that this component sets
@@ -104,23 +104,22 @@ this.setState({areMenusOpen: false});
 }
 };
 
-<MenuOne customOnKeyDown={closeAllMenusOnEsc} isOpen={areMenusOpen} />
-<MenuTwo customOnKeyDown={closeAllMenusOnEsc} isOpen={areMenusOpen} />
+<MainMenu customOnKeyDown={closeAllMenusOnEsc} isOpen={areMenusOpen} />
 Note: Using this prop will disable all the default 
 'close on Escape' functionality, so you will need 
 to handle this (including determining which key was 
 pressed) yourself.
 11. noOverlay
 You can turn off the default overlay with noOverlay.
-<Menu noOverlay />
+<MainMenu noOverlay />
 You can disable the overlay click event (i.e. prevent overlay clicks from closing the menu) with disableOverlayClick.
 This can either be a boolean, or a function that returns a boolean.
-<Menu disableOverlayClick />
-<Menu disableOverlayClick={() => shouldDisableOverlayClick() } />
+<MainMenu disableOverlayClick />
+<MainMenu disableOverlayClick={() => shouldDisableOverlayClick() } />
 12. noTransition
 You can disable all transitions/animations by passing 
 noTransition.
-<Menu noTransition />
+<MainMenu noTransition />
 This is useful if you want the menu to remain open 
 across re-mounts, for example during SPA route changes.
 13. customBurgerIcon
@@ -129,8 +128,8 @@ burger and cross icons with custom ReactElements.
 Pass them as the customBurgerIcon and customCrossIcon 
 props respectively.
 example:
-<Menu customBurgerIcon={ <img src="img/icon.svg" /> } />
-<Menu customCrossIcon={ <img src="img/cross.svg" /> } />
+<MainMenu customBurgerIcon={ <img src="img/icon.svg" /> } />
+<MainMenu customCrossIcon={ <img src="img/cross.svg" /> } />
 This can be useful if you want exclusive external control 
 of the menu, using the isOpen prop.
 14. id and className
@@ -140,20 +139,20 @@ to the rendered menu's outermost element.
 This is not required for any functionality, 
 but could be useful for things like styling 
 with CSS modules.
-<Menu id={ "sidebar" } className={ "my-menu" } />
+<MainMenu id={ "sidebar" } className={ "my-menu" } />
 You can also pass custom 
 classNames to the other elements:
-<Menu burgerButtonClassName={ "my-class" } />
-<Menu burgerBarClassName={ "my-class" } />
-<Menu crossButtonClassName={ "my-class" } />
-<Menu crossClassName={ "my-class" } />
-<Menu menuClassName={ "my-class" } />
-<Menu morphShapeClassName={ "my-class" } />
-<Menu itemListClassName={ "my-class" } />
-<Menu overlayClassName={ "my-class" } />
+<MainMenu burgerButtonClassName={ "my-class" } />
+<MainMenu burgerBarClassName={ "my-class" } />
+<MainMenu crossButtonClassName={ "my-class" } />
+<MainMenu crossClassName={ "my-class" } />
+<MainMenu menuClassName={ "my-class" } />
+<MainMenu morphShapeClassName={ "my-class" } />
+<MainMenu itemListClassName={ "my-class" } />
+<MainMenu overlayClassName={ "my-class" } />
 And to the html and body elements (applied when the menu is open):
-<Menu htmlClassName={ "my-class" } />
-<Menu bodyClassName={ "my-class" } />
+<MainMenu htmlClassName={ "my-class" } />
+<MainMenu bodyClassName={ "my-class" } />
 Note: Passing these props will prevent the menu 
 from applying styles to the html or body elements 
 automatically.
@@ -162,7 +161,7 @@ By default, the menu will set focus on the first
 item when opened. This is to help with keyboard 
 navigation. If you don't want this functionality, 
 you can pass the disableAutoFocus prop.
-<Menu disableAutoFocus />
+<MainMenu disableAutoFocus />
 16. itemListElement
 The menu's children are all wrapped in a nav 
 element by default, as navigation is likely 
@@ -170,7 +169,7 @@ the most common use case for this component.
 However, it's a general purpose sidebar, 
 so you can change this to a div if you're 
 not using it for navigation:
-<Menu itemListElement="div" />
+<MainMenu itemListElement="div" />
 17. styles
 All the animations are handled internally 
 by the component. However, the visual styles 
@@ -292,17 +291,17 @@ var styles = {
   }
 }
 
-<Menu styles={ styles } />
+<MainMenu styles={ styles } />
 
 ###**usage**
-import {HambergerMenu} from '../components'
+import {MainMenu} from '../components'
 <div id="outter-container">
- <HamburgerMenu pageWrapId="page-wrap" outterContainerId="outter-container" animationType="slide" right={false} styles={styles}>
+ <MainMenu pageWrapId="page-wrap" outterContainerId="outter-container" animationType="slide" right={false} styles={styles}>
         <a id="home" className="menu-item" href="/">Home</a>
         <a id="about" className="menu-item" href="/about">About</a>
         <a id="contact" className="menu-item" href="/contact">Contact</a>
         <a onClick={ this.showSettings } className="menu-item--small" href="">Settings</a>
-</HamburgerMenu>
+</MainMenu>
 <main id="page-wrap">
 .
 .
