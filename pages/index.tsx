@@ -1,16 +1,27 @@
 import React from "react";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
-import { Layout, Header, ProductList, ComingSoon, NotifyForm, SocialLinks } from "../components";
+import { Layout, ComingSoon, NotifyForm, SocialLinks } from "../components";
 import { fetchPosts, fetchProducts } from "../hooks";
+import Head from "next/head";
 
 const Home = () => {
   return (
-    <Layout>
-      <ComingSoon/>
-      <NotifyForm/>
-      <SocialLinks/>
-    </Layout>
+    <>
+      <Head>
+        <title>beeper</title>
+        <meta property="og:description" content="A new mobile music experience coming to a “where ever you are” near you." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://ahrefs.com/blog/open-graph-meta-tags/" />
+
+        <meta property="og:image" content="OpenGraph-Thumbnail.jpg" />
+      </Head>
+      <Layout>
+        <ComingSoon />
+        <NotifyForm />
+        <SocialLinks />
+      </Layout>
+    </>
   );
 };
 

@@ -2,19 +2,20 @@
 export { Layout } from "./Layout";
 =======
 import React from "react";
+import Head from "next/head";
 
 export const Layout = ({ children }) => {
-  console.log('children: ', children)
   return (
     <main>
       {children}
+
       <style jsx global>{`
         * {
-          font-family: IBM Plex Mono, Menlo, Monaco, "Lucida Console", "Liberation Mono",
-            "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New",
-            monospace, serif;
-            padding: 0;
-            margin: 0;
+          font-family: IBM Plex Mono, Menlo, Monaco, "Lucida Console",
+            "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
+            "Courier New", monospace, serif;
+          padding: 0;
+          margin: 0;
         }
         body {
           margin: 0;
@@ -31,7 +32,6 @@ export const Layout = ({ children }) => {
           margin: 0 auto;
           max-width: 650px;
         }
-
       `}</style>
     </main>
   );
