@@ -1,9 +1,12 @@
-###**dependencies**
+** ReadMe DOC for using the DNA MainMenu Component **
+
+** dependencies in use **
 eve
 snapsvg-cjs
 prop-types
 classnames
-###**Properties**
+
+** all props of the component **
 1. animationType - (it can be one of slide stack elastic bubble push pushRotate scaleDown scaleRotate fallDown reveal)
 pageWrapId - the id of the element wrapping the rest of content on your page
 (except elements with fixed positioning),placed after the component
@@ -14,6 +17,7 @@ example:
 .
 .
 </main>
+
 2. outerContainerId - the id of the element containing everything,including the menu component
 example:
 <div id="outer-container">
@@ -24,17 +28,20 @@ example:
 .
 </main>
 </div>
+
 3. right - The menu opens from the left by default.
 To have it open from the right, use the right prop. 
 It's just a boolean so you don't need to specify a value. 
 Then set the position of the button using CSS.
 example:
 <MainMenu right />
+
 4. width
 You can specify the width of the menu with the width prop. The default is 300.
 <MainMenu width={200} />
 <MainMenu width={'280px'} />
 <MainMenu width={‘20%’} />
+
 5. isOpen
 You can control whether the sidebar is open or closed with the isOpen prop. 
 This is useful if you need to close the menu after a user clicks on an item in it,
@@ -42,6 +49,7 @@ for example, or if you want to open the menu from some other button in addition 
 The default value is false.
 example:
 <MainMenu isOpen={true} />
+
 6. onOpen
 If you keep the menu state yourself it might be convenient
 to pass a custom function to be used when the user triggers 
@@ -53,6 +61,7 @@ example:
 Note: The menu will NOT open automatically 
 if you pass this prop,
 so you must handle it yourself.
+
 7. onClose
 If you keep the menu state yourself 
 it might be convenient to pass a custom function 
@@ -66,6 +75,7 @@ The user hits the escape key
 Note: The menu will NOT close automatically 
 if you pass this prop, 
 so you must handle it yourself.
+
 8. onStateChange
 You can detect whether the sidebar is open or 
 closed by passing a callback function to 
@@ -77,6 +87,7 @@ var isMenuOpen = function(state) {
 };
 
 <MainMenu onStateChange={ isMenuOpen } />
+
 9. disableCloseOnEsc
 By default, the menu will close when the Escape key 
 is pressed. To disable this behavior, you can pass 
@@ -87,6 +98,7 @@ menu that behaves differently depending on the
 browser width.
 
 <MainMenu disableCloseOnEsc />
+
 10. customOnKeyDown
 For more control over global keypress functionality,
 you can override the handler that this component sets
@@ -109,6 +121,7 @@ Note: Using this prop will disable all the default
 'close on Escape' functionality, so you will need 
 to handle this (including determining which key was 
 pressed) yourself.
+
 11. noOverlay
 You can turn off the default overlay with noOverlay.
 <MainMenu noOverlay />
@@ -116,12 +129,14 @@ You can disable the overlay click event (i.e. prevent overlay clicks from closin
 This can either be a boolean, or a function that returns a boolean.
 <MainMenu disableOverlayClick />
 <MainMenu disableOverlayClick={() => shouldDisableOverlayClick() } />
+
 12. noTransition
 You can disable all transitions/animations by passing 
 noTransition.
 <MainMenu noTransition />
 This is useful if you want the menu to remain open 
 across re-mounts, for example during SPA route changes.
+
 13. customBurgerIcon
 You can replace the default bars that make up the 
 burger and cross icons with custom ReactElements.
@@ -156,12 +171,14 @@ And to the html and body elements (applied when the menu is open):
 Note: Passing these props will prevent the menu 
 from applying styles to the html or body elements 
 automatically.
+
 15. disableAutoFocus
 By default, the menu will set focus on the first 
 item when opened. This is to help with keyboard 
 navigation. If you don't want this functionality, 
 you can pass the disableAutoFocus prop.
 <MainMenu disableAutoFocus />
+
 16. itemListElement
 The menu's children are all wrapped in a nav 
 element by default, as navigation is likely 
@@ -170,6 +187,7 @@ However, it's a general purpose sidebar,
 so you can change this to a div if you're 
 not using it for navigation:
 <MainMenu itemListElement="div" />
+
 17. styles
 All the animations are handled internally 
 by the component. However, the visual styles 
@@ -293,7 +311,7 @@ var styles = {
 
 <MainMenu styles={ styles } />
 
-###**usage**
+** usage **
 import {MainMenu} from '../components'
 <div id="outter-container">
  <MainMenu pageWrapId="page-wrap" outterContainerId="outter-container" animationType="slide" right={false} styles={styles}>
