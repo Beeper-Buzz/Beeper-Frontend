@@ -9,24 +9,24 @@ const originalRequire = Module.prototype.require;
 // The following ensures that there is always only a single (and same)
 // copy of React in an app at any given moment.
 Module.prototype.require = function (modulePath) {
-    // Only redirect resolutions to non-relative and non-absolute modules
-    if (
-        ['/react/', '/react-dom/', '/react-query/'].some((d) => {
-            try {
-                return require.resolve(modulePath).includes(d);
-            } catch (err) {
-                return false;
-            }
-        })
-    ) {
-        try {
-            modulePath = resolveFrom(node_modules, modulePath);
-        } catch (err) {
-            //
-        }
+  // Only redirect resolutions to non-relative and non-absolute modules
+  if (
+    ['/react/', '/react-dom/', '/react-query/'].some((d) => {
+      try {
+        return require.resolve(modulePath).includes(d);
+      } catch (err) {
+        return false;
+      }
+    })
+  ) {
+    try {
+      modulePath = resolveFrom(node_modules, modulePath);
+    } catch (err) {
+      //
     }
+  }
 
-    return originalRequire.call(this, modulePath);
+  return originalRequire.call(this, modulePath);
 };
 const DEPLOY_ENV =
   process.env.DEPLOY_ENV && process.env.DEPLOY_ENV.toLowerCase();

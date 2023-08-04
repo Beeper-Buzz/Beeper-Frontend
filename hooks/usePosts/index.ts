@@ -10,7 +10,7 @@ const fetchPosts = async (limit = 10) => {
 };
 
 const usePosts = (limit: number) => {
-    return useQuery(['posts', limit], () => fetchPosts(limit));
+  return useQuery(['posts', limit], () => fetchPosts(limit));
 };
 
 export { usePosts, fetchPosts };
