@@ -12,7 +12,7 @@ import {
 import BurgerIcon from './BurgerIcon';
 import CrossIcon from './CrossIcon';
 
-    const MenuFactory=styles => {
+export const MenuFactory= (styles: any) => {
     if (!styles) {
         throw new Error('No styles supplied');
     }
@@ -24,19 +24,19 @@ import CrossIcon from './CrossIcon';
     const HOME = 'Home';
     const END = 'End';
 
-    function usePrevious(value) {
-        const ref = React.useRef(value);
-        React.useEffect(() => {
-            ref.current = value;
-        });
-        return ref.current;
-    }
+  function usePrevious(value:any) {
+    const ref = React.useRef(value);
+    React.useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  }
 
-    const Menu = props => {
-        const [isOpen, setIsOpen] = React.useState(false);
-        const timeoutId = React.useRef(null);
-        const toggleOptions:{current:any} = React.useRef({});
-        const prevIsOpenProp = usePrevious(props.isOpen);
+  const Menu = (props:MenuProps) => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const timeoutId:any = React.useRef(null);
+    const toggleOptions: { current: any } = React.useRef({});
+    const prevIsOpenProp = usePrevious(props.isOpen);
 
         React.useEffect(() => {
             if (props.isOpen) {
@@ -65,69 +65,14 @@ import CrossIcon from './CrossIcon';
                 const morphShape = document.getElementById('bm-morph-shape');
                 const path = styles.svg.lib(morphShape).select('path');
 
-                if (isOpen) {
-                    // Animate SVG path
-                    styles.svg.animate(path);
-                } else {
-                    // Reset path (timeout ensures animation happens off screen)
-                    setTimeout(() => {
-                        path.attr('d', styles.svg.pathInitial);
-                    }, 300);
-                }
-            }
-        });
-
-        React.useEffect(() => {
-            const { noStateChange, focusOnLastItem} = toggleOptions.current;
-
-            if (!noStateChange) {
-                props.onStateChange({ isOpen });
-            }
-
-            if (!props.disableAutoFocus) {
-                // For accessibility reasons, ensures that when we toggle open,
-                // we focus the first or last menu item according to given parameter
-                if (isOpen) {
-                    focusOnLastItem ? focusOnLastMenuItem() : focusOnFirstMenuItem();
-                } else {
-                    if (document.activeElement) {
-                        (document.activeElement as HTMLElement).blur();
-                    } else {
-                        document.body.blur(); // Needed for IE
-                    }
-                }
-            }
-
-            // Timeout ensures wrappers are cleared after animation finishes
-            clearCurrentTimeout();
-            timeoutId.current = setTimeout(() => {
-                timeoutId.current = null;
-                if (!isOpen) {
-                    applyWrapperStyles(false);
-                }
-            }, 500);
-
-            // Bind keydown handlers (or custom function if supplied)
-            const defaultOnKeyDown = isOpen ? onKeyDownOpen : onKeyDownClosed;
-            const onKeyDown = props.customOnKeyDown || defaultOnKeyDown;
-            window.addEventListener('keydown', onKeyDown);
-
-            return function cleanup() {
-                window.removeEventListener('keydown', onKeyDown);
-            };
-        }, [isOpen]);
-
-        function toggleMenu(options:any = {}) {
-            toggleOptions.current = options;
-
-            applyWrapperStyles();
-
-            // Ensures wrapper styles are applied before the menu is toggled
-            setTimeout(() => {
-                setIsOpen(open =>
-                    typeof options.isOpen !== 'undefined' ? options.isOpen : !open
-                );
-            });
+        if (isOpen) {
+          // Animate SVG path
+          styles.svg.animate(path);
+        } else {
+          // Reset path (timeout ensures animation happens off screen)
+          setTimeout(() => {
+            path.attr("d", styles&&styles.svg&&styles.svg.pathInitial);
+          }, 300);
         }
 
         function open() {
@@ -146,27 +91,135 @@ import CrossIcon from './CrossIcon';
             }
         }
 
-        function getStyle(style:(isOpen:boolean,formattedWidth:string,right:string,index:number)=>any, index?:number) {
-            const { width, right } = props;
-            const formattedWidth = typeof width !== 'string' ? `${width}px` : width;
-            return style(isOpen, formattedWidth, right, index);
+      // Bind keydown handlers (or custom function if supplied)
+      const defaultOnKeyDown = isOpen ? onKeyDownOpen : onKeyDownClosed;
+      const onKeyDown = props.customOnKeyDown || defaultOnKeyDown;
+      window.addEventListener("keydown", onKeyDown);
+
+      return function cleanup() {
+        window.removeEventListener("keydown", onKeyDown);
+      };
+    }, [isOpen]);
+
+    function toggleMenu(options: any = {}) {
+      toggleOptions.current = options;
+
+      applyWrapperStyles();
+
+      // Ensures wrapper styles are applied before the menu is toggled
+      setTimeout(() => {
+        setIsOpen((open) => (typeof options.isOpen !== "undefined" ? options.isOpen : !open));
+      });
+    }
+
+    function open() {
+      if (typeof props.onOpen === "function") {
+        props.onOpen();
+      } else {
+        toggleMenu();
+      }
+    }
+
+    function close() {
+      if (typeof props.onClose === "function") {
+        props.onClose();
+      } else {
+        toggleMenu();
+      }
+    }
+
+    function getStyle(
+      style: (isOpen: boolean, formattedWidth: string, right: string, index: number) => any,
+      index?: number
+    ) {
+      const { width, right } = props;
+      const formattedWidth = typeof width !== "string" ? `${width}px` : width;
+      return style(isOpen, formattedWidth, right, index as number);
+    }
+
+    // Builds styles incrementally for a given element
+    function getStyles(el:BaseStylesKey, index?: any, inline?: any) {
+      const propName= "bm" + el.replace(el.charAt(0), el.charAt(0).toUpperCase());
+
+      // Set base styles
+      let output = baseStyles[el] ? getStyle(baseStyles[el]) : {};
+
+      // Add animation-specific styles
+      if (styles[el]) {
+        output = {
+          ...output,
+          ...getStyle(styles[el], index + 1)
+        };
+      }
+
+      // Add custom styles
+      if (props.styles[propName]) {
+        output = {
+          ...output,
+          ...props.styles[propName]
+        };
+      }
+
+      // Add element inline styles
+      if (inline) {
+        output = {
+          ...output,
+          ...inline
+        };
+      }
+
+      // Remove transition if required
+      // (useful if rendering open initially)
+      if (props.noTransition) {
+        delete output.transition;
+      }
+
+      return output;
+    }
+
+    // Sets or unsets styles on DOM elements outside the menu component
+    // This is necessary for correct page interaction with some of the menus
+    // Throws and returns if the required external elements don't exist,
+    // which means any external page animations won't be applied
+    function handleExternalWrapper(id:string, wrapperStyles, set) {
+      const wrapper = document.getElementById(id);
+
+      if (!wrapper) {
+        console.error("Element with ID '" + id + "' not found");
+        return;
+      }
+
+      const builtStyles = getStyle(wrapperStyles);
+
+      for (const prop in builtStyles) {
+        if (builtStyles.hasOwnProperty(prop)) {
+          wrapper.style[prop] = set ? builtStyles[prop] : "";
         }
 
-        // Builds styles incrementally for a given element
-        function getStyles(el, index?:any, inline?:any) {
-            const propName =
-                'bm' + el.replace(el.charAt(0), el.charAt(0).toUpperCase());
+      // Prevent any horizontal scroll
+      // Only set overflow-x as an inline style if htmlClassName or
+      // bodyClassName is not passed in. Otherwise, it is up to the caller to
+      // decide if they want to set the overflow style in CSS using the custom
+      // class names
+      const applyOverflow = (el:HTMLElement) => (el.style["overflow-x"] = set ? "hidden" : "");
+      if (!props.htmlClassName) {
+        applyOverflow(document.querySelector("html") as HTMLElement);
+      }
+      if (!props.bodyClassName) {
+        applyOverflow(document.querySelector("body") as HTMLElement);
+      }
+    }
 
-            // Set base styles
-            let output = baseStyles[el] ? getStyle(baseStyles[el]) : {};
+    // Applies component-specific styles to external wrapper elements
+    function applyWrapperStyles(set = true) {
+      const applyClass = (el:HTMLElement, className:string) => el.classList[set ? "add" : "remove"](className);
 
-            // Add animation-specific styles
-            if (styles[el]) {
-                output = {
-                    ...output,
-                    ...getStyle(styles[el], index + 1)
-                };
-            }
+      if (props.htmlClassName) {
+        applyClass(document.querySelector("html") as HTMLElement, props.htmlClassName);
+      }
+      if (props.bodyClassName) {
+        applyClass(document.querySelector("body") as HTMLElement, props.bodyClassName);
+      }
 
             // Add custom styles
             if (props.styles[propName]) {
