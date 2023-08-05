@@ -152,7 +152,7 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
           <div
             style={{ textAlign: "center", width: "100%" }}
             onClick={handleClick.bind(null, parentKeyPath + "/" + item.key)}>
-            {item.pcIcon&&item.pcIcon()}
+            {item.pcIcon && item.pcIcon()}
             {item.name}
           </div>
 
@@ -181,7 +181,7 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
                       v.key
                     )}
                     key={parentKeyPath + "/" + item.key + "/" + v.key}>
-                    {v.pcIcon&&v.pcIcon()}
+                    {v.pcIcon && v.pcIcon()}
                     {v.name}
                   </MenuItem>
                 );

@@ -324,9 +324,9 @@ import {MainMenu} from '../components'
 </main>
 </div>
 
-18.pcWrapClassName: pc端导航栏的样式名
- 19.pcMenuItemClassName:pc端2级菜单样式名
-  20.onMenuItemClick：点击菜单触发的回调(keyPath:string,key:string)=>void;
-  menusData:  菜单数据格式为[{pcIcon:()=><AccountBalanceOutlinedIcon style={{marginRight:'10px'}} />，icon:()=><AccountBalanceOutlinedIcon style={{marginRight:'10px'}} />，name:'home',key:'home',children:[{name:'home-sub',key:'home-sub'}]}]
+18.pcWrapClassName
+ 19.pcMenuItemClassName
+  20.onMenuItemClick:(keyPath:string,key:string)=>void;
+  menusData:  [{pcIcon:()=><AccountBalanceOutlinedIcon style={{marginRight:'10px'}} />，icon:()=><AccountBalanceOutlinedIcon style={{marginRight:'10px'}} />，name:'home',key:'home',children:[{name:'home-sub',key:'home-sub'}]}]
 
 
