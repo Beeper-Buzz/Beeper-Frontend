@@ -1,22 +1,22 @@
 import Snap from "./snapsvgImporter";
 import menuFactory from "./menuFactory";
 import { pxToNum } from "./utils";
-import {Path} from "./types";
-import {MenuFactoryStyles} from "./types/menuFactory";
+import { Path } from "./types";
+import { MenuFactoryStyles } from "./types/menuFactory";
 
 const MORPH_SHAPE_WIDTH = 120;
 
-const styles:MenuFactoryStyles = {
+const styles: MenuFactoryStyles = {
   svg: {
     lib: Snap,
     pathInitial: "M-1,0h101c0,0-97.833,153.603-97.833,396.167C2.167,627.579,100,800,100,800H-1V0z",
     pathOpen: "M-1,0h101c0,0,0-1,0,395c0,404,0,405,0,405H-1V0z",
-    animate(path:Path) {
+    animate(path: Path) {
       path.animate({ path: this.pathOpen }, 400, window.mina.easeinout);
     }
   },
 
-  morphShape(isOpen:boolean, width:string, right:boolean) {
+  morphShape(isOpen: boolean, width: string, right: boolean) {
     return {
       position: "absolute",
       width: MORPH_SHAPE_WIDTH,
@@ -31,7 +31,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  menuWrap(isOpen:boolean, width:string, right:boolean) {
+  menuWrap(isOpen: boolean, width: string, right: boolean) {
     return {
       MozTransform: isOpen
         ? "translate3d(0, 0, 0)"
@@ -62,7 +62,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  menu(isOpen:boolean, width:string, right:boolean) {
+  menu(isOpen: boolean, width: string, right: boolean) {
     return {
       position: "fixed",
       right: right ? 0 : "inherit",
@@ -73,7 +73,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  itemList(isOpen:boolean, width:string, right:boolean) {
+  itemList(isOpen: boolean, width: string, right: boolean) {
     if (right) {
       return {
         position: "relative",
@@ -84,7 +84,7 @@ const styles:MenuFactoryStyles = {
     }
   },
 
-  pageWrap(isOpen:boolean, width:string, right:boolean) {
+  pageWrap(isOpen: boolean, width: string, right: boolean) {
     return {
       MozTransform: isOpen ? "" : right ? "translate3d(-100px, 0, 0)" : "translate3d(100px, 0, 0)",
       MsTransform: isOpen ? "" : right ? "translate3d(-100px, 0, 0)" : "translate3d(100px, 0, 0)",
@@ -99,7 +99,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  outerContainer(isOpen:boolean) {
+  outerContainer(isOpen: boolean) {
     return {
       overflow: isOpen ? "" : "hidden"
     };

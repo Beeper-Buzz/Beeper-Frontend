@@ -1,8 +1,8 @@
 import menuFactory from "./menuFactory";
-import {MenuFactoryStyles} from "./types/menuFactory";
+import { MenuFactoryStyles } from "./types/menuFactory";
 
-const styles :MenuFactoryStyles = {
-  pageWrap(isOpen:boolean, width:string, right:boolean) {
+const styles: MenuFactoryStyles = {
+  pageWrap(isOpen: boolean, width: string, right: boolean) {
     return {
       MozTransform: isOpen
         ? ""
@@ -33,7 +33,7 @@ const styles :MenuFactoryStyles = {
     };
   },
 
-  outerContainer(isOpen:boolean) {
+  outerContainer(isOpen: boolean) {
     return {
       overflow: isOpen ? "" : "hidden"
     };

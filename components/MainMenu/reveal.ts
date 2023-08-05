@@ -1,8 +1,8 @@
 import menuFactory from "./menuFactory";
-import {MenuFactoryStyles} from "./types/menuFactory";
+import { MenuFactoryStyles } from "./types/menuFactory";
 
-const styles:MenuFactoryStyles = {
-  menuWrap(isOpen:boolean) {
+const styles: MenuFactoryStyles = {
+  menuWrap(isOpen: boolean) {
     return {
       MozTransform: "translate3d(0, 0, 0)",
       MsTransform: "translate3d(0, 0, 0)",
@@ -13,7 +13,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  overlay(isOpen:boolean, width:string,right:boolean) {
+  overlay(isOpen: boolean, width: string, right: boolean) {
     return {
       zIndex: 1400,
       MozTransform: isOpen
@@ -46,7 +46,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  pageWrap(isOpen:boolean, width:string, right:boolean) {
+  pageWrap(isOpen: boolean, width: string, right: boolean) {
     return {
       MozTransform: isOpen
         ? ""
@@ -79,7 +79,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  burgerIcon(isOpen:boolean, width:string, right:boolean) {
+  burgerIcon(isOpen: boolean, width: string, right: boolean) {
     return {
       MozTransform: isOpen
         ? right
@@ -112,7 +112,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  outerContainer(isOpen:boolean) {
+  outerContainer(isOpen: boolean) {
     return {
       overflow: isOpen ? "" : "hidden"
     };

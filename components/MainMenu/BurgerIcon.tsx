@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import {BurgerIconProps} from "./types/BurgerIconProps";
-const BurgerIcon = (props:BurgerIconProps) => {
+import { BurgerIconProps } from "./types/BurgerIconProps";
+const BurgerIcon = (props: BurgerIconProps) => {
   const { styles, customIcon, barClassName, className, onClick, onIconHoverChange } = props;
   const [hover, setHover] = useState(false);
-  const getLineStyle = (index:number) => {
+  const getLineStyle = (index: number) => {
     return {
       position: "absolute" as "absolute",
       height: "20%",
@@ -51,9 +51,7 @@ const BurgerIcon = (props:BurgerIconProps) => {
             style={{
               ...getLineStyle(bar),
               ...styles?.bmBurgerBars
-            }}>
-
-          </span>
+            }}></span>
         ))}
       </span>
     );

@@ -1,16 +1,16 @@
 import Snap from "./snapsvgImporter";
 import menuFactory from "./menuFactory";
 import { pxToNum } from "./utils";
-import {Path} from "./types";
-import {MenuFactoryStyles} from "./types/menuFactory";
+import { Path } from "./types";
+import { MenuFactoryStyles } from "./types/menuFactory";
 const BUBBLE_WIDTH = 140;
-const styles:MenuFactoryStyles = {
+const styles: MenuFactoryStyles = {
   svg: {
     lib: Snap,
     pathInitial: "M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z",
     pathOpen:
       "M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z",
-    animate(path:Path) {
+    animate(path: Path) {
       let pos = 0;
       let steps = this.pathOpen.split(";");
       let stepsTotal = steps.length;
@@ -175,7 +175,7 @@ const styles:MenuFactoryStyles = {
     }
   },
 
-  morphShape(isOpen:boolean, width:string, right:boolean) {
+  morphShape(isOpen: boolean, width: string, right: boolean) {
     return {
       position: "absolute",
       width: "100%",
@@ -190,7 +190,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  menuWrap(isOpen:boolean, width:string, right:boolean) {
+  menuWrap(isOpen: boolean, width: string, right: boolean) {
     return {
       MozTransform: isOpen
         ? "translate3d(0, 0, 0)"
@@ -221,7 +221,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  menu(isOpen:boolean, width:string, right:boolean) {
+  menu(isOpen: boolean, width: string, right: boolean) {
     const finalWidth = pxToNum(width) - BUBBLE_WIDTH;
     return {
       position: "fixed",
@@ -257,7 +257,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  item(isOpen:boolean, width:string, right:boolean) {
+  item(isOpen: boolean, width: string, right: boolean) {
     const finalWidth = pxToNum(width) - BUBBLE_WIDTH;
     return {
       MozTransform: isOpen
@@ -292,7 +292,7 @@ const styles:MenuFactoryStyles = {
     };
   },
 
-  closeButton(isOpen:boolean, width:string, right:boolean) {
+  closeButton(isOpen: boolean, width: string, right: boolean) {
     const finalWidth = pxToNum(width) - BUBBLE_WIDTH;
     return {
       MozTransform: isOpen

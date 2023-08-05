@@ -1,10 +1,11 @@
 import React from "react";
 import Link from "next/link";
 import { useProducts } from "../../hooks/useProducts";
+import { ProductListProps } from "./types";
 
 export const ProductList = () => {
-    const { data, isLoading, isFetching } = useProducts(1);
-    if (isLoading) return <div>Loading</div>;
+  const { data, isLoading, isFetching } = useProducts(1);
+  if (isLoading) return <div>Loading</div>;
 
   return (
     <section>
