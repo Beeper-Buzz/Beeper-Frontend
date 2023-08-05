@@ -43,6 +43,12 @@ export const GlobalStyles = ({ theme, children }: any) => (
           color: ${theme.colors.white.primary};
           background: ${theme.colors.brand.primary};
         }
+        #__next{
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        }
 
         a {
           cursor: pointer;
