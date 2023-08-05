@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 export { InfoBox } from "./InfoBox";
 =======
 import React from "react";
@@ -22,3 +23,6 @@ const InfoBox: React.FC<InfoBoxProps> = ({ children }: { children: string }) => 
 
 export { InfoBox };
 >>>>>>> 368708c (update)
+=======
+export { InfoBox } from './InfoBox'
+>>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)

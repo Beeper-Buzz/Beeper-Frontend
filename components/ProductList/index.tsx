@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 export { ProductList } from "./ProductList";
 =======
 import React from "react";
@@ -211,3 +212,6 @@ export const ProductList: React.FC<ProductListProps> = () => {
   );
 };
 >>>>>>> 56c97cb (Fix type error and refreshing product details page)
+=======
+export { ProductList } from './ProductList'
+>>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)

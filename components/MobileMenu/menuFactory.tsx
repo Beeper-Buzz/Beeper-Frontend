@@ -18,6 +18,10 @@ import {
 import { BaseStyles, BaseStylesKey } from "./types/baseStyles";
 import { BurgerIconStyles } from "./types/BurgerIconProps";
 import { CrossIconStyles } from "./types/CrossIcon";
+export const MenuFactory= (styles: any) => {
+    if (!styles) {
+        throw new Error('No styles supplied');
+    }
 
 const MenuFactory = (styles: MenuFactoryStyles) => {
   if (!styles) {
@@ -297,6 +301,33 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
     }
 
     function onKeyDownOpen(e: KeyboardEvent) {
+      if (!wrapper) {
+          console.error("Element with ID '" + id + "' not found");
+          return;
+      }
+
+      const builtStyles = getStyle(wrapperStyles);
+
+      for (const prop in builtStyles) {
+          if (builtStyles.hasOwnProperty(prop)) {
+              wrapper.style[prop] = set ? builtStyles[prop] : '';
+          }
+      }
+
+      // Prevent any horizontal scroll
+      // Only set overflow-x as an inline style if htmlClassName or
+      // bodyClassName is not passed in. Otherwise, it is up to the caller to
+      // decide if they want to set the overflow style in CSS using the custom
+      // class names
+      const applyOverflow = el =>
+          (el.style['overflow-x'] = set ? 'hidden' : '');
+      if (!props.htmlClassName) {
+          applyOverflow(document.querySelector('html'));
+      }
+      if (!props.bodyClassName) {
+          applyOverflow(document.querySelector('body'));
+      }
+
       e = e || window.event;
       switch (e.key) {
         case ESCAPE:
@@ -335,6 +366,7 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
             // If arrow up, open menu and focus on last menuitem
             toggleMenu({ focusOnLastItem: true });
             break;
+<<<<<<< HEAD
         }
       }
     }
@@ -361,6 +393,129 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
           />
         )}
         {props.customBurgerIcon !== false && (
+=======
+>>>>>>> 05496be (update)
+        }
+
+        // Applies component-specific styles to external wrapper elements
+        function applyWrapperStyles(set = true) {
+            const applyClass = (el, className) =>
+                el.classList[set ? 'add' : 'remove'](className);
+
+            if (props.htmlClassName) {
+                applyClass(document.querySelector('html'), props.htmlClassName);
+            }
+            if (props.bodyClassName) {
+                applyClass(document.querySelector('body'), props.bodyClassName);
+            }
+
+            if (styles.pageWrap && props.pageWrapId) {
+                handleExternalWrapper(props.pageWrapId, styles.pageWrap, set);
+            }
+
+            if (styles.outerContainer && props.outerContainerId) {
+                handleExternalWrapper(
+                    props.outerContainerId,
+                    styles.outerContainer,
+                    set
+                );
+            }
+
+            const menuWrap = document.querySelector('.bm-menu-wrap');
+            if (menuWrap) {
+                if (set) {
+                    menuWrap.removeAttribute('hidden');
+                } else {
+                    menuWrap.setAttribute('hidden', 'true');
+                }
+            }
+        }
+
+        // Avoids potentially attempting to update an unmounted component
+        function clearCurrentTimeout() {
+            if (timeoutId.current) {
+                clearTimeout(timeoutId.current);
+            }
+        }
+
+        function onKeyDownOpen(e) {
+            e = e || window.event;
+            switch (e.key) {
+                case ESCAPE:
+                    // Close on ESC, unless disabled
+                    if (!props.disableCloseOnEsc) {
+                        close();
+                        focusOnMenuButton();
+                    }
+                    break;
+                case ARROW_DOWN:
+                    focusOnNextMenuItem();
+                    break;
+                case ARROW_UP:
+                    focusOnPreviousMenuItem();
+                    break;
+                case HOME:
+                    focusOnFirstMenuItem();
+                    break;
+                case END:
+                    focusOnLastMenuItem();
+                    break;
+            }
+        }
+
+        function onKeyDownClosed(e) {
+            e = e || window.event;
+            // Key downs came from menu button
+            if (e.target === document.getElementById('react-burger-menu-btn')) {
+                switch (e.key) {
+                    case ARROW_DOWN:
+                    case SPACE:
+                        // If down arrow, space or enter, open menu and focus on first menuitem
+                        toggleMenu();
+                        break;
+                    case ARROW_UP:
+                        // If arrow up, open menu and focus on last menuitem
+                        toggleMenu({ focusOnLastItem: true });
+                        break;
+                }
+            }
+        }
+
+        function handleOverlayClick() {
+            if (
+                props.disableOverlayClick === true ||
+                (typeof props.disableOverlayClick === 'function' &&
+                    props.disableOverlayClick())
+            ) {
+                return;
+            } else {
+                close();
+            }
+        }
+
+        return (
+            <div>
+                {!props.noOverlay && (
+            <div
+                className={`bm-overlay ${props.overlayClassName}`.trim()}
+        onClick={handleOverlayClick}
+        style={getStyles('overlay')}
+        />
+    )}
+        {props.customBurgerIcon !== false && (
+<<<<<<< HEAD
+            <div style={getStyles('burgerIcon')}>
+                <BurgerIcon
+                    onClick={open}
+                styles={props.styles}
+                customIcon={props.customBurgerIcon}
+                className={props.burgerButtonClassName}
+                barClassName={props.burgerBarClassName}
+                onIconStateChange={props.onIconStateChange}
+                />
+            </div>
+=======
+>>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)
           <div style={getStyles("burgerIcon" as keyof BaseStyles)}>
             <BurgerIcon
               onClick={open}
@@ -371,6 +526,7 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
               onIconStateChange={props.onIconStateChange}
             />
           </div>
+<<<<<<< HEAD
         )}
         <div
           id={props.id}
@@ -379,6 +535,17 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
           aria-hidden={!isOpen}
         >
           {styles.svg && (
+=======
+>>>>>>> 368708c (update)
+        )}
+        <div
+            id={props.id}
+        className={`bm-menu-wrap ${props.className}`.trim()}
+        style={getStyles('menuWrap')}
+        aria-hidden={!isOpen}
+    >
+        {styles.svg && (
+>>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)
             <div
               id="bm-morph-shape"
               className={`bm-morph-shape ${props.morphShapeClassName}`.trim()}
@@ -431,7 +598,11 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
             <div style={getStyles("closeButton" as keyof BaseStyles)}>
               <CrossIcon
                 onClick={close}
+<<<<<<< HEAD
                 styles={props.styles as CrossIconStyles}
+=======
+                styles={props.styles}
+>>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)
                 customIcon={props.customCrossIcon}
                 className={props.crossButtonClassName}
                 crossClassName={props.crossClassName}
@@ -440,6 +611,7 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
             </div>
           )}
         </div>
+<<<<<<< HEAD
       </div>
     );
   };
@@ -521,3 +693,85 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
   return Menu;
 };
 export default MenuFactory;
+=======
+    );
+    };
+
+    Menu.propTypes = {
+        bodyClassName: PropTypes.string,
+        burgerBarClassName: PropTypes.string,
+        burgerButtonClassName: PropTypes.string,
+        className: PropTypes.string,
+        crossButtonClassName: PropTypes.string,
+        crossClassName: PropTypes.string,
+        customBurgerIcon: PropTypes.oneOfType([
+            PropTypes.element,
+            PropTypes.oneOf([false])
+        ]),
+        customCrossIcon: PropTypes.oneOfType([
+            PropTypes.element,
+            PropTypes.oneOf([false])
+        ]),
+        customOnKeyDown: PropTypes.func,
+        disableAutoFocus: PropTypes.bool,
+        disableCloseOnEsc: PropTypes.bool,
+        disableOverlayClick: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+        htmlClassName: PropTypes.string,
+        id: PropTypes.string,
+        isOpen: PropTypes.bool,
+        itemClassName: PropTypes.string,
+        itemListClassName: PropTypes.string,
+        itemListElement: PropTypes.oneOf(['div', 'nav']),
+        menuClassName: PropTypes.string,
+        morphShapeClassName: PropTypes.string,
+        noOverlay: PropTypes.bool,
+        noTransition: PropTypes.bool,
+        onClose: PropTypes.func,
+        onIconHoverChange: PropTypes.func,
+        onOpen: PropTypes.func,
+        onStateChange: PropTypes.func,
+        outerContainerId:
+            styles && styles.outerContainer
+                ? PropTypes.string.isRequired
+                : PropTypes.string,
+        overlayClassName: PropTypes.string,
+        pageWrapId:
+            styles && styles.pageWrap
+                ? PropTypes.string.isRequired
+                : PropTypes.string,
+        right: PropTypes.bool,
+        styles: PropTypes.object,
+        width: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    };
+
+    Menu.defaultProps = {
+        bodyClassName: '',
+        burgerBarClassName: '',
+        burgerButtonClassName: '',
+        className: '',
+        crossButtonClassName: '',
+        crossClassName: '',
+        disableAutoFocus: false,
+        disableCloseOnEsc: false,
+        htmlClassName: '',
+        id: '',
+        itemClassName: '',
+        itemListClassName: '',
+        menuClassName: '',
+        morphShapeClassName: '',
+        noOverlay: false,
+        noTransition: false,
+        onStateChange: () => {},
+        outerContainerId: '',
+        overlayClassName: '',
+        pageWrapId: '',
+        styles: {},
+        width: 300,
+        onIconHoverChange: () => {},
+        itemListElement: 'nav'
+    };
+
+    return Menu;
+};
+    export default MenuFactory;
+>>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)
