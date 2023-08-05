@@ -1,5 +1,5 @@
 import menuFactory from "./menuFactory";
-import {MenuFactoryStyles} from "../Footer/types/interfaces/menuFactory";
+import {MenuFactoryStyles} from "./types/menuFactory";
 
 const styles :MenuFactoryStyles = {
   pageWrap(isOpen:boolean, width:string, right:string) {

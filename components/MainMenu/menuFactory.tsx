@@ -3,14 +3,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import baseStyles from './baseStyles';
 import {
-    focusOnFirstMenuItem,
-    focusOnLastMenuItem,
-    focusOnMenuButton,
-    focusOnNextMenuItem,
-    focusOnPreviousMenuItem
-} from './dom';
-import BurgerIcon from './BurgerIcon';
-import CrossIcon from './CrossIcon';
+  focusOnFirstMenuItem,
+  focusOnLastMenuItem,
+  focusOnMenuButton,
+  focusOnNextMenuItem,
+  focusOnPreviousMenuItem
+} from "./dom";
+import BurgerIcon from "./BurgerIcon";
+import CrossIcon from "./CrossIcon";
+import {MenuFactoryStyles, MenuFactoryStylesKey, MenuProps} from "./types/menuFactory";
+import {BaseStyles, BaseStylesKey} from "./types/baseStyles";
 
 export const MenuFactory= (styles: any) => {
     if (!styles) {
@@ -181,7 +183,7 @@ export const MenuFactory= (styles: any) => {
     // This is necessary for correct page interaction with some of the menus
     // Throws and returns if the required external elements don't exist,
     // which means any external page animations won't be applied
-    function handleExternalWrapper(id:string, wrapperStyles, set) {
+    function handleExternalWrapper(id:string, wrapperStyles:any, set:any) {
       const wrapper = document.getElementById(id);
 
       if (!wrapper) {
@@ -388,14 +390,14 @@ export const MenuFactory= (styles: any) => {
     )}
         {props.customBurgerIcon !== false && (
             <div style={getStyles('burgerIcon')}>
-            <BurgerIcon
-                onClick={open}
-            styles={props.styles}
-            customIcon={props.customBurgerIcon}
-            className={props.burgerButtonClassName}
-            barClassName={props.burgerBarClassName}
-            onIconStateChange={props.onIconStateChange}
-            />
+                <BurgerIcon
+                    onClick={open}
+                styles={props.styles}
+                customIcon={props.customBurgerIcon}
+                className={props.burgerButtonClassName}
+                barClassName={props.burgerBarClassName}
+                onIconStateChange={props.onIconStateChange}
+                />
             </div>
         )}
         <div
@@ -406,63 +408,49 @@ export const MenuFactory= (styles: any) => {
     >
         {styles.svg && (
             <div
-                id="bm-morph-shape"
-            className={`bm-morph-shape ${props.morphShapeClassName}`.trim()}
-            style={getStyles('morphShape')}
-        >
-            <svg
-                width="100%"
-            height="100%"
-            viewBox="0 0 100 800"
-            preserveAspectRatio="none"
-            >
-            <path d={styles.svg.pathInitial} />
-        </svg>
-        </div>
-        )}
-        <div
-            className={`bm-menu ${props.menuClassName}`.trim()}
-        style={getStyles('menu')}
-    >
-        {React.createElement(
-            props.itemListElement,
-            {
-                className: `bm-item-list ${props.itemListClassName}`.trim(),
-                style: getStyles('itemList')
-            },
-            React.Children.map(props.children, (item, index) => {
-                if (item) {
-                    const classList = [
-                        'bm-item',
-                        props.itemClassName,
-                        item.props.className
-                    ]
-                        .filter(className => !!className)
-                        .join(' ');
-                    const extraProps = {
-                        key: index,
-                        className: classList,
-                        style: getStyles('item', index, item.props.style),
-                        tabIndex: isOpen ? 0 : -1
-                    };
-                    return React.cloneElement(item, extraProps);
-                }
-            })
-        )}
-        </div>
-        {props.customCrossIcon !== false && (
-            <div style={getStyles('closeButton')}>
-            <CrossIcon
-                onClick={close}
-            styles={props.styles}
-            customIcon={props.customCrossIcon}
-            className={props.crossButtonClassName}
-            crossClassName={props.crossClassName}
-            isOpen={isOpen}
-            />
+              id="bm-morph-shape"
+              className={`bm-morph-shape ${props.morphShapeClassName}`.trim()}
+              style={getStyles("morphShape" as keyof BaseStyles)}>
+              <svg width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">
+                <path d={styles.svg.pathInitial} />
+              </svg>
             </div>
-        )}
-        </div>
+          )}
+          <div className={`bm-menu ${props.menuClassName}`.trim()} style={getStyles("menu")}>
+            {React.createElement(
+              props.itemListElement,
+              {
+                className: `bm-item-list ${props.itemListClassName}`.trim(),
+                style: getStyles("itemList")
+              },
+              React.Children.map(props.children, (item, index) => {
+                if (item) {
+                  const classList = ["bm-item", props.itemClassName, item.props.className]
+                    .filter((className) => !!className)
+                    .join(" ");
+                  const extraProps = {
+                    key: index,
+                    className: classList,
+                    style: getStyles("item", index, item.props.style),
+                    tabIndex: isOpen ? 0 : -1
+                  };
+                  return React.cloneElement(item, extraProps);
+                }
+              })
+            )}
+          </div>
+          {props.customCrossIcon !== false && (
+            <div style={getStyles("closeButton" as keyof BaseStyles)}>
+              <CrossIcon
+                onClick={close}
+                styles={props.styles}
+                customIcon={props.customCrossIcon}
+                className={props.crossButtonClassName}
+                crossClassName={props.crossClassName}
+                isOpen={isOpen}
+              />
+            </div>
+          )}
         </div>
     );
     };

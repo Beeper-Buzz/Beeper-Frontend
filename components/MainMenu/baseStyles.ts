@@ -1,4 +1,4 @@
-import {BaseStyles} from "../Footer/types/interfaces/baseStyles";
+import {BaseStyles} from "./types/baseStyles";
 
 const styles:BaseStyles = {
   overlay(isOpen:boolean) {
