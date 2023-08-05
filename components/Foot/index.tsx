@@ -1,1 +1,0 @@
-export { Foot } from "./Foot";

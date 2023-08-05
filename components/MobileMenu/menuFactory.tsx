@@ -663,7 +663,3 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
 
   return Menu;
 };
-export default MenuFactory;
-};
-
-export default MenuFactory;

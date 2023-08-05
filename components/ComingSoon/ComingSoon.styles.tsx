@@ -127,7 +127,11 @@ export const Fade = styled.div`
   position: absolute;
   bottom: 0;
   background: rgb(0, 0, 0);
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 100%
+  );
   @media screen and (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
     height: 300px;
   }

@@ -1,4 +1,4 @@
-import { menuDataItem } from "../MobileMenu/types";
+import { menuDataItem } from "./index";
 
 export interface IDesktopMenuProps {
   menusData: menuDataItem[];
