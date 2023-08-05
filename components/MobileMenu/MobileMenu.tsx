@@ -10,13 +10,12 @@ import { menuStyles, darkMenuStyles } from "./menuStyles";
 import { useTheme } from "@emotion/react";
 import { useRouter } from "next/router";
 
-import { MenuToggle, MenuFooter } from "./MainMenu.styles";
-
 import {
   StyledList,
   StyledListItem,
   StyledListItemText,
-  StyledListItemIcon
+  StyledListItemIcon,
+  MenuFooter
 } from "./MobileMenu.styles";
 
 export interface MenuItemProps {
