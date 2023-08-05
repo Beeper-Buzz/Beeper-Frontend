@@ -34,7 +34,7 @@ interface TrackingProvider {
 
 declare global {
   interface Window {
-      gtag:any;
+    gtag: any;
   }
 }
 
