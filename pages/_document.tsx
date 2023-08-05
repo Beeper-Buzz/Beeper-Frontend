@@ -216,12 +216,19 @@ class MyDocument extends Document {
                   'send_page_view': false,
                   'debug_mode': ${tracking.GA_DEBUG_MODE},
                 });
-                gtag('event', 'ip_address', {'ip': myip});
               `
             }}
           />
           <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUqxah2mT_0iaosOBBSIKRy0lw7f6wdLA&libraries=places" />
           <script dangerouslySetInnerHTML={{ __html: FacebookPixelObject }} />
+          <noscript>
+            <img
+              height="1"
+              width="1"
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${tracking.FB_PIXEL_ID}&ev=PageView&noscript=1`}
+            />
+          </noscript>
         </Head>
         <body>
           <Main />
