@@ -9,7 +9,7 @@ import {
   useMenuItems
 } from "../../hooks";
 import { MainMenuProps, menuDataItem } from "./types";
-import DesktopMenu from "./DesktopMenu";
+import DesktopMenu from "../MainMenu/DesktopMenu";
 
 import { HiddenOnDesktop, HiddenOnMobile } from "./MainMenu.styles";
 import { MobileMenu } from "./MobileMenu";

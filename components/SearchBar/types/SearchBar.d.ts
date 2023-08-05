@@ -1,5 +1,5 @@
 export interface SearchBarProps {
-  placeholder?: string,
-  autoComplete?: boolean,
-  value?: string
+  placeholder?: string;
+  autoComplete?: boolean;
+  value?: string;
 }
