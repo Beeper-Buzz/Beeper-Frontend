@@ -212,8 +212,7 @@ class MyDocument extends Document {
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', "${tracking.GA_TRACKING_CODE}", {
-                  'custom_map': {'dimension1': 'ip'},
-                  'send_page_view': false,
+                  'send_page_view': true,
                   'debug_mode': ${tracking.GA_DEBUG_MODE},
                 });
               `
