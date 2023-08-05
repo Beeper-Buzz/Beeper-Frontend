@@ -1,6 +1,6 @@
-import { dark } from "@material-ui/core/styles/createPalette";
 import { darken, lighten } from "polished";
 const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "false";
+
 export const theme = {
   isDarkMode: darkMode === "true",
   colors: {
@@ -31,13 +31,13 @@ export const theme = {
       primary: "#FF008A",
       medium: lighten(0.66, "#FF008A"),
       light: lighten(0.33, "#FF008A"),
-      darken: darken(0.33, "#FF008A")
+      dark: darken(0.33, "#FF008A")
     },
     purple: {
       primary: "#900093",
       medium: lighten(0.66, "#900093"),
       light: lighten(0.33, "#900093"),
-      darken: darken(0.33, "#900093")
+      dark: darken(0.11, "#900093")
     },
     brand: {
       primary: "#EB8B8B",
@@ -109,66 +109,59 @@ export const theme = {
   },
   typography: {
     titleXXL: {
-      fontFamily: "Anybody Light",
+      fontFamily: "micro bold",
       fontWeight: "bold",
       fontSize: "72px",
       lineHeight: "86px",
       color: "#000"
     },
     titleXL: {
-      fontFamily: "Anybody Light",
+      fontFamily: "micro bold",
       fontWeight: "bold",
       fontSize: "33.8681px",
       lineHeight: "41px",
       color: "#000"
     },
     titleLG: {
-      fontFamily: "Anybody Light",
+      fontFamily: "micro bold",
       fontWeight: "bold",
       fontSize: "24px",
       lineHeight: "30px",
       color: "#000"
     },
     titleMD: {
-      fontFamily: "Anybody ExtraLight",
+      fontFamily: "Bebas Neue",
       fontWeight: "bold",
       fontSize: "20px",
       lineHeight: "24px",
       color: "#000"
     },
     titleSM: {
-      fontFamily: "Anybody ExtraLight",
+      fontFamily: "Bebas Neue",
       fontWeight: "normal",
       fontSize: "14px",
-      lineHeight: "1.5rem",
-      color: "#000"
-    },
-    titleXS: {
-      fontFamily: "Anybody ExtraLight",
-      fontWeight: "normal",
-      fontSize: "10px",
-      lineHeight: "0.9rem",
+      lineHeight: "18px",
       color: "#000"
     },
     bodyMD: {
-      fontFamily: "Anybody ExtraLight",
+      fontFamily: "ibm condensed medium",
       fontWeight: "normal",
       fontSize: "18px",
-      lineHeight: "20px",
+      lineHeight: "18px",
       color: "#000"
     },
     bodySM: {
-      fontFamily: "Anybody ExtraLight",
+      fontFamily: "ibm condensed medium",
       fontWeight: "normal",
       fontSize: "14px",
       lineHeight: "16px",
       color: "#000"
     },
-    bodyXS: {
-      fontFamily: "Anybody ExtraLight",
+    bodyXXS: {
+      fontFamily: "ibm condensed medium",
       fontWeight: "normal",
-      fontSize: "9px",
-      lineHeight: "0.9rem",
+      fontSize: "6.2699px",
+      lineHeight: "7px",
       color: "#000"
     }
   },

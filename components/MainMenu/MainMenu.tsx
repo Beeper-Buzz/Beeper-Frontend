@@ -12,7 +12,7 @@ import { MainMenuProps, menuDataItem } from "./types";
 import DesktopMenu from "../MainMenu/DesktopMenu";
 
 import { HiddenOnDesktop, HiddenOnMobile } from "./MainMenu.styles";
-import { MobileMenu } from "./MobileMenu";
+import { MobileMenu } from "../MobileMenu/MobileMenu";
 
 // const SidebarMenu = styled(List)`
 //   width: 100%;

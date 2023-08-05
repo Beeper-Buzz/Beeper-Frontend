@@ -51,7 +51,7 @@ export const MobileMenu = ({
       if (onMenuItemClick) {
         onMenuItemClick(kp, key);
       }
-<<<<<<< HEAD
+
       setKeyPath((pre) => {
         if (kp == pre) {
           // console.log("closing");
@@ -135,61 +135,6 @@ export const MobileMenu = ({
       );
     }
     return null;
-=======
-    });
-  }, []);
-  const getSubMenuOrItems = (
-    menusData: menuDataItem[],
-    parentKeyPath: string,
-    level: number
-  ) => {
-    const pl = level * 40 + "px";
-    return (
-      <SiderMenu disablePadding>
-        {menusData.map((item, index) => {
-          return (
-            <Fragment key={parentKeyPath + "/" + item.key}>
-              {
-                <MenuItem
-                  pl={pl}
-                  onClick={handleClick.bind(
-                    null,
-                    parentKeyPath + "/" + item.key,
-                    item.key
-                  )}
-                  button
-                >
-                  <ListItemIcon>{item.icon ? item.icon() : null}</ListItemIcon>
-                  <ListItemText primary={item.name} />
-                  {item &&
-                    item.children &&
-                    item.children.length != 0 &&
-                    (keyPath.indexOf(parentKeyPath + "/" + item.key) != -1 ? (
-                      <ExpandLess />
-                    ) : (
-                      <ExpandMore />
-                    ))}
-                </MenuItem>
-              }
-              {item && item.children && item.children.length != 0 && (
-                <Collapse
-                  timeout="auto"
-                  unmountOnExit
-                  in={keyPath.indexOf(parentKeyPath + "/" + item.key) != -1}
-                >
-                  {getSubMenuOrItems(
-                    item.children,
-                    parentKeyPath + "/" + item.key,
-                    level + 1
-                  )}
-                </Collapse>
-              )}
-            </Fragment>
-          );
-        })}
-      </SiderMenu>
-    );
->>>>>>> 5cecf8c (tweak yarn version, remove menu readme files, remove dead code, fix linter issues)
   };
 
   return (
@@ -233,8 +178,3 @@ export const MobileMenu = ({
     </BurgerMenu>
   );
 };
-<<<<<<< HEAD
-=======
-
-export { MainMenu } from "./MainMenu";
->>>>>>> 5cecf8c (tweak yarn version, remove menu readme files, remove dead code, fix linter issues)

@@ -1,5 +1,4 @@
-import dynamic from "next/dynamic";
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSpring, animated } from "@react-spring/web";
 
 import { LogoMark, BlobWrapper } from "./LogoBlob.styles";
@@ -12,9 +11,6 @@ const blob3 =
   "M36.4,-58.3C45.7,-50.6,51,-38.1,58.4,-25.6C65.9,-13,75.5,-0.4,76.7,13.1C77.9,26.5,70.8,40.9,59.4,48.4C48.1,55.9,32.5,56.7,18.3,59.4C4.2,62.2,-8.5,67.1,-21.3,66.2C-34.1,65.3,-47.1,58.7,-58.1,48.8C-69.1,38.9,-78,25.7,-82.2,10.5C-86.5,-4.7,-85.9,-21.8,-77.9,-34C-69.8,-46.1,-54.3,-53.2,-40.1,-58.7C-25.8,-64.3,-12.9,-68.3,0.3,-68.7C13.5,-69.2,27,-66.1,36.4,-58.3Z";
 const blob4 =
   "M35.1,-51.8C49.7,-45.2,68.6,-42.6,72.9,-33.3C77.3,-23.9,67,-7.9,62,7.1C57,22.1,57.4,36.1,50.9,44.9C44.4,53.7,31.2,57.4,17.4,63.4C3.5,69.4,-10.9,77.7,-24.1,76.4C-37.4,75.1,-49.5,64.3,-59.3,52C-69.1,39.6,-76.6,25.9,-75.7,12.7C-74.9,-0.5,-65.7,-13.2,-58.4,-25.7C-51.2,-38.3,-45.9,-50.7,-36.5,-59.7C-27.1,-68.7,-13.5,-74.3,-1.6,-71.7C10.2,-69.1,20.5,-58.4,35.1,-51.8Z";
-
-const isServer = typeof window === "undefined";
-const isClient = typeof window !== "undefined";
 
 export const LogoBlob = ({ hasBlob, isDark }: any) => {
   const [open, toggle] = useState(false);
@@ -56,6 +52,8 @@ export const LogoBlob = ({ hasBlob, isDark }: any) => {
   const AnimFeTurbulence = animated("feTurbulence");
   const AnimFeDisplacementMap = animated("feDisplacementMap");
   const AnimFeGaussianBlur = animated("feGaussianBlur");
+
+  const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH || "";
 
   return (
     <>
@@ -120,10 +118,7 @@ export const LogoBlob = ({ hasBlob, isDark }: any) => {
           </g>
         </animated.svg>
       </BlobWrapper>
-      <LogoMark
-        src={process.env.NEXT_PUBLIC_LOGO_PATH}
-        onClick={() => toggle(!open)}
-      />
+      <LogoMark src={logoPath} onClick={() => toggle(!open)} />
     </>
   );
 };

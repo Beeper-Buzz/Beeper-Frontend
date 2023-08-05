@@ -8,11 +8,12 @@ import {
 } from "../components";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
-import { useMutation, useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 import { fetchProducts, useProducts } from "../../hooks";
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import { CarouselProvider, Slider } from "pure-react-carousel";
+import { CarouselProvider } from "pure-react-carousel";
+import { useSpring } from "react-spring";
 import "pure-react-carousel/dist/react-carousel.es.css";
 
 import {
@@ -38,7 +39,10 @@ export const ComingSoon = () => {
   const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH;
   const previewMode =
     process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === "true" ? true : false;
-  const comingSoonText = process.env.NEXT_PUBLIC_COMING_SOON_TEXT || "";
+  const comingSoonText =
+    process.env.NEXT_PUBLIC_COMING_SOON_TEXT ||
+    process.env.NEXT_PUBLIC_COMING_SOON_COPY ||
+    "";
   const mailerUrl = process.env.NEXT_PUBLIC_MAILCHIMP_URL || "";
   const mailerId = process.env.NEXT_PUBLIC_MAILCHIMP_ID || "";
   const mailerUser = process.env.NEXT_PUBLIC_MAILCHIMP_U || "";
@@ -118,6 +122,13 @@ export const ComingSoon = () => {
     [productsData]
   );
 
+  const { tintValue } = useSpring({
+    delay: 3000,
+    from: { tintValue: 0 },
+    to: { tintValue: 1 },
+    config: { tension: 80, friction: 60 }
+  });
+
   useEffect(() => {
     if (productsSuccess) {
       queryClient.setQueryData(["products", 1], productsData);
@@ -126,20 +137,33 @@ export const ComingSoon = () => {
 
   return (
     <>
-      <Container>
-        {logoPath ? (
+      <Container
+        style={{
+          filter: tintValue.interpolate(
+            (value) => `saturate(${value * 100}%) blur(${5 * (1 - value)}px)`
+          )
+        }}
+      >
+        {/* <Container tintValue={props.tintValue}> */}
+        <Fade />
+        <Device src="/images/beeper_one_masked.png" />
+        {!isServer ? (
+          <LogoBlob />
+        ) : logoPath ? (
           <Logo src={logoPath} />
         ) : siteTitle ? (
           <LogoText>{siteTitle}</LogoText>
-        ) : null}
+        ) : (
+          <Logo />
+        )}
         {siteDesc && <Text>{siteDesc}</Text>}
-        {/* {previewMode && (
+        {previewMode && (
           <ProductTeaser
             products={productsData}
             title={""}
             openSlideshow={(e: any) => setIsSlideshow(e)}
           />
-        )} */}
+        )}
         {previewMode && (
           <ResponsiveMasonry
             columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
@@ -149,9 +173,6 @@ export const ComingSoon = () => {
             </Masonry>
           </ResponsiveMasonry>
         )}
-        {comingSoonText !== "" && <Text>{comingSoonText}</Text>}
-        <NotifyForm />
-        <SocialLinks />
         {isSlideshow && (
           <ProductImageCarousel>
             <CarouselBackground onClick={() => setIsSlideshow(false)} />
@@ -178,10 +199,7 @@ export const ComingSoon = () => {
             </CarouselProvider>
           </ProductImageCarousel>
         )}
-        <Fade />
-        <Device src="/images/beeper_one_masked.png" />
-        {isServer ? <Logo /> : <LogoBlob />}
-        <Text>{process.env.NEXT_PUBLIC_COMING_SOON_COPY}</Text>
+        <Text>{comingSoonText}</Text>
         <NotifyForm />
         <SocialLinks />
       </Container>

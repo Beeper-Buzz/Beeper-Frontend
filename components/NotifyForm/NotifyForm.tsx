@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import {
   Container,
   NotifyText,
+  ErrorText,
   FormWrapper,
   QuestionWrapper,
   EmailInput,
@@ -194,11 +195,11 @@ export const NotifyForm = () => {
             </NotifyText>
           )}
           {status === "error" && (
-            <NotifyText>
+            <ErrorText>
               {message === "Bad Request"
                 ? `${message} or Email already exists`
                 : message}
-            </NotifyText>
+            </ErrorText>
           )}
           {status === "success" &&
             currentQuestion >= notifyQuestions.length && (
