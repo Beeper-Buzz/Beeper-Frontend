@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useProducts } from "../../hooks/useProducts";
 import { ProductListProps } from "./types";
 import styled from "@emotion/styled";
+import { useRouter } from "next/router";
 
 const ProductsRow = styled.div`
   display: grid;
