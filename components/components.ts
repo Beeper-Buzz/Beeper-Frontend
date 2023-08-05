@@ -9,6 +9,7 @@ export * from "./InfoBox";
 export * from "./Layout";
 export * from "./Loading";
 export * from "./Login";
+export * from "./Logo";
 export * from "./MainMenu";
 export * from "./NotifyForm";
 export * from "./PostList";

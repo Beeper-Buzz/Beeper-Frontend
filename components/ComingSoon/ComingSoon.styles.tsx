@@ -108,13 +108,39 @@ export const LogoText = styled.div`
 export const Text = styled.div`
   text-align: center;
   width: 425px;
-  top: 400px;
-  font-family: ${(p: any) => p.theme.typography.titleMD.fontFamily};
-  font-weight: ${(p: any) => p.theme.typography.titleMD.fontWeight};
-  font-size: ${(p: any) => p.theme.typography.titleMD.fontSize};
-  line-height: ${(p: any) => p.theme.typography.titleMD.lineHeight};
+  margin-top: -40px;
+  text-transform: uppercase;
+  opacity: 0.66;
+  font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
+  font-size: ${(p) => p.theme.typography.titleSM.fontSize};
+  font-weight: ${(p) => p.theme.typography.titleSM.fontWeight};
+  line-height: ${(p) => p.theme.typography.titleSM.lineHeight};
   color: ${(p: any) =>
     p.theme.isDarkMode
       ? p.theme.colors.white.primary
       : p.theme.colors.black.primary};
+`;
+
+export const Fade = styled.div`
+  width: 100%;
+  height: 50%;
+  position: absolute;
+  bottom: 0;
+  background: rgb(0, 0, 0);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+  @media screen and (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
+    height: 300px;
+  }
+`;
+
+export const Device = styled.img`
+  opacity: 0.33;
+  display: flex;
+  justify-contents: center;
+  position: absolute;
+  bottom: -40%;
+  width: 150%;
+  @media screen and (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
+    bottom: -10px;
+  }
 `;
