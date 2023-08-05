@@ -14,6 +14,7 @@ export * from "./Loading";
 export * from "./Login";
 export * from "./Lottie";
 export * from "./Logo";
+export * from "./LogoBlob";
 export * from "./MainMenu";
 export * from "./NotifyForm";
 export * from "./PostList";
