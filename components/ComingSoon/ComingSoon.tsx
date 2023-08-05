@@ -26,7 +26,9 @@ import {
   CarouselNav,
   CarouselBackButton,
   CarouselNextButton,
-  Text
+  Text,
+  Fade,
+  Device
 } from "./ComingSoon.styles";
 
 const siteTitle = process.env.NEXT_PUBLIC_SITE_TITLE || "";
@@ -205,7 +207,12 @@ export const ComingSoon = () => {
             </CarouselProvider>
           </ProductImageCarousel>
         )}
-        <LegalLinks />
+        <Fade />
+        <Device src="/images/beeper_one_masked.png" />
+        <Logo />
+        <Text>{process.env.NEXT_PUBLIC_COMING_SOON_COPY}</Text>
+        <NotifyForm />
+        <SocialLinks />
       </Container>
     </>
   );
