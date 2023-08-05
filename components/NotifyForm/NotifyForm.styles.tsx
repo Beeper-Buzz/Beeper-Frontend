@@ -49,7 +49,7 @@ interface QuestionWrapperType {
 
 export const QuestionWrapper = styled.div<QuestionWrapperType>`
   display: ${(p) => (p.isVisible ? "block" : "none")};
-  width: 340px;
+  width: 375px;
   height: 125px;
   margin: 0 20px;
   @media (max-width: ${(p) => p.theme.breakpoints.values.xs}px) {
@@ -102,9 +102,9 @@ export const EmailInput = styled.input<GenericThemeType>`
   margin: 0;
   outline: none;
   padding: 8px 15px;
-  color: ${(props) => props.theme.colors.blue.primary};
+  color: ${(props) => props.theme.colors.purple.primary};
   &::placeholder {
-    color: ${(props) => props.theme.colors.blue.primary};
+    color: ${(props) => props.theme.colors.purple.primary};
   }
   &:focus::placeholder {
     color: ${(props) => props.theme.colors.pink.primary};
@@ -120,7 +120,7 @@ export const Button = styled.button<GenericThemeType>`
   text-align: center;
   width: 121px;
   height: 36.15px;
-  color: ${(p) => p.theme.colors.pink.light};
+  color: ${(p) => p.theme.colors.purple.light};
   background: ${(p) => p.theme.colors.pink.dark};
   font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
   border: 2px solid rgba(255, 0, 138, 0.15);
@@ -136,6 +136,12 @@ export const Button = styled.button<GenericThemeType>`
   font-size: 18px;
   letter-spacing: 1px;
   padding: 0;
+  transition: 0.33s all ease-in-out;
+  &:hover {
+    transition: 0.33s all ease-in-out;
+    background: ${(p) => p.theme.colors.pink.primary};
+    color: ${(p) => p.theme.colors.white.primary};
+  }
   @media (max-width: ${(p) => p.theme.breakpoints.values.xs}px) {
     -webkit-appearance: none;
   }

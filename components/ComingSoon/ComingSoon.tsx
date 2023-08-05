@@ -126,7 +126,7 @@ export const ComingSoon = () => {
     delay: 3000,
     from: { tintValue: 0 },
     to: { tintValue: 1 },
-    config: { tension: 80, friction: 60 }
+    config: { tension: 80, friction: 180 }
   });
 
   useEffect(() => {

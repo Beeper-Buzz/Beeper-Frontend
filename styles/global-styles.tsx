@@ -32,7 +32,6 @@ export const GlobalStyles = ({ theme, children }: any) => (
           background-size: 100vw 100vh;
           background-repeat: no-repeat;
           background-position: center;
-          color: hotpink !important;
           margin: 0;
           padding: 0;
           width: 100%;
@@ -51,13 +50,13 @@ export const GlobalStyles = ({ theme, children }: any) => (
 
         ::-moz-selection {
           /* Code for Firefox */
-          color: ${theme.colors.white.primary};
-          background: ${theme.colors.brand.primary};
+          color: black;
+          background: yellow;
         }
 
         ::selection {
-          color: ${theme.colors.white.primary};
-          background: ${theme.colors.brand.primary};
+          color: black;
+          background: yellow;
         }
         #__next {
           width: 100%;
@@ -68,7 +67,7 @@ export const GlobalStyles = ({ theme, children }: any) => (
 
         a {
           cursor: pointer;
-          color: ${theme.colors.brand.primary};
+          color: yellow;
         }
 
         p {
@@ -108,9 +107,9 @@ export const GlobalStyles = ({ theme, children }: any) => (
         }
 
         button {
-          background-color: ${theme.colors.brand.primary};
+          background-color: yellow;
           border: 0;
-          color: ${theme.colors.white.primary};
+          color: black;
           width: 100%;
           max-width: 400px;
           font-size: 29.24px;
