@@ -32,13 +32,13 @@ declare module "@emotion/react" {
         medium: string;
         light: string;
         dark: string;
-      },
+      };
       purple: {
         primary: string;
         medium: string;
         light: string;
         dark: string;
-      },
+      };
       brand: {
         bright?: string;
         primary: string;
