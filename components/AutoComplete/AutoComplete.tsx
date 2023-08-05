@@ -15,7 +15,7 @@ const AutoComplete = ({
 }: AutoCompleteProps) => {
   const { error, status, data, isLoading, isSuccess } = useProducts(1);
   const [page, setPage] = useState(1);
-  const [suggestions, setSuggestions] = useState<Any[]>([]);
+  const [suggestions, setSuggestions] = useState([]);
   // const [error, setError] = useState('');
 
   useEffect(() => {
