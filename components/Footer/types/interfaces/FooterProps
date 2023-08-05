@@ -1,7 +1,0 @@
-export interface FooterProps{
-    links: object[];
-    showLegal: boolean;
-    showContent: boolean;
-    showSocial: boolean;
-    styles:{}
-}

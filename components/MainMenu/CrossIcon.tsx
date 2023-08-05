@@ -1,70 +1,61 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-const CrossIcon=({customIcon,styles,crossClassName,className,onClick,isOpen})=>{
-    const getCrossStyle=(type)=>{
-        return {
-            position:'absolute',
-            width:3,
-            height:14,
-            transform:type==='before' ? 'rotate(45deg)' : 'rotate(-45deg)'
-        }
-    }
-    let icon;
-    let buttonWrapperStyle={
-        position: 'absolute',
-        width: 24,
-        height: 24,
-        right: 8,
-        top: 8
-    }
-    let buttonStyle = {
-        position: 'absolute' as 'absolute',
-        left: 0,
-        top: 0,
-        zIndex: 1,
-        width: '100%',
-        height: '100%',
-        margin: 0,
-        padding: 0,
-        border: 'none',
-        fontSize: 0,
-        background: 'transparent',
-        cursor: 'pointer'
+import React from "react";
+import {CrossIconProps} from "../Footer/types/interfaces/CrossIcon";
+
+export const CrossIcon = ({ customIcon, styles, crossClassName, onClick, isOpen }:CrossIconProps) => {
+  const getCrossStyle = (type:string) => {
+    return {
+      position: "absolute" as "absolute",
+      width: 3,
+      height: 14,
+      transform: type === "before" ? "rotate(45deg)" : "rotate(-45deg)"
     };
-    if (customIcon) {
-        let extraProps = {
-            className: `bm-cross ${customIcon.props.className ||
-            ''}`.trim(),
-            style: {
-                ...{ width: '100%', height: '100%' },
-                ...styles.bmCross
-            }
-        };
-        icon = React.cloneElement(customIcon, extraProps);
-    } else {
-        icon = (
-            <span style={{ position: 'absolute', top: '6px', right: '14px' }}>
-          {['before', 'after'].map((type, i) => (
-              <span
-                  key={i}
-                  className={`bm-cross ${crossClassName}`.trim()}
-                  style={{
-                      ...getCrossStyle(type),
-                      ...styles.bmCross
-                  }}
-              />
-          ))}
-        </span>
-        );
-    }
+  };
+
+  let buttonWrapperStyle = {
+    position: "absolute" as "absolute",
+    width: 24,
+    height: 24,
+    right: 8,
+    top: 8
+  };
+  
+  let buttonStyle = {
+    position: "absolute" as "absolute",
+    left: 0,
+    top: 0,
+    zIndex: 1,
+    width: "100%",
+    height: "100%",
+    margin: 0,
+    padding: 0,
+    border: "none",
+    fontSize: 0,
+    background: "transparent",
+    cursor: "pointer"
+  };
+  
+  if (customIcon) {
+    let extraProps = {
+      className: `bm-cross ${customIcon.props.className || ""}`.trim(),
+      style: {
+        ...{ width: "100%", height: "100%" },
+        ...styles.bmCross
+      }
+    };
+    
+    return React.cloneElement(customIcon, extraProps);
+  } else {
     return (
-        <div
-            className={`bm-cross-button ${className}`.trim()}
+      <span style={{ position: "absolute", top: "6px", right: "14px" }}>
+        {["before", "after"].map((type, i) => (
+          <span
+            key={i}
+            className={`bm-cross ${crossClassName}`.trim()}
             style={{
                 ...buttonWrapperStyle,
                 ...styles.bmCrossButton
             }}
-        >
+          >
             <button
                 id="react-burger-cross-btn"
                 onClick={onClick}
@@ -73,20 +64,11 @@ const CrossIcon=({customIcon,styles,crossClassName,className,onClick,isOpen})=>{
             >
                 Close Menu
             </button>
-            {icon}
-        </div>
-    )
-}
-CrossIcon.propTypes = {
-    crossClassName: PropTypes.string,
-    customIcon: PropTypes.element,
-    isOpen: PropTypes.bool,
-    styles: PropTypes.object
+          </span>
+        ))}
+      </span>
+    );
+  }
 };
-CrossIcon.defaultProps = {
-    crossClassName: '',
-    className: '',
-    styles: {},
-    isOpen: false
-};
-export default CrossIcon
+
+export default CrossIcon;
