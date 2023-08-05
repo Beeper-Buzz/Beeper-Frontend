@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { useProducts } from "../../hooks/useProducts";
 import { ProductListProps } from "./types";
+import styled from "@emotion/styled";
 
 const ProductsRow = styled.div`
   display: grid;
@@ -41,12 +42,12 @@ export const ProductList: React.FC<ProductListProps> = (props: any) => {
   // if (isLoading) return <MyDiv>Loading</MyDiv>;
 
   if (!isSuccess) {
-    return <div>Could not load products</div>;
+    return <MyDiv>Could not load products</MyDiv>;
   }
 
   return (
-    <section>
-      <div className="products-row">
+    <MySection>
+      <ProductsRow className="products-row">
         {products?.data?.map((product) => {
           const imageId =
             Array.isArray(product.relationships.images.data) &&
@@ -66,76 +67,17 @@ export const ProductList: React.FC<ProductListProps> = (props: any) => {
                   id: product.id
                 }
               }}>
-              <div className="product-container">
-                <img src={source} />
-                <h1>{product.attributes.name}</h1>
-                <div>
+              <ProductContainer>
+                <MyImg src={source} />
+                <MyH1>{product.attributes.name}</MyH1>
+                <MyDiv>
                   <h3>${product.attributes.price}</h3>
-                </div>
-              </div>
+                </MyDiv>
+              </ProductContainer>
             </Link>
           );
         })}
-      </div>
-      <style jsx>{`
-        .products-row {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        }
-        .product-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-
-        img {
-          height: 300px;
-          width: 240px;
-          object-fit: contain;
-        }
-
-        h1 {
-          font-size: 20px;
-        }
-
-        section {
-          padding-bottom: 20px;
-        }
-        li {
-          display: block;
-          margin-bottom: 10px;
-        }
-        div {
-          align-items: center;
-          display: flex;
-        }
-        a {
-          font-size: 14px;
-          margin-right: 10px;
-          text-decoration: none;
-          padding-bottom: 0;
-          border: 0;
-        }
-        span {
-          font-size: 14px;
-          margin-right: 5px;
-        }
-        ul {
-          margin: 0;
-          padding: 0;
-        }
-        button:before {
-          align-self: center;
-          border-style: solid;
-          border-width: 6px 4px 0 4px;
-          border-color: #ffffff transparent transparent transparent;
-          content: "";
-          height: 0;
-          margin-right: 5px;
-          width: 0;
-        }
-      `}</style>
-    </section>
+      </ProductsRow>
+    </MySection>
   );
 };
