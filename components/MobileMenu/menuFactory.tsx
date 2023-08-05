@@ -18,10 +18,13 @@ import {
 import { BaseStyles, BaseStylesKey } from "./types/baseStyles";
 import { BurgerIconStyles } from "./types/BurgerIconProps";
 import { CrossIconStyles } from "./types/CrossIcon";
+<<<<<<< HEAD:components/MobileMenu/menuFactory.tsx
 export const MenuFactory= (styles: any) => {
     if (!styles) {
         throw new Error('No styles supplied');
     }
+=======
+>>>>>>> 249e2df (update):components/MainMenu/menuFactory.tsx
 
 const MenuFactory = (styles: MenuFactoryStyles) => {
   if (!styles) {
@@ -598,11 +601,15 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
             <div style={getStyles("closeButton" as keyof BaseStyles)}>
               <CrossIcon
                 onClick={close}
+<<<<<<< HEAD:components/MobileMenu/menuFactory.tsx
 <<<<<<< HEAD
                 styles={props.styles as CrossIconStyles}
 =======
                 styles={props.styles}
 >>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)
+=======
+                styles={props.styles as CrossIconStyles}
+>>>>>>> 249e2df (update):components/MainMenu/menuFactory.tsx
                 customIcon={props.customCrossIcon}
                 className={props.crossButtonClassName}
                 crossClassName={props.crossClassName}
