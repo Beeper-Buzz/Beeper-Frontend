@@ -4,35 +4,35 @@ import { useProducts } from "../../hooks/useProducts";
 import { ProductListProps } from "./types";
 import styled from "@emotion/styled";
 
-const ProductsRow=styled.div`
+const ProductsRow = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-`
-const ProductContainer=styled.div`
+`;
+const ProductContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-`
-const MyImg=styled.img`
+`;
+const MyImg = styled.img`
   height: 300px;
   width: 240px;
   object-fit: contain;
-`
-const MyH1=styled.h1`
+`;
+const MyH1 = styled.h1`
   font-size: 20px;
-`
-const MySection=styled.section`
+`;
+const MySection = styled.section`
   padding-bottom: 20px;
-`
-const MyLi=styled.li`
+`;
+const MyLi = styled.li`
   display: block;
   margin-bottom: 10px;
-`
-const MyDiv=styled.div`
+`;
+const MyDiv = styled.div`
   align-items: center;
   display: flex;
-`
+`;
 export const ProductList: React.FC<ProductListProps> = () => {
   const { data: products, isLoading, isSuccess } = useProducts(1);
   if (isLoading) return <div>Loading</div>;

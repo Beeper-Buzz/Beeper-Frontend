@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { InfoBoxProps } from "./types";
-
 const Info = styled.div`
   margin-top: 20px;
   margin-bottom: 20px;

@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 export { InfoBox } from "./InfoBox";
 =======
 import React from "react";
@@ -26,3 +27,6 @@ export { InfoBox };
 =======
 export { InfoBox } from './InfoBox'
 >>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)
+=======
+export { InfoBox } from "./InfoBox";
+>>>>>>> 4dbea76 (update)

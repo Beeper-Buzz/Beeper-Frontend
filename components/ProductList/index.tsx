@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 export { ProductList } from "./ProductList";
 =======
 import React from "react";
@@ -215,3 +216,6 @@ export const ProductList: React.FC<ProductListProps> = () => {
 =======
 export { ProductList } from './ProductList'
 >>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)
+=======
+export { ProductList } from "./ProductList";
+>>>>>>> 4dbea76 (update)

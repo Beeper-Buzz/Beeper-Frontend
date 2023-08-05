@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 export * from "./Footer";
 =======
 import React from "react";
@@ -151,3 +152,6 @@ Footer.defaultProps = {
 =======
 export { Footer } from './Footer'
 >>>>>>> 7cc392d (reorganize files (prefer named files), rename MainMenu > MobileMenu, add MobileMenu & Footer to global Layout file, remove test route)
+=======
+export { Footer } from "./Footer";
+>>>>>>> 4dbea76 (update)
