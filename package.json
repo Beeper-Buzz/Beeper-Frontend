@@ -2,6 +2,10 @@
   "name": "dna-frontend",
   "version": "0.1.1",
   "private": true,
+  "engines": {
+    "node": "14.17.0",
+    "yarn": "1.22.19"
+  },
   "scripts": {
     "dev": "cross-env DEPLOY_ENV=dev next dev",
     "build": "cross-env DEPLOY_ENV=prod next build",
