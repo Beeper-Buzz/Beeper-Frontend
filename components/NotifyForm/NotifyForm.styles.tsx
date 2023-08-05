@@ -5,8 +5,11 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 95%;
-  height: 175px;
+  align-items: center;
+  width: 100%;
+  padding: 0 5px;
+  position: relative;
+  // height: 175px;
 `;
 
 export const NotifyText = styled.div`
