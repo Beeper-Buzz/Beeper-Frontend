@@ -2,7 +2,7 @@ import menuFactory from "./menuFactory";
 import {MenuFactoryStyles} from "./types/menuFactory";
 
 const styles :MenuFactoryStyles = {
-  pageWrap(isOpen:boolean, width:string, right:string) {
+  pageWrap(isOpen:boolean, width:string, right:boolean) {
     return {
       MozTransform: isOpen
         ? ""
