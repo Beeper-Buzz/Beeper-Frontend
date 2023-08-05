@@ -7,7 +7,7 @@ import { fetchPosts, fetchProducts } from "../../hooks";
 const Home = () => {
   return (
     <Layout>
-      <ProductList />
+      <ProductList products={[]} title="Products" />
       <div className={"test"}></div>
     </Layout>
   );

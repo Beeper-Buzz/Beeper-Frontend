@@ -120,7 +120,10 @@ export const LogoBlob = ({ hasBlob, isDark }: any) => {
           </g>
         </animated.svg>
       </BlobWrapper>
-      <LogoMark src={process.env.NEXT_PUBLIC_LOGO_PATH} onClick={() => toggle(!open)} />
+      <LogoMark
+        src={process.env.NEXT_PUBLIC_LOGO_PATH}
+        onClick={() => toggle(!open)}
+      />
     </>
   );
 };

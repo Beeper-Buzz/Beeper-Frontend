@@ -144,7 +144,8 @@ const SearchBar = ({
       aria-expanded={isAutoCompleteVisible}
       ref={dropdownRef}
       aria-labelledby={labelId}
-      {...rest}>
+      {...rest}
+    >
       <SearchBarWrapper className="is-search-route">
         <SearchInputWrapper>
           <StyledInputContainer isExpanded={isExpanded} isWidthSet={isWidthSet}>

@@ -10,7 +10,6 @@ import { useCart } from "../../hooks/useCart";
 import { MyLogo } from "../Layout/Layout";
 import SearchBar from "../SearchBar";
 import { MainMenu } from "../MainMenu";
-import { menusData } from "../MainMenu/data/menusData";
 import { CartSidebar } from "../CartSidebar/CartSidebar";
 import { SocialLinks } from "..";
 

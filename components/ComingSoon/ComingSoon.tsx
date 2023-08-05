@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { NotifyForm, ProductTeaser, SocialLinks, Logo, LogoBlob } from "../components";
+import {
+  NotifyForm,
+  ProductTeaser,
+  SocialLinks,
+  Logo,
+  LogoBlob
+} from "../components";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
 import { useMutation, useQueryClient } from "react-query";
@@ -26,7 +32,7 @@ import {
 } from "./ComingSoon.styles";
 
 export const ComingSoon = () => {
-  const isServer = typeof window === 'undefined';
+  const isServer = typeof window === "undefined";
   const siteTitle = process.env.NEXT_PUBLIC_SITE_TITLE || "";
   const siteDesc = process.env.NEXT_PUBLIC_SITE_DESC || "";
   const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH;

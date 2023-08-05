@@ -28,6 +28,7 @@ export type menuItem = {
 export type menuDataItem = {
   name: string;
   key: string;
+  menu_location_listing?: menuDataItem[];
   children?: menuDataItem[];
   icon?: () => ReactNode;
   pcIcon?: () => ReactNode;

@@ -122,8 +122,8 @@ export const Button = styled.button`
   );
   border: none;
   box-sizing: border-box;
-  box-shadow: -6px -6px 12px rgb(144 0 147 / 11%), 1px 1px 24px rgba(0, 0, 0, 0.33),
-    inset 1px 2px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: -6px -6px 12px rgb(144 0 147 / 11%),
+    1px 1px 24px rgba(0, 0, 0, 0.33), inset 1px 2px 8px rgba(0, 0, 0, 0.5);
   border-radius: 36.1511px;
   position: relative;
   top: 0;
