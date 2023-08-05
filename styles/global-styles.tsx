@@ -20,18 +20,6 @@ export const GlobalStyles = ({ theme, children }: any) => (
           font-family: "ibm condensed medium";
           font-size: 14px;
           line-height: 16px;
-          background: black;
-          background-image: #00000;
-          background-image: radial-gradient(at 94% 36%, hsla(273, 81%, 20%, 1) 0, transparent 100%),
-            radial-gradient(at 19% 93%, hsla(299, 100%, 30%, 1) 0, transparent 32%),
-            radial-gradient(at 50% 11%, hsla(0, 0%, 0%, 1) 0, transparent 100%),
-            radial-gradient(at 36% 94%, hsla(264, 75%, 65%, 1) 0, transparent 100%),
-            radial-gradient(at 32% 19%, hsla(261, 78%, 27%, 1) 0, transparent 100%),
-            radial-gradient(at 18% 79%, hsla(242, 100%, 50%, 1) 0, transparent 100%),
-            radial-gradient(at 83% 53%, hsla(124, 85%, 70%, 1) 0, transparent 59%);
-          background-size: 100vw 100vh;
-          background-repeat: no-repeat;
-          background-position: center;
           margin: 0;
           padding: 0;
           width: 100%;

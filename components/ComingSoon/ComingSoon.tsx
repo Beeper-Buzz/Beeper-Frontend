@@ -17,6 +17,7 @@ import { useSpring } from "react-spring";
 import "pure-react-carousel/dist/react-carousel.es.css";
 
 import {
+  Background,
   Container,
   LogoText,
   ProductImageCarousel,
@@ -136,7 +137,7 @@ export const ComingSoon = () => {
   }, [productsSuccess]);
 
   return (
-    <>
+    <Background>
       <Container
         style={{
           filter: tintValue.interpolate(
@@ -203,7 +204,7 @@ export const ComingSoon = () => {
         <NotifyForm />
         <SocialLinks />
       </Container>
-    </>
+    </Background>
   );
 };
 
