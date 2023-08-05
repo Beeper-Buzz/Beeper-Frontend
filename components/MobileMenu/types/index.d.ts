@@ -20,7 +20,6 @@ export type BurgerMenu = {
   fallDown: ReactElement;
   reveal: ReactElement;
 };
-
 export type menuItem = {
   name: string;
   key: string;

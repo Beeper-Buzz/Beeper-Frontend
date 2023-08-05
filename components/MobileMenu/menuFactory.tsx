@@ -18,10 +18,6 @@ import {
 import { BaseStyles, BaseStylesKey } from "./types/baseStyles";
 import { BurgerIconStyles } from "./types/BurgerIconProps";
 import { CrossIconStyles } from "./types/CrossIcon";
-export const MenuFactory= (styles: any) => {
-    if (!styles) {
-        throw new Error('No styles supplied');
-    }
 
 const MenuFactory = (styles: MenuFactoryStyles) => {
   if (!styles) {
@@ -500,26 +496,16 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
         />
     )}
         {props.customBurgerIcon !== false && (
-            <div style={getStyles('burgerIcon')}>
-                <BurgerIcon
-                    onClick={open}
+            <div style={getStyles("burgerIcon" as keyof BaseStyles)}>
+              <BurgerIcon
+                onClick={open}
                 styles={props.styles}
                 customIcon={props.customBurgerIcon}
                 className={props.burgerButtonClassName}
                 barClassName={props.burgerBarClassName}
                 onIconStateChange={props.onIconStateChange}
-                />
+              />
             </div>
-          <div style={getStyles("burgerIcon" as keyof BaseStyles)}>
-            <BurgerIcon
-              onClick={open}
-              styles={props.styles}
-              customIcon={props.customBurgerIcon}
-              className={props.burgerButtonClassName}
-              barClassName={props.burgerBarClassName}
-              onIconStateChange={props.onIconStateChange}
-            />
-          </div>
         )}
         <div
           id={props.id}
@@ -677,4 +663,7 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
 
   return Menu;
 };
+export default MenuFactory;
+};
+
 export default MenuFactory;
