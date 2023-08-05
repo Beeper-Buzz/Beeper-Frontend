@@ -13,6 +13,7 @@ import BurgerIcon from "./BurgerIcon";
 import CrossIcon from "./CrossIcon";
 import {MenuFactoryStyles, MenuFactoryStylesKey, MenuProps} from "./types/menuFactory";
 import {BaseStyles, BaseStylesKey} from "./types/baseStyles";
+import {BurgerIconStyles} from "./types/BurgerIconProps";
 
 export const MenuFactory= (styles: any) => {
     if (!styles) {
@@ -150,15 +151,15 @@ export const MenuFactory= (styles: any) => {
       if (styles[el]) {
         output = {
           ...output,
-          ...getStyle(styles[el], index + 1)
+          ...getStyle(styles[el] as ()=>any, index + 1)
         };
       }
 
       // Add custom styles
-      if (props.styles[propName]) {
+      if (props.styles[propName as keyof BurgerIconStyles]) {
         output = {
           ...output,
-          ...props.styles[propName]
+          ...props.styles[propName as keyof BurgerIconStyles]
         };
       }
 
@@ -195,7 +196,7 @@ export const MenuFactory= (styles: any) => {
 
       for (const prop in builtStyles) {
         if (builtStyles.hasOwnProperty(prop)) {
-          wrapper.style[prop] = set ? builtStyles[prop] : "";
+          wrapper.style[prop as unknown as number] = set ? builtStyles[prop] : "";
         }
 
       // Prevent any horizontal scroll
@@ -203,7 +204,7 @@ export const MenuFactory= (styles: any) => {
       // bodyClassName is not passed in. Otherwise, it is up to the caller to
       // decide if they want to set the overflow style in CSS using the custom
       // class names
-      const applyOverflow = (el:HTMLElement) => (el.style["overflow-x"] = set ? "hidden" : "");
+      const applyOverflow = (el:HTMLElement) => (el.style["overflow-x"as unknown as number] = set ? "hidden" : "");
       if (!props.htmlClassName) {
         applyOverflow(document.querySelector("html") as HTMLElement);
       }
@@ -255,6 +256,7 @@ export const MenuFactory= (styles: any) => {
         function handleExternalWrapper(id, wrapperStyles, set) {
             const wrapper = document.getElementById(id);
 
+<<<<<<< HEAD
             if (!wrapper) {
                 console.error("Element with ID '" + id + "' not found");
                 return;
@@ -281,6 +283,47 @@ export const MenuFactory= (styles: any) => {
             if (!props.bodyClassName) {
                 applyOverflow(document.querySelector('body'));
             }
+=======
+    function onKeyDownOpen(e:KeyboardEvent) {
+      e = e || window.event;
+      switch (e.key) {
+        case ESCAPE:
+          // Close on ESC, unless disabled
+          if (!props.disableCloseOnEsc) {
+            close();
+            focusOnMenuButton();
+          }
+          break;
+        case ARROW_DOWN:
+          focusOnNextMenuItem();
+          break;
+        case ARROW_UP:
+          focusOnPreviousMenuItem();
+          break;
+        case HOME:
+          focusOnFirstMenuItem();
+          break;
+        case END:
+          focusOnLastMenuItem();
+          break;
+      }
+    }
+
+    function onKeyDownClosed(e:KeyboardEvent) {
+      e = e || window.event;
+      // Key downs came from menu button
+      if (e.target === document.getElementById("react-burger-menu-btn")) {
+        switch (e.key) {
+          case ARROW_DOWN:
+          case SPACE:
+            // If down arrow, space or enter, open menu and focus on first menuitem
+            toggleMenu();
+            break;
+          case ARROW_UP:
+            // If arrow up, open menu and focus on last menuitem
+            toggleMenu({ focusOnLastItem: true });
+            break;
+>>>>>>> 05496be (update)
         }
 
         // Applies component-specific styles to external wrapper elements

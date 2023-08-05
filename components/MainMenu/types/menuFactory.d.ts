@@ -1,7 +1,5 @@
 import {FunctionComponent, ReactElement} from "react";
 import {BurgerIconStyles} from "./BurgerIconProps";
-
-
 export type SVG ={
     animate:Function;
     lib:Function;
@@ -10,7 +8,7 @@ export type SVG ={
 }
 export type MenuFactoryStyles={
     svg?:SVG;
-    overlay?:(isOpen:boolean,width?:string,right?:boolean)=>object;
+    overlay?:(isOpen:boolean,width:string,right:boolean)=>object;
     menuWrap?:(isOpen:boolean,width:string,right:boolean)=>object;
     menu?:(isOpen:boolean,width:string,right:boolean)=>object;
     itemList?:(isOpen:boolean,width:string,right:boolean)=>object|undefined;
@@ -48,7 +46,8 @@ export interface MenuProps {
     id:string;
     className:string;
     morphShapeClassName:string;
-    itemListElement:FunctionComponent;
+    itemListElement:FunctionComponent<{className:string;style:object}>;
+    itemListClassName:string;
     itemClassName:string;
     customCrossIcon:ReactElement|false;
     crossClassName:string;
