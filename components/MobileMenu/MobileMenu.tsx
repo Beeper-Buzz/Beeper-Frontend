@@ -134,3 +134,5 @@ export const MobileMenu = (props: MobileMenuProps) => {
     </>
   );
 };
+
+export { MainMenu } from "./MainMenu";

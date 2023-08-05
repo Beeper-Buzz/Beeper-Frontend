@@ -7,7 +7,6 @@ prop-types
 classnames
 
 ** all props of the component **
-
 1. animationType - (it can be one of slide stack elastic bubble push pushRotate scaleDown scaleRotate fallDown reveal)
 pageWrapId - the id of the element wrapping the rest of content on your page
 (except elements with fixed positioning),placed after the component
