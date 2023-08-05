@@ -1,10 +1,17 @@
 import mailchimp from "@mailchimp/mailchimp_marketing";
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from "next";
 import fetch, { FormData } from "node-fetch";
 
-const mailchimpAudienceId = process.env.NEXT_PUBLIC_MAILCHIMP_AUDIENCE_ID || process.env.MAILCHIMP_AUDIENCE_ID || "";
-const mailchimpApiKey = process.env.NEXT_PUBLIC_MAILCHIMP_API_KEY || process.env.MAILCHIMP_API_KEY || "";
-const mailchimpUser = process.env.NEXT_PUBLIC_MAILCHIMP_USER || process.env.MAILCHIMP_USER || "";
+const mailchimpAudienceId =
+  process.env.NEXT_PUBLIC_MAILCHIMP_AUDIENCE_ID ||
+  process.env.MAILCHIMP_AUDIENCE_ID ||
+  "";
+const mailchimpApiKey =
+  process.env.NEXT_PUBLIC_MAILCHIMP_API_KEY ||
+  process.env.MAILCHIMP_API_KEY ||
+  "";
+const mailchimpUser =
+  process.env.NEXT_PUBLIC_MAILCHIMP_USER || process.env.MAILCHIMP_USER || "";
 
 mailchimp.setConfig({
   apiKey: mailchimpApiKey,
@@ -23,13 +30,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ error: "Email is required" });
   }
 
-  if (mailerService !== 'mailchimp' && mailerService !== 'gohighlevel') {
-    return res.status(400).json({ error: 'Invalid mailer service' });
+  if (mailerService !== "mailchimp" && mailerService !== "gohighlevel") {
+    return res.status(400).json({ error: "Invalid mailer service" });
   }
 
   if (mailerService === "mailchimp") {
     if (!mailchimpApiKey || !mailchimpAudienceId) {
-      return res.status(500).json({ error: 'Missing MailChimp Details' });
+      return res.status(500).json({ error: "Missing MailChimp Details" });
     }
     const mailchimpId = `${mailchimpAudienceId}`;
 
@@ -66,17 +73,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (mailerService === "gohighlevel") {
     if (!ghlLocation || !ghlForm) {
-      return res.status(500).json({ error: 'Missing GoHighLevel Details' });
+      return res.status(500).json({ error: "Missing GoHighLevel Details" });
     }
     let formData = new FormData();
-    formData.append('first_name', firstName);
-    formData.append('last_name', lastName);
-    formData.append('phone', phone);
-    formData.append('email', email);
-    formData.append('formId', ghlForm);
-    formData.append('location_id', ghlLocation);
-    formData.append('eventData[source]', "direct");
-    
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
+    formData.append("phone", phone);
+    formData.append("email", email);
+    formData.append("formId", ghlForm);
+    formData.append("location_id", ghlLocation);
+    formData.append("eventData[source]", "direct");
+
     console.log("Sending data to GoHighLevel: ", formData);
     // {
     //   "first_name": "TEST12345",
