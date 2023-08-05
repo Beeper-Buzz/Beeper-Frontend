@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { animated } from "react-spring";
 import { transparentize } from "polished";
 import { ButtonBack, ButtonNext } from "pure-react-carousel";
 import { Slider, Slide, ImageWithZoom } from "pure-react-carousel";
@@ -69,23 +70,23 @@ export const CarouselNextButton = styled(ButtonNext)`
   }
 `;
 
-export const Container = styled.div`
+export const Container = styled(animated.div)<any>`
   display: flex;
   flex-direction: column;
   position: relative;
-  /* justify-content: center;
-  align-items: center; */
-  /* width: auto; */
-  min-height: 100vh;
-  background-color: ${(p) =>
-    p.theme.isDarkMode
-      ? p.theme.colors.black.primary
-      : p.theme.colors.white.primary};
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: 100vh;
+  overflow: hidden;
+  color: ${(p: any) => p.theme.colors.pink.primary};
+  filter: sepia(${(p: any) => p.tintValue});
+  -webkit-filter: sepia(${(p: any) => p.tintValue});
 `;
 
 export const Logo = styled.img`
   width: auto;
-  height: 240px;
+  height: 201px;
 
   @media screen and (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
     width: 90%;
@@ -111,10 +112,10 @@ export const Text = styled.div`
   margin-top: -40px;
   text-transform: uppercase;
   opacity: 0.66;
-  font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
-  font-size: ${(p) => p.theme.typography.titleSM.fontSize};
-  font-weight: ${(p) => p.theme.typography.titleSM.fontWeight};
-  line-height: ${(p) => p.theme.typography.titleSM.lineHeight};
+  font-family: ${(p) => p.theme.typography.titleLG.fontFamily};
+  font-size: ${(p) => p.theme.typography.titleLG.fontSize};
+  font-weight: ${(p) => p.theme.typography.titleLG.fontWeight};
+  line-height: ${(p) => p.theme.typography.titleLG.lineHeight};
   color: ${(p: any) =>
     p.theme.isDarkMode
       ? p.theme.colors.white.primary
@@ -140,7 +141,7 @@ export const Fade = styled.div`
 export const Device = styled.img`
   opacity: 0.33;
   display: flex;
-  justify-contents: center;
+  justify-content: center;
   position: absolute;
   bottom: -40%;
   width: 150%;

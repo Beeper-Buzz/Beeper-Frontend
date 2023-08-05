@@ -2,8 +2,8 @@ import styled from "@emotion/styled";
 
 export const LogoMark = styled.img`
   width: auto;
-  height: 240px;
-  margin-top: -100px;
+  height: 160px;
+  margin-top: -40px;
   position: relative;
   @media screen and (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
     width: 90%;
