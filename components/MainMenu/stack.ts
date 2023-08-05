@@ -1,7 +1,7 @@
 import menuFactory from "./menuFactory";
-import {MenuFactoryStyles} from "./types/menuFactory";
+import { MenuFactoryStyles } from "./types/menuFactory";
 
-const styles:MenuFactoryStyles = {
+const styles: MenuFactoryStyles = {
   menuWrap(isOpen, width, right) {
     return {
       MozTransform: isOpen

@@ -1,7 +1,7 @@
-import {BaseStyles} from "./types/baseStyles";
+import { BaseStyles } from "./types/baseStyles";
 
-const styles:BaseStyles = {
-  overlay(isOpen:boolean) {
+const styles: BaseStyles = {
+  overlay(isOpen: boolean) {
     return {
       position: "fixed",
       zIndex: 1000,
@@ -18,7 +18,7 @@ const styles:BaseStyles = {
     };
   },
 
-  menuWrap(isOpen:boolean, width:string, right:string) {
+  menuWrap(isOpen: boolean, width: string, right: boolean) {
     return {
       position: "fixed",
       right: right ? 0 : "inherit",

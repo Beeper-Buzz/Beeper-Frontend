@@ -13,9 +13,13 @@ import { useProducts } from '../../hooks/useProducts';
 =======
 import React from "react";
 import { useProducts } from "../../hooks/useProducts";
+<<<<<<< HEAD
 >>>>>>> 83b1bed (Change to double quotes to minimze merge conflicts)
+=======
+import { ProductListProps } from "./types";
+>>>>>>> 368708c (update)
 
-export const ProductList = () => {
+export const ProductList: React.FC<ProductListProps> = () => {
   const { data, isLoading, isSuccess } = useProducts(1);
   if (isLoading) return <div>Loading</div>;
 

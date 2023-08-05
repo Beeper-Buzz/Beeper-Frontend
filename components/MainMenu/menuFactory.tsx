@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 
 import React from 'react';
 import PropTypes from 'prop-types';
 import baseStyles from './baseStyles';
+=======
+import React, { FunctionComponent, ReactElement } from "react";
+import PropTypes from "prop-types";
+import baseStyles from "./baseStyles";
+>>>>>>> 368708c (update)
 import {
   focusOnFirstMenuItem,
   focusOnLastMenuItem,
@@ -11,14 +17,21 @@ import {
 } from "./dom";
 import BurgerIcon from "./BurgerIcon";
 import CrossIcon from "./CrossIcon";
-import {MenuFactoryStyles, MenuFactoryStylesKey, MenuProps} from "./types/menuFactory";
-import {BaseStyles, BaseStylesKey} from "./types/baseStyles";
-import {BurgerIconStyles} from "./types/BurgerIconProps";
+import { MenuFactoryStyles, MenuFactoryStylesKey, MenuProps } from "./types/menuFactory";
+import { BaseStyles, BaseStylesKey } from "./types/baseStyles";
+import { BurgerIconStyles } from "./types/BurgerIconProps";
 
+<<<<<<< HEAD
 export const MenuFactory= (styles: any) => {
     if (!styles) {
         throw new Error('No styles supplied');
     }
+=======
+const MenuFactory = (styles: MenuFactoryStyles) => {
+  if (!styles) {
+    throw new Error("No styles supplied");
+  }
+>>>>>>> 368708c (update)
 
     const ARROW_DOWN = 'ArrowDown';
     const ARROW_UP = 'ArrowUp';
@@ -27,7 +40,7 @@ export const MenuFactory= (styles: any) => {
     const HOME = 'Home';
     const END = 'End';
 
-  function usePrevious(value:any) {
+  function usePrevious(value: any) {
     const ref = React.useRef(value);
     React.useEffect(() => {
       ref.current = value;
@@ -35,9 +48,9 @@ export const MenuFactory= (styles: any) => {
     return ref.current;
   }
 
-  const Menu = (props:MenuProps) => {
+  const Menu = (props: MenuProps) => {
     const [isOpen, setIsOpen] = React.useState(false);
-    const timeoutId:any = React.useRef(null);
+    const timeoutId: any = React.useRef(null);
     const toggleOptions: { current: any } = React.useRef({});
     const prevIsOpenProp = usePrevious(props.isOpen);
 
@@ -74,7 +87,7 @@ export const MenuFactory= (styles: any) => {
         } else {
           // Reset path (timeout ensures animation happens off screen)
           setTimeout(() => {
-            path.attr("d", styles&&styles.svg&&styles.svg.pathInitial);
+            path.attr("d", styles && styles.svg && styles.svg.pathInitial);
           }, 300);
         }
 
@@ -132,17 +145,17 @@ export const MenuFactory= (styles: any) => {
     }
 
     function getStyle(
-      style: (isOpen: boolean, formattedWidth: string, right: string, index: number) => any,
+      style: (isOpen: boolean, formattedWidth: string, right: boolean, index: number) => any,
       index?: number
     ) {
       const { width, right } = props;
       const formattedWidth = typeof width !== "string" ? `${width}px` : width;
-      return style(isOpen, formattedWidth, right, index as number);
+      return style(isOpen, formattedWidth, right as boolean, index as number);
     }
 
     // Builds styles incrementally for a given element
-    function getStyles(el:BaseStylesKey, index?: any, inline?: any) {
-      const propName= "bm" + el.replace(el.charAt(0), el.charAt(0).toUpperCase());
+    function getStyles(el: BaseStylesKey, index?: any, inline?: any) {
+      const propName = "bm" + el.replace(el.charAt(0), el.charAt(0).toUpperCase());
 
       // Set base styles
       let output = baseStyles[el] ? getStyle(baseStyles[el]) : {};
@@ -151,12 +164,12 @@ export const MenuFactory= (styles: any) => {
       if (styles[el]) {
         output = {
           ...output,
-          ...getStyle(styles[el] as ()=>any, index + 1)
+          ...getStyle(styles[el] as () => any, index + 1)
         };
       }
 
       // Add custom styles
-      if (props.styles[propName as keyof BurgerIconStyles]) {
+      if (props && props.styles && props.styles[propName as keyof BurgerIconStyles]) {
         output = {
           ...output,
           ...props.styles[propName as keyof BurgerIconStyles]
@@ -184,7 +197,7 @@ export const MenuFactory= (styles: any) => {
     // This is necessary for correct page interaction with some of the menus
     // Throws and returns if the required external elements don't exist,
     // which means any external page animations won't be applied
-    function handleExternalWrapper(id:string, wrapperStyles:any, set:any) {
+    function handleExternalWrapper(id: string, wrapperStyles: any, set: any) {
       const wrapper = document.getElementById(id);
 
       if (!wrapper) {
@@ -204,7 +217,8 @@ export const MenuFactory= (styles: any) => {
       // bodyClassName is not passed in. Otherwise, it is up to the caller to
       // decide if they want to set the overflow style in CSS using the custom
       // class names
-      const applyOverflow = (el:HTMLElement) => (el.style["overflow-x"as unknown as number] = set ? "hidden" : "");
+      const applyOverflow = (el: HTMLElement) =>
+        (el.style["overflow-x" as unknown as number] = set ? "hidden" : "");
       if (!props.htmlClassName) {
         applyOverflow(document.querySelector("html") as HTMLElement);
       }
@@ -215,7 +229,8 @@ export const MenuFactory= (styles: any) => {
 
     // Applies component-specific styles to external wrapper elements
     function applyWrapperStyles(set = true) {
-      const applyClass = (el:HTMLElement, className:string) => el.classList[set ? "add" : "remove"](className);
+      const applyClass = (el: HTMLElement, className: string) =>
+        el.classList[set ? "add" : "remove"](className);
 
       if (props.htmlClassName) {
         applyClass(document.querySelector("html") as HTMLElement, props.htmlClassName);
@@ -257,6 +272,7 @@ export const MenuFactory= (styles: any) => {
             const wrapper = document.getElementById(id);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (!wrapper) {
                 console.error("Element with ID '" + id + "' not found");
                 return;
@@ -285,6 +301,9 @@ export const MenuFactory= (styles: any) => {
             }
 =======
     function onKeyDownOpen(e:KeyboardEvent) {
+=======
+    function onKeyDownOpen(e: KeyboardEvent) {
+>>>>>>> 368708c (update)
       e = e || window.event;
       switch (e.key) {
         case ESCAPE:
@@ -309,7 +328,7 @@ export const MenuFactory= (styles: any) => {
       }
     }
 
-    function onKeyDownClosed(e:KeyboardEvent) {
+    function onKeyDownClosed(e: KeyboardEvent) {
       e = e || window.event;
       // Key downs came from menu button
       if (e.target === document.getElementById("react-burger-menu-btn")) {
@@ -432,6 +451,7 @@ export const MenuFactory= (styles: any) => {
         />
     )}
         {props.customBurgerIcon !== false && (
+<<<<<<< HEAD
             <div style={getStyles('burgerIcon')}>
                 <BurgerIcon
                     onClick={open}
@@ -442,6 +462,18 @@ export const MenuFactory= (styles: any) => {
                 onIconStateChange={props.onIconStateChange}
                 />
             </div>
+=======
+          <div style={getStyles("burgerIcon" as keyof BaseStyles)}>
+            <BurgerIcon
+              onClick={open}
+              styles={props.styles}
+              customIcon={props.customBurgerIcon}
+              className={props.burgerButtonClassName}
+              barClassName={props.burgerBarClassName}
+              onIconStateChange={props.onIconStateChange}
+            />
+          </div>
+>>>>>>> 368708c (update)
         )}
         <div
             id={props.id}
@@ -461,7 +493,10 @@ export const MenuFactory= (styles: any) => {
           )}
           <div className={`bm-menu ${props.menuClassName}`.trim()} style={getStyles("menu")}>
             {React.createElement(
-              props.itemListElement,
+              props.itemListElement as
+                | "div"
+                | "nav"
+                | FunctionComponent<{ className: string; style: object }>,
               {
                 className: `bm-item-list ${props.itemListClassName}`.trim(),
                 style: getStyles("itemList")
@@ -482,7 +517,7 @@ export const MenuFactory= (styles: any) => {
               })
             )}
           </div>
-          {props.customCrossIcon !== false && (
+          {props.customCrossIcon && (
             <div style={getStyles("closeButton" as keyof BaseStyles)}>
               <CrossIcon
                 onClick={close}
