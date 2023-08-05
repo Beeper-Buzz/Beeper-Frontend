@@ -1,0 +1,1 @@
+export { LogoBlob } from "./LogoBlob";

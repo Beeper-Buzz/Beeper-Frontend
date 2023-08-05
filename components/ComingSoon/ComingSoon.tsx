@@ -174,7 +174,7 @@ export const ComingSoon = () => {
         )}
         <Fade />
         <Device src="/images/beeper_one_masked.png" />
-        <Logo />
+        {isServer ? <Logo /> : <LogoBlob />}
         <Text>{process.env.NEXT_PUBLIC_COMING_SOON_COPY}</Text>
         <NotifyForm />
         <SocialLinks />
