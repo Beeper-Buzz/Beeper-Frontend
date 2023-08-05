@@ -138,10 +138,10 @@ class MyDocument extends Document {
           {/* CHANGEME */}
           <meta
             property="og:image"
-            content={`${process.env.NEXT_PUBLIC_APP_URL}/open-graph-instinct-dna.jpg`}
+            content={`${process.env.NEXT_PUBLIC_APP_URL}/images/Beeper-OG.jpg`}
           />
-          <meta property="og:image:width" content="406" />
-          <meta property="og:image:height" content="406" />
+          <meta property="og:image:width" content="600" />
+          <meta property="og:image:height" content="529" />
           <meta name="twitter:card" content="summary" />
           <meta name="twitter:description" content={process.env.NEXT_PUBLIC_PAGE_DESC} />
           <meta name="twitter:title" content={process.env.NEXT_PUBLIC_SITE_TITLE} />
