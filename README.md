@@ -63,6 +63,13 @@ POL Frontend Interface
 https://pol-frontend-dev.instinct.is/
 https://pol-frontend-staging.instinct.is/
 
+## Updating a fork:
+
+- `git remote add upstream git@github.com:1instinct/dna-frontend.git`
+- `git fetch upstream`
+- `git checkout main`
+- `git pull upstream main`
+
 TODO:
 
 ## Keeping Your Code Updated
