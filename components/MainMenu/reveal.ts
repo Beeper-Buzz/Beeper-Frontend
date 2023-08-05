@@ -1,5 +1,5 @@
 import menuFactory from "./menuFactory";
-import {MenuFactoryStyles} from "../Footer/types/interfaces/menuFactory";
+import {MenuFactoryStyles} from "./types/menuFactory";
 
 const styles:MenuFactoryStyles = {
   menuWrap(isOpen:boolean) {

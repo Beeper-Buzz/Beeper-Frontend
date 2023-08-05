@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import {BurgerIconProps} from "../Footer/types/interfaces/BurgerIconProps";
+import {BurgerIconProps} from "./types/BurgerIconProps";
 const BurgerIcon = (props:BurgerIconProps) => {
   const { styles, customIcon, barClassName, className, onClick, onIconHoverChange } = props;
   const [hover, setHover] = useState(false);
