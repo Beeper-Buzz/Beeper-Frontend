@@ -53,8 +53,9 @@ export const ProductList: React.FC<ProductListProps> = (props: any) => {
           const imageId =
             Array.isArray(product.relationships.images.data) &&
             product.relationships.images.data[0]?.id;
-          const imageSource = products?.included?.find((image) => image.id === imageId)?.attributes
-            .styles[2].url;
+          const imageSource = products?.included?.find(
+            (image) => image.id === imageId
+          )?.attributes.styles[2].url;
           const source = imageSource
             ? `https://pol-admin-staging.instinct.is/${imageSource}`
             : "https://via.placeholder.com/150";
@@ -67,7 +68,8 @@ export const ProductList: React.FC<ProductListProps> = (props: any) => {
                   slug: product.attributes.slug,
                   id: product.id
                 }
-              }}>
+              }}
+            >
               <ProductContainer>
                 <MyImg src={source} />
                 <MyH1>{product.attributes.name}</MyH1>

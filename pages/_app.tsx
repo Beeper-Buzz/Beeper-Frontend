@@ -3,10 +3,8 @@ import type { AppProps /*, AppContext */ } from "next/app";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { AuthProvider } from "../config/auth";
-import { MainMenu, Header, ComingSoon } from "../components";
-import styled from "@emotion/styled";
+import { Header, ComingSoon } from "../components";
 import "swiper/swiper-bundle.min.css";
-import { menusData } from "../components/MainMenu/data/menusData";
 import "./app.css";
 import { useRouter } from "next/router";
 import Head from "next/head";
@@ -16,7 +14,6 @@ import * as tracking from "../config/tracking";
 import { ThemeProvider } from "@emotion/react";
 import { theme } from "../styles/theme";
 import { GlobalStyles } from "../styles/global-styles";
-import { pxIphone } from "../utilities/device-sizes";
 import "../styles/fonts.css";
 import "../public/fonts/black-tie/black-tie.css";
 import "swiper/swiper.scss";
@@ -26,6 +23,7 @@ import "../components/Terms/FinancialPrivacyModal.css";
 import "./app.css";
 
 import { AppWrapper } from "./_app.styles";
+import { MainMenu } from "@components/MobileMenu/MainMenu";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
