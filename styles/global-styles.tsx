@@ -32,7 +32,6 @@ export const GlobalStyles = ({ theme, children }: any) => (
           background-size: 100vw 100vh;
           background-repeat: no-repeat;
           background-position: center;
-          color: hotpink !important;
           margin: 0;
           padding: 0;
           width: 100%;
@@ -51,13 +50,13 @@ export const GlobalStyles = ({ theme, children }: any) => (
 
         ::-moz-selection {
           /* Code for Firefox */
-          color: ${theme.colors.white.primary};
-          background: ${theme.colors.brand.primary};
+          color: black;
+          background: yellow;
         }
 
         ::selection {
-          color: ${theme.colors.white.primary};
-          background: ${theme.colors.brand.primary};
+          color: black;
+          background: yellow;
         }
         #__next {
           width: 100%;
@@ -68,7 +67,7 @@ export const GlobalStyles = ({ theme, children }: any) => (
 
         a {
           cursor: pointer;
-          color: ${theme.colors.brand.primary};
+          color: yellow;
         }
 
         p {
@@ -106,7 +105,39 @@ export const GlobalStyles = ({ theme, children }: any) => (
         select:focus {
           outline: none;
         }
-        
+
+        button {
+          background-color: yellow;
+          border: 0;
+          color: black;
+          width: 100%;
+          max-width: 400px;
+          font-size: 29.24px;
+          line-height: 35.09px;
+          font-weight: bold;
+          padding: 10px 10px;
+          cursor: pointer;
+        }
+
+        button:hover {
+          background-color: ${saturate(0.5, theme.colors.brand.primary)};
+        }
+
+        button:active {
+          background-color: ${saturate(0.5, theme.colors.brand.primary)};
+        }
+
+        button:focus,
+        .size-selection button:focus {
+          outline: none;
+        }
+        i {
+          color: ${
+            theme.isDarkMode
+              ? theme.colors.white.primary
+              : theme.colors.black.primary
+          };
+        }
         .pc-menu-item {
           color: ${
             theme.isDarkMode
