@@ -47,11 +47,11 @@ export const ProductList: React.FC<ProductListProps> = (props: any) => {
   return (
     <section>
       <div className="products-row">
-        {data?.data?.map((product) => {
+        {products?.data?.map((product) => {
           const imageId =
             Array.isArray(product.relationships.images.data) &&
             product.relationships.images.data[0]?.id;
-          const imageSource = data?.included?.find((image) => image.id === imageId)?.attributes
+          const imageSource = products?.included?.find((image) => image.id === imageId)?.attributes
             .styles[2].url;
           const source = imageSource
             ? `https://pol-admin-staging.instinct.is/${imageSource}`
