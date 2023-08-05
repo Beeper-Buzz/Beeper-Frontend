@@ -8,6 +8,7 @@ const Home = () => {
   return (
     <Layout>
       <ProductList />
+      <div className={'test'}></div>
     </Layout>
   );
 };
