@@ -92,7 +92,12 @@ export const EmailInput = styled.input`
         : `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='${p.theme.colors.black.primary}' stroke-width='4' stroke-dasharray='0' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e"`};
   }
   &:focus::placeholder {
-    color: ${(props) => props.theme.colors.brand.primary};
+    color: ${(props) => props.theme.colors.pink.primary};
+  }
+  @media (max-width: ${(p) => p.theme.breakpoints.values.xs}px) {
+    -webkit-appearance: none;
+    width: 80vw;
+    margin: 0 0 0 2.5vw;
   }
 `;
 
@@ -117,23 +122,20 @@ export const Button = styled.button`
   );
   border: none;
   box-sizing: border-box;
+  box-shadow: -6px -6px 12px rgb(144 0 147 / 11%), 1px 1px 24px rgba(0, 0, 0, 0.33),
+    inset 1px 2px 8px rgba(0, 0, 0, 0.5);
+  border-radius: 36.1511px;
   position: relative;
   top: 0;
   right: 0;
   width: 75px;
   cursor: pointer;
   float: right;
-  font-family: ${(p: any) => p.theme.typography.bodyXS.fontFamily};
-  font-weight: ${(p: any) => p.theme.typography.bodyXS.fontWeight};
-  font-size: ${(p: any) => p.theme.typography.bodyXS.fontSize};
-  line-height: ${(p: any) => p.theme.typography.bodyXS.lineHeight};
-  &:hover {
-    transition: 0.33s all ease-in-out;
-    opacity: 1;
-  }
-  &:active {
-    background: ${(props) => props.theme.colors.black.primary};
-    color: ${(props) => props.theme.colors.white.primary};
+  font-size: 18px;
+  letter-spacing: 1px;
+  padding: 0;
+  @media (max-width: ${(p) => p.theme.breakpoints.values.xs}px) {
+    -webkit-appearance: none;
   }
 `;
 
