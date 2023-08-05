@@ -1,4 +1,5 @@
-import { lighten } from "polished";
+import { dark } from "@material-ui/core/styles/createPalette";
+import { darken, lighten } from "polished";
 const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "false";
 export const theme = {
   isDarkMode: darkMode === "true",
@@ -21,9 +22,22 @@ export const theme = {
       light: "#f9f9f9"
     },
     blue: {
-      primary: "#7b61ff",
-      medium: lighten(0.66, "#7b61ff"),
-      light: lighten(0.33, "#7b61ff")
+      primary: "#4400ff",
+      medium: lighten(0.66, "#4400ff"),
+      light: lighten(0.33, "#4400ff"),
+      dark: darken(0.33, "#4400ff")
+    },
+    pink: {
+      primary: "#FF008A",
+      medium: lighten(0.66, "#FF008A"),
+      light: lighten(0.33, "#FF008A"),
+      darken: darken(0.33, "#FF008A")
+    },
+    purple: {
+      primary: "#900093",
+      medium: lighten(0.66, "#900093"),
+      light: lighten(0.33, "#900093"),
+      darken: darken(0.33, "#900093")
     },
     brand: {
       primary: "#EB8B8B",
@@ -50,6 +64,11 @@ export const theme = {
       medium: lighten(0.66, "#D04040"),
       light: lighten(0.33, "#D04040")
     }
+  },
+  gradients: {
+    rainbow:
+      "linear-gradient(90deg, #FF0000 0%, #FF9900 14.04%, #FAFF00 28.08%, #00FF19 42.12%, #00F0FF 55.64%, #000AFF 70.2%, #EB00FF 84.76%, #FF0000 99.84%)",
+    pinkhaze: "linear-gradient(180deg, rgba(157, 22, 95, 0.5) 0%, rgba(157, 22, 95, 0) 100%)"
   },
   background: {
     ambient: "linear-gradient(180deg, #EB8B8B 0%, #CC8BEB 100%)",
