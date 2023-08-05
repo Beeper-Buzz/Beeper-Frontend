@@ -14,7 +14,7 @@ export const LogoMark = styled.img`
 export const BlobWrapper = styled.div`
   position: absolute;
   margin-top: -200px;
-  
+
   @media screen and (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
     margin-top: -100px;
   }
