@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "@emotion/styled";
 
 import {
   SocialContainer,
@@ -8,7 +7,11 @@ import {
   SocialIcon
 } from "./SocialLinks.styles";
 
-export const SocialLinks = () => {
+interface SocialLinksProps {
+  isDark?: boolean;
+}
+
+export const SocialLinks = ({ isDark }: SocialLinksProps) => {
   const instagramSlug =
     process.env.NEXT_PUBLIC_INSTAGRAM_SLUG || "gaggle_of_lawyers";
   const facebookSlug =

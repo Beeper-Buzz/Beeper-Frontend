@@ -247,6 +247,7 @@ class MyDocument extends Document {
                 gtag('js', new Date());
                 gtag('config', "${tracking.GA_TRACKING_CODE}", {
                   'send_page_view': true,
+                  'page_path': window.location.pathname,
                   'debug_mode': ${tracking.GA_DEBUG_MODE},
                 });
               `

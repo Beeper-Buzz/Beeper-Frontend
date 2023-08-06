@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { IDesktopMenuProps } from "./types/DesktopMenu";
-import { menuDataItem } from "../MobileMenu/types";
+import { menuDataItem } from "./types";
 import styled from "@emotion/styled";
 const Container = styled.div`
   padding-left: 100px;
@@ -23,13 +23,13 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
   const { pcWrapClassName, menusData, pcMenuItemClassName, onMenuItemClick } =
     props;
   const [keyPathMap, setKeyPathMap] = useState({});
-  const handleClick = useCallback((keyPath, event) => {
+  const handleClick = useCallback(({ keyPath, event }: any) => {
     setKeyPathMap((pre) => {
       let ret = { [keyPath]: event.target };
       return ret;
     });
   }, []);
-  const handleClose = useCallback((keyPath) => {
+  const handleClose = useCallback((keyPath: any) => {
     setKeyPathMap((pre) => {
       return { ...pre, [keyPath]: null };
     });

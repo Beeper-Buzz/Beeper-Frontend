@@ -8,7 +8,7 @@ import {
   useMenuLocation,
   useMenuItems
 } from "../../hooks";
-import { MainMenuProps, menuDataItem } from "./types";
+import { MainMenuProps } from "./types";
 import DesktopMenu from "../MainMenu/DesktopMenu";
 
 import { HiddenOnDesktop, HiddenOnMobile } from "./MainMenu.styles";

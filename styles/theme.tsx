@@ -157,6 +157,13 @@ export const theme = {
       lineHeight: "16px",
       color: "#000"
     },
+    bodyXS: {
+      fontFamily: "ibm condensed medium",
+      fontWeight: "normal",
+      fontSize: "8px",
+      lineHeight: "10px",
+      color: "#000"
+    },
     bodyXXS: {
       fontFamily: "ibm condensed medium",
       fontWeight: "normal",
