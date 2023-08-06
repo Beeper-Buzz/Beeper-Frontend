@@ -1,5 +1,5 @@
 import { FunctionComponent, ReactElement, ReactNode } from "react";
-import { BurgerIconStyles } from "./BurgerIconProps";
+import { BurgerIconStyles } from "../../MobileMenu/types/BurgerIconProps";
 declare global {
   interface Window {
     mina: any;
@@ -33,7 +33,7 @@ export type menuDataItem = {
   icon?: () => ReactNode;
   pcIcon?: () => ReactNode;
 };
-export interface MobileMenuProps {
+export interface MainMenuProps {
   showMenuHeader?: boolean;
   menusLoading?: boolean;
   pcWrapClassName?: string;

@@ -1,7 +1,7 @@
 import Snap from "./snapsvgImporter";
 import menuFactory from "./menuFactory";
 import { pxToNum } from "./utils";
-import { Path } from "./types";
+import { Path } from "../MainMenu/types";
 import { MenuFactoryStyles } from "./types/menuFactory";
 
 const MORPH_SHAPE_WIDTH = 120;

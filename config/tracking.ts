@@ -32,6 +32,12 @@ interface TrackingProvider {
   trackEvent({ action, category, label }: TrackingEvent): void;
 }
 
+declare global {
+  interface Window {
+      gtag:any;
+  }
+}
+
 const googleAnalyticsProvider: TrackingProvider = {
   getName: (): string => {
     return "Google Analytics 4";

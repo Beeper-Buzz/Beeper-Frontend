@@ -6,10 +6,6 @@ declare module "@emotion/react" {
     isDarkMode: boolean;
     isSimpleSignup: boolean;
     colors: {
-      purple?: {
-        light: string;
-        primary: string;
-      };
       gray: {
         dark: string;
         primary: string;
@@ -33,6 +29,18 @@ declare module "@emotion/react" {
         medium: string;
         light: string;
       };
+      pink: {
+        primary: string;
+        medium: string;
+        light: string;
+        dark: string;
+      },
+      purple: {
+        primary: string;
+        medium: string;
+        light: string;
+        dark: string;
+      },
       brand: {
         bright: string;
         primary: string;
@@ -165,6 +173,13 @@ declare module "@emotion/react" {
         color: string;
       };
       bodyXS: {
+        fontFamily: string;
+        fontWeight: string;
+        fontSize: string;
+        lineHeight: string;
+        color: string;
+      };
+      bodyXXS: {
         fontFamily: string;
         fontWeight: string;
         fontSize: string;
