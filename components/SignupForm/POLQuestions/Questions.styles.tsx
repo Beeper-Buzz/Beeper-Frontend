@@ -28,7 +28,10 @@ export const InputGroupWrapper = styled.div<GenericThemeType>`
     padding: 30px 0px 0px 0px;
   }
   & [data-qa="title"] {
-    color: ${(props) => props.theme.colors.brand.primary};
+    color: ${(props) =>
+      props.theme.isDarkMode
+        ? props.theme.colors.white.primary
+        : props.theme.colors.brand.primary};
     font-size: 1.6rem;
   }
   & .carousel .thumbs-wrapper {
@@ -44,14 +47,20 @@ export const InputGroupWrapper = styled.div<GenericThemeType>`
   & .carousel .control-dots .dot {
     width: 5px;
     height: 5px;
-    background: ${(props) => props.theme.colors.gray.primary};
+    background: ${(props) =>
+      props.theme.isDarkMode
+        ? props.theme.colors.white.primary
+        : props.theme.colors.brand.primary};
     box-shadow: none;
     &:focus {
       outline: none;
     }
   }
   & .carousel .control-dots .dot.selected {
-    background: ${(props) => props.theme.colors.white.primary};
+    background: ${(props) =>
+      props.theme.isDarkMode
+        ? props.theme.colors.white.primary
+        : props.theme.colors.brand.primary};
     box-shadow: 0 0 0 7px ${(props) => props.theme.colors.brand.primary};
   }
 `;
@@ -111,7 +120,9 @@ export const TermsStatement = styled.p<TermsStatementType>`
   text-align: left;
   flex-basis: 100%;
   color: ${(props) =>
-    props.accepted ? props.theme.colors.brand.primary : props.theme.colors.red.primary};
+    props.accepted
+      ? props.theme.colors.brand.primary
+      : props.theme.colors.red.primary};
   height: auto;
   overflow-y: scroll;
   margin: 0;
@@ -123,7 +134,9 @@ export const TermsStatement = styled.p<TermsStatementType>`
     font-weight: 700;
     text-decoration: underline;
     color: ${(props) =>
-      props.accepted ? props.theme.colors.brand.primary : props.theme.colors.red.primary};
+      props.accepted
+        ? props.theme.colors.brand.primary
+        : props.theme.colors.red.primary};
   }
 
   @media (max-width: ${(props) => props.theme.breakpoints.values.sm}px) {

@@ -2,12 +2,19 @@
 import React, { useState, useCallback } from "react";
 // import NumberFormat from 'react-number-format';
 import { Field, useFormikContext } from "formik";
-import PlacesAutocomplete, { geocodeByAddress, getLatLng } from "react-places-autocomplete";
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng
+} from "react-places-autocomplete";
 
 // Local
 import TipBot from "../../TipBot";
 import { FormikInput, FormikAutocomplete } from "../../FormikWrappers";
-import { QuestionWrapper, InputGroupWrapper, InputWrapper } from "./Questions.styles";
+import {
+  QuestionWrapper,
+  InputGroupWrapper,
+  InputWrapper
+} from "./Questions.styles";
 
 // const suggestions = [
 //   '100 Freeman Street Brooklyn NY 11222',

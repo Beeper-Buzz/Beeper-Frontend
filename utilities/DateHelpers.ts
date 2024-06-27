@@ -21,7 +21,9 @@ export const toShortDateZeroFill = (date: any) => {
   if (!isADate(date)) return null;
   const monthFormat = `0${date.getMonth() + 1}`;
   const dayFormat = `0${date.getDate()}`;
-  return `${monthFormat.slice(-2)}/${dayFormat.slice(-2)}/${date.getFullYear()}`;
+  return `${monthFormat.slice(-2)}/${dayFormat.slice(
+    -2
+  )}/${date.getFullYear()}`;
 };
 
 export const dayDiff = (date1: any, date2: any) => {
@@ -36,7 +38,10 @@ export const daysSinceToday = (date: any) => {
 export const daysThisYear = () => {
   const now: any = new Date();
   const start: any = new Date(now.getFullYear(), 0, 0);
-  const diff = now - start + (start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000;
+  const diff =
+    now -
+    start +
+    (start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000;
   const oneDayThisYear = 1000 * 60 * 60 * 24;
   const day = Math.floor(diff / oneDayThisYear);
   return day;
@@ -61,5 +66,8 @@ export const normalizeDate = (value: any) => {
   if (onlyNums.length <= 4) {
     return `${onlyNums.slice(0, 2)}/${onlyNums.slice(2)}${trailingSlash}`;
   }
-  return `${onlyNums.slice(0, 2)}/${onlyNums.slice(2, 4)}/${onlyNums.slice(4, 8)}`;
+  return `${onlyNums.slice(0, 2)}/${onlyNums.slice(2, 4)}/${onlyNums.slice(
+    4,
+    8
+  )}`;
 };

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import Link from "next/link";
 import Rating from "@material-ui/lab/Rating";
-import { pxPC } from "../../utils";
+import { pxPC } from "../../utilities/device-sizes";
 import { XlargeTitle, DescText, PriceText } from "../../styles/BaseStyles";
 
 export const ProductCardWrapper = styled.div`
@@ -29,7 +29,9 @@ export const ProductImg = styled.img`
 export const ProductTitle = styled.h4`
   font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 export const ProductDesc = styled.p`
   font-weight: 100;
@@ -48,7 +50,9 @@ export const ProductRate = styled(Rating)`
 export const Price = styled.h3`
   font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: right;
 `;
 export const ThreeDot = styled.div`
@@ -57,20 +61,24 @@ export const ThreeDot = styled.div`
   align-items: center;
   margin-top: ${pxPC(3)};
 `;
-const Dot = styled.div`
+export const Dot = styled.div`
   width: ${pxPC(12)};
   height: ${pxPC(12)};
   border-radius: 50%;
   border: 1px solid
-    ${(p) => (p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary)};
+    ${(p) =>
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
   margin-right: ${pxPC(8)};
+  background: ${(p) => p.color};
 `;
-export const Dot1 = styled(Dot)`
-  background: #cbc8bf;
-`;
-export const Dot2 = styled(Dot)`
-  background: #979d93;
-`;
-export const Dot3 = styled(Dot)`
-  background: #979d93;
-`;
+// export const Dot1 = styled(Dot)`
+//   background: #cbc8bf;
+// `;
+// export const Dot2 = styled(Dot)`
+//   background: #979d93;
+// `;
+// export const Dot3 = styled(Dot)`
+//   background: #979d93;
+// `;

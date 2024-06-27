@@ -108,7 +108,9 @@ const FormWrapper: React.FC<any> = ({
       return (
         <WizardForm canGoBack={canGoBack}>
           <InitialTitle>
-            {isMobile && !canGoBack && <h1>Welcome! Let's get you started..</h1>}
+            {isMobile && !canGoBack && (
+              <h1>Welcome! Let's get you started..</h1>
+            )}
           </InitialTitle>
           {children}
           <WizardActions>
@@ -201,7 +203,7 @@ export const SignupForm = () => {
 
   const { register } = useAuth();
 
-  const handleSubmit = useCallback((values) => {
+  const handleSubmit = useCallback((values: any) => {
     new Promise((resolve, reject) => {
       // const { firstName, lastName, middleName, suffix } = values[
       //   'personal-info'
@@ -318,5 +320,3 @@ export const SignupForm = () => {
     </MainWrapper>
   );
 };
-
-SignupForm.propTypes = {};

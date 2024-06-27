@@ -21,7 +21,6 @@ export const Layout: React.FC<LayoutProps> = ({
 }: {
   children: JSX.Element[] | JSX.Element;
 }) => {
-  const darkMode = process.env.IS_DARK_MODE === "true";
   return (
     <Container>
       <Content>
@@ -30,7 +29,7 @@ export const Layout: React.FC<LayoutProps> = ({
           {({ css, cx }) => (
             <Footer
               footerData={{
-                logo: <MyLogo imageFile="/logo.png" darkMode={true} />,
+                logo: <MyLogo imageFile="/pol-logo.png" darkMode={true} />,
                 columns
               }}
             />

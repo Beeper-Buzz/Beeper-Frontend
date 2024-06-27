@@ -1,17 +1,17 @@
 import styled from "@emotion/styled";
 import { LargeTitle, BtnTitle } from "../../../styles/BaseStyles";
 import ButtonBase from "@material-ui/core/ButtonBase";
-import { pxIphone, pxPC } from "../../../utils";
+import { pxIphone, pxPC } from "../../../utilities/device-sizes";
 export const Container = styled.div`
   display: flex;
   justify-content: left;
   height: ${pxPC(719)};
-  background-image: url(/banner.png);
+  background-image: url(/pol-hero.jpg);
   background-size: cover;
   position: relative;
   @media (max-width: 768px) {
     height: calc(100vh - ${pxIphone(60)});
-    background-image: url("/bannerMo.png");
+    background-image: url("/pol-hero-mo.jpg");
   }
 `;
 export const HeroTitle = styled(LargeTitle)`
@@ -34,11 +34,13 @@ export const HeroBtn = styled(ButtonBase)`
   height: ${pxPC(37)};
   background: #eb8b8b !important;
   margin-top: ${pxPC(22)}!important;
-  color: #fff !important;
   font-family: "Bebas Neue";
   font-size: ${pxPC(18)};
   line-height: ${pxPC(22)};
-  color: #fff;
+  color: ${(p: any) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: center;
   @media (max-width: 768px) {
     width: 50vw;

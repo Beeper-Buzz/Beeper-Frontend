@@ -3,13 +3,16 @@ import { useQuery } from "react-query";
 import { spreeClient } from "../../config/spree";
 import { QueryKeys } from "../queryKeys";
 
-const fetchVariants = async (page: number = 1, productId: string): Promise<any> => {
+const fetchVariants = async (
+  page: number = 1,
+  productId: string
+): Promise<any> => {
   const storage = (await import("../../config/storage")).default;
   const token = await storage.getToken();
   const spreeUrl = `${
-    process.env.SPREE_API_URL
+    process.env.NEXT_PUBLIC_SPREE_API_URL
   }/api/v2/variants?filter[product_id_eq]=${productId}&token=${
-    token ? token.access_token : process.env.SPREE_ACCESS_TOKEN
+    token ? token.access_token : process.env.NEXT_PUBLIC_SPREE_ACCESS_TOKEN
   }`;
   // const spreeUrl = `http://pol-admin-staging.instinct.is/api/v2/variants?filter[product_id_eq]=${productId}`;
   const strictUrl = encodeURI(spreeUrl);
@@ -18,7 +21,7 @@ const fetchVariants = async (page: number = 1, productId: string): Promise<any> 
   myHeaders.append("Content-Type", "application/json");
   // myHeaders.append(
   //   "Authorization",
-  //   `Bearer ${token ? token.access_token : process.env.SPREE_ACCESS_TOKEN}`
+  //   `Bearer ${token ? token.access_token : process.env.NEXT_PUBLIC_SPREE_ACCESS_TOKEN}`
   //   // `Bearer ${token ? token.access_token : ""}`
   // );
   const response = await fetch(strictUrl, {

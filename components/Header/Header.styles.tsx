@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
-import { Badge, Popover } from "@material-ui/core";
+import { Popover } from "@material-ui/core";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import { pxIphone } from "../../utils";
+import { pxIphone } from "../../utilities/device-sizes";
 
 export const TopHeader = styled.div`
   padding: 10px 0 12px 0;
@@ -35,6 +35,14 @@ export interface LinkDivProps {
 export const LinkDiv = styled.a<LinkDivProps>`
   font-size: 14px;
   text-decoration: none;
+  ${(p) =>
+    p.isActive
+      ? null
+      : `
+    pointer-events: none;
+    cursor: default;
+    text-decoration: none;
+  `}
   &:hover {
     color: ${(p) => p.theme.colors.brand.primary};
   }
@@ -63,7 +71,6 @@ export const LeftSide = styled.div`
   width: auto;
   display: flex;
   position: absolute;
-  top: 0;
   left: 10px;
   flex-direction: row;
   align-items: center;
@@ -79,7 +86,6 @@ export const RightSide = styled.div`
   width: auto;
   display: flex;
   position: absolute;
-  top: 0;
   right: 10px;
   flex-direction: row;
   align-items: center;
@@ -104,7 +110,9 @@ export const HeaderOptions = styled.div`
     font-weight: ${(p) => p.theme.typography.titleMD.fontWeight};
     line-height: ${(p) => p.theme.typography.titleMD.lineHeight};
     color: ${(p) =>
-      p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
   }
   @media (max-width: 768px) {
     display: none;
@@ -112,9 +120,21 @@ export const HeaderOptions = styled.div`
 `;
 
 export const CartToggle = styled.div`
-  margin: 10px 10px 0 0;
+  margin: -10px 3px 0 0;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
+
+  @media (min-width: ${(p) => p.theme.breakpoints.values.xs}px) {
+    & span.MuiBadge-root span.MuiBadge-badge {
+      top: 5px !important;
+    }
+  }
+
+  @media (max-width: ${(p) => p.theme.breakpoints.values.xs}px) {
+    margin: 10px 10px 0 0;
+  }
 `;
 
 export const HeaderAccount = styled.div`
@@ -124,28 +144,60 @@ export const HeaderAccount = styled.div`
   margin: 0 20px;
   justify-content: space-around;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
-  @media (max-width: 768px) {
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
+  @media (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
     display: none;
   }
 `;
 
 export const AccountEmail = styled.div`
+  font-family: ${(p) => p.theme.typography.titleMD.fontFamily};
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0 10px;
+  cursor: pointer;
 `;
 
 export const AccountMenu = styled(Popover)`
-  padding: 20px 10px;
-  border: 1px solid red;
+  font-family: ${(p) => p.theme.typography.titleMD.fontFamily};
+  text-align: right;
+  & div.MuiPaper-root {
+    width: 160px;
+    padding: 20px;
+    top: 45px !important;
+    left: auto !important;
+    right: 105px;
+    background-color: ${(p) =>
+      p.theme.isDarkMode
+        ? p.theme.colors.gray.dark
+        : p.theme.colors.white.primary};
+  }
+`;
+
+export const AccountOption = styled.div`
+  cursor: pointer;
+  margin: 5px 0;
+  &:first-of-type {
+    margin: 0;
+  }
+
+  & > a {
+    color: ${(p) =>
+      p.theme.isDarkMode
+        ? p.theme.colors.white.primary
+        : p.theme.colors.black.primary};
+  }
 `;
 
 export const ArrowDown = styled(ArrowDropDownIcon)`
   margin-left: 5px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   @media (max-width: 768px) {
     display: none !important;
   }
@@ -163,7 +215,9 @@ export const ShoppingCart = styled.img`
 export const FavoriteIcon = styled(FavoriteBorderIcon)`
   font-size: 12px;
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   margin-right: 13px;
   @media (max-width: 768px) {
     display: none !important;

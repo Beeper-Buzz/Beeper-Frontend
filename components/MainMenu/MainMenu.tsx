@@ -2,7 +2,12 @@ import React, { useEffect, useCallback, useState } from "react";
 import classnames from "classnames";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
-import { fetchMenuLocation, fetchMenuItems, useMenuLocation, useMenuItems } from "../../hooks";
+import {
+  fetchMenuLocation,
+  fetchMenuItems,
+  useMenuLocation,
+  useMenuItems
+} from "../../hooks";
 import { MainMenuProps, menuDataItem } from "./types";
 import DesktopMenu from "./DesktopMenu";
 
@@ -45,23 +50,15 @@ export const MainMenu = (props: MainMenuProps) => {
     data: menuItemsData,
     isLoading: menuItemsIsLoading,
     isSuccess: menuItemsIsSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } = useMenuItems(
-    1
-  );
+  }: {
+    error: any;
+    status: any;
+    data: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+  } = useMenuItems(1);
 
-  useEffect(() => {
-    if (menuItemsIsSuccess && menuLocationIsSuccess) {
-      console.log(
-        menusData,
-        "MENU LOCATION",
-        menuLocationData?.response_data,
-        "MENU ITEMS",
-        menuItemsData?.response_data
-      );
-    }
-  }, []);
-
-  if (menuItemsIsLoading) return <>Loading...</>;
+  if (menuItemsIsLoading || menuLocationIsLoading || !menuItemsData) return null;
 
   return (
     <>
@@ -69,7 +66,8 @@ export const MainMenu = (props: MainMenuProps) => {
         <MobileMenu
           showMenuHeader={showMenuHeader}
           onMenuItemClick={onMenuItemClick}
-          menusData={menuItemsData?.response_data}
+          menusLoading={menuItemsIsLoading}
+          menusData={menuItemsData ? menuItemsData?.response_data : []}
         />
       </HiddenOnDesktop>
       <HiddenOnMobile>
@@ -78,7 +76,8 @@ export const MainMenu = (props: MainMenuProps) => {
             onMenuItemClick={onMenuItemClick}
             pcWrapClassName={classnames(pcWrapClassName)}
             pcMenuItemClassName={pcMenuItemClassName}
-            menusData={menuItemsData?.response_data}
+            menusLoading={menuItemsIsLoading}
+            menusData={menuItemsData ? menuItemsData?.response_data : []}
             // menusData={menusData}
           />
         ) : null}
@@ -91,8 +90,10 @@ export async function getServerSideProps() {
   const queryClient = new QueryClient();
 
   // await queryClient.prefetchQuery(["posts", 1], () => fetchPosts(1));
-  await queryClient.prefetchQuery(["menu_location", 1], () => fetchMenuLocation(1));
-  await queryClient.prefetchQuery(["menu_items", 1], () => fetchMenuItems(0));
+  await queryClient.prefetchQuery(["menu_location", 1], () =>
+    fetchMenuLocation(1)
+  );
+  await queryClient.prefetchQuery(["menu_items", 1], () => fetchMenuItems(1));
 
   return {
     props: {

@@ -21,7 +21,7 @@ import {
   SearchBarWrapper,
   ButtonWrapper
 } from "./SearchBar.styles";
-import AutoComplete from "../AutoComplete";
+import AutoComplete from "../SearchSuggestions";
 import { useRouter } from "next/router";
 import { useOnClickOutside } from "../../hooks";
 import { SearchBarProps } from "./types";
@@ -47,7 +47,6 @@ const SearchBar = ({
     const { value } = e.target;
     if (value.length === 0) handleSearchClear();
     setQuery(value);
-
     setIsAutocompleteVisible(true);
   };
 
@@ -153,7 +152,9 @@ const SearchBar = ({
             <StyledInputPrefix darkMode={darkMode}>
               <i
                 onClick={toggleSearch}
-                className={isSearchLoading ? "bts bt-spinner bt-pulse" : "btr bt-search"}
+                className={
+                  isSearchLoading ? "bts bt-spinner bt-pulse" : "btr bt-search"
+                }
               ></i>
             </StyledInputPrefix>
             <StyledInput
@@ -171,7 +172,10 @@ const SearchBar = ({
               autoComplete="off"
             />
             {query && (
-              <StyledInputPostfix onClick={handleSearchClear} darkMode={darkMode}>
+              <StyledInputPostfix
+                onClick={handleSearchClear}
+                darkMode={darkMode}
+              >
                 <i className="btr bt-times"></i>
               </StyledInputPostfix>
             )}
@@ -184,7 +188,7 @@ const SearchBar = ({
 
       {autoComplete ? (
         <AutoComplete
-          setIsSearchLoading={() => setIsSearchLoading}
+          setIsSearchLoading={(e) => setIsSearchLoading(e)}
           isVisible={isAutoCompleteVisible}
           toggleVisibility={(e: any) => setIsAutocompleteVisible(e)}
           id={dropdownId}

@@ -2,10 +2,11 @@ import React, { useEffect, useState, useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { Badge, Popover } from "@material-ui/core";
+import { Badge } from "@material-ui/core";
 import Sticky from "react-sticky-el";
 import { HeaderProps } from "./types";
 import { useAuth } from "../../config/auth";
+import { useCart } from "../../hooks/useCart";
 import { MyLogo } from "../Layout/Layout";
 import SearchBar from "../SearchBar";
 import { MainMenu } from "../MainMenu";
@@ -31,12 +32,21 @@ import {
   ShoppingCart,
   FavoriteIcon,
   AccountEmail,
-  AccountMenu
+  AccountMenu,
+  AccountOption
 } from "./Header.styles";
 
-const dummyCategories = ["Best Sellers", "Latest", "Seasonal", "Luxury", "On Sale", "Coming Soon"];
+const dummyCategories = [
+  "Best Sellers",
+  "Latest",
+  "Seasonal",
+  "Luxury",
+  "On Sale",
+  "Coming Soon"
+];
 
 export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
+  const router = useRouter();
   const { pathname } = useRouter();
   const { user, logout } = useAuth();
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -48,8 +58,16 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const accountId = accountVisible ? "simple-popover" : undefined;
   const toggleCart = () => setCartVisible((isVisible) => !isVisible);
   const toggleAccount = () => setAccountVisible((isVisible) => !isVisible);
+  const isMaint = process.env.NEXT_PUBLIC_IS_MAINT_MODE || "false";
+  const siteTitle = process.env.NEXT_PUBLIC_SHORT_TITLE || "DNA";
 
-  const isMaint = process.env.IS_MAINT_MODE;
+  const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH || null;
+
+  const {
+    data: cartData,
+    isLoading: cartIsLoading,
+    isError: cartHasError
+  } = useCart();
 
   const handleAccount = (event: any) => {
     setAccountElem(event.currentTarget);
@@ -76,17 +94,27 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           </LeftSide>
         )}
         <LogoDiv>
-          <Link href="/">
-            <LinkDiv isActive>
-              <MyLogo imageFile="/pol-logo.png" darkMode={darkMode} />
-            </LinkDiv>
-          </Link>
+          <LinkDiv
+            isActive
+            onClick={() => {
+              router.push("/");
+            }}
+          >
+            {logoPath ? (
+              <MyLogo imageFile={logoPath} darkMode={darkMode} />
+            ) : (
+              <h1>{siteTitle}</h1>
+            )}
+          </LinkDiv>
         </LogoDiv>
         <RightSide>
           {isMobile ? null : <SearchBar darkMode={darkMode} />}
           {user ? (
             <HeaderAccount>
-              <AccountEmail aria-describedby={accountId} onClick={handleAccount}>
+              <AccountEmail
+                aria-describedby={accountId}
+                onClick={handleAccount}
+              >
                 {user.data.attributes.email}
                 <ArrowDown />
               </AccountEmail>
@@ -96,19 +124,23 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                 onClose={handleCloseAccount}
                 anchorOrigin={{
                   vertical: "bottom",
-                  horizontal: "right"
+                  horizontal: "center"
                 }}
                 transformOrigin={{
                   vertical: "top",
-                  horizontal: "right"
+                  horizontal: "center"
                 }}
               >
-                <ul>
-                  <li>Account Settings</li>
-                  <li>Need Help?</li>
-                </ul>
+                <AccountOption>
+                  <div>Account Settings</div>
+                </AccountOption>
+                <AccountOption>
+                  <div>Need Help?</div>
+                </AccountOption>
                 <hr />
-                <div onClick={logout}>LOGOUT</div>
+                <AccountOption>
+                  <div onClick={logout}>Logout</div>
+                </AccountOption>
               </AccountMenu>
               {/* <UserIconMo src={"/user.png"} /> */}
               <Badge badgeContent={4} color="secondary">
@@ -117,16 +149,22 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
             </HeaderAccount>
           ) : (
             <HeaderOptions>
-              <Link href="/login">
-                <LinkDiv isActive={pathname === "/login"}>LOG IN</LinkDiv>
-              </Link>
-              <Link href="/authenticate/signup">
-                <LinkDiv isActive={pathname === "/authenticate/signup"}>SIGN UP</LinkDiv>
-              </Link>
+              <LinkDiv href="/login" isActive={pathname !== "/login"}>
+                LOGIN
+              </LinkDiv>
+              <LinkDiv
+                href="/authenticate/signup"
+                isActive={pathname !== "/authenticate/signup"}
+              >
+                SIGN UP
+              </LinkDiv>
             </HeaderOptions>
           )}
           <CartToggle>
-            <Badge badgeContent={4} color="primary">
+            <Badge
+              badgeContent={cartData ? cartData.data.attributes.item_count : 0}
+              color="primary"
+            >
               <CartSidebar isVisible={cartVisible} toggle={toggleCart} />
             </Badge>
           </CartToggle>

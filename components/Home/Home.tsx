@@ -1,13 +1,18 @@
-import { useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useQuery } from "react-query";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
 import { Layout, InfoBox, ProductList } from "../components";
-import { fetchStreams, fetchProducts, useProducts, useStreams } from "../../hooks";
+import {
+  fetchStreams,
+  fetchProducts,
+  useProducts,
+  useStreams
+} from "../../hooks";
 import Hero from "./Hero";
 import Banner from "./Banner";
 import { Content } from "./Home.styles";
-import LatestProducts from "./LatestProducts";
+import Featured from "./Featured";
 import MemberList from "./MemberList";
 import { StreamList } from "../StreamList";
 import PolProductList from "../PolProductList";
@@ -15,8 +20,42 @@ import { useMediaQuery } from "react-responsive";
 import MobileLatest from "./MobileLatest";
 import { Loading } from "../Loading";
 import homeData from "./home.json";
+import { VideoJS } from "..";
+import constants from "../../utilities/constants";
+
 export const Home = (props: any) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
+
+  const playerRef = useRef(null);
+
+  const videoJsOptions = {
+    autoplay: true,
+    playsInline: true,
+    controls: false,
+    responsive: true,
+    preload: "auto",
+    muted: true,
+    fluid: true,
+    sources: [
+      {
+        src: "pol-fw-21.mp4",
+        type: "video/mp4"
+      }
+    ]
+  };
+
+  const handlePlayerReady = ({ player }: any) => {
+    playerRef.current = player;
+
+    // you can handle player events here
+    // player.on('waiting', () => {
+    //   console.log('player is waiting');
+    // });
+
+    // player.on('dispose', () => {
+    //   console.log('player will dispose');
+    // });
+  };
 
   const {
     error: productsError,
@@ -24,9 +63,13 @@ export const Home = (props: any) => {
     data: productsData,
     isLoading: productsAreLoading,
     isSuccess: productsIsSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } = useProducts(
-    1
-  );
+  }: {
+    error: any;
+    status: any;
+    data: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+  } = useProducts(1);
 
   const {
     error: streamsError,
@@ -34,23 +77,28 @@ export const Home = (props: any) => {
     data: streamsData,
     isLoading: streamsAreLoading,
     isSuccess: streamsAreSuccess
-  }: { error: any; status: any; data: any; isLoading: boolean; isSuccess: boolean } = useStreams(1);
+  }: {
+    error: any;
+    status: any;
+    data: any;
+    isLoading: boolean;
+    isSuccess: boolean;
+  } = useStreams(1);
 
-  const memberList = isMobile ? null : <MemberList data={homeData.memberList} />;
-  const mobileMemberList = !isMobile ? null : <MemberList data={homeData.memberList} />;
-  const advertList = isMobile ? null : <LatestProducts data={homeData.latestProducts} title="" />;
+  const memberList = isMobile ? null : (
+    <MemberList data={homeData.memberList} />
+  );
+  const mobileMemberList = !isMobile ? null : (
+    <MemberList data={homeData.memberList} />
+  );
   const advertListMobile = isMobile ? (
-    <MobileLatest data={productsData} title={""}></MobileLatest>
+    <MobileLatest products={productsData} title={""}></MobileLatest>
   ) : null;
   const polProductList = isMobile ? null : (
     // <PolProductList data={homeData.hotDigs} title={"New Drops This Week"} />
-    <PolProductList data={productsData} title={"New Drops This Week"} />
+    <PolProductList products={productsData} title={"New Drops This Week"} />
   );
   const banner = isMobile ? null : <Banner data={homeData.bigHotDig} />;
-
-  useEffect(() => {
-    // console.log(streamsData?.response_data, productsData);
-  }, []);
 
   if (productsAreLoading || streamsAreLoading) {
     return <Loading />;
@@ -65,9 +113,11 @@ export const Home = (props: any) => {
       <Hero />
       <Content>
         {/* {memberList} */}
-        <StreamList data={streamsData?.response_data} title={"Live-Shopping"} />
+        {streamsData && <StreamList data={streamsData?.response_data} title={"Live-Shopping"} />}
+        {!productsAreLoading && polProductList}
         {/* {mobileMemberList} */}
-        {advertList}
+        <Featured data={homeData.latestProducts} title="" />;
+        <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
         {advertListMobile}
         {!productsAreLoading && polProductList}
         {banner}

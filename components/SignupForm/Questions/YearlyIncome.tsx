@@ -6,7 +6,11 @@ import { InputAdornment } from "@material-ui/core";
 // Local
 import TipBot from "../../TipBot";
 import { FormikIncome } from "../../FormikWrappers";
-import { QuestionWrapper, InputGroupWrapper, InputWrapper } from "./Questions.styles";
+import {
+  QuestionWrapper,
+  InputGroupWrapper,
+  InputWrapper
+} from "./Questions.styles";
 
 export const YearlyIncome = () => {
   const speechMarkup = useCallback(() => {
@@ -23,7 +27,9 @@ export const YearlyIncome = () => {
             id="yearlyIncome"
             component={FormikIncome}
             InputProps={{
-              startAdornment: <InputAdornment position="start">$</InputAdornment>
+              startAdornment: (
+                <InputAdornment position="start">$</InputAdornment>
+              )
             }}
             label="Yearly Income"
           />

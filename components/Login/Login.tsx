@@ -9,7 +9,13 @@ import { useAuth } from "../../config/auth";
 
 import { FormikInput } from "../FormikWrappers";
 
-import { LoginWrapper, FormWrapper, InputWrapper, Subtext } from "./Login.styles";
+import {
+  LoginWrapper,
+  FormWrapper,
+  InputWrapper,
+  Subtext
+} from "./Login.styles";
+import constants from "../../utilities/constants";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -23,12 +29,15 @@ export const Login = () => {
         initialValues={loginForm.fields}
         validationSchema={loginForm.validate}
         onSubmit={(values, { setSubmitting }) => {
+          setSubmitting(true);
           login(values)
-            .then(() => {
+            .then((res: any) => {
+              console.log("LOGIN SUCCESS: ", res);
               setSubmitting(false);
               router.push("/");
             })
-            .catch(() => {
+            .catch((e: any) => {
+              constants.IS_DEBUG && console.log("LOGIN FAIL: ", e);
               setSubmitting(false);
             });
         }}
@@ -36,22 +45,30 @@ export const Login = () => {
         {({ isSubmitting }) => (
           <FormWrapper>
             <InputWrapper>
-              <Field type="email" name="username" component={FormikInput} label="Email" />
+              <Field
+                type="email"
+                name="username"
+                placeholder="Email"
+                component={FormikInput}
+                label="Email"
+              />
             </InputWrapper>
             <InputWrapper>
-              <Field type="password" name="password" component={FormikInput} label="Password" />
+              <Field
+                type="password"
+                name="password"
+                placeholder="Password"
+                component={FormikInput}
+                label="Password"
+              />
             </InputWrapper>
             <button type="submit" disabled={isSubmitting}>
               Submit
             </button>
             <Subtext>
-              <Link href="/authenticate/signup">
-                <a>Register</a>
-              </Link>
+              <Link href="/authenticate/signup">Register</Link>
               &nbsp;&nbsp;|&nbsp;&nbsp;
-              <Link href="/reset-password">
-                <a>Reset Password</a>
-              </Link>
+              <Link href="/reset-password">Reset Password</Link>
             </Subtext>
           </FormWrapper>
         )}

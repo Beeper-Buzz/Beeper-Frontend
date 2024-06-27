@@ -1,12 +1,13 @@
 import styled from "@emotion/styled";
 import { ButtonBack, ButtonNext } from "pure-react-carousel";
+import { Slider, Slide, ImageWithZoom } from "pure-react-carousel";
 
 export const ProductContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   margin: 0 auto;
-  padding-top: 30px;
+  padding: 30px 0 30px;
   width: 100%;
   font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
 `;
@@ -18,6 +19,15 @@ export const ProductImageCarousel = styled.div`
     width: 100%;
   }
 `;
+
+// These have default styles
+// These are overrides and need !important
+export const StyledSlider = styled(Slider)``;
+export const StyledSlide = styled(Slide)`
+  width: 100% !important;
+  height: 500px !important;
+`;
+export const StyledImageWithZoom = styled(ImageWithZoom)``;
 
 export const CarouselNav = styled.div`
   width: 100%;
@@ -57,6 +67,10 @@ export const ProductInfoBox = styled.div`
 export const ProductDescription = styled.div`
   text-align: center;
   max-width: 400px;
+  color: ${(p) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
 `;
 
 export const Detail = styled.h3`
@@ -68,6 +82,28 @@ export const Detail = styled.h3`
 `;
 
 export const Price = styled.h1``;
+
+export const VariantSwatchList = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const VariantSwatch = styled.div`
+  display: block;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  border: 1px solid ${(p) => p.theme.colors.black.light};
+  margin: 0 10px 0 0;
+  background: ${(p) => p.color};
+
+  &:last-of-type {
+    margin: 0;
+  }
+`;
 
 export const SizesTitle = styled.p`
   text-align: left;
@@ -96,21 +132,12 @@ export const SizeQty = styled.div`
 
 export const SizeTitle = styled.div`
   padding: 3px 0 0 0;
-  background: ${(p) => p.theme.colors.gray.background};
+  background: ${(p) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.gray.dark
+      : p.theme.colors.gray.background};
   text-transform: uppercase;
 `;
-
-// export const ColorsTable = styled.table``;
-
-// export const ColorsHead = styled.thead``;
-
-// export const ColorsTH = styled.th``;
-
-// export const ColorsBody = styled.tbody``;
-
-// export const ColorsRow = styled.tr``;
-
-// export const ColorsCell = styled.td``;
 
 export const ColorsTable = styled.div`
   margin: 40px 0 40px 0;
@@ -120,7 +147,7 @@ export const ColorsHead = styled.div``;
 
 export const ColorsTH = styled.div`
   display: grid;
-  grid-template-columns: 40% 20% 20% 20%;
+  grid-template-columns: 30% 25% 20% 20%;
   background: ${(p) => p.theme.colors.brand.primary};
   color: ${(p) => p.theme.colors.white.primary};
 `;
@@ -133,14 +160,21 @@ export const ColorsBody = styled.div`
 
 export const ColorsRow = styled.div`
   display: grid;
-  grid-template-columns: 37.5% 5% 5% 5% 20% 25%;
+  grid-template-columns: 30% 5% 15% 5% 20% 25%;
 `;
 
 export const ColorsCell = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 4px 6px;
   & input {
-    width: 100%;
-    border: 0;
+    width: 80px;
+    border: 1px solid ${(p: any) => p.theme.colors.white.primary};
+    color: ${(p: any) =>
+      p.isDarkMode
+        ? p.theme.colors.black.primary
+        : p.theme.colors.white.primary} !important;
     background: transparent;
     &:focus {
       outline: none;
@@ -158,4 +192,11 @@ export const ColorsCell = styled.div`
 
 export const BuyButton = styled.button`
   font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
+`;
+
+export const PropertyName = styled.span`
+  color: ${(p) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.gray.primary
+      : p.theme.colors.black.primary};
 `;

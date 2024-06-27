@@ -6,7 +6,9 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import Collapse from "@material-ui/core/Collapse";
 import { SocialLinks } from "../";
-import { menuStyles } from "./menuStyles";
+import { menuStyles, darkMenuStyles } from "./menuStyles";
+import { useTheme } from "@emotion/react";
+import { useRouter } from "next/router";
 
 import { MenuToggle, MenuFooter } from "./MainMenu.styles";
 
@@ -16,6 +18,7 @@ import {
   StyledListItemText,
   StyledListItemIcon
 } from "./MobileMenu.styles";
+import constants from "../../utilities/constants";
 
 export interface MenuItemProps {
   paddingLeft: string;
@@ -31,24 +34,33 @@ const MenuItem = styled(StyledListItem, {
   }
 `;
 
-export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) => {
+export const MobileMenu = ({
+  showMenuHeader,
+  onMenuItemClick,
+  menusData
+}: any) => {
+  const theme = useTheme();
+  const router = useRouter();
   const currYear = new Date().getFullYear();
   const [open, setOpen] = useState(false);
+  const [keyPath, setKeyPath] = useState("");
+  const menuItems =
+      menusData?.menu_location_listing?.length > 0
+        ? menusData?.menu_location_listing[0].menu_item_listing
+        : [];
+  
   const toggleMenu = () => setOpen((value: any) => !value);
 
-  const [keyPath, setKeyPath] = useState("");
   const handleClick = useCallback(
     (kp: any, key: any) => {
-      if (onMenuItemClick) {
-        onMenuItemClick(kp, key);
-      }
+      // if (onMenuItemClick) {
+      //   onMenuItemClick(key);
+      // }
       setKeyPath((pre) => {
         if (kp == pre) {
-          // console.log("closing");
           let str = kp.replace("/" + key, "");
           return str;
         } else {
-          // console.log("opening");
           return kp;
         }
       });
@@ -56,54 +68,60 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
     [onMenuItemClick]
   );
 
-  const getSubMenuItem = (localMenuData: any[], parentKeyPath: string, level: number) => {
-    const paddingLeft = level * 20 + "px";
-    const isArray = Array.isArray(localMenuData);
-    // console.log(isArray, localMenuData);
-    const menuItems = isArray
-      ? localMenuData
-      : menusData?.menu_location_listing[0].menu_item_listing;
-    // console.log('local menu: ', localMenuData);
-    return (
-      <StyledList disablePadding>
-        {menuItems.map((item: any, index: any) => {
-          const subItems = item.childrens;
-          const slug = item.name.toLowerCase();
-          const pathSlug = parentKeyPath + "/" + slug;
-          // console.log(subItems, pathSlug, keyPath.indexOf(pathSlug) != -1);
+  const handleItemClick = (item: any, hasChildren: boolean, pathSlug: string, slug: string) => {
+    if (hasChildren) {
+      handleClick(pathSlug, slug);
+    } else {
+      router.push(item.url); // Navigate to the item's URL.
+      toggleMenu(); // Close the sidebar menu.
+    }
+  };
 
-          return (
-            <Fragment key={pathSlug}>
-              {
+  const renderMenuItems = (
+    menuData: any[],
+    parentKeyPath: string,
+    level: number
+  ) => {
+    const paddingLeft = level * 20 + "px";
+    
+    if (menuData.length) {
+      return (
+        <StyledList disablePadding>
+          {menuData.map((item: any, index: any) => {
+            const hasChildren = item.childrens.length > 0;
+            const subItems = hasChildren ? item.childrens : [];
+            const slug = item.name.toLowerCase();
+            const pathSlug = parentKeyPath + "/" + slug;
+
+            return (
+              <Fragment key={pathSlug}>
                 <MenuItem
                   key={`${pathSlug}-1`}
                   paddingLeft={paddingLeft}
-                  onClick={handleClick.bind(null, pathSlug, slug)}
+                  onClick={() => handleItemClick(item, hasChildren, pathSlug, slug)}
                   button
                 >
                   {/* <StyledListItemIcon>{item.icon ? item.icon() : null}</StyledListItemIcon> */}
                   {/* <StyledListItemText primary={item.name.replace("/", "_")} /> */}
                   <StyledListItemText primary={item.name} />
-                  {item &&
-                    subItems &&
-                    subItems.length != 0 &&
-                    (keyPath.indexOf(pathSlug) != -1 ? <ExpandLess /> : <ExpandMore />)}
+                  {hasChildren && (keyPath.indexOf(pathSlug) !== -1 ? <ExpandLess /> : <ExpandMore />)}
                 </MenuItem>
-              }
-              {item && subItems && subItems.length != 0 && (
-                <Collapse timeout="auto" unmountOnExit in={keyPath.indexOf(pathSlug) != -1}>
-                  {level < 2 ? getSubMenuItem(subItems, pathSlug, level + 1) : null}
-                  {/* <h1>hey</h1> */}
-                  {subItems.map(({ item, i }: any) => {
-                    return <Fragment key={`${pathSlug}-2`}>{item}</Fragment>;
-                  })}
-                </Collapse>
-              )}
-            </Fragment>
-          );
-        })}
-      </StyledList>
-    );
+                {hasChildren && (
+                  <Collapse
+                    timeout="auto"
+                    unmountOnExit
+                    in={keyPath.indexOf(pathSlug) !== -1}
+                  >
+                    {renderMenuItems(subItems, pathSlug, level + 1)}
+                  </Collapse>
+                )}
+              </Fragment>
+            );
+          })}
+        </StyledList>
+      );
+    }
+    return null;
   };
 
   return (
@@ -112,7 +130,7 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
       isOpen={open}
       onOpen={toggleMenu}
       onClose={toggleMenu}
-      styles={menuStyles}
+      styles={theme.isDarkMode ? darkMenuStyles : menuStyles}
       // {...others}
     >
       {/* <BurgerMenu width={220} isOpen={open} onOpen={toggleMenu} onClose={toggleMenu} {...others}> */}
@@ -123,17 +141,24 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
           </div>
         </>
       ) : null}
-      {/* {getSubMenuItem(menuItemsData && menuItemsData?.response_data.menu_location_listing[0], "", 0)} */}
-      {getSubMenuItem(menusData, "", 0)}
-      <MenuItem paddingLeft={"10px"} onClick={() => console.log("login")} button>
+      {/* {renderMenuItems(menuItemsData && menuItemsData?.response_data.menu_location_listing[0], "", 0)} */}
+      {menuItems && renderMenuItems(menuItems, "", 0)}
+      <MenuItem
+        paddingLeft={"10px"}
+        onClick={() => {
+          toggleMenu();
+          router.push("/login");
+        }}
+        button
+      >
         <hr />
         Login
       </MenuItem>
       <SocialLinks />
       <MenuFooter>
         <div>
-          <a href="/privacy">Privacy Policy</a> - <a href="/terms">Terms &amp; Conditions</a> -
-          RETURN POLICY
+          <a href="/privacy">Privacy Policy</a> -{" "}
+          <a href="/terms">Terms &amp; Conditions</a> - RETURN POLICY
         </div>
         <div>All Materials Copyright © {currYear} POL Clothing</div>
       </MenuFooter>

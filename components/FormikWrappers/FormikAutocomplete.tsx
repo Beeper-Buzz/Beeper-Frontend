@@ -4,7 +4,10 @@ import { useField } from "formik";
 
 import { TextField } from "@material-ui/core";
 
-import PlacesAutocomplete, { geocodeByAddress, getLatLng } from "react-places-autocomplete";
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng
+} from "react-places-autocomplete";
 
 import {
   Error,
@@ -75,7 +78,7 @@ export const FormikAutocomplete = ({
             />
             {!addressSelected && homeAddress !== "" && (
               <SuggestionWrapper>
-                {loading && <SuggestionLoader>Loading...</SuggestionLoader>}
+                {loading && <SuggestionLoader>Loader...</SuggestionLoader>}
                 {suggestions.map((suggestion) => {
                   const className = suggestion.active
                     ? "suggestion-item active"

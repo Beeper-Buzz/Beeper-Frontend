@@ -1,10 +1,8 @@
 import { lighten } from "polished";
+const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "false";
 export const theme = {
-  isDarkMode: false,
+  isDarkMode: darkMode === "true",
   colors: {
-    pink: {
-      primary: "hotpink"
-    },
     gray: {
       dark: "#333",
       primary: "#666",
@@ -56,9 +54,12 @@ export const theme = {
   background: {
     ambient: "linear-gradient(180deg, #EB8B8B 0%, #CC8BEB 100%)",
     brand: "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 51.56%)",
-    yellow: "linear-gradient(180deg, rgba(248, 207, 81, 0.64) 0%, rgba(248, 207, 81, 0) 100%)",
-    OmniscientPink: "linear-gradient(180deg, #EB8B8B 0%, rgba(235, 139, 139, 0) 100%)",
-    AmbientVectors: "linear-gradient(142.27deg, #EB8B8B 21.81%, #DC8BBA 43.8%, #CC8BEB 66.99%)",
+    yellow:
+      "linear-gradient(180deg, rgba(248, 207, 81, 0.64) 0%, rgba(248, 207, 81, 0) 100%)",
+    OmniscientPink:
+      "linear-gradient(180deg, #EB8B8B 0%, rgba(235, 139, 139, 0) 100%)",
+    AmbientVectors:
+      "linear-gradient(142.27deg, #EB8B8B 21.81%, #DC8BBA 43.8%, #CC8BEB 66.99%)",
     AmbientVectorsReversed: "linear-gradient(180deg, #EB8B8B 0%, #CC8BEB 100%)"
   },
   effect: {
@@ -77,7 +78,8 @@ export const theme = {
       background: "#c4c4c4"
     },
     BrandGlowSecondarySM: {
-      boxShadow: "2px 3px 2px 1px rgba(122, 73, 152, 0.25), 0px -1px 2px #D8B5B5",
+      boxShadow:
+        "2px 3px 2px 1px rgba(122, 73, 152, 0.25), 0px -1px 2px #D8B5B5",
       background: "#C4C4C4"
     },
     Skeuomorphism: {
@@ -87,59 +89,66 @@ export const theme = {
   },
   typography: {
     titleXXL: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody Light",
       fontWeight: "bold",
       fontSize: "72px",
       lineHeight: "86px",
       color: "#000"
     },
     titleXL: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody Light",
       fontWeight: "bold",
       fontSize: "33.8681px",
       lineHeight: "41px",
       color: "#000"
     },
     titleLG: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody Light",
       fontWeight: "bold",
       fontSize: "24px",
       lineHeight: "30px",
       color: "#000"
     },
     titleMD: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "bold",
       fontSize: "20px",
       lineHeight: "24px",
       color: "#000"
     },
     titleSM: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "normal",
       fontSize: "14px",
       lineHeight: "1.5rem",
       color: "#000"
     },
+    titleXS: {
+      fontFamily: "Anybody ExtraLight",
+      fontWeight: "normal",
+      fontSize: "10px",
+      lineHeight: "0.9rem",
+      color: "#000"
+    },
     bodyMD: {
-      fontFamily: "Roboto",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "normal",
       fontSize: "18px",
       lineHeight: "20px",
       color: "#000"
     },
     bodySM: {
-      fontFamily: "Roboto Condensed",
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "normal",
       fontSize: "14px",
       lineHeight: "16px",
       color: "#000"
     },
-    bodyXXS: {
-      fontFamily: "Roboto",
+    bodyXS: {
+      fontFamily: "Anybody ExtraLight",
       fontWeight: "normal",
-      fontSize: "6px",
-      lineHeight: "8px",
+      fontSize: "9px",
+      lineHeight: "0.9rem",
       color: "#000"
     }
   },

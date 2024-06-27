@@ -6,7 +6,11 @@ import styled from "@emotion/styled";
 import { FormikInput } from "../FormikWrappers";
 
 import { resetPasswordForm } from "../AuthForm/constants";
-import { ResetPasswordWrapper, FormWrapper, InputWrapper } from "./ResetPassword.styles";
+import {
+  ResetPasswordWrapper,
+  FormWrapper,
+  InputWrapper
+} from "./ResetPassword.styles";
 
 const FieldContainer = styled.div`
   margin: 15px 0px;
@@ -37,19 +41,20 @@ export const ResetPassword = () => {
         {({ isSubmitting }) => (
           <FormWrapper>
             <InputWrapper>
-              <Field type="email" name="username" component={FormikInput} label="Email" />
+              <Field
+                type="email"
+                name="username"
+                component={FormikInput}
+                label="Email"
+              />
             </InputWrapper>
             <button type="submit" disabled={isSubmitting}>
               Submit
             </button>
             <p>
-              <Link href="/login">
-                <a>Login</a>
-              </Link>
+              <Link href="/login">Login</Link>
               &nbsp;&nbsp;|&nbsp;&nbsp;
-              <Link href="/authenticate/signup">
-                <a>Register</a>
-              </Link>
+              <Link href="/authenticate/signup">Register</Link>
             </p>
           </FormWrapper>
         )}

@@ -7,7 +7,12 @@ import { Carousel } from "react-responsive-carousel";
 
 // Local
 import TipBot from "../../TipBot";
-import { QuestionWrapper, InputGroupWrapper, Title, Description } from "./Questions.styles";
+import {
+  QuestionWrapper,
+  InputGroupWrapper,
+  Title,
+  Description
+} from "./Questions.styles";
 
 interface GenericThemeType {
   theme?: any;
@@ -57,7 +62,7 @@ export const ColorizedCart = styled.i<GenericThemeType>`
   }
 `;
 
-const partnerName = process.env.SITE_TITLE;
+const partnerName = process.env.NEXT_PUBLIC_SITE_TITLE;
 
 export const GetPreQualified = () => {
   // const { errors, touched } = useFormikContext();

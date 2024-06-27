@@ -5,9 +5,6 @@ declare module "@emotion/react" {
   export interface Theme {
     isDarkMode: boolean;
     colors: {
-      pink: {
-        primary: string;
-      };
       purple?: {
         light: string;
         primary: string;
@@ -157,7 +154,7 @@ declare module "@emotion/react" {
         lineHeight: string;
         color: string;
       };
-      bodyXXS: {
+      bodyXS: {
         fontFamily: string;
         fontWeight: string;
         fontSize: string;

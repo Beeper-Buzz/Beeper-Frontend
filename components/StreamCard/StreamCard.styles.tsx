@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import Link from "next/link";
-import { pxPC, pxIphone } from "../../utils";
+import { pxPC, pxIphone } from "../../utilities/device-sizes";
 import { PriceText, XlargeTitle, XsmallText } from "../../styles/BaseStyles";
 
 export const StreamCardWrapper = styled.div`
@@ -64,7 +64,7 @@ export const StreamChecked = styled.div`
   width: 137px;
   height: 90px;
   margin: auto;
-  font-size: 24px;
+  font-size: 0.8em;
   line-height: 30px;
   font-family: ${(p) => p.theme.typography.bodyMD.fontFamily};
   text-align: center;
@@ -78,13 +78,17 @@ export const StreamCardTitle = styled.h2`
   font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
   line-height: ${(p) => p.theme.typography.titleSM.lineHeight};
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   margin: 20px 0 0 0;
 `;
 
 export const StreamCardDesc = styled.p`
   color: ${(p) =>
-    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
+    p.theme.isDarkMode
+      ? p.theme.colors.white.primary
+      : p.theme.colors.black.primary};
   text-align: center;
   font-weight: 100;
 `;

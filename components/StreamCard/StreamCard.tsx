@@ -33,8 +33,7 @@ export const StreamCard = ({ isPast, item }: any) => {
           {!isPast ? <StreamMask /> : null}
           {!isPast ? (
             <StreamChecked>
-              {isPast ? "Streamed" : "Streaming"} Soon &nbsp;&nbsp;&nbsp;{" "}
-              {moment(item.start_date).fromNow()} &nbsp;&nbsp;&nbsp; Check Back Soon
+              {"Streaming " + moment(item.start_date).fromNow()}
             </StreamChecked>
           ) : null}
           {isPast ? (
@@ -43,10 +42,10 @@ export const StreamCard = ({ isPast, item }: any) => {
             </StreamStatusWrapper>
           ) : null}
           <StreamImg src="/3.png" alt={""} />
-          {/* <InfluencerBox>
+          <InfluencerBox>
             <InfluencerAvatar src="/1.png" />
             <InfluencerName as={"span"}>Jane Doe</InfluencerName>
-          </InfluencerBox> */}
+          </InfluencerBox>
         </StreamImgWrapper>
         <StreamCardTitle>{item.title}</StreamCardTitle>
         <StreamCardDesc>{item.description}</StreamCardDesc>

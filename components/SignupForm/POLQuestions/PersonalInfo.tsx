@@ -19,7 +19,7 @@ export const PersonalInfo = () => {
   // const { errors, touched } = useFormikContext()
 
   const speechMarkup = useCallback(() => {
-    return { __html: "Let’s start with your name." };
+    return { __html: "Let's start with your name." };
   }, []);
 
   return (
@@ -27,7 +27,12 @@ export const PersonalInfo = () => {
       <TipBot speech={speechMarkup()} />
       <InputGroupWrapper>
         <InputWrapper>
-          <Field name="firstName" id="firstName" component={FormikInput} label="First Name" />
+          <Field
+            name="firstName"
+            id="firstName"
+            component={FormikInput}
+            label="First Name"
+          />
         </InputWrapper>
         {/* <InputWrapper>
           <Field
@@ -38,7 +43,12 @@ export const PersonalInfo = () => {
           />
         </InputWrapper> */}
         <InputWrapper>
-          <Field name="lastName" id="lastName" component={FormikInput} label="Last Name" />
+          <Field
+            name="lastName"
+            id="lastName"
+            component={FormikInput}
+            label="Last Name"
+          />
         </InputWrapper>
         {/* <InputWrapper>
           <Field

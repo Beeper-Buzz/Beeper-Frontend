@@ -52,7 +52,7 @@ export interface FootProps {
   footerData: FooterDataType;
 }
 export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
-  const Logo = footerData.logo as React.ComponentType;
+  const Logo = footerData.logo as ReactNode;
   const gridClass = classes?.grid || "";
   const columnClass = classes?.columnClassWrapper || "";
   const columnTitleClass = classes?.columnTitle || "";
@@ -64,13 +64,19 @@ export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
   const mobileIconLinks = footerData.mobileIconLinks;
   return (
     <Container className={classnames(classes?.root)}>
-      {Logo && <LogoDiv>{Logo}</LogoDiv>}
+      {/* {Logo && <LogoDiv>{Logo ? Logo : null}</LogoDiv>} */}
       <Grid className={gridClass}>
         {columns.map((item, index) => (
           <Column className={columnClass} key={index}>
-            {item.title && <ColumnTitle className={columnTitleClass}>{item.title}</ColumnTitle>}
+            {item.title && (
+              <ColumnTitle className={columnTitleClass}>
+                {item.title}
+              </ColumnTitle>
+            )}
             {item.subTitle && (
-              <ColumnSubTitle className={subTitleClass}>{item.subTitle}</ColumnSubTitle>
+              <ColumnSubTitle className={subTitleClass}>
+                {item.subTitle}
+              </ColumnSubTitle>
             )}
             {item.links &&
               item.links.map((v, i) => (
