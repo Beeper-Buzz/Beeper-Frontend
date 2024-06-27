@@ -44,7 +44,8 @@ export const showCart = async () => {
     } else {
       const response = await spreeClient.cart.create();
       if (response.isSuccess()) {
-        constants.IS_DEBUG && console.log("creating cart: ", response.success());
+        constants.IS_DEBUG &&
+          console.log("creating cart: ", response.success());
         const result = response.success();
         storage.setGuestOrderToken(result.data.attributes.token);
         return result;
@@ -78,7 +79,7 @@ export const addItemToCart = async (item: AddItem) => {
 
   // Add item to cart using the existing or new order token
   const response = await spreeClient.cart.addItem(
-    { orderToken: orderToken},
+    { orderToken: orderToken },
     {
       variant_id: item.variant_id,
       quantity: item.quantity
@@ -93,7 +94,6 @@ export const addItemToCart = async (item: AddItem) => {
     throw new Error(response.fail().message);
   }
 };
-
 
 export const useCart = () => {
   return useQuery<IOrder, false>([QueryKeys.CART], () => showCart());

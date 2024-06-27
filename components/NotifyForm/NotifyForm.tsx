@@ -120,7 +120,7 @@ export const NotifyForm = () => {
         firstName: firstName,
         lastName: lastName,
         phone: phone,
-        newContact: newContact
+        newContact: false
       }),
       headers: {
         "Content-Type": "application/json"
@@ -164,9 +164,9 @@ export const NotifyForm = () => {
         <FormWrapper index={currentQuestion}>
           <form
             onSubmit={(e: any) =>
-              currentQuestion < 1
-                ? handleSubmit(e, true)
-                : handleSubmit(e, false)
+              currentQuestion > 0
+                ? handleSubmit(e, false)
+                : handleSubmit(e, true)
             }
           >
             {currentQuestion < notifyQuestions.length

@@ -86,8 +86,8 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
                     {item.name}
                   </DropDownHeader> */}
                   <DropDownLink href={child.url} key={`${index}-link`}>
-                      {child.name}
-                    </DropDownLink>
+                    {child.name}
+                  </DropDownLink>
                 </DropDownColumn>
               ))}
               <Vr />
