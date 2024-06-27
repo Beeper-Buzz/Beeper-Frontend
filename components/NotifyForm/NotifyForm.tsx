@@ -132,7 +132,7 @@ export const NotifyForm = () => {
     console.log("Response: ", resBody);
     setStatus("sending");
 
-    if (resBody.error.length) {
+    if (resBody.error) {
       setStatus("error");
       setMessage(resBody.error);
       return;
