@@ -12,7 +12,7 @@ import {
   useStreams,
   useVariants
 } from "../../hooks";
-import { Layout, LoadingWrapper, Loading } from "../components";
+import { Layout, Loading } from "../components";
 import { useProduct, fetchProduct } from "../../hooks/useProduct";
 import { useMutation, useQueryClient } from "react-query";
 import { addItemToCart } from "../../hooks/useCart";

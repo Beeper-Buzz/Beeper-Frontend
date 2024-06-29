@@ -125,7 +125,7 @@ export const ComingSoon = () => {
   );
 
   const { tintValue } = useSpring({
-    delay: 1000,
+    delay: 600,
     from: { tintValue: 0 },
     to: { tintValue: 1 },
     config: { tension: 80, friction: 180 }
@@ -213,7 +213,7 @@ export const ComingSoon = () => {
         )}
         <Text>{comingSoonText}</Text>
         <NotifyForm />
-        <SocialLinks isDark />
+        <SocialLinks />
       </Container>
     </Background>
   );

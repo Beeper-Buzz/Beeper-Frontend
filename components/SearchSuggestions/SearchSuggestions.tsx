@@ -40,7 +40,6 @@ const SearchSuggestions = ({
   if (!isVisible) return null;
 
   if (isLoading) {
-    setIsSearchLoading(true);
     return (
       <StyledSearchSuggestions role="listbox" aria-labelledby={labelId} id={id}>
         <LoadingIcon className="bts bt-spinner bt-pulse" />
@@ -61,7 +60,7 @@ const SearchSuggestions = ({
   return (
     <StyledSearchSuggestions role="listbox" aria-labelledby={labelId} id={id}>
       {isVisible &&
-        data?.data?.map((item, index) => {
+        data?.data?.map((item: any, index: number) => {
           return (
             <Suggestion
               suggestion={item}

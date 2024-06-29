@@ -61,18 +61,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     return (
       <AppWrapper>
         <Header darkMode={darkMode} />
-        <MainMenu
-          showMenuHeader
-          onMenuItemClick={(key: string) => router.push(key)}
-          customBurgerIcon={<i className="btb bt-bars" />}
-          pcMenuItemClassName={"pc-menu-item"}
-          pcWrapClassName={"pc-menu-wrap"}
-          outterContainerId={"outter-container"}
-          pageWrapId={"page-wrap"}
-          animationType={"slide"}
-          menusData={menusData}
-          right={false}
-        />
         <Component {...pageProps} wholesale={wholesale} />
       </AppWrapper>
     );

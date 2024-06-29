@@ -166,7 +166,7 @@ export const MobileMenu = ({
         <hr />
         Login
       </MenuItem>
-      <SocialLinks isDark />
+      <SocialLinks />
       <MenuFooter>
         <div>
           <a href="/privacy">Privacy Policy</a> -{" "}

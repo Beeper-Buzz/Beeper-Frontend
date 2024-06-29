@@ -16,13 +16,3 @@ export const StyledListItem = styled(ListItem)`
 export const StyledListItemText = styled(ListItemText)``;
 
 export const StyledListItemIcon = styled(ListItemIcon)``;
-
-export const MenuFooter = styled.div`
-  font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
-  color: ${(p) => p.theme.colors.gray.light} !important;
-  bottom: 0;
-
-  & a {
-    color: ${(p) => p.theme.colors.gray.medium} !important;
-  }
-`;

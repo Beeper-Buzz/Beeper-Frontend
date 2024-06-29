@@ -22,7 +22,7 @@ export const SocialLinks = ({ darkMode }: SocialLinksProps) => {
     <>
       <SocialContainer>
         <SocialList>
-          <SocialListItem darkMode={darkMode}>
+          <SocialListItem>
             <a
               href={
                 `http://www.instagram.com/${process.env.NEXT_PUBLIC_INSTAGRAM_SLUG}` ||
@@ -35,7 +35,7 @@ export const SocialLinks = ({ darkMode }: SocialLinksProps) => {
             </a>
           </SocialListItem>
 
-          <SocialListItem darkMode={darkMode}>
+          <SocialListItem>
             <a
               href={
                 `http://www.facebook.com/${process.env.NEXT_PUBLIC_FACEBOOK_SLUG}` ||
@@ -48,7 +48,7 @@ export const SocialLinks = ({ darkMode }: SocialLinksProps) => {
             </a>
           </SocialListItem>
 
-          <SocialListItem darkMode={darkMode}>
+          <SocialListItem>
             <a
               href={
                 `http://www.twitter.com/${process.env.NEXT_PUBLIC_TWITTER_SLUG}` ||
