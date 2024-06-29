@@ -24,7 +24,7 @@ export interface MenuItemProps {
 
 const MenuItem = styled(StyledListItem, {
   shouldForwardProp: (prop) => isPropValid(prop) && prop !== "paddingLeft"
-}) <MenuItemProps>`
+})<MenuItemProps>`
   padding: 0 0 0 ${(props) => props.paddingLeft} !important;
   margin: 5px 0;
   & div span {
@@ -143,7 +143,7 @@ export const MobileMenu = ({
       onOpen={toggleMenu}
       onClose={toggleMenu}
       styles={theme.isDarkMode ? darkMenuStyles : menuStyles}
-    // {...others}
+      // {...others}
     >
       {/* <BurgerMenu width={220} isOpen={open} onOpen={toggleMenu} onClose={toggleMenu} {...others}> */}
       {showMenuHeader ? (

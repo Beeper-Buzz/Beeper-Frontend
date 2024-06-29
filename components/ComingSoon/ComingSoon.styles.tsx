@@ -92,7 +92,7 @@ export const Background = styled.div`
   height: 100%;
 `;
 
-export const Container = styled(animated.div) <any>`
+export const Container = styled(animated.div)<any>`
   display: flex;
   flex-direction: column;
   position: relative;
