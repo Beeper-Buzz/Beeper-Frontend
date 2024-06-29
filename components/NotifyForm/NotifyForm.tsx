@@ -17,25 +17,25 @@ import {
 const notifyQuestions = [
   {
     id: "email",
-    question: "Wanna know when the product becomes available?",
+    question: "Get notified when we launch.",
     placeholder: "Email",
     buttonText: "Get Updates"
   },
   {
     id: "firstName",
-    question: "Great. Btw, what's your name?",
+    question: "Thanks. What should we call you?",
     placeholder: "First Name",
     buttonText: "Save Name"
   },
   {
     id: "lastName",
-    question: "Ok, and your last name?",
+    question: "Nice, wanna share your last name?",
     placeholder: "Last Name",
     buttonText: "Save Name"
   },
   {
     id: "phone",
-    question: "Perfect, wanna get text updates from us?",
+    question: "Perfect, if you want we'll text.",
     placeholder: "Phone",
     buttonText: "Sure"
   }
@@ -121,7 +121,7 @@ export const NotifyForm = () => {
         firstName: firstName,
         lastName: lastName,
         phone: phone,
-        newContact: newContact
+        newContact: false
       }),
       headers: {
         "Content-Type": "application/json"
@@ -165,9 +165,9 @@ export const NotifyForm = () => {
         <FormWrapper index={currentQuestion}>
           <form
             onSubmit={(e: any) =>
-              currentQuestion < 1
-                ? handleSubmit(e, true)
-                : handleSubmit(e, false)
+              currentQuestion > 0
+                ? handleSubmit(e, false)
+                : handleSubmit(e, true)
             }
           >
             {currentQuestion < notifyQuestions.length
@@ -195,18 +195,18 @@ export const NotifyForm = () => {
             </NotifyText>
           )}
           {status === "error" && (
-            <ErrorText>
+            <NotifyText>
               {message === "Bad Request"
                 ? `${message} or Email already exists`
                 : message}
-            </ErrorText>
+            </NotifyText>
           )}
           {status === "success" &&
             currentQuestion >= notifyQuestions.length && (
               <NotifyText>{message}</NotifyText>
             )}
         </FormWrapper>
-        <MailTo id="mailto" href={`mailto:${process.env.NEXT_PUBLIC_EMAIL}`}>
+        <MailTo id="mailto" href={`mailto:${process.env.NEXT_PUBLIC_COMPANY_EMAIL}`}>
           Got Questions? We'd love to hear from you.
         </MailTo>
       </Container>

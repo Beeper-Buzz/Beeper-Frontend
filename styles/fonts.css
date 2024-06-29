@@ -1,78 +1,79 @@
 @font-face {
   font-family: "ibm mono bold";
-  src: url("../public/fonts/ibmplexmono-bold-webfont.woff2") format("woff2"),
-    url("../public/fonts/ibmplexmono-bold-webfont.woff") format("woff");
+  src: url("/fonts/ibmplexmono-bold-webfont.woff2") format("woff2"),
+    url("/fonts/ibmplexmono-bold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
-  font-family: "ibm mono bold italic";
-  src: url("../public/fonts/ibmplexmono-bolditalic-webfont.woff2")
-      format("woff2"),
-    url("../public/fonts/ibmplexmono-bolditalic-webfont.woff") format("woff");
+  font-family: "body_mono_bold_italic";
+  src: url("/fonts/ibmplexmono-bolditalic-webfont.woff2") format("woff2"),
+    url("/fonts/ibmplexmono-bolditalic-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibm mono italic";
-  src: url("../public/fonts/ibmplexmono-italic-webfont.woff2") format("woff2"),
-    url("../public/fonts/ibmplexmono-italic-webfont.woff") format("woff");
+  src: url("/fonts/ibmplexmono-italic-webfont.woff2") format("woff2"),
+    url("/fonts/ibmplexmono-italic-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibm mono bold italic";
-  src: url("../public/fonts/ibmplexmono-bolditalic-webfont.woff2")
-      format("woff2"),
-    url("../public/fonts/ibmplexmono-bolditalic-webfont.woff") format("woff");
+  src: url("/fonts/ibmplexmono-bolditalic-webfont.woff2") format("woff2"),
+    url("/fonts/ibmplexmono-bolditalic-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibm mono extra light";
-  src: url("../public/fonts/ibmplexmono-extralight-webfont.woff2")
-      format("woff2"),
-    url("../public/fonts/ibmplexmono-extralight-webfont.woff") format("woff");
+  src: url("/fonts/ibmplexmono-extralight-webfont.woff2") format("woff2"),
+    url("/fonts/ibmplexmono-extralight-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibm mono extra light italic";
-  src: url("../public/fonts/ibmplexmono-extralightitalic-webfont.woff2")
-      format("woff2"),
-    url("../public/fonts/ibmplexmono-extralightitalic-webfont.woff")
-      format("woff");
+  src: url("/fonts/ibmplexmono-extralightitalic-webfont.woff2") format("woff2"),
+    url("/fonts/ibmplexmono-extralightitalic-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibm mono semibold";
-  src: url("../public/fonts/ibmplexmono-semibold-webfont.woff2") format("woff2"),
-    url("../public/fonts/ibmplexmono-semibold-webfont.woff") format("woff");
+  src: url("/fonts/ibmplexmono-semibold-webfont.woff2") format("woff2"),
+    url("/fonts/ibmplexmono-semibold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibm bold";
-  src: url("../public/fonts/ibmplexsans-bold-webfont.woff2") format("woff2"),
-    url("../public/fonts/ibmplexsans-bold-webfont.woff") format("woff");
+  src: url("/fonts/ibmplexsans-bold-webfont.woff2") format("woff2"),
+    url("/fonts/ibmplexsans-bold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibm condensed medium";
-  src: url("../public/fonts/ibmplexsanscond-medium-webfont.woff2")
-      format("woff2"),
-    url("../public/fonts/ibmplexsanscond-medium-webfont.woff") format("woff");
+  src: url("/fonts/ibmplexsanscond-medium-webfont.woff2") format("woff2"),
+    url("/fonts/ibmplexsanscond-medium-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "micro bold";
-  src: url("../public/fonts/MicroTechnic/micro-bold-webfont.woff2")
-      format("woff2"),
-    url("../public/fonts/MicroTechnic/micro-bold-webfont.woff") format("woff");
+  src: url("/fonts/MicroTechnic/micro-bold-webfont.woff2") format("woff2"),
+    url("/fonts/MicroTechnic/micro-bold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }

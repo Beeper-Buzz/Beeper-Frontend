@@ -8,8 +8,8 @@ import {
   useMenuLocation,
   useMenuItems
 } from "../../hooks";
-import { MainMenuProps } from "./types";
-import DesktopMenu from "../MainMenu/DesktopMenu";
+import { MainMenuProps, menuDataItem } from "./types";
+import DesktopMenu from "./DesktopMenu";
 
 import { HiddenOnDesktop, HiddenOnMobile } from "./MainMenu.styles";
 import { MobileMenu } from "../MobileMenu/MobileMenu";
@@ -58,19 +58,8 @@ export const MainMenu = (props: MainMenuProps) => {
     isSuccess: boolean;
   } = useMenuItems(1);
 
-  useEffect(() => {
-    // if (menuItemsIsSuccess && menuLocationIsSuccess) {
-    //   console.log(
-    //     menusData,
-    //     "MENU LOCATION",
-    //     menuLocationData?.response_data,
-    //     "MENU ITEMS",
-    //     menuItemsData?.response_data
-    //   );
-    // }
-  }, []);
-
-  if (menuItemsIsLoading || menuLocationIsLoading) return null;
+  if (menuItemsIsLoading || menuLocationIsLoading || !menuItemsData)
+    return null;
 
   return (
     <>
@@ -105,7 +94,7 @@ export async function getServerSideProps() {
   await queryClient.prefetchQuery(["menu_location", 1], () =>
     fetchMenuLocation(1)
   );
-  await queryClient.prefetchQuery(["menu_items", 1], () => fetchMenuItems(0));
+  await queryClient.prefetchQuery(["menu_items", 1], () => fetchMenuItems(1));
 
   return {
     props: {

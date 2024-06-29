@@ -13,6 +13,7 @@ import {
 import * as React from "react";
 import { ServerStyleSheets } from "@material-ui/core/styles";
 import * as tracking from "../config/tracking";
+import * as constants from "../utilities/constants";
 
 const withResponsiveContext = (App: any, req: any) => {
   const contextValue = (() => {
@@ -127,47 +128,15 @@ class MyDocument extends Document {
           <meta name="robots" content="noodp" />
           <meta property="og:locale" content="en_US" />
           <meta property="og:type" content="website" />
-          <meta
-            property="og:title"
-            content={process.env.NEXT_PUBLIC_PAGE_TITLE}
-          />
-          <meta
-            property="og:site_name"
-            content={process.env.NEXT_PUBLIC_SITE_TITLE}
-          />
-          <meta
-            property="og:description"
-            content={process.env.NEXT_PUBLIC_PAGE_DESC}
-          />
-          <meta property="og:url" content={process.env.NEXT_PUBLIC_APP_URL} />
-          {/* CHANGEME */}
-          <meta
-            property="article:publisher"
-            content="https://www.facebook.com/materialinstinct/"
-          />
-          <meta property="article:section" content="General" />
-          <meta
-            property="article:published_time"
-            content="2017-04-15T15:00:03-04:00"
-          />
-          {/* CHANGEME */}
-          <meta
-            property="og:image"
-            content={`${process.env.NEXT_PUBLIC_APP_URL}/images/Beeper-OG.jpg`}
-          />
-          <meta property="og:image:width" content="600" />
-          <meta property="og:image:height" content="529" />
-          <meta name="twitter:card" content="summary" />
-          <meta
-            name="twitter:description"
-            content={process.env.NEXT_PUBLIC_PAGE_DESC}
-          />
-          <meta
-            name="twitter:title"
-            content={process.env.NEXT_PUBLIC_SITE_TITLE}
-          />
-          <meta name="twitter:site" content={process.env.NEXT_PUBLIC_APP_URL} />
-          {/* CHANGEME */}
+          <meta property="og:title" content={siteTitle} />
+          <meta property="og:site_name" content={siteTitle} />
+          <meta property="og:description" content={siteDesc} />
+          <meta property="og:url" content={siteUrl} />
+
+          <meta property="og:image" content={`${siteUrl}${ogImgPath}`} />
+          <meta property="og:image:width" content={ogImgWidth} />
+          <meta property="og:image:height" content={ogImgHeight} />
+
           <meta
             property="article:publisher"
             content={`https://www.facebook.com/${facebookSlug}`}
@@ -253,7 +222,9 @@ class MyDocument extends Document {
               `
             }}
           />
-          <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUqxah2mT_0iaosOBBSIKRy0lw7f6wdLA&libraries=places" />
+          <script
+            src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_PLACES_API_KEY}&libraries=places`}
+          />
           <script dangerouslySetInnerHTML={{ __html: FacebookPixelObject }} />
           <noscript>
             <img

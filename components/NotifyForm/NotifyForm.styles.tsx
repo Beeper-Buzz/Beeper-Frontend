@@ -65,11 +65,15 @@ export const QuestionWrapper = styled.div<QuestionWrapperType>`
 export const NotifyText = styled.div`
   text-align: center;
   width: 100%;
-  font-style: normal;
-  font-weight: 200;
-  font-size: 14px;
-  line-height: 19px;
-  margin: 0 auto 20px auto;
+  font-family: ${(p: any) => p.theme.typography.bodyMD.fontFamily};
+  font-weight: ${(p: any) => p.theme.typography.bodyMD.fontWeight};
+  font-size: ${(p: any) => p.theme.typography.bodyMD.fontSize};
+  line-height: ${(p: any) => p.theme.typography.bodyMD.lineHeight};
+  margin: 20px auto;
+  color: ${(p) =>
+    p.theme.isDarkMode
+      ? p.theme.colors.brand.primary
+      : p.theme.colors.brand.primary};
 `;
 
 export const ErrorText = styled.div`
@@ -80,6 +84,10 @@ export const ErrorText = styled.div`
   font-size: 14px;
   line-height: 19px;
   margin: -40px auto 20px auto;
+  font-family: ${(p: any) => p.theme.typography.bodyMD.fontFamily};
+  font-weight: ${(p: any) => p.theme.typography.bodyMD.fontWeight};
+  font-size: ${(p: any) => p.theme.typography.bodyMD.fontSize};
+  line-height: ${(p: any) => p.theme.typography.bodyMD.lineHeight};
   color: ${(p) => p.theme.colors.pink.primary};
 `;
 
@@ -150,8 +158,14 @@ export const Button = styled.button<GenericThemeType>`
 export const MailTo = styled.a`
   text-decoration: none;
   text-align: center;
-  line-height: 19px;
-  font-style: normal;
-  font-weight: 200;
-  margin-top: -20px;
+  font-family: ${(p: any) => p.theme.typography.bodyMD.fontFamily};
+  font-weight: ${(p: any) => p.theme.typography.bodyMD.fontWeight};
+  font-size: ${(p: any) => p.theme.typography.bodyMD.fontSize};
+  line-height: ${(p: any) => p.theme.typography.bodyMD.lineHeight};
+  color: yellow;
+  margin-top: 20px;
+  bottom: 0;
+  & :hover {
+    color: ${(p: any) => p.theme.colors.brand.primary};
+  }
 `;

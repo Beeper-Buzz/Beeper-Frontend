@@ -40,8 +40,9 @@ export const theme = {
       dark: darken(0.11, "#900093")
     },
     brand: {
-      primary: "#EB8B8B",
+      primary: "#ff008a",
       secondary: "#E6CDC0",
+      dark: "#900093",
       light: "#F9F2EA"
     },
     todo: {

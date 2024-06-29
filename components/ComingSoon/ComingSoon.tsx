@@ -30,7 +30,8 @@ import {
   CarouselNextButton,
   Text,
   Fade,
-  Device
+  DeviceOff,
+  DeviceOn
 } from "./ComingSoon.styles";
 
 export const ComingSoon = () => {
@@ -124,10 +125,17 @@ export const ComingSoon = () => {
   );
 
   const { tintValue } = useSpring({
-    delay: 3000,
+    delay: 1000,
     from: { tintValue: 0 },
     to: { tintValue: 1 },
     config: { tension: 80, friction: 180 }
+  });
+
+  const { deviceOnValue } = useSpring({
+    delay: 5000,
+    from: { deviceOnValue: 0 },
+    to: { deviceOnValue: 1 },
+    config: { tension: 0, friction: 0 }
   });
 
   useEffect(() => {
@@ -147,7 +155,10 @@ export const ComingSoon = () => {
       >
         {/* <Container tintValue={props.tintValue}> */}
         <Fade />
-        <Device src="/images/beeper_one_masked.png" />
+        <DeviceOff src="/images/beeper_one_off.png" />
+        {/* <DeviceOn src="/images/beeper_one_on.png" style={{
+          opacity: deviceOnValue.interpolate((value) => value)
+        }} /> */}
         {!isServer ? (
           <LogoBlob />
         ) : logoPath ? (
@@ -202,7 +213,7 @@ export const ComingSoon = () => {
         )}
         <Text>{comingSoonText}</Text>
         <NotifyForm />
-        <SocialLinks />
+        <SocialLinks isDark />
       </Container>
     </Background>
   );

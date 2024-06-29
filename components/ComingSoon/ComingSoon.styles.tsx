@@ -92,7 +92,7 @@ export const Background = styled.div`
   height: 100%;
 `;
 
-export const Container = styled(animated.div)<any>`
+export const Container = styled(animated.div) <any>`
   display: flex;
   flex-direction: column;
   position: relative;
@@ -160,8 +160,19 @@ export const Fade = styled.div`
   }
 `;
 
-export const Device = styled.img`
+export const DeviceOff = styled.img`
   opacity: 0.33;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: -40%;
+  width: 150%;
+  @media screen and (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
+    bottom: -10px;
+  }
+`;
+
+export const DeviceOn = styled.img`
   display: flex;
   justify-content: center;
   position: absolute;

@@ -14,6 +14,7 @@ import * as tracking from "../config/tracking";
 import { ThemeProvider } from "@emotion/react";
 import { theme } from "../styles/theme";
 import { GlobalStyles } from "../styles/global-styles";
+import { pxIphone } from "../utilities/device-sizes";
 import "../styles/fonts.css";
 import "../public/fonts/black-tie/black-tie.css";
 import "swiper/swiper.scss";
@@ -26,7 +27,7 @@ import { AppWrapper } from "./_app.styles";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
-  const [wholesale, setWholesale] = useState(true);
+  const [wholesale, setWholesale] = useState(false);
   const router = useRouter();
   const isMaint = process.env.NEXT_PUBLIC_IS_MAINT_MODE || "true";
 
@@ -60,6 +61,18 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     return (
       <AppWrapper>
         <Header darkMode={darkMode} />
+        <MainMenu
+          showMenuHeader
+          onMenuItemClick={(key: string) => router.push(key)}
+          customBurgerIcon={<i className="btb bt-bars" />}
+          pcMenuItemClassName={"pc-menu-item"}
+          pcWrapClassName={"pc-menu-wrap"}
+          outterContainerId={"outter-container"}
+          pageWrapId={"page-wrap"}
+          animationType={"slide"}
+          menusData={menusData}
+          right={false}
+        />
         <Component {...pageProps} wholesale={wholesale} />
       </AppWrapper>
     );

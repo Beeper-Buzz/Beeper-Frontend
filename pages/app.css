@@ -25,17 +25,3 @@
   font-weight: normal;
   font-style: normal;
 }
-@font-face {
-  font-family: "Micro Bold";
-  src: url("../public/fonts/MicroTechnic/MicroTechnicExtBold.ttf")
-    format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Micro Bold Outline";
-  src: url("../public/fonts/MicroTechnic/MicroTechnicExtBoldOutline.ttf")
-    format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
