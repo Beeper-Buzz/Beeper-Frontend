@@ -11,7 +11,9 @@ SwiperCore.use([Navigation]);
 const MemberList: React.FC<MemberListProps> = (props) => {
   const { data } = props;
   const isMobile = useMediaQuery({ maxWidth: 767 });
-  const onSwipe = useCallback((swipe) => {}, []);
+  const onSwipe = useCallback((swipe: any) => {
+    console.log(swipe);
+  }, []);
   return (
     <MySwiperContainer>
       <Swiper onSwiper={onSwipe} loop={true} spaceBetween={1} slidesPerView={isMobile ? 3 : 7}>

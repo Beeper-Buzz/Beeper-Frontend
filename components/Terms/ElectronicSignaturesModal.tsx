@@ -100,7 +100,7 @@ export const ElectronicSignaturesModal = () => {
             </a>
             ). The browser must have cookies enabled.
           </li>
-          <li>Access to the email address used to create an account for {window.location}.</li>
+          <li>Access to the email address used to create an account for {`${window.location}`}.</li>
           <li>
             Sufficient electronic storage capacity on your computer&quot;s hard drive or other data
             storage unit, to store copies of your records.

@@ -1,6 +1,6 @@
 import { lighten } from "polished";
 export const theme = {
-  isDarkMode: false,
+  isDarkMode: true,
   colors: {
     pink: {
       primary: "hotpink"
@@ -122,21 +122,21 @@ export const theme = {
       color: "#000"
     },
     bodyMD: {
-      fontFamily: "Roboto",
+      fontFamily: "Anonymous",
       fontWeight: "normal",
       fontSize: "18px",
       lineHeight: "20px",
       color: "#000"
     },
     bodySM: {
-      fontFamily: "Roboto Condensed",
+      fontFamily: "Anonymous",
       fontWeight: "normal",
       fontSize: "14px",
       lineHeight: "16px",
       color: "#000"
     },
     bodyXXS: {
-      fontFamily: "Roboto",
+      fontFamily: "Anonymous",
       fontWeight: "normal",
       fontSize: "6px",
       lineHeight: "8px",
