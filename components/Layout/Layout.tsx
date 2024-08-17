@@ -21,7 +21,6 @@ export const Layout: React.FC<LayoutProps> = ({
 }: {
   children: JSX.Element[] | JSX.Element;
 }) => {
-  const darkMode = process.env.IS_DARK_MODE === "true";
   return (
     <Container>
       <Content>
