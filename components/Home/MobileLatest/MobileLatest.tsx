@@ -28,7 +28,7 @@ const MobileLatest: React.FC<MobileLatestProps> = (props) => {
           let productVariantColors =
             allOptions && allOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
           let foundOptions = productVariantColors.filter((i: any) => {
-            console.log("found: ", i.relationships.option_type.data.id);
+            // console.log("found: ", i.relationships.option_type.data.id);
             return productOptionIds.includes(i.relationships.option_type.data.id);
           });
           console.log(item, productImg, foundImg, imgUrl);
