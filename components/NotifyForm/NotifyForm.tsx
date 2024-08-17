@@ -206,7 +206,7 @@ export const NotifyForm = () => {
             )}
         </FormWrapper>
         <MailTo id="mailto" href={`mailto:${process.env.NEXT_PUBLIC_EMAIL}`}>
-          Got Questions? We’d love to hear from you.
+          Got Questions? We'd love to hear from you.
         </MailTo>
       </Container>
     </>
