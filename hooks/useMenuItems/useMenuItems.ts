@@ -13,16 +13,14 @@ const fetchMenuItems = async (id: number = 1) => {
     method: "GET",
     headers: requestHeaders
   })
-    .then((response) => {
-      if (!response.ok) throw new Error("Menu Items request failed");
-      else return response.json();
-    })
-    // .then((data) => console.log(data))
-    .catch((err) => {
-      console.log(err);
-      throw new Error("Menu Items request failed");
-    });
-  // console.log(response)
+  .then((response) => {
+    if (!response.ok) throw new Error("Menu Items request failed");
+    else return response.json();
+  })
+  .then((data) => data)
+  .catch((err) => {
+    throw new Error("Menu Items request failed");
+  });
   return response;
 };
 const useMenuItems = (id: number) => {

@@ -64,7 +64,7 @@ export const StreamChecked = styled.div`
   width: 137px;
   height: 90px;
   margin: auto;
-  font-size: 24px;
+  font-size: 0.8em;
   line-height: 30px;
   font-family: ${(p) => p.theme.typography.bodyMD.fontFamily};
   text-align: center;

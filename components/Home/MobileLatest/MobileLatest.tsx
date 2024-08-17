@@ -31,7 +31,7 @@ const MobileLatest: React.FC<MobileLatestProps> = (props) => {
             // console.log("found: ", i.relationships.option_type.data.id);
             return productOptionIds.includes(i.relationships.option_type.data.id);
           });
-          console.log(item, productImg, foundImg, imgUrl);
+          // console.log(item, productImg, foundImg, imgUrl);
           return <ProductCard item={item} imgSrc={imgSrc} opts={foundOptions} />;
         })}
       </Grid>

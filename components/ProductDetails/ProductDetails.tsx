@@ -20,6 +20,7 @@ import { QueryKeys } from "../../hooks/queryKeys";
 import * as tracking from "../../config/tracking";
 import Featured from "../Home/Featured";
 import PolProductList from "../PolProductList";
+import { ProductList } from "../ProductList";
 import { FourOhFour } from "../404/FourOhFour";
 import { useMediaQuery } from "react-responsive";
 import homeData from "../Home/home.json";
@@ -82,14 +83,14 @@ const productColors: ColorOptionType[] = [
 ];
 
 interface ProductDetailsProps {
+  props: any;
   wholesale?: boolean;
 }
 
-export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
+export const ProductDetails = ({ wholesale, props }: ProductDetailsProps) => {
   const router = useRouter();
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { asPath: productSlug } = router;
-  // console.log(productSlug);
   const {
     data: thisProduct,
     isLoading,
@@ -99,16 +100,38 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
   } = useProduct(`${productSlug.toLowerCase().replace("/", "")}`);
   const productImgs =
     thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "image");
-  const productColorOptions =
+  const productOptions =
     thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "option_value");
-  const productVariantColors =
-    productColorOptions &&
-    productColorOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
+  const productColors =
+    productOptions &&
+    productOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
+  const productSizes =
+    productOptions &&
+    productOptions?.filter((e: any) => e.attributes.presentation.includes("XS" || "S" || "M" || "L" || "XL"));
   const productProperties =
     thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "product_property");
   const thisProductId = thisProduct?.data?.id || "";
+  const {
+    error: productsError,
+    status: productsStatus,
+    data: productsData,
+    isLoading: productsAreLoading,
+    isSuccess: productsAreSuccess
+  } = useProducts(1);
+  const randomNextProductId = productsAreSuccess
+    ? productsData?.data[Math.floor(Math.random() * productsData?.data?.length)].id
+    : "";
+
+  const {
+    error: variantsError,
+    status: variantsStatus,
+    data: variantsData,
+    isLoading: variantsAreLoading,
+    isSuccess: variantsAreSuccess
+  } = useVariants(1, thisProductId);
+
   const queryClient = useQueryClient();
-  const [packQtys, setPackQtys] = useState([
+  const [packSizeQtys, setPackSizeQtys] = useState([
     {
       name: "XS",
       qty: 2
@@ -131,17 +154,19 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
     }
   ]);
 
-  const totalPackQty = (sizes: any) => {
-    let qty = 0;
-    sizes.map((i: any) => qty + i.qty);
+  const variantsPerPack = (sizes: any) => {
+    let qty: number = 0;
+    sizes.map((i: any) => {
+      qty += i.qty;
+    });
     return qty;
   };
 
-  const [colorOptions, setColorOptions] = useState<any>(productVariantColors);
-  const [chosenVariants, setChoseVariants] = useState([]);
+  // const [colorOptions, setColorOptions] = useState<any>(productColors);
+  const [chosenVariants, setChosenVariants] = useState<Any[]>([]);
   const [addItem, setAddItem] = useState<any>({
     variant_id: thisProduct?.data.id,
-    quantity: wholesale ? totalPackQty(packQtys) : 1
+    quantity: wholesale ? variantsPerPack(packSizeQtys) : 1
     // public_metadata: {
     //   first_item_order: true
     // },
@@ -152,35 +177,17 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
     //     [key: string]: string;
     // };
   });
-  // console.log("colors: ", productVariantColors);
+  // console.log("colors: ", productColors);
 
-  const {
-    error: productsError,
-    status: productsStatus,
-    data: productsData,
-    isLoading: productsAreLoading,
-    isSuccess: productsAreSuccess
-  } = useProducts(1);
-  const randomNextProductId = productsAreSuccess
-    ? productsData?.data[Math.floor(Math.random() * productsData?.data?.length)].id
-    : "";
-
-  const {
-    error: variantsError,
-    status: variantsStatus,
-    data: variantsData,
-    isLoading: variantsAreLoading,
-    isSuccess: variantsAreSuccess
-  } = useVariants(1, thisProductId);
-
-  const similarProducts =
-    productsData && !isMobile ? (
-      <PolProductList products={productsData} title={"Similar Products"} />
-    ) : null;
-  const recommendedProducts =
-    productsData && !isMobile ? (
-      <PolProductList products={productsData} title={"Recommended for You"} />
-    ) : null;
+  const renderSimilarProducts = () => {
+    if (productsAreLoading) return <p>Loading...</p>;
+    return !isMobile && <ProductList products={productsData} title={"Similar Products"} />
+  }
+    
+  const recommendedProducts = () => {
+    if (productsAreLoading) return <p>Loading...</p>;
+    return !isMobile && <ProductList products={productsData} title={"Recommended For You"} />
+  }
   // const latestProducts = isMobile ? null : (
   //   <Featured data={homeData.latestProducts} title="" />
   // );
@@ -190,16 +197,53 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
     }
   });
 
-  const addAllToCart = () =>
-    useCallback(() => {
-      chosenVariants.forEach((i) => handleAddToCart(i));
-    }, [chosenVariants]);
+  const findVariantsWithOptionId = (optionId: number) => {
+    debugger;
+    let foundVariants: any = [];
+    foundVariants = variantsData && variantsData?.relationships?.option_value?.data;
+    const foundVariant = foundVariants?.filter((i: any) => i.id === optionId);
+    if (foundVariant) {
+      return foundVariant;
+    }
+    return null
+  }
 
-  const setColorQtys = (arr: any) => {
-    return arr.map(({ item, index }: any) => {
-      return setColorOptions([...colorOptions]);
-    });
+  const incrementVariantQty = (optionId: number) => {
+    const chosenOption = productOptions?.find((i) => i.id === optionId);
+    const foundVariants = findVariantsWithOptionId(optionId);
+    // const chosenVariant = variantsData && variantsData?.find((i) => i.relationships?.option_values?.data['id'] === optionId);
+    if (chosenVariants.length > 0) {
+      debugger;
+      const chosenVariant = chosenVariants.find((i) => i.relationships?.option_values?.data['id'] === optionId);
+      console.log("VARIANT: ", chosenVariant);
+    }
+    debugger;
+    // chosenVariants.push({ variant_id: optionId, quantity: 1 * productSizes?.length });
+    console.log("CHOSEN: ", chosenVariants);
+    
+    // debugger;
+    // const newVariantQty = [...chosenVariants];
+    // if (newVariantQty[index])
+    // newVariantQty[index].quantity += 1;
+    // setPackSizeQtys(newVariantQty);
+    // setChosenVariants({
+    //   ...addItem,
+    //   quantity: wholesale ? variantsPerPack(newVariantQty) : 1
+    // });
+  }
+
+  const addAllToCart = () => {
+    if (chosenVariants.length) {
+      console.log("ADD: ", chosenVariants);
+      return chosenVariants.forEach((i) => handleAddToCart(i));
+    }
   };
+
+  // const setColorQtys = (arr: any) => {
+  //   return arr.map(({ item, index }: any) => {
+  //     return setColorOptions([...colorOptions]);
+  //   });
+  // };
 
   const handleKeyPress = (event: KeyboardEvent) => {
     const thisProductId = thisProduct?.data?.id;
@@ -245,60 +289,68 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
     }
   };
 
-  const updatePackSelections = (e: any) => {
-    const newValue = e.target.value;
-    setColorOptions((prevState: any) => {
+  const updatePackSelections = (e: any, variantId: number) => {
+    debugger;
+    const newValue = e.target ? e.target.value : e;
+    console.log("newValue: ", newValue);
+    const chosenPacks = chosenVariants.length && chosenVariants[variantId]?.quantity + newValue || null;
+    console.log("chosenPacks: ", chosenPacks);
+    setChosenVariants((prevState: any) => {
       return {
         ...prevState,
-        propA: newValue
+        chosenPacks
       };
     });
   };
 
-  const renderColorOptions = useCallback(() => {
+  const renderWholesaleOptions = useCallback(() => {
     let variants: any = [];
-    // const foundVariants = thisProduct?.included?.some((elem) => {
-    //   if (elem.type == "option_values") {
-    //     variants.push(elem);
-    //   }
-    // });
-    const foundVariants = thisProduct?.included?.filter((elem) => elem.type === "variant");
-    console.log("PRODUCT: ", thisProduct, "VARIANTS: ", foundVariants);
-
-    if (productVariantColors && productVariantColors.length) {
-      return productVariantColors?.map((item, index) => {
-        // const optionText = item.attributes.options_text;
-        // console.log("row: ", item);
-        return (
-          <ColorsRow key={`${index}-row`}>
-            {/* <ColorsCell>{item.attributes.options_text}</ColorsCell> */}
-            <ColorsCell>
-              <VariantSwatch color={item.attributes.presentation} />
-            </ColorsCell>
-            <ColorsCell>-</ColorsCell>
-            <ColorsCell>
-              <input
-                // value={colorOptions[index]}
-                value={0}
-                type="number"
-                min="0"
-                max="99"
-                onChange={(e: any) => updatePackSelections(e)}
-              />
-            </ColorsCell>
-            <ColorsCell>+</ColorsCell>
-            <ColorsCell>24</ColorsCell>
-            <ColorsCell>${item.attributes.price}</ColorsCell>
-          </ColorsRow>
-        );
-      });
+    
+    
+    if (variantsAreLoading) {
+      return <p>Loading...</p>;
     }
-  }, [productVariantColors]);
+    
+    const foundVariants = thisProduct?.included?.filter((elem) => elem.type === "variant");
+
+    console.log("PRODUCT: ", thisProduct, "VARIANTS: ", foundVariants, "COLORS: ", productColors, "SIZES: ", productSizes, "OPTIONS: ", productOptions);
+    
+    return productColors?.map((item, index) => {
+      const chosenVariantQty = chosenVariants.length && chosenVariants[index === item.id]?.quantity || 0;
+      const optionText = item.attributes.options_text;
+      console.log("CHOSEN QTY: ", chosenVariantQty);
+      return (
+        <ColorsRow key={`${index}-row`}>
+          {/* <ColorsCell>{item.attributes.options_text}</ColorsCell> */}
+          <ColorsCell>
+            <VariantSwatch color={item.attributes.presentation} />
+          </ColorsCell>
+          <ColorsCell>
+            <button>-</button>
+          </ColorsCell>
+          <ColorsCell>
+            <input
+              value={chosenVariantQty}
+              type="number"
+              min="0"
+              max="999"
+              onChange={(e: any) => updatePackSelections(e, item.id)}
+            />
+          </ColorsCell>
+          <ColorsCell>
+            <button onClick={() => incrementVariantQty(item.id)}>+</button>
+          </ColorsCell>
+          <ColorsCell>{chosenVariantQty}</ColorsCell>
+          <ColorsCell>${item.attributes.price}</ColorsCell>
+        </ColorsRow>
+      );
+    });
+  }, [productColors]);
 
   const renderProductImgs = useCallback(() => {
     const productImgs =
       thisProduct && thisProduct?.included?.filter((e: any) => e["type"] === "image");
-    const primaryImg = productImgs && productImgs[0].attributes.styles[9].url;
+    const primaryImg = productImgs && productImgs[0]?.attributes.styles[9].url;
     // console.log("rendered imgs: ", productImgs);
     if (productImgs && productImgs.length < 1) {
       return <Loading />;
@@ -329,14 +381,14 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
   const renderVariantSwatches = useCallback(() => {
     return (
       <VariantSwatchList>
-        {productVariantColors?.map((option: any, index: any) => {
+        {productColors?.map((option: any, index: any) => {
           const optionColor = option.attributes.presentation;
           // console.log("Option: ", optionColor);
           return <VariantSwatch key={`variant-${index}`} color={optionColor} />;
         })}
       </VariantSwatchList>
     );
-  }, [productVariantColors]);
+  }, [productColors]);
 
   const renderProperties = useCallback(() => {
     return (
@@ -344,7 +396,7 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
         {productProperties?.map((property: any, index: any) => {
           return (
             <div key={`property-${index}`}>
-              <PropertyName>{property.attributes.name}</PropertyName>: {property.attributes.value}
+              <PropertyName>{property.attributes.name}</PropertyName>: &nbsp;{property.attributes.value}
             </div>
           );
         })}
@@ -352,16 +404,18 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
     );
   }, [productProperties]);
 
-  const renderPackQtys = useCallback(() => {
-    return packQtys.map((i, index) => {
-      return (
-        <Size>
-          <SizeQty>{i.qty}</SizeQty>
-          <SizeTitle>{i.name}</SizeTitle>
-        </Size>
-      );
-    });
-  }, [packQtys]);
+  const renderSizeQtys = useCallback(() => {
+    if (productSizes?.length > 0) {
+      return productSizes.map((i, index) => {
+        return (
+          <Size>
+            <SizeQty>2</SizeQty>
+            <SizeTitle>{i.attributes.presentation}</SizeTitle>
+          </Size>
+        );
+      });
+    }
+  }, [packSizeQtys]);
 
   const handleAddToCart = (i: any) => {
     console.log("ITEM: ", i);
@@ -398,7 +452,7 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
     );
   }
 
-  if (isError) {
+  if (isError || !thisProduct) {
     return <FourOhFour />;
   }
 
@@ -460,7 +514,7 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
               {wholesale && (
                 <>
                   <SizesTitle>Sizes Per Pack</SizesTitle>
-                  <SizesPerPack>{renderPackQtys()}</SizesPerPack>
+                  <SizesPerPack>{renderSizeQtys()}</SizesPerPack>
                 </>
               )}
 
@@ -474,7 +528,7 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
                       <ColorsCell>Pack Price</ColorsCell>
                     </ColorsTH>
                   </ColorsHead>
-                  <ColorsBody>{renderColorOptions()}</ColorsBody>
+                  <ColorsBody>{renderWholesaleOptions()}</ColorsBody>
                 </ColorsTable>
               )}
 
@@ -499,17 +553,18 @@ export const ProductDetails = ({ wholesale }: ProductDetailsProps) => {
                 </div>
               )}
 
-              <BuyButton className="" onClick={() => handleAddToCart(addItem)}>
+              {/* <BuyButton className="" onClick={() => handleAllToCart(addItem)}> */}
+              <BuyButton className="" onClick={addAllToCart}>
                 add to cart
               </BuyButton>
               <div style={{ textAlign: "left" }}>
-                <Detail>Model Info</Detail>
+                <Detail>Product Info</Detail>
                 {renderProperties()}
               </div>
             </ProductDescription>
           </ProductInfoBox>
-          {similarProducts ? similarProducts : <></>}
-          {recommendedProducts ? recommendedProducts : <></>}
+          {renderSimilarProducts()}
+          {recommendedProducts()}
         </ProductContainer>
       </Layout>
     );
