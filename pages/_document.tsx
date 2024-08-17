@@ -56,7 +56,7 @@ class MyDocument extends Document {
     const OpenGraphObject = `
       "@context": "http://schema.org",
       "@type": "Organization",
-      "url": "htt{process.env.APP_URL},
+      "url": "https://${process.env.APP_URL},
       "contactPoint": [{
         "@type": "ContactPoint",
         "telephone": "+1-917-300-8103",
