@@ -78,7 +78,7 @@ export const FormikAutocomplete = ({
             />
             {!addressSelected && homeAddress !== "" && (
               <SuggestionWrapper>
-                {loading && <SuggestionLoader>Loading...</SuggestionLoader>}
+                {loading && <SuggestionLoader>Loader...</SuggestionLoader>}
                 {suggestions.map((suggestion) => {
                   const className = suggestion.active
                     ? "suggestion-item active"
