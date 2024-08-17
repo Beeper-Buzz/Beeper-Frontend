@@ -14,6 +14,11 @@ export const LoginWrapper = styled.div`
   justify-content: center;
   align-items: center;
   text-align: center;
+
+  @media (max-width: ${(p) => p.theme.breakpoints.values.xs}px) {
+    width: auto;
+    margin: 0 16px;
+  }
 `;
 
 export const FormWrapper = styled(Form)`

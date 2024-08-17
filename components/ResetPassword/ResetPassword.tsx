@@ -43,13 +43,9 @@ export const ResetPassword = () => {
               Submit
             </button>
             <p>
-              <Link href="/login">
-                <a>Login</a>
-              </Link>
+              <Link href="/login">Login</Link>
               &nbsp;&nbsp;|&nbsp;&nbsp;
-              <Link href="/authenticate/signup">
-                <a>Register</a>
-              </Link>
+              <Link href="/authenticate/signup">Register</Link>
             </p>
           </FormWrapper>
         )}

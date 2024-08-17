@@ -13,7 +13,8 @@ export const AppWrapper = styled.div`
   background-size: cover;
   background-position: center;
   font-family: ${(p) => p.theme.typography.bodyMD.fontFamily};
-  color: ${(p) => p.theme.typography.bodyMD.color};
+  color: ${(p) =>
+    p.theme.isDarkMode ? p.theme.colors.white.primary : p.theme.colors.black.primary};
   font-size: ${(p) => p.theme.typography.bodyMD.fontSize};
   line-height: ${(p) => p.theme.typography.bodyMD.lineHeight};
   overflow: visible;

@@ -6,7 +6,8 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import Collapse from "@material-ui/core/Collapse";
 import { SocialLinks } from "../";
-import { menuStyles } from "./menuStyles";
+import { menuStyles, darkMenuStyles } from "./menuStyles";
+import { useTheme } from "@emotion/react";
 
 import { MenuToggle, MenuFooter } from "./MainMenu.styles";
 
@@ -35,6 +36,8 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
   const currYear = new Date().getFullYear();
   const [open, setOpen] = useState(false);
   const toggleMenu = () => setOpen((value: any) => !value);
+
+  const theme = useTheme();
 
   const [keyPath, setKeyPath] = useState("");
   const handleClick = useCallback(
@@ -117,7 +120,7 @@ export const MobileMenu = ({ showMenuHeader, onMenuItemClick, menusData }: any) 
       isOpen={open}
       onOpen={toggleMenu}
       onClose={toggleMenu}
-      styles={menuStyles}
+      styles={theme.isDarkMode ? darkMenuStyles : menuStyles}
       // {...others}
     >
       {/* <BurgerMenu width={220} isOpen={open} onOpen={toggleMenu} onClose={toggleMenu} {...others}> */}

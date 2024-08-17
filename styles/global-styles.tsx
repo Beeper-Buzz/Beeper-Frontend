@@ -122,6 +122,13 @@ export const GlobalStyles = ({ theme, children }: any) => (
       .bm-overlay {
         top: 0;
       }
+      .bm-burger-button {
+        span span {
+          background: ${theme.isDarkMode
+            ? theme.colors.white.primary
+            : theme.colors.black.primary} !important;
+        }
+      }
     `}
   />
 );

@@ -35,6 +35,14 @@ export interface LinkDivProps {
 export const LinkDiv = styled.a<LinkDivProps>`
   font-size: 14px;
   text-decoration: none;
+  ${(p) =>
+    p.isActive
+      ? null
+      : `
+    pointer-events: none;
+    cursor: default;
+    text-decoration: none;
+  `}
   &:hover {
     color: ${(p) => p.theme.colors.brand.primary};
   }
