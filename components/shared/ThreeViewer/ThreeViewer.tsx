@@ -31,6 +31,7 @@ export const ThreeViewer = () => {
     <Canvas
       camera={{ position: [0, 0, 4] }}
       scene={theme.isDarkMode ? { background: new Color(0x000000) } : {}}
+      // fog={{ color: new Color("pink"), near: 10, far: 100 }}
     >
       <fog attach="fog" args={["pink", 10, 100]} />
       {/* <ambientLight /> */}
