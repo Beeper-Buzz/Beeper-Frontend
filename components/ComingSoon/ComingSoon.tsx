@@ -164,24 +164,15 @@ export const ComingSoon = () => {
             openSlideshow={(e: any) => setIsSlideshow(e)}
           />
         )}
-        {previewMode && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "16px",
-              width: "100%",
-              margin: "32px 0"
-            }}
+        {/* {previewMode && (
+          <ResponsiveMasonry
+            columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
           >
-            {
-              renderProductThumbnails(
-                productsData,
-                setIsSlideshow
-              ) as React.ReactNode
-            }
-          </div>
-        )}
+            <Masonry>
+              {renderProductThumbnails(productsData, setIsSlideshow)}
+            </Masonry>
+          </ResponsiveMasonry>
+        )} */}
         {isSlideshow && (
           <ProductImageCarousel>
             <CarouselBackground onClick={() => setIsSlideshow(false)} />
