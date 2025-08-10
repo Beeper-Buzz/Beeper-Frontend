@@ -1,8 +1,9 @@
 import { FunctionComponent, ReactElement, ReactNode } from "react";
-import { BurgerIconStyles } from "../../MobileMenu/types/BurgerIconProps";
+import { BurgerIconStyles } from "./BurgerIconProps";
 declare global {
   interface Window {
     mina: any;
+    gtag: any;
   }
 }
 export type Path = {
@@ -20,6 +21,7 @@ export type BurgerMenu = {
   fallDown: ReactElement;
   reveal: ReactElement;
 };
+
 export type menuItem = {
   name: string;
   key: string;
@@ -28,14 +30,13 @@ export type menuItem = {
 export type menuDataItem = {
   name: string;
   key: string;
-  menu_location_listing?: menuDataItem[];
   children?: menuDataItem[];
   icon?: () => ReactNode;
   pcIcon?: () => ReactNode;
+  pcMenuItem?: ReactNode;
 };
 export interface MainMenuProps {
   showMenuHeader?: boolean;
-  menusLoading?: boolean;
   pcWrapClassName?: string;
   pcMenuItemClassName?: string;
   onMenuItemClick?: (keyPath: string, key: string) => void;
@@ -64,6 +65,7 @@ export interface MainMenuProps {
     | "nav"
     | FunctionComponent<{ className: string; style: object }>;
   menuClassName?: string;
+  menuFooter?: boolean;
   morphShapeClassName?: string;
   noOverlay?: boolean;
   noTransition?: boolean;
@@ -75,6 +77,7 @@ export interface MainMenuProps {
   overlayClassName?: string;
   pageWrapId?: string;
   right?: boolean;
+  showMenuHeader?: boolean;
   styles?: BurgerIconStyles;
   width?: number | string;
   outterContainerId?: string;

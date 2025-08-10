@@ -1,4 +1,4 @@
-import { lighten, darken, saturate } from "polished";
+import { darken, lighten } from "polished";
 import { dark } from "@material-ui/core/styles/createPalette";
 const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "false";
 const simpleSignup = process.env.NEXT_PUBLIC_SIMPLE_SIGNUP || "true";
@@ -15,7 +15,6 @@ export const theme = {
     },
     black: {
       primary: "#000",
-      dark: "#333",
       medium: "#585858",
       light: lighten(0.33, "#000")
     },
@@ -45,9 +44,7 @@ export const theme = {
     brand: {
       primary: "#EB8B8B",
       secondary: "#E6CDC0",
-      bright: saturate(0.33, "#EB8B8B"),
-      dark: darken(0.33, "#EB8B8B"),
-      light: lighten(0.05, "#EB8B8B")
+      light: "#F9F2EA"
     },
     todo: {
       primary: "#BFB081",
@@ -114,45 +111,38 @@ export const theme = {
   },
   typography: {
     titleXXL: {
-      fontFamily: "ibmplexmono_body_bold",
+      fontFamily: "micro bold",
       fontWeight: "bold",
       fontSize: "72px",
       lineHeight: "86px",
       color: "#000"
     },
     titleXL: {
-      fontFamily: "ibmplexmono_body_bold",
+      fontFamily: "micro bold",
       fontWeight: "bold",
       fontSize: "33.8681px",
       lineHeight: "41px",
       color: "#000"
     },
     titleLG: {
-      fontFamily: "ibmplexmono_body_bold",
+      fontFamily: "micro bold",
       fontWeight: "bold",
       fontSize: "24px",
       lineHeight: "30px",
       color: "#000"
     },
     titleMD: {
-      fontFamily: "ibmplexmono_body_bold",
+      fontFamily: "Bebas Neue",
       fontWeight: "bold",
       fontSize: "20px",
       lineHeight: "24px",
       color: "#000"
     },
     titleSM: {
-      fontFamily: "ibmplexmono_body_bold",
+      fontFamily: "Bebas Neue",
       fontWeight: "normal",
       fontSize: "14px",
-      lineHeight: "1.5rem",
-      color: "#000"
-    },
-    titleXS: {
-      fontFamily: "ibmplexmono_body_bold",
-      fontWeight: "normal",
-      fontSize: "10px",
-      lineHeight: "0.9rem",
+      lineHeight: "18px",
       color: "#000"
     },
     bodyMD: {
@@ -169,15 +159,15 @@ export const theme = {
       lineHeight: "16px",
       color: "#000"
     },
-    bodySMBold: {
-      fontFamily: "Anybody Light",
-      fontWeight: "bold",
-      fontSize: "14px",
-      lineHeight: "16px",
+    bodyXS: {
+      fontFamily: "ibm condensed medium",
+      fontWeight: "normal",
+      fontSize: "8px",
+      lineHeight: "10px",
       color: "#000"
     },
-    bodyXS: {
-      fontFamily: "Anybody ExtraLight",
+    bodyXXS: {
+      fontFamily: "ibm condensed medium",
       fontWeight: "normal",
       fontSize: "6.2699px",
       lineHeight: "7px",

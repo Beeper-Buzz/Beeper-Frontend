@@ -315,14 +315,32 @@ background: 'rgba(0, 0, 0, 0.3)'
 ** usage **
 import {MainMenu} from '../components'
 
-<div id="outter-container">
-<MainMenu pageWrapId="page-wrap" outterContainerId="outter-container" animationType="slide" right={false} styles={styles}>
-<a id="home" className="menu-item" href="/">Home</a>
-<a id="about" className="menu-item" href="/about">About</a>
-<a id="contact" className="menu-item" href="/contact">Contact</a>
-<a onClick={ this.showSettings } className="menu-item--small" href="">Settings</a>
-</MainMenu>
+<<<<<<< HEAD:components/MainMenu/mainmenu-readme.md
 
+<div id="outter-container">
+ <MainMenu pageWrapId="page-wrap" outterContainerId="outter-container" animationType="slide" right={false} styles={styles}>
+
+# </MainMenu>
+
+# <MainMenu pageWrapId="page-wrap" outterContainerId="outter-container" animationType="slide" right={false} styles={styles}>
+
+<div id="outer-container">
+<<<<<<< HEAD:components/MainMenu/readme.txt
+ <MainMenu pageWrapId="page-wrap" outterContainerId="outer-container" animationType="slide" right={false} styles={styles}>
+
+# </MainMenu>
+
+ <MainMenu pageWrapId="page-wrap" outterContainerId="outer-container" animationType="slide" right={false} styles={styles}>
+>>>>>>> ba20c99:components/MainMenu/mobilemenu-readme.md
+        <a id="home" className="menu-item" href="/">Home</a>
+        <a id="about" className="menu-item" href="/about">About</a>
+        <a id="contact" className="menu-item" href="/contact">Contact</a>
+        <a onClick={ this.showSettings } className="menu-item--small" href="">Settings</a>
+</MainMenu>
+<<<<<<< HEAD:components/MainMenu/mainmenu-readme.md
+=======
+>>>>>>> @aaron.smulktis/develop:components/MainMenu/Mainmenu-readme.md
+>>>>>>> ba20c99:components/MainMenu/mobilemenu-readme.md
 <main id="page-wrap">
 .
 .

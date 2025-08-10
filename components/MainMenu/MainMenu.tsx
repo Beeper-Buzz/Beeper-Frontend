@@ -8,11 +8,11 @@ import {
   useMenuLocation,
   useMenuItems
 } from "../../hooks";
-import { MainMenuProps } from "./types";
-import DesktopMenu from "../MainMenu/DesktopMenu";
+import { MainMenuProps, menuDataItem } from "./types";
+import DesktopMenu from "./DesktopMenu";
 
 import { HiddenOnDesktop, HiddenOnMobile } from "./MainMenu.styles";
-import { MobileMenu } from "../MobileMenu/MobileMenu";
+import { MobileMenu } from "./MobileMenu";
 
 // const SidebarMenu = styled(List)`
 //   width: 100%;
