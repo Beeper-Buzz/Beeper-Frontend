@@ -1,7 +1,7 @@
 import React from "react";
 import { useTheme } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+// import { OrbitControls } from "@react-three/drei";
 import { EffectComposer, Bloom, Noise } from "@react-three/postprocessing";
 import { SpiderGraph } from "./SpiderGraph";
 import { FogEffect } from "./FogEffect";
@@ -45,7 +45,7 @@ export const ThreeViewer = () => {
         <Noise opacity={0.3} />
       </EffectComposer>
 
-      <OrbitControls
+      {/* <OrbitControls
         // limit pan to x and y axis
         enablePan={false}
         // maxPolarAngle={Math.PI / 4}
@@ -58,7 +58,7 @@ export const ThreeViewer = () => {
         enableDamping
         dampingFactor={0.2}
         target={[0, 0, 0]}
-      />
+      /> */}
     </Canvas>
   );
 };
