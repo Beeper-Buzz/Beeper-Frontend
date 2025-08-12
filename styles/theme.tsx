@@ -1,5 +1,4 @@
-import { darken, lighten } from "polished";
-import { dark } from "@material-ui/core/styles/createPalette";
+import { lighten, darken, saturate } from "polished";
 const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "false";
 const simpleSignup = process.env.NEXT_PUBLIC_SIMPLE_SIGNUP || "true";
 export const theme = {
@@ -16,12 +15,14 @@ export const theme = {
     black: {
       primary: "#000",
       medium: "#585858",
-      light: lighten(0.33, "#000")
+      light: lighten(0.33, "#000"),
+      dark: darken(0.11, "#000")
     },
     white: {
       primary: "#fff",
       medium: lighten(0.66, "#fff"),
-      light: "#f9f9f9"
+      light: "#f9f9f9",
+      dark: darken(0.11, "#fff")
     },
     blue: {
       primary: "#4400ff",
@@ -44,27 +45,33 @@ export const theme = {
     brand: {
       primary: "#EB8B8B",
       secondary: "#E6CDC0",
-      light: "#F9F2EA"
+      light: "#F9F2EA",
+      dark: "#CC8BEB",
+      bright: "#EB8B8B"
     },
     todo: {
       primary: "#BFB081",
       medium: lighten(0.66, "#BFB081"),
-      light: lighten(0.33, "#BFB081")
+      light: lighten(0.33, "#BFB081"),
+      dark: darken(0.11, "#BFB081")
     },
     design: {
       primary: "#FF6C52",
       medium: lighten(0.66, "#FF6C52"),
-      light: lighten(0.33, "#FF6C52")
+      light: lighten(0.33, "#FF6C52"),
+      dark: darken(0.11, "#FF6C52")
     },
     developed: {
       primary: "#A5D8BC",
       medium: lighten(0.66, "#A5D8BC"),
-      light: lighten(0.33, "#A5D8BC")
+      light: lighten(0.33, "#A5D8BC"),
+      dark: darken(0.11, "#A5D8BC")
     },
     red: {
       primary: "#D04040",
       medium: lighten(0.66, "#D04040"),
-      light: lighten(0.33, "#D04040")
+      light: lighten(0.33, "#D04040"),
+      dark: darken(0.11, "#D04040")
     }
   },
   gradients: {
@@ -155,6 +162,13 @@ export const theme = {
     bodySM: {
       fontFamily: "ibm condensed medium",
       fontWeight: "normal",
+      fontSize: "14px",
+      lineHeight: "16px",
+      color: "#000"
+    },
+    bodySMBold: {
+      fontFamily: "ibm condensed medium",
+      fontWeight: "bold",
       fontSize: "14px",
       lineHeight: "16px",
       color: "#000"

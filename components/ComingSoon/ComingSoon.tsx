@@ -97,14 +97,14 @@ export const ComingSoon = () => {
 
   const renderProductThumbnails = useCallback(
     (
-      productsData: ProductsData | undefined,
+      productsData: any | undefined,
       setIsSlideshow: (value: boolean) => void
     ) => {
-      return productsData?.data.map((i: Product) => {
+      return productsData?.data.map((i: any) => {
         const productImg = i.relationships?.images?.data[0]?.id;
         const allImages =
-          productsData?.included?.filter((e) => e.type === "image") || [];
-        const foundImg = allImages.filter((e) => e.id === productImg);
+          productsData?.included?.filter((e: any) => e.type === "image") || [];
+        const foundImg = allImages.filter((e: any) => e.id === productImg);
         const imgUrl =
           foundImg.length > 0 ? foundImg[0]?.attributes?.styles[3]?.url : "";
         const imgSrc = productImg ? `${spreeApiUrl}${imgUrl}` : "";

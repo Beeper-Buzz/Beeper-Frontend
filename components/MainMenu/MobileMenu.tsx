@@ -1,7 +1,8 @@
-import React, { Fragment, useState, useCallback } from "react";
+import React, { Fragment, useState, useCallback, useRef } from "react";
 import styled from "@emotion/styled";
 import isPropValid from "@emotion/is-prop-valid";
-import { slide as BurgerMenu } from "react-burger-menu";
+import * as BurgerMenu from "react-burger-menu";
+const Menu = BurgerMenu.slide as unknown as React.ComponentType<any>;
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import Collapse from "@material-ui/core/Collapse";
@@ -41,6 +42,7 @@ export const MobileMenu = ({
 }: any) => {
   const theme = useTheme();
   const router = useRouter();
+  const menuRef = useRef<HTMLDivElement>(null);
   const currYear = new Date().getFullYear();
   const [open, setOpen] = useState(false);
   const [keyPath, setKeyPath] = useState("");
@@ -136,46 +138,44 @@ export const MobileMenu = ({
     return null;
   };
 
-  return null
-
-  // return (
-  //   <BurgerMenu
-  //     width={"66%"}
-  //     isOpen={open}
-  //     onOpen={toggleMenu}
-  //     onClose={toggleMenu}
-  //     styles={theme.isDarkMode ? darkMenuStyles : menuStyles}
-  //     // {...others}
-  //   >
-  //     {/* <BurgerMenu width={220} isOpen={open} onOpen={toggleMenu} onClose={toggleMenu} {...others}> */}
-  //     {showMenuHeader ? (
-  //       <>
-  //         <div onClick={toggleMenu}>
-  //           <i className="btb bt-close" />
-  //         </div>
-  //       </>
-  //     ) : null}
-  //     {/* {renderMenuItems(menuItemsData && menuItemsData?.response_data.menu_location_listing[0], "", 0)} */}
-  //     {menuItems && renderMenuItems(menuItems, "", 0)}
-  //     <MenuItem
-  //       paddingLeft={"10px"}
-  //       onClick={() => {
-  //         toggleMenu();
-  //         router.push("/login");
-  //       }}
-  //       button
-  //     >
-  //       <hr />
-  //       Login
-  //     </MenuItem>
-  //     <SocialLinks />
-  //     <MenuFooter>
-  //       <div>
-  //         <a href="/privacy">Privacy Policy</a> -{" "}
-  //         <a href="/terms">Terms &amp; Conditions</a> - RETURN POLICY
-  //       </div>
-  //       <div>All Materials Copyright © {currYear} POL Clothing</div>
-  //     </MenuFooter>
-  //   </BurgerMenu>
-  // );
+  return (
+    <Menu
+      width={"66%"}
+      isOpen={open}
+      onOpen={toggleMenu}
+      onClose={toggleMenu}
+      styles={theme.isDarkMode ? darkMenuStyles : menuStyles}
+      // {...others}
+    >
+      {/* <Menu width={220} isOpen={open} onOpen={toggleMenu} onClose={toggleMenu} {...others}> */}
+      {showMenuHeader ? (
+        <>
+          <div onClick={toggleMenu}>
+            <i className="btb bt-close" />
+          </div>
+        </>
+      ) : null}
+      {/* {renderMenuItems(menuItemsData && menuItemsData?.response_data.menu_location_listing[0], "", 0)} */}
+      {menuItems && renderMenuItems(menuItems, "", 0)}
+      <MenuItem
+        paddingLeft={"10px"}
+        onClick={() => {
+          toggleMenu();
+          router.push("/login");
+        }}
+        button
+      >
+        <hr />
+        Login
+      </MenuItem>
+      <SocialLinks />
+      <MenuFooter>
+        <div>
+          <a href="/privacy">Privacy Policy</a> -{" "}
+          <a href="/terms">Terms &amp; Conditions</a> - RETURN POLICY
+        </div>
+        <div>All Materials Copyright © {currYear} POL Clothing</div>
+      </MenuFooter>
+    </Menu>
+  );
 };
