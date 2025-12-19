@@ -146,7 +146,7 @@ export const ComingSoon = () => {
       >
         {/* <Container tintValue={props.tintValue}> */}
         <Fade />
-        <Device src="/images/beeper_one_masked.png" />
+        <Device src="/images/beeper_one_masked_delta8.jpg" />
         {!isServer ? (
           <LogoBlob />
         ) : logoPath ? (

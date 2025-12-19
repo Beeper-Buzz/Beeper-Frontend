@@ -149,11 +149,11 @@ export const Fade = styled.div`
   height: 50%;
   position: absolute;
   bottom: 0;
-  background: rgb(0, 0, 0);
+  background: ${p => p.theme.isDarkMode ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)'};
   background: linear-gradient(
     180deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 1) 100%
+    ${p => p.theme.isDarkMode ? 'rgba(0, 0, 0, 0)' : 'rgba(255, 255, 255, 0)'} 0%,
+    ${p => p.theme.isDarkMode ? 'rgba(0, 0, 0, 1)' : 'rgba(255, 255, 255, 1)'} 100%
   );
   @media screen and (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
     height: 300px;
@@ -165,9 +165,11 @@ export const Device = styled.img`
   display: flex;
   justify-content: center;
   position: absolute;
-  bottom: -40%;
+  bottom: -60%;
   width: 150%;
   @media screen and (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
-    bottom: -10px;
+    top: -10%;
+    height: 140%;
+    width: auto;
   }
 `;

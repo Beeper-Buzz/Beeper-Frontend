@@ -107,7 +107,7 @@ export const LogoBlob = ({ hasBlob, isDark }: any) => {
                 transform: "translate(100, 100)",
                 opacity: x.to({
                   range: [0, 0.33, 0.66, 1],
-                  output: [0.1, 0.15, 0.15, 0.1]
+                  output: [0.33, 0.22, 0.22, 0.33]
                 }),
                 fill: x.to({
                   range: [0, 0.5, 1],
