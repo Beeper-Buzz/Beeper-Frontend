@@ -123,14 +123,29 @@ class MyDocument extends Document {
           <meta name="robots" content="noodp" />
           <meta property="og:locale" content="en_US" />
           <meta property="og:type" content="website" />
-          <meta property="og:title" content={process.env.NEXT_PUBLIC_PAGE_TITLE} />
-          <meta property="og:site_name" content={process.env.NEXT_PUBLIC_SITE_TITLE} />
-          <meta property="og:description" content={process.env.NEXT_PUBLIC_PAGE_DESC} />
+          <meta
+            property="og:title"
+            content={process.env.NEXT_PUBLIC_PAGE_TITLE}
+          />
+          <meta
+            property="og:site_name"
+            content={process.env.NEXT_PUBLIC_SITE_TITLE}
+          />
+          <meta
+            property="og:description"
+            content={process.env.NEXT_PUBLIC_PAGE_DESC}
+          />
           <meta property="og:url" content={process.env.NEXT_PUBLIC_APP_URL} />
           {/* CHANGEME */}
-          <meta property="article:publisher" content="https://www.facebook.com/materialinstinct/" />
+          <meta
+            property="article:publisher"
+            content="https://www.facebook.com/materialinstinct/"
+          />
           <meta property="article:section" content="General" />
-          <meta property="article:published_time" content="2017-04-15T15:00:03-04:00" />
+          <meta
+            property="article:published_time"
+            content="2017-04-15T15:00:03-04:00"
+          />
           {/* CHANGEME */}
           <meta
             property="og:image"
@@ -139,8 +154,14 @@ class MyDocument extends Document {
           <meta property="og:image:width" content="600" />
           <meta property="og:image:height" content="529" />
           <meta name="twitter:card" content="summary" />
-          <meta name="twitter:description" content={process.env.NEXT_PUBLIC_PAGE_DESC} />
-          <meta name="twitter:title" content={process.env.NEXT_PUBLIC_SITE_TITLE} />
+          <meta
+            name="twitter:description"
+            content={process.env.NEXT_PUBLIC_PAGE_DESC}
+          />
+          <meta
+            name="twitter:title"
+            content={process.env.NEXT_PUBLIC_SITE_TITLE}
+          />
           <meta name="twitter:site" content={process.env.NEXT_PUBLIC_APP_URL} />
           {/* CHANGEME */}
           <meta
@@ -173,10 +194,12 @@ class MyDocument extends Document {
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
           ></link>
+
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
+
           <script type="application/ld+json">{OpenGraphObject}</script>
           <script
             src="https://js.stripe.com/v3/"

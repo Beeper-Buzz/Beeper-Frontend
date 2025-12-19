@@ -1,20 +1,19 @@
 import styled from "@emotion/styled";
 
-interface FooterStateType {
-  darkMode?: boolean;
-}
-
-export const SocialContainer = styled.div<FooterStateType>`
+export const SocialContainer = styled.div`
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 95%;
+  height: 104px;
+  bottom: 0;
 `;
 
 export const SocialList = styled.ul`
   padding-inline-start: 0px;
 `;
-
-export const SocialListItem = styled.li<FooterStateType>`
+export const SocialListItem = styled.li`
   display: inline-block;
   margin: 0 10px;
   & a {
@@ -27,7 +26,6 @@ export const SocialListItem = styled.li<FooterStateType>`
     color: ${(p) => p.theme.colors.brand.primary};
   }
 `;
-
 export const SocialIcon = styled.img`
   height: 40px;
   width: 40px;

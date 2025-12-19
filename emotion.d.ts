@@ -18,8 +18,8 @@ declare module "@emotion/react" {
         background: string;
       };
       black: {
-        dark: string;
         primary: string;
+        dark: string;
         medium: string;
         light: string;
       };
@@ -33,6 +33,18 @@ declare module "@emotion/react" {
         primary: string;
         medium: string;
         light: string;
+      };
+      pink: {
+        primary: string;
+        medium: string;
+        light: string;
+        dark: string;
+      };
+      purple: {
+        primary: string;
+        medium: string;
+        light: string;
+        dark: string;
       };
       brand: {
         bright: string;
@@ -173,6 +185,13 @@ declare module "@emotion/react" {
         color: string;
       };
       bodyXS: {
+        fontFamily: string;
+        fontWeight: string;
+        fontSize: string;
+        lineHeight: string;
+        color: string;
+      };
+      bodyXXS: {
         fontFamily: string;
         fontWeight: string;
         fontSize: string;

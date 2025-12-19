@@ -67,3 +67,12 @@
   font-weight: normal;
   font-style: normal;
 }
+
+@font-face {
+  font-family: "micro bold";
+  src: url("../public/fonts/MicroTechnic/micro-bold-webfont.woff2")
+      format("woff2"),
+    url("../public/fonts/MicroTechnic/micro-bold-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}

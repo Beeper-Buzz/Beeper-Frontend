@@ -6,7 +6,9 @@ import Sticky from "react-sticky-el";
 import { HeaderProps } from "./types";
 import { useAuth } from "../../config/auth";
 import { useCart } from "../../hooks/useCart";
+import { MyLogo } from "../Layout/Layout";
 import SearchBar from "../SearchBar";
+import { MainMenu } from "../MainMenu";
 import { CartSidebar } from "../CartSidebar/CartSidebar";
 import { SocialLinks } from "..";
 
@@ -79,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
       <TopHeader>
         {!isMobile && (
           <LeftSide>
-            <SocialLinks darkMode={darkMode} />
+            <SocialLinks isDark={darkMode} />
           </LeftSide>
         )}
         <LogoDiv>

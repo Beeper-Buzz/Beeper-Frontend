@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import {
   Container,
   NotifyText,
+  ErrorText,
   FormWrapper,
   QuestionWrapper,
   EmailInput,
@@ -164,9 +165,9 @@ export const NotifyForm = () => {
         <FormWrapper index={currentQuestion}>
           <form
             onSubmit={(e: any) =>
-              currentQuestion > 0
-                ? handleSubmit(e, false)
-                : handleSubmit(e, true)
+              currentQuestion < 1
+                ? handleSubmit(e, true)
+                : handleSubmit(e, false)
             }
           >
             {currentQuestion < notifyQuestions.length
@@ -194,11 +195,11 @@ export const NotifyForm = () => {
             </NotifyText>
           )}
           {status === "error" && (
-            <NotifyText>
+            <ErrorText>
               {message === "Bad Request"
                 ? `${message} or Email already exists`
                 : message}
-            </NotifyText>
+            </ErrorText>
           )}
           {status === "success" &&
             currentQuestion >= notifyQuestions.length && (

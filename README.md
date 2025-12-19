@@ -46,18 +46,26 @@ We manage our global styles in several files:
 Unset all Heroku env vars:
 `heroku config:unset $(heroku config --shell | sed 's/=.*//' | xargs) -a app-name`
 
-## Deploy URLS
-
-POL Admin Interface & API
-<http://dna-admin-dev.instinct.is/>
-<http://dna-admin-staging.instinct.is/>
-
-POL Frontend Interface
-<https://dna-frontend-dev.instinct.is/>
-<https://dna-frontend-staging.instinct.is/>
 ## Gotchas:
 
 - App only loads using http://0.0.0.0:3000, using "localhost" does not work right now
+- 
+## Deploy URLS:
+
+POL Admin Interface & API
+http://pol-admin-dev.instinct.is/
+http://pol-admin-staging.instinct.is/
+
+POL Frontend Interface
+https://pol-frontend-dev.instinct.is/
+https://pol-frontend-staging.instinct.is/
+
+## Updating a fork:
+
+- `git remote add upstream git@github.com:1instinct/dna-frontend.git`
+- `git fetch upstream`
+- `git checkout main`
+- `git pull upstream main`
 
 TODO:
 

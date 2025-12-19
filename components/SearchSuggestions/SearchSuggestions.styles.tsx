@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export interface StyledSearchSuggestionsProps {
+export interface StyledAutoCompleteProps {
   theme?: {
     colors: {
       blue: { primary: string };
@@ -8,7 +8,7 @@ export interface StyledSearchSuggestionsProps {
     };
   };
 }
-export const StyledSearchSuggestions = styled.div<StyledSearchSuggestionsProps>`
+export const StyledAutoComplete = styled.div<StyledAutoCompleteProps>`
   position: absolute;
   display: block;
   width: 100%;
@@ -56,19 +56,8 @@ export const StyledSearchSuggestions = styled.div<StyledSearchSuggestionsProps>`
         : p.theme.colors.gray.light};
   }
 `;
-export interface StyledSuggestionLinkProps {
-  theme?: {
-    colors: {
-      blue: {
-        primary: string;
-      };
-      gray: {
-        background: string;
-      };
-    };
-  };
-}
-export const StyledSuggestionLink = styled.div<StyledSuggestionLinkProps>`
+
+export const StyledSuggestionLink = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;

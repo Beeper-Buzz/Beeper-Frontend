@@ -40,6 +40,7 @@ export const showCart = async () => {
         { include: "line_items,variants" }
       );
       if (newCart.isSuccess()) {
+        constants.IS_DEBUG && console.log("new cart: ", newCart.success());
         return newCart.success();
       } else {
         throw new Error(newCart.fail().message);

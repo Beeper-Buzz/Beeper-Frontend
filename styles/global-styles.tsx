@@ -11,18 +11,21 @@ export const GlobalStyles = ({ theme, children }: any) => (
         @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
 
         html {
-          /* overflow: hidden; */
+          overflow: hidden;
           width: 100%;
           height: 100%;
         }
 
         body {
+          font-family: "ibm condensed medium";
+          font-size: 14px;
+          line-height: 16px;
           margin: 0;
           padding: 0;
           width: 100%;
           height: 100%;
           text-rendering: auto;
-          // -webkit-font-smoothing: antialiased;
+          -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
           font-display: swap;
           font-smooth: 2em;
@@ -35,13 +38,13 @@ export const GlobalStyles = ({ theme, children }: any) => (
 
         ::-moz-selection {
           /* Code for Firefox */
-          color: ${theme.colors.white.primary};
-          background: ${theme.colors.brand.primary};
+          color: black;
+          background: yellow;
         }
 
         ::selection {
-          color: ${theme.colors.white.primary};
-          background: ${theme.colors.brand.primary};
+          color: black;
+          background: yellow;
         }
         #__next {
           width: 100%;
@@ -52,7 +55,7 @@ export const GlobalStyles = ({ theme, children }: any) => (
 
         a {
           cursor: pointer;
-          color: ${theme.colors.brand.primary};
+          color: yellow;
         }
 
         p {
@@ -90,7 +93,39 @@ export const GlobalStyles = ({ theme, children }: any) => (
         select:focus {
           outline: none;
         }
-        
+
+        button {
+          background-color: yellow;
+          border: 0;
+          color: black;
+          width: 100%;
+          max-width: 400px;
+          font-size: 29.24px;
+          line-height: 35.09px;
+          font-weight: bold;
+          padding: 10px 10px;
+          cursor: pointer;
+        }
+
+        button:hover {
+          background-color: ${saturate(0.5, theme.colors.brand.primary)};
+        }
+
+        button:active {
+          background-color: ${saturate(0.5, theme.colors.brand.primary)};
+        }
+
+        button:focus,
+        .size-selection button:focus {
+          outline: none;
+        }
+        i {
+          color: ${
+            theme.isDarkMode
+              ? theme.colors.white.primary
+              : theme.colors.black.primary
+          };
+        }
         .pc-menu-item {
           color: ${
             theme.isDarkMode

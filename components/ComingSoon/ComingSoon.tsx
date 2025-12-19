@@ -1,15 +1,23 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { NotifyForm, ProductTeaser, SocialLinks, Logo, LogoBlob } from "../components";
+import {
+  NotifyForm,
+  ProductTeaser,
+  SocialLinks,
+  Logo,
+  LogoBlob
+} from "../components";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
-import { useMutation, useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 import { fetchProducts, useProducts } from "../../hooks";
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
-// import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import { CarouselProvider, Slider } from "pure-react-carousel";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { CarouselProvider } from "pure-react-carousel";
+import { useSpring } from "react-spring";
 import "pure-react-carousel/dist/react-carousel.es.css";
 
 import {
+  Background,
   Container,
   LogoText,
   ProductImageCarousel,
@@ -26,13 +34,16 @@ import {
 } from "./ComingSoon.styles";
 
 export const ComingSoon = () => {
-  const isServer = typeof window === 'undefined';
+  const isServer = typeof window === "undefined";
   const siteTitle = process.env.NEXT_PUBLIC_SITE_TITLE || "";
   const siteDesc = process.env.NEXT_PUBLIC_SITE_DESC || "";
   const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH;
   const previewMode =
     process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === "true" ? true : false;
-  const comingSoonText = process.env.NEXT_PUBLIC_COMING_SOON_TEXT || "";
+  const comingSoonText =
+    process.env.NEXT_PUBLIC_COMING_SOON_TEXT ||
+    process.env.NEXT_PUBLIC_COMING_SOON_COPY ||
+    "";
   const mailerUrl = process.env.NEXT_PUBLIC_MAILCHIMP_URL || "";
   const mailerId = process.env.NEXT_PUBLIC_MAILCHIMP_ID || "";
   const mailerUser = process.env.NEXT_PUBLIC_MAILCHIMP_U || "";
@@ -86,14 +97,14 @@ export const ComingSoon = () => {
 
   const renderProductThumbnails = useCallback(
     (
-      productsData: ProductsData | undefined,
+      productsData: any | undefined,
       setIsSlideshow: (value: boolean) => void
     ) => {
-      return productsData?.data.map((i: Product) => {
+      return productsData?.data.map((i: any) => {
         const productImg = i.relationships?.images?.data[0]?.id;
         const allImages =
-          productsData?.included?.filter((e) => e.type === "image") || [];
-        const foundImg = allImages.filter((e) => e.id === productImg);
+          productsData?.included?.filter((e: any) => e.type === "image") || [];
+        const foundImg = allImages.filter((e: any) => e.id === productImg);
         const imgUrl =
           foundImg.length > 0 ? foundImg[0]?.attributes?.styles[3]?.url : "";
         const imgSrc = productImg ? `${spreeApiUrl}${imgUrl}` : "";
@@ -111,6 +122,13 @@ export const ComingSoon = () => {
     [spreeApiUrl]
   );
 
+  const { tintValue } = useSpring({
+    delay: 500,
+    from: { tintValue: 0 },
+    to: { tintValue: 1 },
+    config: { tension: 150, friction: 80, mass: 3, clamp: true }
+  });
+
   useEffect(() => {
     if (productsSuccess) {
       queryClient.setQueryData(["products", 1], productsData);
@@ -118,12 +136,7 @@ export const ComingSoon = () => {
   }, [productsSuccess]);
 
   return (
-<<<<<<< HEAD
     <>
-      <Container>
-        {logoPath ? (
-=======
-    <Background>
       <Container
         style={{
           filter: tintValue.interpolate(
@@ -137,40 +150,37 @@ export const ComingSoon = () => {
         {!isServer ? (
           <LogoBlob />
         ) : logoPath ? (
->>>>>>> d66b221 (Changes:)
           <Logo src={logoPath} />
         ) : siteTitle ? (
           <LogoText>{siteTitle}</LogoText>
         ) : null}
         {siteDesc && <Text>{siteDesc}</Text>}
         {/* {previewMode && (
+=======
+          <Logo src={logoPath} />
+        ) : siteTitle ? (
+          <LogoText>{siteTitle}</LogoText>
+        ) : (
+          <Logo />
+        )}
+        {siteDesc && <Text>{siteDesc}</Text>}
+        {previewMode && (
+>>>>>>> 02806cf2e332e0d05189f6600158d4b840241643
           <ProductTeaser
             products={productsData}
             title={""}
             openSlideshow={(e: any) => setIsSlideshow(e)}
           />
-        )} */}
-        {previewMode && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "16px",
-              width: "100%",
-              margin: "32px 0"
-            }}
-          >
-            {
-              renderProductThumbnails(
-                productsData,
-                setIsSlideshow
-              ) as React.ReactNode
-            }
-          </div>
         )}
-        {comingSoonText !== "" && <Text>{comingSoonText}</Text>}
-        <NotifyForm />
-        <SocialLinks />
+        {/* {previewMode && (
+          <ResponsiveMasonry
+            columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
+          >
+            <Masonry>
+              {renderProductThumbnails(productsData, setIsSlideshow)}
+            </Masonry>
+          </ResponsiveMasonry>
+        )} */}
         {isSlideshow && (
           <ProductImageCarousel>
             <CarouselBackground onClick={() => setIsSlideshow(false)} />
@@ -197,10 +207,7 @@ export const ComingSoon = () => {
             </CarouselProvider>
           </ProductImageCarousel>
         )}
-        <Fade />
-        <Device src="/images/beeper_one_masked.png" />
-        <Logo />
-        <Text>{process.env.NEXT_PUBLIC_COMING_SOON_COPY}</Text>
+        <Text>{comingSoonText}</Text>
         <NotifyForm />
         <SocialLinks />
       </Container>

@@ -1,5 +1,5 @@
 import { lighten, darken, saturate } from "polished";
-const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "false";
+const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "true";
 const simpleSignup = process.env.NEXT_PUBLIC_SIMPLE_SIGNUP || "true";
 export const theme = {
   isDarkMode: darkMode === "true",
@@ -16,46 +16,69 @@ export const theme = {
       dark: "#333",
       primary: "#000",
       medium: "#585858",
-      light: lighten(0.33, "#000")
+      light: lighten(0.33, "#000"),
     },
     white: {
       dark: "#ccc",
       primary: "#fff",
       medium: lighten(0.66, "#fff"),
-      light: "#f9f9f9"
+      light: "#f9f9f9",
     },
     blue: {
-      primary: "#7b61ff",
-      medium: lighten(0.66, "#7b61ff"),
-      light: lighten(0.33, "#7b61ff")
+      primary: "#4400ff",
+      medium: lighten(0.66, "#4400ff"),
+      light: lighten(0.33, "#4400ff"),
+      dark: darken(0.33, "#4400ff")
+    },
+    pink: {
+      primary: "#FF008A",
+      medium: lighten(0.66, "#FF008A"),
+      light: lighten(0.33, "#FF008A"),
+      dark: darken(0.33, "#FF008A")
+    },
+    purple: {
+      primary: "#900093",
+      medium: lighten(0.66, "#900093"),
+      light: lighten(0.33, "#900093"),
+      dark: darken(0.11, "#900093")
     },
     brand: {
       primary: "#EB8B8B",
       secondary: "#E6CDC0",
-      bright: saturate(0.33, "#EB8B8B"),
-      dark: darken(0.33, "#EB8B8B"),
-      light: lighten(0.05, "#EB8B8B")
+      light: "#F9F2EA",
+      dark: "#CC8BEB",
+      bright: "#EB8B8B"
     },
     todo: {
       primary: "#BFB081",
       medium: lighten(0.66, "#BFB081"),
-      light: lighten(0.33, "#BFB081")
+      light: lighten(0.33, "#BFB081"),
+      dark: darken(0.11, "#BFB081")
     },
     design: {
       primary: "#FF6C52",
       medium: lighten(0.66, "#FF6C52"),
-      light: lighten(0.33, "#FF6C52")
+      light: lighten(0.33, "#FF6C52"),
+      dark: darken(0.11, "#FF6C52")
     },
     developed: {
       primary: "#A5D8BC",
       medium: lighten(0.66, "#A5D8BC"),
-      light: lighten(0.33, "#A5D8BC")
+      light: lighten(0.33, "#A5D8BC"),
+      dark: darken(0.11, "#A5D8BC")
     },
     red: {
       primary: "#D04040",
       medium: lighten(0.66, "#D04040"),
-      light: lighten(0.33, "#D04040")
+      light: lighten(0.33, "#D04040"),
+      dark: darken(0.11, "#D04040")
     }
+  },
+  gradients: {
+    rainbow:
+      "linear-gradient(90deg, #FF0000 0%, #FF9900 14.04%, #FAFF00 28.08%, #00FF19 42.12%, #00F0FF 55.64%, #000AFF 70.2%, #EB00FF 84.76%, #FF0000 99.84%)",
+    pinkhaze:
+      "linear-gradient(180deg, rgba(157, 22, 95, 0.5) 0%, rgba(157, 22, 95, 0) 100%)"
   },
   background: {
     ambient: "linear-gradient(180deg, #EB8B8B 0%, #CC8BEB 100%)",
@@ -95,21 +118,21 @@ export const theme = {
   },
   typography: {
     titleXXL: {
-      fontFamily: "ibmplexmono_body_bold",
+      fontFamily: "micro bold",
       fontWeight: "bold",
       fontSize: "72px",
       lineHeight: "86px",
       color: "#000"
     },
     titleXL: {
-      fontFamily: "ibmplexmono_body_bold",
+      fontFamily: "micro bold",
       fontWeight: "bold",
       fontSize: "33.8681px",
       lineHeight: "41px",
       color: "#000"
     },
     titleLG: {
-      fontFamily: "ibmplexmono_body_bold",
+      fontFamily: "micro bold",
       fontWeight: "bold",
       fontSize: "24px",
       lineHeight: "30px",
@@ -126,7 +149,7 @@ export const theme = {
       fontFamily: "ibmplexmono_body_bold",
       fontWeight: "normal",
       fontSize: "14px",
-      lineHeight: "1.5rem",
+      lineHeight: "18px",
       color: "#000"
     },
     titleXS: {
@@ -144,31 +167,38 @@ export const theme = {
       color: "#000"
     },
     bodyMD: {
-      fontFamily: "Anybody ExtraLight",
+      fontFamily: "ibm condensed medium",
       fontWeight: "normal",
       fontSize: "18px",
-      lineHeight: "20px",
+      lineHeight: "18px",
       color: "#000"
     },
     bodySM: {
-      fontFamily: "Anybody ExtraLight",
+      fontFamily: "ibm condensed medium",
       fontWeight: "normal",
       fontSize: "14px",
       lineHeight: "16px",
       color: "#000"
     },
     bodySMBold: {
-      fontFamily: "Anybody Light",
+      fontFamily: "ibm condensed medium",
       fontWeight: "bold",
       fontSize: "14px",
       lineHeight: "16px",
       color: "#000"
     },
     bodyXS: {
-      fontFamily: "Anybody ExtraLight",
+      fontFamily: "ibm condensed medium",
       fontWeight: "normal",
-      fontSize: "9px",
-      lineHeight: "0.9rem",
+      fontSize: "8px",
+      lineHeight: "10px",
+      color: "#000"
+    },
+    bodyXXS: {
+      fontFamily: "ibm condensed medium",
+      fontWeight: "normal",
+      fontSize: "6.2699px",
+      lineHeight: "7px",
       color: "#000"
     }
   },
