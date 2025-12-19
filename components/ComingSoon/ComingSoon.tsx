@@ -123,10 +123,10 @@ export const ComingSoon = () => {
   );
 
   const { tintValue } = useSpring({
-    delay: 3000,
+    delay: 500,
     from: { tintValue: 0 },
     to: { tintValue: 1 },
-    config: { tension: 80, friction: 180 }
+    config: { tension: 150, friction: 80, mass: 3, clamp: true }
   });
 
   useEffect(() => {
