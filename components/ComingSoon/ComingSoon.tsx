@@ -118,9 +118,26 @@ export const ComingSoon = () => {
   }, [productsSuccess]);
 
   return (
+<<<<<<< HEAD
     <>
       <Container>
         {logoPath ? (
+=======
+    <Background>
+      <Container
+        style={{
+          filter: tintValue.interpolate(
+            (value) => `saturate(${value * 100}%) blur(${5 * (1 - value)}px)`
+          )
+        }}
+      >
+        {/* <Container tintValue={props.tintValue}> */}
+        <Fade />
+        <Device src="/images/beeper_one_masked_delta8.jpg" />
+        {!isServer ? (
+          <LogoBlob />
+        ) : logoPath ? (
+>>>>>>> d66b221 (Changes:)
           <Logo src={logoPath} />
         ) : siteTitle ? (
           <LogoText>{siteTitle}</LogoText>
