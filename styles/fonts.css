@@ -60,7 +60,7 @@
   font-style: normal;
 }
 @font-face {
-  font-family: "ibmplexmono_body_condensed_med";
+  font-family: "ibm condensed medium";
   src: url("../public/fonts/ibmplexsanscond-medium-webfont.woff2")
       format("woff2"),
     url("../public/fonts/ibmplexsanscond-medium-webfont.woff") format("woff");

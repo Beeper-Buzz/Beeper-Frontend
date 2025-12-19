@@ -136,7 +136,7 @@ export const ComingSoon = () => {
   }, [productsSuccess]);
 
   return (
-    <>
+    <Background>
       <Container
         style={{
           filter: tintValue.interpolate(
@@ -211,7 +211,7 @@ export const ComingSoon = () => {
         <NotifyForm />
         <SocialLinks />
       </Container>
-    </>
+    </Background>
   );
 };
 

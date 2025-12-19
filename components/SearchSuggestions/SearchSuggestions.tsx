@@ -10,6 +10,7 @@ const AutoComplete = ({
   id,
   labelId,
   isVisible,
+  setIsSearchLoading,
   toggleVisibility,
   onSelect,
   query
@@ -60,7 +61,7 @@ const AutoComplete = ({
   return (
     <StyledAutoComplete role="listbox" aria-labelledby={labelId} id={id}>
       {isVisible &&
-        data?.data?.map((item, index) => {
+        data?.data?.map((item: any, index: number) => {
           return (
             <Suggestion
               suggestion={item}

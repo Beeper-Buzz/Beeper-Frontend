@@ -52,7 +52,7 @@ const Suggestion = ({
   // const dispatch = useDispatch();
   if (suggestion) {
     return (
-      <StyledSuggestionLink onClick={() => handleSelection()}>
+      <StyledSuggestionLink onClick={(e) => handleSelection(e)}>
         <StyledSuggestionContent>
           {formatWithHighlight(suggestion.attributes.name, query)}
         </StyledSuggestionContent>

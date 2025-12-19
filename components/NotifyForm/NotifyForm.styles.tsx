@@ -84,7 +84,7 @@ export const ErrorText = styled.div`
 `;
 
 export const EmailInput = styled.input<GenericThemeType>`
-  font-family: ${(p) => p.theme.typography.titleMD.fontFamily};
+  font-family: "Bebas Neue", sans-serif;
   font-size: ${(p) => p.theme.typography.titleMD.fontSize};
   font-weight: ${(p) => p.theme.typography.titleMD.fontWeight};
   line-height: ${(p) => p.theme.typography.titleMD.lineHeight};
@@ -122,7 +122,7 @@ export const Button = styled.button<GenericThemeType>`
   height: 36.15px;
   color: ${(p) => p.theme.colors.purple.light};
   background: ${(p) => p.theme.colors.pink.dark};
-  font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
+  font-family: "Bebas Neue", sans-serif;
   border: 2px solid rgba(255, 0, 138, 0.15);
   box-sizing: border-box;
   box-shadow: -6px -6px 12px rgb(144 0 147 / 11%),

@@ -1,5 +1,5 @@
-import { css } from '@emotion/react';
-import styled from '@emotion/styled';
+import { css } from "@emotion/react";
+import styled from "@emotion/styled";
 
 export const StyledSearch = styled.div`
   position: relative;
@@ -158,12 +158,12 @@ export const SearchButton = styled.button<SearchButtonProps>`
   border: 0;
   border-radius: 3px;
   padding: 3px 18px;
-  color: ${props => props.theme.colors.white.primary};
-  background-color: ${props => props.theme.colors.blue.primary};
+  color: ${(props) => props.theme.colors.white.primary};
+  background-color: ${(props) => props.theme.colors.blue.primary};
   cursor: pointer;
 
   &:hover {
-    background-color: ${props => props.theme.colors.blue.medium};
+    background-color: ${(props) => props.theme.colors.blue.medium};
   }
 `;
 export interface BrowseButtonProps {

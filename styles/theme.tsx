@@ -16,13 +16,13 @@ export const theme = {
       dark: "#333",
       primary: "#000",
       medium: "#585858",
-      light: lighten(0.33, "#000"),
+      light: lighten(0.33, "#000")
     },
     white: {
       dark: "#ccc",
       primary: "#fff",
       medium: lighten(0.66, "#fff"),
-      light: "#f9f9f9",
+      light: "#f9f9f9"
     },
     blue: {
       primary: "#4400ff",

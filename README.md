@@ -49,7 +49,8 @@ Unset all Heroku env vars:
 ## Gotchas:
 
 - App only loads using http://0.0.0.0:3000, using "localhost" does not work right now
-- 
+-
+
 ## Deploy URLS:
 
 POL Admin Interface & API

@@ -4,7 +4,8 @@ import React from "react";
 // import { Close } from '@carvana/icons';
 
 export const FinancialPrivacyModal = () => {
-  const siteTitle = process.env.NEXT_PUBLIC_SITE_TITLE || "Material Instinct LLC";
+  const siteTitle =
+    process.env.NEXT_PUBLIC_SITE_TITLE || "Material Instinct LLC";
   const phone = process.env.NEXT_PUBLIC_PHONE || "555-555-5555";
   const legalUrl = process.env.NEXT_PUBLIC_LEGAL_URL || "www.company.com";
 
@@ -71,9 +72,8 @@ export const FinancialPrivacyModal = () => {
                 All financial companies need to share customers' personal
                 information to run their everyday business. In the section
                 below, we list the reasons financial companies can share their
-                customers' personal information; the reasons{" "}
-                {siteTitle} chooses to share; and
-                whether you can limit this sharing.
+                customers' personal information; the reasons {siteTitle} chooses
+                to share; and whether you can limit this sharing.
               </td>
             </tr>
           </tbody>
@@ -192,9 +192,7 @@ export const FinancialPrivacyModal = () => {
               <td className="left">Questions?</td>
               <td className="right">
                 Call <strong>{phone}</strong> or go to{" "}
-                <a href={legalUrl}>
-                  www.{legalUrl}
-                </a>
+                <a href={legalUrl}>www.{legalUrl}</a>
               </td>
             </tr>
           </tbody>

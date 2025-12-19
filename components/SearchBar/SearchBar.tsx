@@ -144,7 +144,8 @@ const SearchBar = ({
       aria-expanded={isAutoCompleteVisible}
       ref={dropdownRef}
       aria-labelledby={labelId}
-      {...rest}>
+      {...rest}
+    >
       <SearchBarWrapper className="is-search-route">
         <SearchInputWrapper>
           <StyledInputContainer isExpanded={isExpanded} isWidthSet={isWidthSet}>
@@ -187,9 +188,9 @@ const SearchBar = ({
 
       {autoComplete ? (
         <AutoComplete
-          setIsSearchLoading={(e) => setIsSearchLoading(e)}
+          setIsSearchLoading={(e: boolean) => setIsSearchLoading(e)}
           isVisible={isAutoCompleteVisible}
-          toggleVisibility={(e: any) => setIsAutocompleteVisible(e)}
+          toggleVisibility={(e: boolean) => setIsAutocompleteVisible(e)}
           id={dropdownId}
           labelId={labelId}
           onSelect={(e: any) => selectSuggestion(e)}
