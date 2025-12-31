@@ -5,6 +5,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibmplexmono_body_mono_bold_italic";
   src: url("../public/fonts/ibmplexmono-bolditalic-webfont.woff2")
@@ -13,6 +14,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibmplexmono_body_mono_italic";
   src: url("../public/fonts/ibmplexmono-italic-webfont.woff2") format("woff2"),
@@ -20,6 +22,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibmplexmono_body_mono_bold_italic";
   src: url("../public/fonts/ibmplexmono-bolditalic-webfont.woff2")
@@ -28,6 +31,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibmplexmono_body_mono_extralight";
   src: url("../public/fonts/ibmplexmono-extralight-webfont.woff2")
@@ -36,6 +40,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibmplexmono_body_mono_extralightitalic";
   src: url("../public/fonts/ibmplexmono-extralightitalic-webfont.woff2")
@@ -45,6 +50,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibmplexmono_body_mono_semibold";
   src: url("../public/fonts/ibmplexmono-semibold-webfont.woff2") format("woff2"),
@@ -52,6 +58,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibmplexmono_body_bold";
   src: url("../public/fonts/ibmplexsans-bold-webfont.woff2") format("woff2"),
@@ -59,6 +66,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: "ibm condensed medium";
   src: url("../public/fonts/ibmplexsanscond-medium-webfont.woff2")

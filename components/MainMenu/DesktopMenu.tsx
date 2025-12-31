@@ -54,7 +54,7 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
     if (timer) {
       clearTimeout(timer);
     }
-    setCurrentKey(item.id);
+    setKeyPathMap({});
   }, []);
   const handleMouseLeave = useCallback(() => {
     timer = setTimeout(() => setCurrentKey(undefined), 300);

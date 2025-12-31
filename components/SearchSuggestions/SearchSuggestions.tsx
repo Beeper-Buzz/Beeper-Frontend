@@ -10,7 +10,6 @@ const AutoComplete = ({
   id,
   labelId,
   isVisible,
-  setIsSearchLoading,
   toggleVisibility,
   onSelect,
   query

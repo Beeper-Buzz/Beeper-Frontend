@@ -153,7 +153,9 @@ export const ComingSoon = () => {
           <Logo src={logoPath} />
         ) : siteTitle ? (
           <LogoText>{siteTitle}</LogoText>
-        ) : null}
+        ) : (
+          <Logo />
+        )}
         {siteDesc && <Text>{siteDesc}</Text>}
         {/* {previewMode && (
 =======
