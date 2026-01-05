@@ -65,15 +65,11 @@ export const QuestionWrapper = styled.div<QuestionWrapperType>`
 export const NotifyText = styled.div`
   text-align: center;
   width: 100%;
-  font-family: ${(p: any) => p.theme.typography.bodyMD.fontFamily};
-  font-weight: ${(p: any) => p.theme.typography.bodyMD.fontWeight};
-  font-size: ${(p: any) => p.theme.typography.bodyMD.fontSize};
-  line-height: ${(p: any) => p.theme.typography.bodyMD.lineHeight};
-  margin: 20px auto;
-  color: ${(p) =>
-    p.theme.isDarkMode
-      ? p.theme.colors.brand.primary
-      : p.theme.colors.brand.primary};
+  font-style: normal;
+  font-weight: 200;
+  font-size: 14px;
+  line-height: 19px;
+  margin: 0 auto 20px auto;
 `;
 
 export const ErrorText = styled.div`
@@ -84,15 +80,11 @@ export const ErrorText = styled.div`
   font-size: 14px;
   line-height: 19px;
   margin: -40px auto 20px auto;
-  font-family: ${(p: any) => p.theme.typography.bodyMD.fontFamily};
-  font-weight: ${(p: any) => p.theme.typography.bodyMD.fontWeight};
-  font-size: ${(p: any) => p.theme.typography.bodyMD.fontSize};
-  line-height: ${(p: any) => p.theme.typography.bodyMD.lineHeight};
   color: ${(p) => p.theme.colors.pink.primary};
 `;
 
 export const EmailInput = styled.input<GenericThemeType>`
-  font-family: ${(p) => p.theme.typography.titleMD.fontFamily};
+  font-family: "Bebas Neue", sans-serif;
   font-size: ${(p) => p.theme.typography.titleMD.fontSize};
   font-weight: ${(p) => p.theme.typography.titleMD.fontWeight};
   line-height: ${(p) => p.theme.typography.titleMD.lineHeight};
@@ -130,7 +122,7 @@ export const Button = styled.button<GenericThemeType>`
   height: 36.15px;
   color: ${(p) => p.theme.colors.purple.light};
   background: ${(p) => p.theme.colors.pink.dark};
-  font-family: ${(p) => p.theme.typography.titleSM.fontFamily};
+  font-family: "Bebas Neue", sans-serif;
   border: 2px solid rgba(255, 0, 138, 0.15);
   box-sizing: border-box;
   box-shadow: -6px -6px 12px rgb(144 0 147 / 11%),
@@ -158,14 +150,8 @@ export const Button = styled.button<GenericThemeType>`
 export const MailTo = styled.a`
   text-decoration: none;
   text-align: center;
-  font-family: ${(p: any) => p.theme.typography.bodyMD.fontFamily};
-  font-weight: ${(p: any) => p.theme.typography.bodyMD.fontWeight};
-  font-size: ${(p: any) => p.theme.typography.bodyMD.fontSize};
-  line-height: ${(p: any) => p.theme.typography.bodyMD.lineHeight};
-  color: yellow;
-  margin-top: 20px;
-  bottom: 0;
-  & :hover {
-    color: ${(p: any) => p.theme.colors.brand.primary};
-  }
+  line-height: 19px;
+  font-style: normal;
+  font-weight: 200;
+  margin-top: -20px;
 `;

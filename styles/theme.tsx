@@ -1,8 +1,9 @@
-import { darken, lighten } from "polished";
-const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "false";
-
+import { lighten, darken, saturate } from "polished";
+const darkMode = process.env.NEXT_PUBLIC_DARK_MODE || "true";
+const simpleSignup = process.env.NEXT_PUBLIC_SIMPLE_SIGNUP || "true";
 export const theme = {
   isDarkMode: darkMode === "true",
+  isSimpleSignup: simpleSignup === "true",
   colors: {
     gray: {
       dark: "#333",
@@ -12,11 +13,13 @@ export const theme = {
       background: "#eee"
     },
     black: {
+      dark: "#333",
       primary: "#000",
       medium: "#585858",
       light: lighten(0.33, "#000")
     },
     white: {
+      dark: "#ccc",
       primary: "#fff",
       medium: lighten(0.66, "#fff"),
       light: "#f9f9f9"
@@ -42,28 +45,33 @@ export const theme = {
     brand: {
       primary: "#ff008a",
       secondary: "#E6CDC0",
-      dark: "#900093",
-      light: "#F9F2EA"
+      light: "#F9F2EA",
+      dark: "#CC8BEB",
+      bright: "#EB8B8B"
     },
     todo: {
       primary: "#BFB081",
       medium: lighten(0.66, "#BFB081"),
-      light: lighten(0.33, "#BFB081")
+      light: lighten(0.33, "#BFB081"),
+      dark: darken(0.11, "#BFB081")
     },
     design: {
       primary: "#FF6C52",
       medium: lighten(0.66, "#FF6C52"),
-      light: lighten(0.33, "#FF6C52")
+      light: lighten(0.33, "#FF6C52"),
+      dark: darken(0.11, "#FF6C52")
     },
     developed: {
       primary: "#A5D8BC",
       medium: lighten(0.66, "#A5D8BC"),
-      light: lighten(0.33, "#A5D8BC")
+      light: lighten(0.33, "#A5D8BC"),
+      dark: darken(0.11, "#A5D8BC")
     },
     red: {
       primary: "#D04040",
       medium: lighten(0.66, "#D04040"),
-      light: lighten(0.33, "#D04040")
+      light: lighten(0.33, "#D04040"),
+      dark: darken(0.11, "#D04040")
     }
   },
   gradients: {
@@ -131,17 +139,31 @@ export const theme = {
       color: "#000"
     },
     titleMD: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "ibmplexmono_body_bold",
       fontWeight: "bold",
       fontSize: "20px",
       lineHeight: "24px",
       color: "#000"
     },
     titleSM: {
-      fontFamily: "Bebas Neue",
+      fontFamily: "ibmplexmono_body_bold",
       fontWeight: "normal",
       fontSize: "14px",
       lineHeight: "18px",
+      color: "#000"
+    },
+    titleXS: {
+      fontFamily: "ibmplexmono_body_bold",
+      fontWeight: "normal",
+      fontSize: "10px",
+      lineHeight: "0.9rem",
+      color: "#000"
+    },
+    bodyLG: {
+      fontFamily: "Anybody ExtraLight",
+      fontWeight: "normal",
+      fontSize: "20px",
+      lineHeight: "22px",
       color: "#000"
     },
     bodyMD: {
@@ -154,6 +176,13 @@ export const theme = {
     bodySM: {
       fontFamily: "ibm condensed medium",
       fontWeight: "normal",
+      fontSize: "14px",
+      lineHeight: "16px",
+      color: "#000"
+    },
+    bodySMBold: {
+      fontFamily: "ibm condensed medium",
+      fontWeight: "bold",
       fontSize: "14px",
       lineHeight: "16px",
       color: "#000"

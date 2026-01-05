@@ -34,3 +34,61 @@ export const CartButton = styled.div`
     }
   }
 `;
+
+export const CartItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  font-family: ${(p) => p.theme.typography.bodyMD.fontFamily};
+  line-height: ${(p) => p.theme.typography.bodyMD.lineHeight};
+`;
+
+export const CartItemDescription = styled.span`
+  font-size: 16px;
+  font-family: ${(p) => p.theme.typography.bodyMD.fontFamily};
+  line-height: ${(p) => p.theme.typography.bodyMD.lineHeight};
+`;
+
+export const QuantityAdjusterWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const QuantitySelector = styled.input`
+  width: 30px;
+  text-align: center;
+  margin: 0 10px;
+`;
+
+export const QuantityAdjuster = styled.button`
+  width: 20px;
+  height: 20px;
+  background-color: lightgray;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  &:hover {
+    background-color: gray;
+  }
+`;
+
+export const TotalLine = styled.div`
+  padding: 10px;
+  font-weight: bold;
+`;
+
+export const EmptyCartMessage = styled.p`
+  text-align: center;
+  padding: 20px;
+`;
+
+export const Actions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+`;

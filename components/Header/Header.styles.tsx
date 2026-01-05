@@ -1,8 +1,10 @@
 import styled from "@emotion/styled";
+import isPropValid from "@emotion/is-prop-valid";
 import { Popover } from "@material-ui/core";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import { pxIphone } from "../../utilities/device-sizes";
+import Link from "next/link";
 
 export const TopHeader = styled.div`
   padding: 10px 0 12px 0;
@@ -12,7 +14,7 @@ export const TopHeader = styled.div`
   justify-content: center;
 
   @media (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
-    height: 30px;
+    height: 50px;
   }
 `;
 
@@ -24,15 +26,19 @@ export const LogoDiv = styled.div`
   justify-content: center;
   cursor: pointer;
 `;
+
 export const HeaderDiv = styled.header`
   z-index: 9;
 `;
 
 export interface LinkDivProps {
   isActive: boolean;
+  props?: any;
 }
 
-export const LinkDiv = styled.a<LinkDivProps>`
+export const LinkDiv = styled(Link, {
+  shouldForwardProp: (prop) => isPropValid(prop) && prop !== "isActive"
+})<LinkDivProps>`
   font-size: 14px;
   text-decoration: none;
   ${(p) =>
@@ -63,21 +69,21 @@ export const BottomHeader = styled.div`
   }
 `;
 
-export const Category = styled.a`
+export const Category = styled(Link)`
   padding: 15px;
 `;
 
 export const LeftSide = styled.div`
-  width: auto;
   display: flex;
   position: absolute;
   left: 10px;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   z-index: 2;
 
   @media (max-width: ${(p) => p.theme.breakpoints.values.sm}px) {
+    left: initial;
+    right: 10px;
     justify-content: flex-end;
   }
 `;
@@ -133,7 +139,7 @@ export const CartToggle = styled.div`
   }
 
   @media (max-width: ${(p) => p.theme.breakpoints.values.xs}px) {
-    margin: 10px 10px 0 0;
+    margin: 0;
   }
 `;
 

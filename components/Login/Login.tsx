@@ -1,30 +1,43 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Formik, Field, ErrorMessage } from "formik";
+import { Formik, Field, ErrorMessage, useFormikContext } from "formik";
 import styled from "@emotion/styled";
 
-import { loginForm } from "../AuthForm/constants";
-import { useAuth } from "../../config/auth";
+import { loginForm } from "@components/AuthForm/constants";
+import { useAuth } from "@config/auth";
 
 import { FormikInput } from "../FormikWrappers";
 
 import {
   LoginWrapper,
   FormWrapper,
+  Title,
   InputWrapper,
   Subtext
 } from "./Login.styles";
-import constants from "../../utilities/constants";
+import constants from "@utilities/constants";
+import { Button } from "@components/shared";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const router = useRouter();
+
+  // Component to handle button click
+  const SubmitButton = () => {
+    const { submitForm, isSubmitting } = useFormikContext();
+    return (
+      <Button onClick={submitForm} disabled={isSubmitting}>
+        Submit
+      </Button>
+    );
+  };
+
   return (
     <LoginWrapper>
-      <h1>{loginForm.title}</h1>
+      <Title>{loginForm.title}</Title>
       <Formik
         initialValues={loginForm.fields}
         validationSchema={loginForm.validate}
@@ -42,7 +55,7 @@ export const Login = () => {
             });
         }}
       >
-        {({ isSubmitting }) => (
+        {() => (
           <FormWrapper>
             <InputWrapper>
               <Field
@@ -62,9 +75,7 @@ export const Login = () => {
                 label="Password"
               />
             </InputWrapper>
-            <button type="submit" disabled={isSubmitting}>
-              Submit
-            </button>
+            <SubmitButton />
             <Subtext>
               <Link href="/authenticate/signup">Register</Link>
               &nbsp;&nbsp;|&nbsp;&nbsp;

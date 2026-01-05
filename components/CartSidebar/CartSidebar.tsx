@@ -1,9 +1,33 @@
-import { slide as BurgerMenu } from "react-burger-menu";
+import * as BurgerMenu from "react-burger-menu";
+const Menu = BurgerMenu.slide as unknown as React.ComponentType<any>;
+import { useRouter } from "next/router";
+import React, { useState, useEffect } from "react";
+import { useMutation, useQueryClient } from "react-query";
 import { Loading, LoadingWrapper } from "..";
-import { useCart } from "../../hooks/useCart";
+import { useCart, updateItemQuantity } from "../../hooks/useCart";
+import { useProducts } from "../../hooks";
+import { QueryKeys } from "../../hooks/queryKeys";
+import { useAuth } from "../../config/auth";
 import cartStyles from "./cartStyles";
 
-import { CartWrapper, CartTitle, CartButton } from "./CartSidebar.styles";
+import {
+  CartWrapper,
+  CartTitle,
+  CartButton,
+  CartItem,
+  CartItemDescription,
+  QuantityAdjusterWrapper,
+  QuantitySelector,
+  QuantityAdjuster,
+  TotalLine,
+  EmptyCartMessage,
+  Actions
+} from "./CartSidebar.styles";
+import {
+  IProduct,
+  IProducts
+} from "@spree/storefront-api-v2-sdk/types/interfaces/Product";
+import { Button } from "../shared";
 
 interface Props {
   isVisible: boolean;
@@ -11,19 +35,164 @@ interface Props {
 }
 
 export const CartSidebar = ({ isVisible, toggle }: Props) => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const { user } = useAuth();
+
   const {
     data: cartData,
     isLoading: cartIsLoading,
     isError: cartHasError
   } = useCart();
 
-  const renderCartItems = () => {
-    if (Array.isArray(cartData?.data?.relationships?.variants?.data)) {
-      return cartData?.data?.relationships?.variants?.data?.map(
-        (item, index): any => {
-          return <li key={`cart-item-${index}`}>item: {item.id} | qty: </li>;
+  const { data: productsData } = useProducts(1);
+
+  // Initialize quantities from item_count when cart loads
+  useEffect(() => {
+    if (
+      cartData?.data?.attributes?.item_count &&
+      cartData?.data?.relationships?.line_items?.data
+    ) {
+      const lineItems = cartData?.data.relationships.line_items.data;
+      const itemCount = cartData?.data.attributes.item_count;
+      const lineItemsArray = Array.isArray(lineItems) ? lineItems : [lineItems];
+      const avgQty = Math.ceil(itemCount / lineItemsArray.length);
+
+      const initialQuantities: Record<string, number> = {};
+      lineItemsArray.forEach((item: any) => {
+        if (!quantities[item.id]) {
+          initialQuantities[item.id] = avgQty;
         }
-      );
+      });
+
+      if (Object.keys(initialQuantities).length > 0) {
+        setQuantities((prev) => ({ ...prev, ...initialQuantities }));
+      }
+    }
+  }, [
+    cartData?.data?.attributes?.item_count,
+    cartData?.data?.relationships?.line_items?.data
+  ]);
+
+  const updateQuantityMutation = useMutation(
+    ({ itemId, quantity }: { itemId: string; quantity: number }) =>
+      updateItemQuantity(itemId, quantity),
+    {
+      onMutate: async ({ itemId, quantity }) => {
+        // Optimistically update local state
+        setQuantities((prev) => ({ ...prev, [itemId]: quantity }));
+      },
+      onSuccess: () => {
+        console.log("Quantity updated successfully");
+        queryClient.invalidateQueries(QueryKeys.CART);
+      },
+      onError: (error: any, { itemId, quantity }) => {
+        console.error("Failed to update quantity:", error);
+        // Revert on error
+        setQuantities((prev) => {
+          const newQuantities = { ...prev };
+          delete newQuantities[itemId];
+          return newQuantities;
+        });
+      }
+    }
+  );
+
+  const foundProduct = (productId: string, productsData: IProducts) => {
+    // Check if productsData and productsData.data exist and are iterable
+    if (!productsData || !Array.isArray(productsData.data)) {
+      console.error("Invalid or missing productsData");
+      return null;
+    }
+
+    for (const product of productsData.data) {
+      // Also check if the relationships and variants exist and are iterable
+      if (
+        product.relationships &&
+        product.relationships.variants &&
+        Array.isArray(product.relationships.variants.data)
+      ) {
+        const variant = product.relationships.variants.data.find(
+          (variant) => variant.id === productId
+        );
+        if (variant) {
+          return product;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const handleUpdateItemQuantity = (itemId: string, newQuantity: number) => {
+    console.log("Updating item:", itemId, "to quantity:", newQuantity);
+    // Use setQuantity with 0 instead of removeItem to avoid CORS issues
+    const quantity = Math.max(0, newQuantity);
+    updateQuantityMutation.mutate({ itemId, quantity });
+  };
+
+  const renderCartItems = () => {
+    // Early return if productsData isn't loaded yet
+    if (!productsData || !Array.isArray(productsData.data)) {
+      return null;
+    }
+
+    const lineItemRefs = cartData?.data?.relationships?.line_items?.data || [];
+    const variantRefs = cartData?.data?.relationships?.variants?.data || [];
+
+    if (
+      Array.isArray(variantRefs) &&
+      variantRefs.length > 0 &&
+      Array.isArray(lineItemRefs)
+    ) {
+      return variantRefs.map((variantRef, index): any => {
+        // Match line_item by index (they should be in the same order)
+        const lineItemRef = lineItemRefs[index];
+
+        if (!lineItemRef) {
+          console.error("Could not find line_item at index", index);
+          return null;
+        }
+
+        // Use local quantity state
+        const quantity = quantities[lineItemRef.id] || 1;
+        const product = foundProduct(variantRef.id, productsData);
+
+        return (
+          <CartItem key={lineItemRef.id || `cart-item-${index}`}>
+            <CartItemDescription>
+              {product?.attributes?.name} - ${product?.attributes?.price}
+            </CartItemDescription>
+            <QuantityAdjusterWrapper>
+              <QuantityAdjuster
+                onClick={() =>
+                  handleUpdateItemQuantity(lineItemRef.id, quantity - 1)
+                }
+              >
+                -
+              </QuantityAdjuster>
+              <QuantitySelector
+                type="number"
+                value={quantity}
+                onChange={(e: any) => {
+                  const newQty = parseInt(e.target.value) || 1;
+                  if (newQty > 0) {
+                    handleUpdateItemQuantity(lineItemRef.id, newQty);
+                  }
+                }}
+              />
+              <QuantityAdjuster
+                onClick={() =>
+                  handleUpdateItemQuantity(lineItemRef.id, quantity + 1)
+                }
+              >
+                +
+              </QuantityAdjuster>
+            </QuantityAdjusterWrapper>
+          </CartItem>
+        );
+      });
     }
     return null;
   };
@@ -31,10 +200,7 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
   if (cartIsLoading) {
     return (
       <CartWrapper>
-        {/* <CartButton onClick={toggle}>
-          
-        </CartButton> */}
-        <BurgerMenu
+        <Menu
           right
           customBurgerIcon={<i className="btb bt-lg bt-shopping-cart" />}
           isOpen={isVisible}
@@ -45,7 +211,7 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
           <LoadingWrapper>
             <Loading />
           </LoadingWrapper>
-        </BurgerMenu>
+        </Menu>
         <style jsx>{`
           .cart-modal {
             background-color: white;
@@ -66,7 +232,7 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
         <CartButton onClick={toggle}>
           <i className="btb bt-lg bt-shopping-cart" />
         </CartButton>
-        <BurgerMenu
+        <Menu
           right
           isOpen={isVisible}
           onOpen={toggle}
@@ -75,7 +241,7 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
         >
           <CartTitle>Cart</CartTitle>
           <p>Cart Error</p>
-        </BurgerMenu>
+        </Menu>
         <style jsx>{`
           .cart-modal {
             background-color: white;
@@ -103,20 +269,46 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
         <CartButton onClick={toggle}>
           <i className="btb bt-lg bt-shopping-cart" />
         </CartButton>
-        <BurgerMenu
+        <Menu
           right
           isOpen={isVisible}
           onOpen={toggle}
           styles={cartStyles()}
           onClose={toggle}
+          width={360}
         >
           <CartTitle>Cart</CartTitle>
-          <div>{item_count} items in your cart</div>
+          <div>
+            {item_count} {item_count > 1 ? "items" : "item"} in your cart
+          </div>
           <div>{renderCartItems()}</div>
-          <div>Subtotal: {display_item_total}</div>
-          <div>Tax: {included_tax_total}</div>
-          <div>Total: {display_total}</div>
-        </BurgerMenu>
+          <TotalLine>Subtotal: {display_item_total}</TotalLine>
+          <TotalLine>Tax: {included_tax_total}</TotalLine>
+          <TotalLine>Total: {display_total}</TotalLine>
+          <Actions>
+            <Button variant="outline" onClick={() => router.push("/cart")}>
+              View Cart
+            </Button>
+            {user ? (
+              <Button onClick={() => router.push("/checkout")}>Checkout</Button>
+            ) : (
+              <>
+                <Button onClick={() => router.push("/checkout")}>
+                  Checkout as Guest
+                </Button>
+                <Button variant="outline" onClick={() => router.push("/login")}>
+                  Login
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/signup")}
+                >
+                  Signup
+                </Button>
+              </>
+            )}
+          </Actions>
+        </Menu>
         <style jsx>{`
           .cart-modal {
             background-color: white;

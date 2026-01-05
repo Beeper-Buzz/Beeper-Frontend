@@ -2,31 +2,59 @@ import styled from "@emotion/styled";
 import { pxPC } from "../../../utilities/device-sizes";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import { XlargeTitle } from "../../../styles/BaseStyles";
-export const BannerContainer = styled.div`
+import { Button } from "@components/shared";
+type BannerContainerProps = {
+  background: string;
+};
+export const BannerContainer = styled.div<BannerContainerProps>`
+  background-image: url(${(p) => p.background});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 450px;
   position: relative;
-  margin: ${pxPC(36)} 0 -5px 0;
 `;
 export const BannerTitle = styled(XlargeTitle)``;
 export const BannerImg = styled.img`
   object-fit: cover;
-  min-width: 100%;
+  width: 100%;
   margin-top: ${pxPC(30)};
 `;
-export const BannerBtn = styled(ButtonBase)`
-  width: ${pxPC(228)};
-  height: ${pxPC(35)};
-  position: absolute !important;
+
+type BannerBtnProps = {
+  width?: number;
+};
+export const BannerBtn = styled(Button)<BannerBtnProps>`
+  width: 90%;
+  max-width: 400px;
+  /* height: ${pxPC(35)}; */
+  position: absolute;
   bottom: ${pxPC(43)};
-  margin: auto !important;
-  background-color: ${(p: any) => p.theme.colors.brand.primary} !important;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: ${(p: any) => p.theme.colors.brand.primary};
   color: ${(p: any) =>
     p.theme.isDarkMode
       ? p.theme.colors.white.primary
       : p.theme.colors.black.primary};
-  left: 0;
-  right: 0;
-  font-family: "Bebas Neue";
   font-size: ${pxPC(18)};
   line-height: ${pxPC(22)};
   text-align: center;
+  z-index: 10;
+
+  @media (min-width: ${(p: any) => p.theme.breakpoints.values.sm}px) {
+    width: 60%;
+  }
+
+  @media (min-width: ${(p: any) => p.theme.breakpoints.values.md}px) {
+    width: 50%;
+  }
+
+  @media (min-width: ${(p: any) => p.theme.breakpoints.values.lg}px) {
+    width: 40%;
+  }
 `;

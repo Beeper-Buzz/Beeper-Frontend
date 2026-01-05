@@ -98,7 +98,7 @@ const BurgerIcon = (props: BurgerIconProps) => {
 
 BurgerIcon.propTypes = {
   barClassName: PropTypes.string,
-  customIcon: PropTypes.element,
+  customIcon: PropTypes.node || null,
   styles: PropTypes.object,
   onClick: PropTypes.func,
   onIconStateChange: PropTypes.func

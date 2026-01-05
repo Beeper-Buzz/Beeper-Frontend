@@ -1,5 +1,5 @@
 import React from "react";
-import { useRouter } from "next/router";
+import Router from "next/router";
 import { nanoid } from "nanoid";
 import { IProduct } from "@spree/storefront-api-v2-sdk/types/interfaces/Product";
 // import { useDispatch } from 'react-redux';
@@ -18,6 +18,7 @@ const formatWithHighlight = (text: string, query: string | undefined) => {
 
   const reg = new RegExp(`(${sanitizeString(query)})`, "gi");
   const textParts = text.split(reg);
+
   return textParts.map((part: any) =>
     part.match(reg) ? (
       part
@@ -28,6 +29,7 @@ const formatWithHighlight = (text: string, query: string | undefined) => {
     )
   );
 };
+
 type OwnProps = {
   suggestion?: any;
   query?: string;
@@ -41,17 +43,16 @@ const Suggestion = ({
   onChange,
   toggleVisibility
 }: OwnProps) => {
-  const router = useRouter();
   const handleSelection = (e: any) => {
     onChange("");
-    e.preventDefault();
     toggleVisibility(false);
-    router.push(`/${suggestion.attributes.slug}`);
+    Router.push(`/${suggestion.attributes.slug}?id=${suggestion.id}`);
   };
 
+  // const dispatch = useDispatch();
   if (suggestion) {
     return (
-      <StyledSuggestionLink onClick={handleSelection}>
+      <StyledSuggestionLink onClick={(e) => handleSelection(e)}>
         <StyledSuggestionContent>
           {formatWithHighlight(suggestion.attributes.name, query)}
         </StyledSuggestionContent>

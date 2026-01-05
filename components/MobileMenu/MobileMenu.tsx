@@ -137,13 +137,13 @@ export const MobileMenu = ({
   };
 
   return (
+    // @ts-ignore
     <BurgerMenu
       width={"66%"}
       isOpen={open}
       onOpen={toggleMenu}
       onClose={toggleMenu}
       styles={theme.isDarkMode ? darkMenuStyles : menuStyles}
-      // {...others}
     >
       {/* <BurgerMenu width={220} isOpen={open} onOpen={toggleMenu} onClose={toggleMenu} {...others}> */}
       {showMenuHeader ? (

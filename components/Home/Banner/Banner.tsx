@@ -1,10 +1,6 @@
 import React from "react";
-import {
-  BannerContainer,
-  BannerTitle,
-  BannerImg,
-  BannerBtn
-} from "./Banner.styles";
+import { useRouter } from "next/router";
+import { BannerContainer, BannerTitle, BannerBtn } from "./Banner.styles";
 export type bannerData = {
   img: string;
 };
@@ -12,11 +8,13 @@ export interface BannerProps {
   data: bannerData;
 }
 const Banner: React.FC<BannerProps> = (props) => {
+  const router = useRouter();
   const { data } = props;
   return (
-    <BannerContainer>
-      <BannerImg src={data.img} />
-      <BannerBtn>BUTTON</BannerBtn>
+    <BannerContainer background={data.img}>
+      <BannerBtn width={300} onClick={() => router.push("/about")}>
+        SHOP NOW
+      </BannerBtn>
     </BannerContainer>
   );
 };

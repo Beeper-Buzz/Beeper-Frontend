@@ -11,18 +11,21 @@ export const GlobalStyles = ({ theme, children }: any) => (
         @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
 
         html {
-          /* overflow: hidden; */
+          overflow: hidden;
           width: 100%;
           height: 100%;
         }
 
         body {
+          font-family: "ibm condensed medium";
+          font-size: 14px;
+          line-height: 16px;
           margin: 0;
           padding: 0;
           width: 100%;
           height: 100%;
           text-rendering: auto;
-          // -webkit-font-smoothing: antialiased;
+          -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
           font-display: swap;
           font-smooth: 2em;
@@ -35,18 +38,24 @@ export const GlobalStyles = ({ theme, children }: any) => (
 
         ::-moz-selection {
           /* Code for Firefox */
-          color: ${theme.colors.white.primary};
-          background: ${theme.colors.brand.primary};
+          color: black;
+          background: yellow;
         }
 
         ::selection {
-          color: ${theme.colors.white.primary};
-          background: ${theme.colors.brand.primary};
+          color: black;
+          background: yellow;
+        }
+        #__next {
+          width: 100%;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
         }
 
         a {
           cursor: pointer;
-          color: ${theme.colors.brand.primary};
+          color: yellow;
         }
 
         p {
@@ -86,9 +95,9 @@ export const GlobalStyles = ({ theme, children }: any) => (
         }
 
         button {
-          background-color: ${theme.colors.brand.primary};
+          background-color: yellow;
           border: 0;
-          color: ${theme.colors.white.primary};
+          color: black;
           width: 100%;
           max-width: 400px;
           font-size: 29.24px;

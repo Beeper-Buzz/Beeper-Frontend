@@ -3,9 +3,7 @@ import type { AppProps /*, AppContext */ } from "next/app";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { AuthProvider } from "../config/auth";
-import { Header, ComingSoon } from "../components";
-import "swiper/swiper-bundle.min.css";
-import "./app.css";
+import { MainMenu, Header, ComingSoon } from "../components";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import * as tracking from "../config/tracking";
@@ -14,7 +12,8 @@ import * as tracking from "../config/tracking";
 import { ThemeProvider } from "@emotion/react";
 import { theme } from "../styles/theme";
 import { GlobalStyles } from "../styles/global-styles";
-import { pxIphone } from "../utilities/device-sizes";
+import "swiper/swiper-bundle.min.css";
+
 import "../styles/fonts.css";
 import "../public/fonts/black-tie/black-tie.css";
 import "swiper/swiper.scss";
@@ -70,7 +69,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           outterContainerId={"outter-container"}
           pageWrapId={"page-wrap"}
           animationType={"slide"}
-          menusData={menusData}
           right={false}
         />
         <Component {...pageProps} wholesale={wholesale} />

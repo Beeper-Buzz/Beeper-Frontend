@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { Badge } from "@material-ui/core";
 import Sticky from "react-sticky-el";
 import { HeaderProps } from "./types";
@@ -20,10 +19,10 @@ import {
   LogoDiv,
   HeaderDiv,
   LinkDiv,
-  BottomHeader,
-  Category,
-  UserIconMo,
-  CartMo,
+  // BottomHeader,
+  // Category,
+  // UserIconMo,
+  // CartMo,
   CartToggle,
   HeaderAccount,
   HeaderOptions,
@@ -34,15 +33,7 @@ import {
   AccountMenu,
   AccountOption
 } from "./Header.styles";
-
-const dummyCategories = [
-  "Best Sellers",
-  "Latest",
-  "Seasonal",
-  "Luxury",
-  "On Sale",
-  "Coming Soon"
-];
+import { Logo } from "@components/shared/Logo";
 
 export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const router = useRouter();
@@ -60,7 +51,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const isMaint = process.env.NEXT_PUBLIC_IS_MAINT_MODE || "false";
   const siteTitle = process.env.NEXT_PUBLIC_SHORT_TITLE || "DNA";
 
-  const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH || null;
+  const logoPath =
+    process.env.NEXT_PUBLIC_LOGO_PATH || "images/open-graph-instinct-dna.jpg";
 
   const {
     data: cartData,
@@ -93,17 +85,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           </LeftSide>
         )}
         <LogoDiv>
-          <LinkDiv
-            isActive
-            onClick={() => {
-              router.push("/");
-            }}
-          >
-            {logoPath ? (
-              <MyLogo imageFile={logoPath} darkMode={darkMode} />
-            ) : (
-              <h1>{siteTitle}</h1>
-            )}
+          <LinkDiv isActive href="/">
+            {logoPath ? <Logo /> : <h1>{siteTitle}</h1>}
           </LinkDiv>
         </LogoDiv>
         <RightSide>
@@ -142,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                 </AccountOption>
               </AccountMenu>
               {/* <UserIconMo src={"/user.png"} /> */}
-              <Badge badgeContent={4} color="secondary">
+              <Badge badgeContent={4} color="secondary" overlap="rectangular">
                 <FavoriteIcon />
               </Badge>
             </HeaderAccount>
@@ -152,7 +135,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                 LOGIN
               </LinkDiv>
               <LinkDiv
-                href="/authenticate/signup"
+                href="/signup"
                 isActive={pathname !== "/authenticate/signup"}
               >
                 SIGN UP
@@ -161,8 +144,11 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           )}
           <CartToggle>
             <Badge
-              badgeContent={cartData ? cartData.data.attributes.item_count : 0}
+              badgeContent={
+                cartData ? cartData?.data?.attributes?.item_count : 0
+              }
               color="primary"
+              overlap="rectangular"
             >
               <CartSidebar isVisible={cartVisible} toggle={toggleCart} />
             </Badge>

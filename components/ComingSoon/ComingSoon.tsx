@@ -30,8 +30,7 @@ import {
   CarouselNextButton,
   Text,
   Fade,
-  DeviceOff,
-  DeviceOn
+  Device
 } from "./ComingSoon.styles";
 
 export const ComingSoon = () => {
@@ -69,7 +68,7 @@ export const ComingSoon = () => {
   } = useProducts(1);
 
   const renderProductSlides = useCallback(() => {
-    return productsData.data.map((i: any) => {
+    return productsData.data.flatMap((i: any) => {
       const productImg = i.relationships?.images?.data[0]?.id;
       const allImages = productsData
         ? productsData?.included?.filter((e: any) => e.type == "image")
@@ -97,45 +96,37 @@ export const ComingSoon = () => {
   }, [productsData]);
 
   const renderProductThumbnails = useCallback(
-    (productsData: any, setIsSlideshow: any) => {
-      return productsData?.data?.map((i: any) => {
+    (
+      productsData: any | undefined,
+      setIsSlideshow: (value: boolean) => void
+    ) => {
+      return productsData?.data.map((i: any) => {
         const productImg = i.relationships?.images?.data[0]?.id;
-        const allImages = productsData
-          ? productsData?.included?.filter((e: any) => e.type == "image")
-          : [];
-        const foundImg = allImages
-          ? allImages.filter((e: any) => e["id"] == productImg)
-          : undefined;
-        console.log("foundImg: ", foundImg);
+        const allImages =
+          productsData?.included?.filter((e: any) => e.type === "image") || [];
+        const foundImg = allImages.filter((e: any) => e.id === productImg);
         const imgUrl =
-          foundImg !== undefined ? foundImg[0]?.attributes?.styles[3]?.url : "";
-        const imgSrc = productImg ? `${spreeApiUrl}${imgUrl}` || "" : "";
+          foundImg.length > 0 ? foundImg[0]?.attributes?.styles[3]?.url : "";
+        const imgSrc = productImg ? `${spreeApiUrl}${imgUrl}` : "";
         return (
           <div
             key={`image-${i.id}`}
             onClick={() => setIsSlideshow(true)}
             style={{ cursor: "pointer" }}
           >
-            <img src={imgSrc} />
+            <img src={imgSrc} alt={`Product ${i.id}`} />
           </div>
         );
       });
     },
-    [productsData]
+    [spreeApiUrl]
   );
 
   const { tintValue } = useSpring({
-    delay: 1000,
+    delay: 500,
     from: { tintValue: 0 },
     to: { tintValue: 1 },
-    config: { tension: 80, friction: 180 }
-  });
-
-  const { deviceOnValue } = useSpring({
-    delay: 5000,
-    from: { deviceOnValue: 0 },
-    to: { deviceOnValue: 1 },
-    config: { tension: 0, friction: 0 }
+    config: { tension: 150, friction: 80, mass: 3, clamp: true }
   });
 
   useEffect(() => {
@@ -155,10 +146,7 @@ export const ComingSoon = () => {
       >
         {/* <Container tintValue={props.tintValue}> */}
         <Fade />
-        <DeviceOff src="/images/beeper_one_off.png" />
-        {/* <DeviceOn src="/images/beeper_one_on.png" style={{
-          opacity: deviceOnValue.interpolate((value) => value)
-        }} /> */}
+        <Device src="/images/beeper_one_masked_delta8.jpg" />
         {!isServer ? (
           <LogoBlob />
         ) : logoPath ? (
@@ -169,14 +157,24 @@ export const ComingSoon = () => {
           <Logo />
         )}
         {siteDesc && <Text>{siteDesc}</Text>}
+        {/* {previewMode && (
+=======
+          <Logo src={logoPath} />
+        ) : siteTitle ? (
+          <LogoText>{siteTitle}</LogoText>
+        ) : (
+          <Logo />
+        )}
+        {siteDesc && <Text>{siteDesc}</Text>}
         {previewMode && (
+>>>>>>> 02806cf2e332e0d05189f6600158d4b840241643
           <ProductTeaser
             products={productsData}
             title={""}
             openSlideshow={(e: any) => setIsSlideshow(e)}
           />
         )}
-        {previewMode && (
+        {/* {previewMode && (
           <ResponsiveMasonry
             columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
           >
@@ -184,7 +182,7 @@ export const ComingSoon = () => {
               {renderProductThumbnails(productsData, setIsSlideshow)}
             </Masonry>
           </ResponsiveMasonry>
-        )}
+        )} */}
         {isSlideshow && (
           <ProductImageCarousel>
             <CarouselBackground onClick={() => setIsSlideshow(false)} />
@@ -213,7 +211,7 @@ export const ComingSoon = () => {
         )}
         <Text>{comingSoonText}</Text>
         <NotifyForm />
-        <SocialLinks isDark />
+        <SocialLinks />
       </Container>
     </Background>
   );

@@ -188,9 +188,9 @@ const SearchBar = ({
 
       {autoComplete ? (
         <AutoComplete
-          setIsSearchLoading={(e) => setIsSearchLoading(e)}
+          setIsSearchLoading={(e: boolean) => setIsSearchLoading(e)}
           isVisible={isAutoCompleteVisible}
-          toggleVisibility={(e: any) => setIsAutocompleteVisible(e)}
+          toggleVisibility={(e: boolean) => setIsAutocompleteVisible(e)}
           id={dropdownId}
           labelId={labelId}
           onSelect={(e: any) => selectSuggestion(e)}

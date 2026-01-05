@@ -2,18 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { LoadingIcon } from "..";
 import { useProducts } from "../../hooks/useProducts";
-import { StyledSearchSuggestions } from "./SearchSuggestions.styles";
+import { StyledAutoComplete } from "./SearchSuggestions.styles";
 import Suggestion from "./Suggestion";
-import { SearchSuggestionsProps } from "./types";
+import { AutoCompleteProps } from "./types";
 
-const SearchSuggestions = ({
+const AutoComplete = ({
   id,
   labelId,
   isVisible,
   toggleVisibility,
   onSelect,
   query
-}: SearchSuggestionsProps) => {
+}: AutoCompleteProps) => {
   const {
     error,
     status,
@@ -40,28 +40,27 @@ const SearchSuggestions = ({
   if (!isVisible) return null;
 
   if (isLoading) {
-    setIsSearchLoading(true);
     return (
-      <StyledSearchSuggestions role="listbox" aria-labelledby={labelId} id={id}>
+      <StyledAutoComplete role="listbox" aria-labelledby={labelId} id={id}>
         <LoadingIcon className="bts bt-spinner bt-pulse" />
-      </StyledSearchSuggestions>
+      </StyledAutoComplete>
     );
   }
 
   if (error) {
     return (
-      <StyledSearchSuggestions role="listbox" aria-labelledby={labelId} id={id}>
+      <StyledAutoComplete role="listbox" aria-labelledby={labelId} id={id}>
         <p>Error {status}</p>
-      </StyledSearchSuggestions>
+      </StyledAutoComplete>
     );
   }
 
   if (!data || data.data.length === 0) return null;
 
   return (
-    <StyledSearchSuggestions role="listbox" aria-labelledby={labelId} id={id}>
+    <StyledAutoComplete role="listbox" aria-labelledby={labelId} id={id}>
       {isVisible &&
-        data?.data?.map((item, index) => {
+        data?.data?.map((item: any, index: number) => {
           return (
             <Suggestion
               suggestion={item}
@@ -72,8 +71,8 @@ const SearchSuggestions = ({
             />
           );
         })}
-    </StyledSearchSuggestions>
+    </StyledAutoComplete>
   );
 };
 
-export default SearchSuggestions;
+export default AutoComplete;

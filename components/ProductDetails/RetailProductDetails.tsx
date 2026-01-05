@@ -19,7 +19,6 @@ import { addItemToCart } from "../../hooks/useCart";
 import { QueryKeys } from "../../hooks/queryKeys";
 import * as tracking from "../../config/tracking";
 import Featured from "../Home/Featured";
-import PolProductList from "../PolProductList";
 import { ProductList } from "../ProductList";
 import { FourOhFour } from "../404/FourOhFour";
 import { useMediaQuery } from "react-responsive";
@@ -84,13 +83,13 @@ const productColors: ColorOptionType[] = [
 ];
 
 interface RetailProductDetailsProps {
-  props: any;
   wholesale?: boolean;
+  [key: string]: any;
 }
 
 export const RetailProductDetails = ({
   wholesale,
-  props
+  ...props
 }: RetailProductDetailsProps) => {
   const router = useRouter();
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -108,13 +107,37 @@ export const RetailProductDetails = ({
   const productOptions =
     thisProduct &&
     thisProduct?.included?.filter((e: any) => e["type"] === "option_value");
+
+  // Get variant-specific colors only
+  const variantIds = Array.isArray(
+    thisProduct?.data?.relationships?.variants?.data
+  )
+    ? thisProduct?.data?.relationships?.variants?.data.map((v: any) => v.id)
+    : [];
+  const productVariants = thisProduct?.included?.filter(
+    (item: any) => item.type === "variant" && variantIds?.includes(item.id)
+  );
+  const variantOptionValueIds =
+    productVariants?.flatMap(
+      (variant: any) =>
+        variant.relationships?.option_values?.data?.map((ov: any) => ov.id) ||
+        []
+    ) || [];
   const productColors =
-    productOptions &&
-    productOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
+    productOptions?.filter(
+      (opt: any) =>
+        variantOptionValueIds.includes(opt.id) &&
+        opt.attributes.presentation.includes("#")
+    ) || [];
+
+  console.log("RetailProductDetails - productColors:", productColors);
+
   const productSizes =
     productOptions &&
     productOptions?.filter((e: any) =>
-      e.attributes.presentation.includes("XS" || "S" || "M" || "L" || "XL")
+      ["XS", "S", "M", "L", "XL"].some((size) =>
+        e.attributes.presentation.includes(size)
+      )
     );
   const productProperties =
     thisProduct &&
@@ -174,7 +197,7 @@ export const RetailProductDetails = ({
   // console.log("colors: ", productColors);
 
   const renderSimilarProducts = () => {
-    if (productsAreLoading) return <p>Loading...</p>;
+    if (productsAreLoading) return <Loading />;
     return (
       !isMobile && (
         <ProductList products={productsData} title={"Similar Products"} />
@@ -183,7 +206,7 @@ export const RetailProductDetails = ({
   };
 
   const recommendedProducts = () => {
-    if (productsAreLoading) return <p>Loading...</p>;
+    if (productsAreLoading) return <Loading />;
     return (
       !isMobile && (
         <ProductList products={productsData} title={"Recommended For You"} />
@@ -296,7 +319,7 @@ export const RetailProductDetails = ({
     };
 
     if (variantsAreLoading) {
-      return <p>Loading...</p>;
+      return <Loading />;
     }
 
     return productColors?.map((item, index) => {
@@ -499,21 +522,27 @@ export const RetailProductDetails = ({
               <Price>${thisProduct?.data?.attributes?.price}</Price>
 
               {/* RETAIL COLOR */}
-              <select>
-                <option selected>Color</option>
-                <option>Blue</option>
-                <option>Beige</option>
-                <option>Pink</option>
-              </select>
+              {productColors && productColors.length > 0 && (
+                <select>
+                  <option selected>Color</option>
+                  {productColors.map((color: any, index: number) => (
+                    <option key={`color-${index}`} value={color.id}>
+                      {color.attributes.name}
+                    </option>
+                  ))}
+                </select>
+              )}
 
               {/* RETAIL SIZE */}
-              <div className="size-selection">
-                <button className="">XS</button>
-                <button className="">S</button>
-                <button className="">M</button>
-                <button className="">L</button>
-                <button className="">XL</button>
-              </div>
+              {productSizes && productSizes.length > 0 && (
+                <div className="size-selection">
+                  {productSizes.map((size: any, index: number) => (
+                    <button key={`size-${index}`} className="">
+                      {size.attributes.presentation}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <BuyButton className="" onClick={() => handleAddToCart(addItem)}>
                 {/* <BuyButton className="" onClick={addAllToCart}> */}

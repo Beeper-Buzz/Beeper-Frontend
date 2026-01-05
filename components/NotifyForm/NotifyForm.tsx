@@ -17,25 +17,25 @@ import {
 const notifyQuestions = [
   {
     id: "email",
-    question: "Get notified when we launch.",
+    question: "Wanna know when the product becomes available?",
     placeholder: "Email",
     buttonText: "Get Updates"
   },
   {
     id: "firstName",
-    question: "Thanks. What should we call you?",
+    question: "Great. Btw, what's your name?",
     placeholder: "First Name",
     buttonText: "Save Name"
   },
   {
     id: "lastName",
-    question: "Nice, wanna share your last name?",
+    question: "Ok, and your last name?",
     placeholder: "Last Name",
     buttonText: "Save Name"
   },
   {
     id: "phone",
-    question: "Perfect, if you want we'll text.",
+    question: "Perfect, wanna get text updates from us?",
     placeholder: "Phone",
     buttonText: "Sure"
   }
@@ -165,9 +165,9 @@ export const NotifyForm = () => {
         <FormWrapper index={currentQuestion}>
           <form
             onSubmit={(e: any) =>
-              currentQuestion > 0
-                ? handleSubmit(e, false)
-                : handleSubmit(e, true)
+              currentQuestion < 1
+                ? handleSubmit(e, true)
+                : handleSubmit(e, false)
             }
           >
             {currentQuestion < notifyQuestions.length
@@ -195,21 +195,18 @@ export const NotifyForm = () => {
             </NotifyText>
           )}
           {status === "error" && (
-            <NotifyText>
+            <ErrorText>
               {message === "Bad Request"
                 ? `${message} or Email already exists`
                 : message}
-            </NotifyText>
+            </ErrorText>
           )}
           {status === "success" &&
             currentQuestion >= notifyQuestions.length && (
               <NotifyText>{message}</NotifyText>
             )}
         </FormWrapper>
-        <MailTo
-          id="mailto"
-          href={`mailto:${process.env.NEXT_PUBLIC_COMPANY_EMAIL}`}
-        >
+        <MailTo id="mailto" href={`mailto:${process.env.NEXT_PUBLIC_EMAIL}`}>
           Got Questions? We'd love to hear from you.
         </MailTo>
       </Container>

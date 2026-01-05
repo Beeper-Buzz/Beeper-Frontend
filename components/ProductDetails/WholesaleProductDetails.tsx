@@ -19,7 +19,6 @@ import { addItemToCart } from "../../hooks/useCart";
 import { QueryKeys } from "../../hooks/queryKeys";
 import * as tracking from "../../config/tracking";
 import Featured from "../Home/Featured";
-import PolProductList from "../PolProductList";
 import { ProductList } from "../ProductList";
 import { FourOhFour } from "../404/FourOhFour";
 import { useMediaQuery } from "react-responsive";
@@ -84,7 +83,8 @@ const productColors: ColorOptionType[] = [
 ];
 
 interface WholesaleProductDetailsProps {
-  props: any;
+  wholesale?: boolean;
+  [key: string]: any;
 }
 
 export const WholesaleProductDetails = ({
@@ -106,13 +106,37 @@ export const WholesaleProductDetails = ({
   const productOptions =
     thisProduct &&
     thisProduct?.included?.filter((e: any) => e["type"] === "option_value");
+
+  // Get variant-specific colors only
+  const variantIds = Array.isArray(
+    thisProduct?.data?.relationships?.variants?.data
+  )
+    ? thisProduct?.data?.relationships?.variants?.data.map((v: any) => v.id)
+    : [];
+  const productVariants = thisProduct?.included?.filter(
+    (item: any) => item.type === "variant" && variantIds?.includes(item.id)
+  );
+  const variantOptionValueIds =
+    productVariants?.flatMap(
+      (variant: any) =>
+        variant.relationships?.option_values?.data?.map((ov: any) => ov.id) ||
+        []
+    ) || [];
   const productColors =
-    productOptions &&
-    productOptions?.filter((e: any) => e.attributes.presentation.includes("#"));
+    productOptions?.filter(
+      (opt: any) =>
+        variantOptionValueIds.includes(opt.id) &&
+        opt.attributes.presentation.includes("#")
+    ) || [];
+
+  console.log("WholesaleProductDetails - productColors:", productColors);
+
   const productSizes =
     productOptions &&
     productOptions?.filter((e: any) =>
-      e.attributes.presentation.includes("XS" || "S" || "M" || "L" || "XL")
+      ["XS", "S", "M", "L", "XL"].some((size) =>
+        e.attributes.presentation.includes(size)
+      )
     );
   const productProperties =
     thisProduct &&
@@ -180,7 +204,7 @@ export const WholesaleProductDetails = ({
   // console.log("colors: ", productColors);
 
   const renderSimilarProducts = () => {
-    if (productsAreLoading) return <p>Loading...</p>;
+    if (productsAreLoading) return <Loading />;
     return (
       !isMobile && (
         <ProductList products={productsData} title={"Similar Products"} />
@@ -189,7 +213,7 @@ export const WholesaleProductDetails = ({
   };
 
   const recommendedProducts = () => {
-    if (productsAreLoading) return <p>Loading...</p>;
+    if (productsAreLoading) return <Loading />;
     return (
       !isMobile && (
         <ProductList products={productsData} title={"Recommended For You"} />
@@ -356,7 +380,7 @@ export const WholesaleProductDetails = ({
     };
 
     if (variantsAreLoading) {
-      return <p>Loading...</p>;
+      return <Loading />;
     }
 
     return productColors?.map((item, index) => {

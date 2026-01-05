@@ -360,18 +360,27 @@ const MenuFactory = (styles: MenuFactoryStyles) => {
             style={getStyles("overlay")}
           />
         )}
-        {props.customBurgerIcon !== false && (
+        {/* {props.customBurgerIcon !== false && (
           <div style={getStyles("burgerIcon" as keyof BaseStyles)}>
             <BurgerIcon
               onClick={open}
               styles={props.styles}
-              customIcon={props.customBurgerIcon}
+              customIcon={
+                props.customBurgerIcon
+                  ? React.cloneElement(props.customBurgerIcon, {
+                      key:
+                        typeof props.customBurgerIcon.key === "string"
+                          ? props.customBurgerIcon.key
+                          : null
+                    })
+                  : undefined
+              }
               className={props.burgerButtonClassName}
               barClassName={props.burgerBarClassName}
               onIconStateChange={props.onIconStateChange}
             />
           </div>
-        )}
+        )} */}
         <div
           id={props.id}
           className={`bm-menu-wrap ${props.className}`.trim()}

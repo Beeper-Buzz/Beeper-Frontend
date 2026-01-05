@@ -1,5 +1,4 @@
 import React from "react";
-import { Facebook, Twitter, Instagram } from "@material-ui/icons";
 
 import {
   SocialContainer,
@@ -9,10 +8,10 @@ import {
 } from "./SocialLinks.styles";
 
 interface SocialLinksProps {
-  darkMode?: boolean;
+  isDark?: boolean;
 }
 
-export const SocialLinks = ({ darkMode }: SocialLinksProps) => {
+export const SocialLinks = ({ isDark }: SocialLinksProps) => {
   const instagramSlug =
     process.env.NEXT_PUBLIC_INSTAGRAM_SLUG || "gaggle_of_lawyers";
   const facebookSlug =
@@ -22,42 +21,21 @@ export const SocialLinks = ({ darkMode }: SocialLinksProps) => {
     <>
       <SocialContainer>
         <SocialList>
-          <SocialListItem darkMode={darkMode}>
-            <a
-              href={
-                `http://www.instagram.com/${process.env.NEXT_PUBLIC_INSTAGRAM_SLUG}` ||
-                "http://www.instagram.com"
-              }
-              target="_blank"
-            >
-              <SocialIcon src="images/social-icon-instagram.png" />
-              {/* <Instagram />{" "} */}
+          <SocialListItem>
+            <a href={`https://instagram.com/${instagramSlug}`} target="_blank">
+              <SocialIcon src="/images/social-icon-instagram.png" />
             </a>
           </SocialListItem>
 
-          <SocialListItem darkMode={darkMode}>
-            <a
-              href={
-                `http://www.facebook.com/${process.env.NEXT_PUBLIC_FACEBOOK_SLUG}` ||
-                "http://www.facebook.com"
-              }
-              target="_blank"
-            >
-              <SocialIcon src="images/social-icon-facebook.png" />{" "}
-              {/* <Facebook />{" "} */}
+          <SocialListItem>
+            <a href={`https://facebook.com/${facebookSlug}`} target="_blank">
+              <SocialIcon src="/images/social-icon-facebook.png" />{" "}
             </a>
           </SocialListItem>
 
-          <SocialListItem darkMode={darkMode}>
-            <a
-              href={
-                `http://www.twitter.com/${process.env.NEXT_PUBLIC_TWITTER_SLUG}` ||
-                "http://www.twitter.com"
-              }
-              target="_blank"
-            >
-              <SocialIcon src="images/social-icon-twitter.png" />{" "}
-              {/* <Twitter />{" "} */}
+          <SocialListItem>
+            <a href={`https://twitter.com/${twitterSlug}`} target="_blank">
+              <SocialIcon src="/images/social-icon-twitter.png" />{" "}
             </a>
           </SocialListItem>
         </SocialList>

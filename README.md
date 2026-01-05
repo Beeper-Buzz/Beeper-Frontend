@@ -46,13 +46,29 @@ We manage our global styles in several files:
 Unset all Heroku env vars:
 `heroku config:unset $(heroku config --shell | sed 's/=.*//' | xargs) -a app-name`
 
+## Gotchas:
+
+- App only loads using http://0.0.0.0:3000, using "localhost" does not work right now
+-
+
+## Deploy URLS:
+
 POL Admin Interface & API
-<http://dna-admin-dev.instinct.is/>
-<http://dna-admin-staging.instinct.is/>
+http://pol-admin-dev.instinct.is/
+http://pol-admin-staging.instinct.is/
 
 POL Frontend Interface
-<https://dna-frontend-dev.instinct.is/>
-<https://dna-frontend-staging.instinct.is/>
+https://pol-frontend-dev.instinct.is/
+https://pol-frontend-staging.instinct.is/
+
+## Updating a fork:
+
+- `git remote add upstream git@github.com:1instinct/dna-frontend.git`
+- `git fetch upstream`
+- `git checkout main`
+- `git pull upstream main`
+
+TODO:
 
 ## Keeping Your Code Updated
 
@@ -82,7 +98,41 @@ Done!
 - `git checkout main`
 - `git pull upstream main`
 
-## TODO
+## Deploy on Heroku
+
+`cat .env.production | grep -v '^#' | xargs -L 1 heroku config:set -a dna-frontend-prod`
+
+## Deploy on Vercel
+
+- Move data fetching into on `getInitialProps`
+- Setup Redux
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Deploy to Microk8s (Kubernetes)
+
+- `ssh clusterIP`
+- `cd ./dna-frontend`
+- `cp ./secret.example.yml ./secret.yml`
+
+Convert .env values to base64:
+
+```shell
+echo -n 'The seed of a powerful beginning' | base64 && \
+echo -n 'hello@instinct.is' | base64 && \
+...
+```
+
+- It can be tricky, helps to use multiple cursors but:
+- paste base64 values into `secret.yml`
+- `microk8s kubectl apply -f secret.yml`
+- `docker build . -t localhost:32000/dna-frontend:registry`
+- `docker images` (copy ID of newly built image)
+- `docker tag <image_id> localhost:32000/dna-frontend:registry`
+- `docker push localhost:32000/dna-frontend:registry`
+- `microk8s kubectl rollout restart deployment/dna-frontend`
+
+# TODO:
 
 - Move data fetching into on `getInitialProps`
 - Setup Redux

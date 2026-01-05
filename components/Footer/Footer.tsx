@@ -51,7 +51,7 @@ export interface FooterProps {
   classes?: CLASSESTYPE;
   footerData: FooterDataType;
 }
-export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
+export const Footer: React.FC<FooterProps> = ({ classes, footerData }) => {
   const Logo = footerData.logo as ReactNode;
   const gridClass = classes?.grid || "";
   const columnClass = classes?.columnClassWrapper || "";

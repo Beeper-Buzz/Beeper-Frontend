@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
-import { InputBase } from "@material-ui/core";
-import { pxPC } from "../../utilities/device-sizes";
-import { Layout } from "../../components";
+import { pxPC } from "@utilities/device-sizes";
+import { useRouter } from "next/router";
+import { Layout, Loading } from "../../components";
+import { InputBase } from "@mui/material";
+
+const AccountRedirect = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to orders page
+    router.push("/account/orders");
+  }, [router]);
+
+  return <Loading />;
+};
 
 const Content = styled.div`
   min-height: calc(100vh - 543px);
@@ -20,7 +32,7 @@ const PageTitle = styled.div`
       : p.theme.colors.black.primary};
   text-transform: uppercase;
   transform: rotate(-90deg);
-  font-family: "Bebas Neue";
+  font-family: ${(p) => p.theme.typography.titleLG.fontFamily};
   &:after {
     position: absolute;
     content: "";
@@ -58,7 +70,7 @@ const MyInputLabel = styled.div`
     p.theme.isDarkMode
       ? p.theme.colors.white.primary
       : p.theme.colors.black.primary};
-  font-family: "Bebas Neue";
+  font-family: ${(p) => p.theme.typography.titleLG.fontFamily};
   text-transform: uppercase;
 `;
 const PageBottom = styled.div`
@@ -114,6 +126,7 @@ const FormLabel = styled.div`
   margin-top: ${pxPC(13)};
   width: 100%;
 `;
+
 const Account = () => {
   return (
     <Layout>
