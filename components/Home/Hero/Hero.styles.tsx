@@ -2,18 +2,17 @@ import styled from "@emotion/styled";
 import { LargeTitle, BtnTitle } from "../../../styles/BaseStyles";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import { pxIphone, pxPC } from "@utilities/device-sizes";
-export const Container = styled.div`
+export const Container = styled.div<{ backgroundImage?: string }>`
   display: flex;
   flex-direction: column;
   justify-content: left;
   height: ${pxPC(719)};
-  background-image: url(/pol-hero.jpg);
-  // background-position: center center;
+  background-image: url(${(p) => p.backgroundImage || "/pol-hero.jpg"});
   background-size: cover;
   position: relative;
   @media (max-width: 768px) {
     height: calc(100vh - ${pxIphone(60)});
-    background-image: url("/pol-hero-mo.jpg");
+    background-image: url(${(p) => p.backgroundImage || "/pol-hero-mo.jpg"});
   }
 `;
 export const HeroAction = styled.div`

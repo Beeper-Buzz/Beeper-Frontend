@@ -1,23 +1,34 @@
 "use client";
-import Lottie from "react-lottie";
+import dynamic from "next/dynamic";
+import { useMemo } from "react";
 import { Layout } from "../components";
-import girlAnimation from "../../data/girl.json";
 import {
   NotFoundContainer,
   NotFoundTitle,
   NotFoundSubtitle
 } from "./FourOhFour.styles";
 
-const animationOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: girlAnimation,
-  rendererSettings: {
-    preserveAspectRatio: "xMidYMid slice"
-  }
-};
+const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 
 export const FourOhFour = () => {
+  // Import animation data only on client
+  const girlAnimation = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require("../../data/girl.json");
+  }, []);
+
+  const animationOptions = useMemo(
+    () => ({
+      loop: true,
+      autoplay: true,
+      animationData: girlAnimation,
+      rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice"
+      }
+    }),
+    [girlAnimation]
+  );
+
   return (
     <Layout>
       <NotFoundContainer>

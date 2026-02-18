@@ -38,7 +38,18 @@ const SectionRenderers: Record<
   string,
   React.FC<{ section: HomepageSection; additionalData?: any }>
 > = {
-  hero: ({ section }) => <Hero />,
+  hero: ({ section }) => {
+    const settings = parseSettings(section.settings);
+    return (
+      <Hero
+        title={section.title || undefined}
+        content={section.content || undefined}
+        buttonText={settings.button_text}
+        buttonLink={settings.button_link}
+        backgroundImage={settings.background_image}
+      />
+    );
+  },
 
   live_streams: ({ section }) => {
     const { data: streamsData } = useStreams(1);
