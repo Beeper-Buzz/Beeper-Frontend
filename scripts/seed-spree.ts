@@ -302,6 +302,8 @@ async function seedOptionTypes(): Promise<{
   const typeIds = new Map<string, string>();
   const valueIds = new Map<string, string>();
 
+  const existingValues = await fetchAll<SpreeOptionValue>('/option_values');
+
   for (const ot of OPTION_TYPES) {
     let typeRecord = existingTypes.find((t) => t.name === ot.name);
     if (typeRecord) {
@@ -316,7 +318,6 @@ async function seedOptionTypes(): Promise<{
     typeIds.set(ot.name, typeRecord.id);
 
     // Seed option values for this type
-    const existingValues = await fetchAll<SpreeOptionValue>('/option_values');
     for (const ov of ot.values) {
       let valRecord = existingValues.find(
         (v) => v.name === ov.name && String(v.option_type_id) === typeRecord!.id,
