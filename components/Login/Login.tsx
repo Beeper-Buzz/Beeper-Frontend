@@ -21,15 +21,15 @@ export const Login = () => {
   const SubmitButton = () => {
     const { submitForm, isSubmitting } = useFormikContext();
     return (
-      <Button onClick={submitForm} disabled={isSubmitting} className="w-full">
+      <Button onClick={submitForm} disabled={isSubmitting} className="neon-btn w-full">
         {isSubmitting ? "Logging in..." : "Submit"}
       </Button>
     );
   };
 
   return (
-    <div className="mx-auto my-10 w-full max-w-md rounded-xl border border-border/30 bg-card p-8 shadow-lg sm:p-10">
-      <h1 className="mb-6 text-center font-title text-2xl font-bold uppercase tracking-wider text-foreground">
+    <div className="glass-panel mx-auto my-10 w-full max-w-md p-8 sm:p-10">
+      <h1 className="mb-6 text-center font-pressstart text-sm text-neon-cyan">
         {loginForm.title}
       </h1>
       <Formik
@@ -79,7 +79,7 @@ export const Login = () => {
         {({ handleSubmit }) => (
           <form onSubmit={handleSubmit} className="space-y-4">
             {loginError && (
-              <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+              <div className="rounded-lg border border-neon-pink/30 bg-neon-pink/10 p-3 font-body text-sm text-neon-pink">
                 {loginError}
               </div>
             )}
@@ -101,17 +101,17 @@ export const Login = () => {
               />
             </div>
             <SubmitButton />
-            <p className="mt-4 text-center font-body text-sm text-muted-foreground">
+            <p className="mt-4 text-center font-body text-sm text-white/50">
               <Link
                 href="/signup"
-                className="text-brand transition-colors hover:underline"
+                className="text-neon-cyan transition-colors hover:underline"
               >
                 Signup
               </Link>
-              <span className="mx-2">|</span>
+              <span className="mx-2 text-white/30">|</span>
               <Link
                 href="/reset-password"
-                className="text-brand transition-colors hover:underline"
+                className="text-neon-cyan transition-colors hover:underline"
               >
                 Reset Password
               </Link>

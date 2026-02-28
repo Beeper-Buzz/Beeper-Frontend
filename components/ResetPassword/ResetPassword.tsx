@@ -9,15 +9,15 @@ export const ResetPassword = () => {
   const SubmitButton = () => {
     const { submitForm, isSubmitting } = useFormikContext();
     return (
-      <Button onClick={submitForm} disabled={isSubmitting} className="w-full">
+      <Button onClick={submitForm} disabled={isSubmitting} className="neon-btn w-full">
         Reset Password
       </Button>
     );
   };
 
   return (
-    <div className="mx-auto my-10 w-full max-w-md rounded-xl border border-border/30 bg-card p-8 shadow-lg sm:p-10">
-      <h1 className="mb-6 text-center font-title text-2xl font-bold uppercase tracking-wider text-foreground">
+    <div className="glass-panel mx-auto my-10 w-full max-w-md p-8 sm:p-10">
+      <h1 className="mb-6 text-center font-pressstart text-sm text-neon-cyan">
         {resetPasswordForm.title}
       </h1>
       <Formik
@@ -46,17 +46,17 @@ export const ResetPassword = () => {
               />
             </div>
             <SubmitButton />
-            <p className="mt-4 text-center font-body text-sm text-muted-foreground">
+            <p className="mt-4 text-center font-body text-sm text-white/50">
               <Link
                 href="/login"
-                className="text-brand transition-colors hover:underline"
+                className="text-neon-cyan transition-colors hover:underline"
               >
                 Login
               </Link>
-              <span className="mx-2">|</span>
+              <span className="mx-2 text-white/30">|</span>
               <Link
                 href="/signup"
-                className="text-brand transition-colors hover:underline"
+                className="text-neon-cyan transition-colors hover:underline"
               >
                 Sign Up
               </Link>

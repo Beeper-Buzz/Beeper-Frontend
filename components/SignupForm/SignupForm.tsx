@@ -78,13 +78,13 @@ export const SignupForm = () => {
           }}
         >
           {({ isSubmitting, handleSubmit }) => (
-            <Form className="w-full rounded-xl border border-border/30 bg-card p-6 shadow-lg sm:p-8">
+            <Form className="glass-panel w-full p-6 sm:p-8">
               <TipBot speech={speechMarkup()} />
               <div className="mt-4">
-                <h1 className="mb-2 text-center font-title text-2xl font-bold uppercase tracking-wider text-foreground">
+                <h1 className="mb-2 text-center font-pressstart text-sm text-neon-cyan">
                   Signup
                 </h1>
-                <p className="mb-6 text-center font-body text-sm text-muted-foreground">
+                <p className="mb-6 text-center font-body text-sm text-white/50">
                   {parse(description)}
                 </p>
 
@@ -118,7 +118,7 @@ export const SignupForm = () => {
                 </div>
 
                 {/* Terms */}
-                <div className="mt-6 rounded-lg border border-border/30 bg-muted/30 p-4">
+                <div className="mt-6 rounded-lg border border-glass-border bg-white/[0.03] p-4">
                   <Carousel
                     showArrows={false}
                     showStatus={false}
@@ -140,15 +140,15 @@ export const SignupForm = () => {
                       <span
                         className={`font-body text-sm ${
                           privacyTerms
-                            ? "text-foreground"
-                            : "text-muted-foreground"
+                            ? "text-white"
+                            : "text-white/50"
                         }`}
                       >
                         I have received and read the{" "}
                         <button
                           type="button"
                           onClick={togglePrivacyModal}
-                          className="cursor-pointer border-none bg-transparent p-0 font-semibold text-brand underline"
+                          className="cursor-pointer border-none bg-transparent p-0 font-semibold text-neon-cyan underline"
                         >
                           Privacy Policy
                         </button>
@@ -169,15 +169,15 @@ export const SignupForm = () => {
                       <span
                         className={`font-body text-sm ${
                           reportingTerms
-                            ? "text-foreground"
-                            : "text-muted-foreground"
+                            ? "text-white"
+                            : "text-white/50"
                         }`}
                       >
                         By clicking &quot;Signup&quot; I agree to the{" "}
                         <button
                           type="button"
                           onClick={toggleSignatureModal}
-                          className="cursor-pointer border-none bg-transparent p-0 font-semibold text-brand underline"
+                          className="cursor-pointer border-none bg-transparent p-0 font-semibold text-neon-cyan underline"
                         >
                           Terms &amp; Conditions
                         </button>
@@ -189,13 +189,13 @@ export const SignupForm = () => {
 
               {/* Submit */}
               <div className="mt-6 flex justify-center">
-                <Button
+                <button
                   type="submit"
                   disabled={!(privacyTerms || !reportingTerms)}
-                  className="w-full max-w-xs"
+                  className="neon-btn w-full max-w-xs"
                 >
                   Submit
-                </Button>
+                </button>
               </div>
             </Form>
           )}
@@ -209,13 +209,13 @@ export const SignupForm = () => {
           onClick={toggleSignatureModal}
         >
           <div
-            className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-card p-6"
+            className="glass-panel max-h-[80vh] w-full max-w-2xl overflow-y-auto bg-surface-deep p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <ElectronicSignaturesModal />
             <button
               onClick={toggleSignatureModal}
-              className="mt-4 w-full cursor-pointer rounded-lg border-none bg-brand px-4 py-2 font-title text-sm text-white"
+              className="neon-btn mt-4 w-full"
             >
               Close
             </button>
@@ -229,13 +229,13 @@ export const SignupForm = () => {
           onClick={togglePrivacyModal}
         >
           <div
-            className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-card p-6"
+            className="glass-panel max-h-[80vh] w-full max-w-2xl overflow-y-auto bg-surface-deep p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <FinancialPrivacyModal />
             <button
               onClick={togglePrivacyModal}
-              className="mt-4 w-full cursor-pointer rounded-lg border-none bg-brand px-4 py-2 font-title text-sm text-white"
+              className="neon-btn mt-4 w-full"
             >
               Close
             </button>
