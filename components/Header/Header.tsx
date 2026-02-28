@@ -62,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
+    <header className="glass-panel sticky top-0 z-50 w-full !rounded-none border-b border-glass-border">
       {/* Top Header */}
       <div className="relative flex flex-row items-center justify-center py-2.5 pb-3 sm:py-3">
         {/* Left Side - Social Links */}
@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
         <div className="flex w-[355px] cursor-pointer items-center justify-center px-7 py-4">
           <Link
             href="/"
-            className="text-sm no-underline text-foreground hover:text-brand transition-colors"
+            className="text-sm no-underline text-white hover:text-neon-cyan transition-colors"
           >
             {displayLogo ? (
               <Image
@@ -107,14 +107,14 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
               {/* Account Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="mx-2.5 flex cursor-pointer items-center justify-center font-title text-title-sm text-foreground hover:text-brand transition-colors border-none bg-transparent outline-none">
+                  <button className="mx-2.5 flex cursor-pointer items-center justify-center font-title text-title-sm text-white hover:text-neon-cyan transition-colors border-none bg-transparent outline-none">
                     {user.data.attributes.email}
-                    <ChevronDown className="ml-1 h-5 w-5 text-foreground hidden sm:block" />
+                    <ChevronDown className="ml-1 h-5 w-5 text-white hidden sm:block" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-[160px] p-5 font-title text-right"
+                  className="glass-panel w-[160px] p-5 font-title text-right"
                 >
                   <DropdownMenuItem asChild>
                     <Link
@@ -122,8 +122,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                       className={cn(
                         "cursor-pointer no-underline",
                         pathname === "/account"
-                          ? "pointer-events-none text-muted-foreground"
-                          : "text-foreground hover:text-brand"
+                          ? "pointer-events-none text-neon-cyan"
+                          : "text-white hover:text-neon-cyan"
                       )}
                     >
                       My Account
@@ -135,8 +135,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                       className={cn(
                         "cursor-pointer no-underline",
                         pathname === "/account/favorites"
-                          ? "pointer-events-none text-muted-foreground"
-                          : "text-foreground hover:text-brand"
+                          ? "pointer-events-none text-neon-cyan"
+                          : "text-white hover:text-neon-cyan"
                       )}
                     >
                       My Favorites
@@ -148,8 +148,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                       className={cn(
                         "cursor-pointer no-underline",
                         pathname === "/account/orders"
-                          ? "pointer-events-none text-muted-foreground"
-                          : "text-foreground hover:text-brand"
+                          ? "pointer-events-none text-neon-cyan"
+                          : "text-white hover:text-neon-cyan"
                       )}
                     >
                       My Orders
@@ -161,19 +161,19 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                       className={cn(
                         "cursor-pointer no-underline",
                         pathname === "/account/settings"
-                          ? "pointer-events-none text-muted-foreground"
-                          : "text-foreground hover:text-brand"
+                          ? "pointer-events-none text-neon-cyan"
+                          : "text-white hover:text-neon-cyan"
                       )}
                     >
                       Account Settings
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem className="cursor-pointer text-white hover:text-neon-cyan">
                     Need Help?
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-glass-border" />
                   <DropdownMenuItem
-                    className="cursor-pointer"
+                    className="cursor-pointer text-white hover:text-neon-cyan"
                     onSelect={logout}
                   >
                     Logout
@@ -187,8 +187,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                 className={cn(
                   "relative no-underline transition-colors",
                   pathname === "/account/favorites"
-                    ? "pointer-events-none text-muted-foreground"
-                    : "text-foreground hover:text-brand"
+                    ? "pointer-events-none text-neon-cyan"
+                    : "text-white hover:text-neon-cyan"
                 )}
               >
                 <Heart className="mr-3 hidden h-5 w-5 sm:block" />
@@ -209,8 +209,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                 className={cn(
                   "mx-2.5 font-title text-title-md no-underline transition-colors",
                   pathname === "/login"
-                    ? "pointer-events-none cursor-default text-muted-foreground"
-                    : "text-foreground hover:text-brand"
+                    ? "pointer-events-none cursor-default text-neon-cyan"
+                    : "text-white hover:text-neon-cyan"
                 )}
               >
                 LOGIN
@@ -220,8 +220,8 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                 className={cn(
                   "mx-2.5 font-title text-title-md no-underline transition-colors",
                   pathname === "/signup"
-                    ? "pointer-events-none cursor-default text-muted-foreground"
-                    : "text-foreground hover:text-brand"
+                    ? "pointer-events-none cursor-default text-neon-cyan"
+                    : "text-white hover:text-neon-cyan"
                 )}
               >
                 SIGN UP
@@ -230,10 +230,10 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           )}
 
           {/* Cart */}
-          <div className="-mt-2.5 mr-0.5 relative text-foreground sm:-mt-2.5">
+          <div className="-mt-2.5 mr-0.5 relative text-white sm:-mt-2.5">
             <CartSidebar isVisible={cartVisible} toggle={toggleCart} />
             {cartItemCount > 0 && (
-              <Badge className="absolute -right-2 -top-1 flex h-5 min-w-[20px] items-center justify-center px-1 text-[10px]">
+              <Badge className="absolute -right-2 -top-1 flex h-5 min-w-[20px] items-center justify-center bg-neon-cyan text-surface-deep px-1 text-[10px] font-bold">
                 {cartItemCount}
               </Badge>
             )}
