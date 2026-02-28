@@ -1,103 +1,19 @@
 import React from "react";
-import styled from "@emotion/styled";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useMutation, useQueryClient } from "react-query";
 import { addItemToCart } from "@hooks/useCart";
 import { QueryKeys } from "@hooks/queryKeys";
-
-const CardWrapper = styled.div`
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  background: ${(p) =>
-    p.theme.isDarkMode ? "rgba(0, 0, 0, 0.7)" : "rgba(255, 255, 255, 0.9)"};
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  backdrop-filter: blur(10px);
-  border: 1px solid
-    ${(p) =>
-      p.theme.isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"};
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const ProductImage = styled.div`
-  position: relative;
-  width: 80px;
-  height: 80px;
-  flex-shrink: 0;
-  border-radius: 4px;
-  overflow: hidden;
-  background: ${(p) => p.theme.colors.gray.light};
-`;
-
-const ProductInfo = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-width: 0;
-`;
-
-const ProductName = styled.h4`
-  font-size: 14px;
-  font-weight: 600;
-  margin: 0;
-  color: ${(p) =>
-    p.theme.isDarkMode
-      ? p.theme.colors.white.primary
-      : p.theme.colors.black.primary};
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-`;
-
-const ProductPrice = styled.div`
-  font-size: 16px;
-  font-weight: bold;
-  color: ${(p) => p.theme.colors.brand.primary};
-  margin: 4px 0;
-`;
-
-const AddToCartBtn = styled.button`
-  padding: 6px 12px;
-  background: ${(p) => p.theme.colors.brand.primary};
-  color: ${(p) => p.theme.colors.white.primary};
-  border: none;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  width: 100%;
-
-  &:hover {
-    background: ${(p) => p.theme.colors.brand.dark};
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
+import { cn } from "@lib/utils";
 
 interface ProductMiniCardProps {
   product: any;
+  variant?: "default" | "compact";
 }
 
 export const ProductMiniCard: React.FC<ProductMiniCardProps> = ({
-  product
+  product,
+  variant = "default"
 }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -122,25 +38,89 @@ export const ProductMiniCard: React.FC<ProductMiniCardProps> = ({
 
   const imageUrl = product.attributes.images?.[0]?.url;
 
+  // ── Compact variant: vertical card for mobile horizontal scroll ──
+  if (variant === "compact") {
+    return (
+      <div
+        onClick={handleClick}
+        className="group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] transition-all active:scale-[0.97]"
+      >
+        {/* Image */}
+        <div className="relative aspect-square w-full overflow-hidden bg-white/[0.04]">
+          {imageUrl && (
+            <Image
+              src={`${process.env.NEXT_PUBLIC_SPREE_API_URL}${imageUrl}`}
+              alt={product.attributes.name}
+              fill
+              className="object-cover transition-transform duration-500 ease-expo-out group-hover:scale-105"
+            />
+          )}
+          {/* Quick add overlay */}
+          <button
+            onClick={handleAddToCart}
+            disabled={addToCart.isLoading}
+            className="absolute inset-x-0 bottom-0 flex items-center justify-center bg-brand/90 py-1.5 font-mono-semibold text-[9px] uppercase tracking-widest text-white opacity-0 backdrop-blur-sm transition-all group-hover:opacity-100 active:bg-brand disabled:opacity-50"
+          >
+            {addToCart.isLoading ? "..." : "+ Add"}
+          </button>
+        </div>
+
+        {/* Info */}
+        <div className="flex flex-col gap-0.5 p-2.5">
+          <h4 className="m-0 line-clamp-1 font-body text-[11px] leading-tight text-white/70">
+            {product.attributes.name}
+          </h4>
+          <span className="font-mono-bold text-[13px] text-brand">
+            ${product.attributes.price}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Default variant: horizontal row card ──
   return (
-    <CardWrapper onClick={handleClick}>
-      <ProductImage>
+    <div
+      onClick={handleClick}
+      className="group flex cursor-pointer gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] p-2.5 transition-all hover:border-white/[0.12] hover:bg-white/[0.05] active:scale-[0.98]"
+    >
+      {/* Thumbnail */}
+      <div className="relative h-[72px] w-[72px] flex-shrink-0 overflow-hidden rounded-lg bg-white/[0.04]">
         {imageUrl && (
           <Image
             src={`${process.env.NEXT_PUBLIC_SPREE_API_URL}${imageUrl}`}
             alt={product.attributes.name}
             fill
-            style={{ objectFit: "cover" }}
+            className="object-cover transition-transform duration-500 ease-expo-out group-hover:scale-105"
           />
         )}
-      </ProductImage>
-      <ProductInfo>
-        <ProductName>{product.attributes.name}</ProductName>
-        <ProductPrice>${product.attributes.price}</ProductPrice>
-        <AddToCartBtn onClick={handleAddToCart} disabled={addToCart.isLoading}>
-          {addToCart.isLoading ? "Adding..." : "Add to Cart"}
-        </AddToCartBtn>
-      </ProductInfo>
-    </CardWrapper>
+      </div>
+
+      {/* Details */}
+      <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+        <div>
+          <h4 className="m-0 line-clamp-2 font-body text-[13px] leading-tight text-white/80">
+            {product.attributes.name}
+          </h4>
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-mono-bold text-[14px] text-brand">
+            ${product.attributes.price}
+          </span>
+          <button
+            onClick={handleAddToCart}
+            disabled={addToCart.isLoading}
+            className={cn(
+              "rounded-full px-3 py-1 font-mono-semibold text-[10px] uppercase tracking-wider transition-all active:scale-90",
+              addToCart.isLoading
+                ? "bg-white/10 text-white/30"
+                : "bg-brand/15 text-brand hover:bg-brand/25"
+            )}
+          >
+            {addToCart.isLoading ? "..." : "+ Cart"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };

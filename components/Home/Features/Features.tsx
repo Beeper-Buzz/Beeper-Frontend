@@ -1,12 +1,4 @@
 import React from "react";
-import {
-  Container,
-  FeatureGrid,
-  FeatureCard,
-  Icon,
-  FeatureTitle,
-  FeatureDescription
-} from "./Features.styles";
 
 interface Feature {
   icon: string;
@@ -33,20 +25,31 @@ const iconMap: Record<string, string> = {
 
 const Features: React.FC<FeaturesProps> = ({ features, title, content }) => {
   return (
-    <Container>
-      {title && <h2>{title}</h2>}
+    <div className="mx-auto max-w-[1200px] px-5 py-16 text-center sm:py-10">
+      {title && (
+        <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-2xl">
+          {title}
+        </h2>
+      )}
       {content && <div dangerouslySetInnerHTML={{ __html: content }} />}
 
-      <FeatureGrid>
+      <div className="mt-10 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-8 sm:grid-cols-1 sm:gap-5">
         {features.map((feature, index) => (
-          <FeatureCard key={index}>
-            <Icon>{iconMap[feature.icon] || "✨"}</Icon>
-            <FeatureTitle>{feature.title}</FeatureTitle>
-            <FeatureDescription>{feature.description}</FeatureDescription>
-          </FeatureCard>
+          <div
+            key={index}
+            className="rounded-lg bg-card px-5 py-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+          >
+            <div className="mb-4 text-5xl">{iconMap[feature.icon] || "✨"}</div>
+            <h3 className="mb-2 text-xl font-semibold text-foreground">
+              {feature.title}
+            </h3>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {feature.description}
+            </p>
+          </div>
         ))}
-      </FeatureGrid>
-    </Container>
+      </div>
+    </div>
   );
 };
 

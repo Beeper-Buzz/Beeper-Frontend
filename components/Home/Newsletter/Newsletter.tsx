@@ -1,12 +1,5 @@
 import React from "react";
 import { NotifyForm } from "@components/NotifyForm";
-import {
-  Container,
-  ContentWrapper,
-  PrivacyText,
-  SocialLinks,
-  SocialIcon
-} from "./Newsletter.styles";
 
 export interface NewsletterProps {
   title?: string | null;
@@ -24,30 +17,54 @@ const Newsletter: React.FC<NewsletterProps> = ({
   showSocialLinks = false
 }) => {
   return (
-    <Container backgroundColor={backgroundColor}>
-      {title && <h2>{title}</h2>}
+    <div
+      className="px-5 py-16 text-center sm:py-10"
+      style={backgroundColor ? { background: backgroundColor } : undefined}
+    >
+      {title && (
+        <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-2xl">
+          {title}
+        </h2>
+      )}
       {content && (
-        <ContentWrapper dangerouslySetInnerHTML={{ __html: content }} />
+        <div
+          className="leading-relaxed text-muted-foreground [&_p]:leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
       )}
 
       <NotifyForm />
 
-      {privacyText && <PrivacyText>{privacyText}</PrivacyText>}
+      {privacyText && (
+        <p className="mt-4 text-sm text-muted-foreground">{privacyText}</p>
+      )}
 
       {showSocialLinks && (
-        <SocialLinks>
-          <SocialIcon href="#" aria-label="Facebook">
+        <div className="mt-8 flex justify-center gap-4">
+          <a
+            href="#"
+            aria-label="Facebook"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-brand font-bold text-white transition-colors hover:bg-brand/80"
+          >
             f
-          </SocialIcon>
-          <SocialIcon href="#" aria-label="Twitter">
+          </a>
+          <a
+            href="#"
+            aria-label="Twitter"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-brand font-bold text-white transition-colors hover:bg-brand/80"
+          >
             𝕏
-          </SocialIcon>
-          <SocialIcon href="#" aria-label="Instagram">
+          </a>
+          <a
+            href="#"
+            aria-label="Instagram"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-brand font-bold text-white transition-colors hover:bg-brand/80"
+          >
             📷
-          </SocialIcon>
-        </SocialLinks>
+          </a>
+        </div>
       )}
-    </Container>
+    </div>
   );
 };
 

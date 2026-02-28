@@ -1,18 +1,17 @@
 import React from "react";
 import { useHomepage, HomepageSection } from "@hooks/useHomepage";
-import { Layout, Loading } from "../components";
-import { Content } from "./StaticHome.styles";
+import { Layout } from "../Layout";
+import { Loading } from "../Loading";
 import Hero from "./Hero";
 import Products from "./Products";
 import { StreamList } from "../StreamList";
-import { VideoJS } from "..";
+import { VideoJS } from "../VideoJS";
 import Featured from "./Featured";
 import Banner from "./Banner";
 import { Features } from "./Features";
 import { Testimonials } from "./Testimonials";
 import { Newsletter } from "./Newsletter";
 import { CallToAction } from "./CallToAction";
-import { useProducts } from "@hooks/useProducts";
 import { useStreams } from "@hooks/useStreams";
 import { useProductFeed, FeedType } from "@hooks/useProductFeed";
 
@@ -20,10 +19,9 @@ import { useProductFeed, FeedType } from "@hooks/useProductFeed";
 function parseSettings(settings: any): any {
   if (typeof settings === "string") {
     try {
-      // Convert Ruby hash rocket to JSON colon, add quotes, and parse
       let json = settings
         .replace(/"=>/g, '":')
-        .replace(/([,{])\s*"([a-zA-Z0-9_]+)":/g, '$1"$2":') // ensure keys are quoted
+        .replace(/([,{])\s*"([a-zA-Z0-9_]+)":/g, '$1"$2":')
         .replace(/:([\s\d\w\[\{\"])/g, ": $1");
       return JSON.parse(json);
     } catch {
@@ -64,19 +62,12 @@ const SectionRenderers: Record<
   },
 
   products: ({ section }) => {
-    // Parse nested settings if needed (API returns settings within settings)
     const sectionSettings =
       parseSettings(section.settings?.settings) ||
       parseSettings(section.settings) ||
       {};
-
-    // Get feed type from section settings, default to "latest"
     const feedType = (sectionSettings.feedType as FeedType) || "latest";
-
-    // Get custom parameters from section settings
     const customParams = sectionSettings.feedParams || {};
-
-    // Use product feed hook
     const { data: feedData, isLoading } = useProductFeed(
       feedType,
       customParams
@@ -94,8 +85,12 @@ const SectionRenderers: Record<
   },
 
   content: ({ section }) => (
-    <div style={{ padding: "20px 40px" }}>
-      {section.title && <h2>{section.title}</h2>}
+    <div className="px-10 py-5">
+      {section.title && (
+        <h2 className="mb-4 text-2xl font-bold text-foreground">
+          {section.title}
+        </h2>
+      )}
       <div dangerouslySetInnerHTML={{ __html: section.content }} />
     </div>
   ),
@@ -116,13 +111,11 @@ const SectionRenderers: Record<
         }
       ]
     };
-
     return <VideoJS options={videoOptions} onReady={() => {}} />;
   },
 
   custom: ({ section }) => {
     const settings = parseSettings(section.settings);
-    // For custom sections, render based on settings or content
     if (settings.componentType === "featured") {
       return (
         <Featured
@@ -134,10 +127,13 @@ const SectionRenderers: Record<
     if (settings.componentType === "banner") {
       return <Banner data={settings.data || {}} />;
     }
-    // Default custom rendering
     return (
-      <div style={{ padding: "40px 0" }}>
-        {section.title && <h2>{section.title}</h2>}
+      <div className="py-10">
+        {section.title && (
+          <h2 className="mb-4 text-2xl font-bold text-foreground">
+            {section.title}
+          </h2>
+        )}
         <div dangerouslySetInnerHTML={{ __html: section.content }} />
       </div>
     );
@@ -145,10 +141,9 @@ const SectionRenderers: Record<
 
   features: ({ section }) => {
     const settings = parseSettings(section.settings);
-    const features = settings.features || [];
     return (
       <Features
-        features={features}
+        features={settings.features || []}
         title={section.title}
         content={section.content}
       />
@@ -157,14 +152,12 @@ const SectionRenderers: Record<
 
   testimonials: ({ section }) => {
     const settings = parseSettings(section.settings);
-    const testimonials = settings.testimonials || [];
-    const displayStyle = settings.display_style || "carousel";
     return (
       <Testimonials
-        testimonials={testimonials}
+        testimonials={settings.testimonials || []}
         title={section.title}
         content={section.content}
-        displayStyle={displayStyle}
+        displayStyle={settings.display_style || "carousel"}
       />
     );
   },
@@ -212,12 +205,12 @@ export const DynamicHome = () => {
     console.error("Homepage error:", error);
     return (
       <Layout>
-        <Content>
-          <div style={{ textAlign: "center", padding: "100px 20px" }}>
-            <h2>Unable to load page</h2>
-            <p>Please try again later.</p>
-          </div>
-        </Content>
+        <div className="px-5 py-24 text-center">
+          <h2 className="text-2xl font-bold text-foreground">
+            Unable to load page
+          </h2>
+          <p className="mt-2 text-muted-foreground">Please try again later.</p>
+        </div>
       </Layout>
     );
   }
@@ -227,18 +220,15 @@ export const DynamicHome = () => {
 
   return (
     <Layout>
-      <Content>
-        {/* Render dynamic sections */}
+      <div className="space-y-8">
         {sections.map((section) => {
           const Renderer = SectionRenderers[section.section_type];
-
           if (!Renderer) {
             console.warn(
               `No renderer found for section type: ${section.section_type}`
             );
             return null;
           }
-
           return (
             <div key={section.id} data-section-id={section.id}>
               <Renderer section={section} />
@@ -246,14 +236,13 @@ export const DynamicHome = () => {
           );
         })}
 
-        {/* Fallback if no sections */}
         {sections.length === 0 && (
-          <div style={{ textAlign: "center", padding: "100px 20px" }}>
-            <h2>Welcome</h2>
-            <p>Content coming soon...</p>
+          <div className="px-5 py-24 text-center">
+            <h2 className="text-2xl font-bold text-foreground">Welcome</h2>
+            <p className="mt-2 text-muted-foreground">Content coming soon...</p>
           </div>
         )}
-      </Content>
+      </div>
     </Layout>
   );
 };

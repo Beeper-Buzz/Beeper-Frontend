@@ -1,6 +1,5 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { Container, Content, ActionButton } from "./CallToAction.styles";
 
 export interface CallToActionProps {
   title?: string | null;
@@ -30,16 +29,35 @@ const CallToAction: React.FC<CallToActionProps> = ({
   };
 
   return (
-    <Container backgroundColor={backgroundColor} textColor={textColor}>
-      <Content>
-        {title && <h2>{title}</h2>}
-        {content && <div dangerouslySetInnerHTML={{ __html: content }} />}
-
-        {buttonText && (
-          <ActionButton onClick={handleClick}>{buttonText}</ActionButton>
+    <div
+      className="px-5 py-20 text-center sm:py-16"
+      style={{
+        background: backgroundColor || "hsl(var(--brand))",
+        color: textColor || "white"
+      }}
+    >
+      <div className="mx-auto max-w-[800px]">
+        {title && (
+          <h2 className="mb-4 text-[2.5rem] font-bold sm:text-[1.75rem]">
+            {title}
+          </h2>
         )}
-      </Content>
-    </Container>
+        {content && (
+          <div
+            className="mb-8 text-lg leading-relaxed sm:text-base [&_p]:mb-8 [&_p]:text-lg [&_p]:leading-relaxed sm:[&_p]:text-base"
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+        )}
+        {buttonText && (
+          <button
+            onClick={handleClick}
+            className="mt-4 rounded bg-white px-10 py-4 text-lg font-semibold text-brand transition-all hover:-translate-y-0.5 hover:shadow-lg sm:w-full sm:max-w-[300px]"
+          >
+            {buttonText}
+          </button>
+        )}
+      </div>
+    </div>
   );
 };
 

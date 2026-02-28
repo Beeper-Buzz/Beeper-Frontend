@@ -1,12 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
-import { Layout } from "../components";
-import {
-  NotFoundContainer,
-  NotFoundTitle,
-  NotFoundSubtitle
-} from "./FourOhFour.styles";
 
 const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 
@@ -30,17 +24,15 @@ export const FourOhFour = () => {
   );
 
   return (
-    <Layout>
-      <NotFoundContainer>
-        <Lottie
-          options={animationOptions}
-          width={300}
-          height={300}
-          style={{ pointerEvents: "none" }}
-        />
-        <NotFoundTitle>404</NotFoundTitle>
-        <NotFoundSubtitle>Whoops, keep looking...</NotFoundSubtitle>
-      </NotFoundContainer>
-    </Layout>
+    <>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center px-5 text-center">
+        <h1 className="mb-4 font-title text-8xl font-black tracking-tight text-brand">
+          404
+        </h1>
+        <p className="font-body text-lg text-muted-foreground">
+          Whoops, keep looking...
+        </p>
+      </div>
+    </>
   );
 };
