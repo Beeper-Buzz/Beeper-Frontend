@@ -6,6 +6,16 @@ interface AnimatedLogoProps {
   className?: string;
 }
 
+// Per-letter animation config matching BeeperNative stagger pattern
+const letterAnimConfig = [
+  { duration: 3800, delay: 0 },     // B
+  { duration: 4200, delay: 400 },   // E
+  { duration: 4600, delay: 800 },   // E
+  { duration: 4000, delay: 200 },   // P
+  { duration: 4400, delay: 600 },   // E
+  { duration: 3600, delay: 900 },   // R
+];
+
 // Individual letter/element paths with stagger delays
 const letterPaths = [
   {
@@ -45,55 +55,15 @@ const letterPaths = [
   }
 ];
 
-// Tagline paths
-const taglinePaths = [
-  {
-    d: "M351.4,127.3v-2.1h-5.2c0.1,0.8-0.2,1.6-0.8,2c-0.7,0.5-1.2,0.4-2,0.4H337c-0.5,0-1.7-0.3-2.1-0.8c-0.6-0.7-0.7-1.3-0.7-2.2v-3.9c0-0.8,0.3-1.4,1-1.8c0.7-0.4,1.8-0.4,2.3-0.4h5.9c0.8,0,1.5,0,2,0.5c0.5,0.4,0.5,0.9,0.5,1.6h5.2v-1.1c0-2-0.4-3.5-2.1-4.6c-0.9-0.6-3.9-0.7-4.3-0.7h-8.4c-1,0-4.1,0-5.6,1.2c-1.7,1.2-1.9,3.8-1.9,5.5v4c0,2.3,0.3,4.7,1.6,5.6c1.8,1.4,3.3,1.6,5.6,1.6h7.9c2.2,0,3.8,0.2,5.6-0.9C351,130.1,351.4,128.9,351.4,127.3z",
-    delay: 700
-  },
-  { d: "M326,132.1v-17.9h-5.7v17.9H326z", delay: 750 },
-  {
-    d: "M317.5,127.3v-1.2c0-1.5-0.4-3.3-1.8-4.2c-0.8-0.5-2.3-0.7-3.8-0.7l-8.8-0.2c-0.4,0-0.8,0-1.1-0.2c-0.3-0.2-0.4-0.6-0.4-1v-0.3c0-0.5,0.2-0.8,0.6-1.1c0.4-0.3,0.8-0.3,1.3-0.3h6.9c0.4,0,0.7,0,1,0.3c0.2,0.2,0.5,0.5,0.5,0.8v0.7h5v-1.1c0-1.1-0.2-1.8-0.7-2.7c-0.9-1.6-4.3-2-6.3-2h-6.9c-1.7,0-3.6,0.1-4.8,0.8c-1.7,1.1-1.9,2.6-1.9,4.5v1c0,0.6,0.1,2.3,1.4,3.5c0.9,0.8,2.6,1,4.3,1l7.8,0.1c0.7,0,1.5,0,1.9,0.2c0.5,0.3,0.7,0.7,0.7,1.2v0.5c0,0.3-0.1,0.6-0.4,0.9c-0.5,0.4-1.1,0.4-1.8,0.4h-6.9c-0.6,0-1.1-0.1-1.5-0.5c-0.2-0.3-0.3-0.6-0.3-1v-0.5h-5.1v2.4c0,0.8,0.5,2,1.4,2.7c0.9,0.6,2.7,0.8,4.5,0.8h7.9c0.8,0,4.4,0.2,5.9-1.5C317.2,129.6,317.5,128.7,317.5,127.3z",
-    delay: 800
-  },
-  {
-    d: "M294.2,125.9v-11.8h-5.4v11.2c0,0.7-0.2,1.4-0.7,1.8c-0.8,0.6-1.4,0.6-2.4,0.6H280c-0.9,0-1.8-0.1-2.3-0.9c-0.5-0.6-0.5-1.2-0.5-1.9v-10.8h-5.6v11.3c0,1.2,0.4,3.6,1.9,5c1.6,1.5,4.2,1.6,5.5,1.6h7c0.9,0,5.2,0.2,6.9-1.9C293.9,128.9,294.2,127.7,294.2,125.9z",
-    delay: 850
-  },
-  {
-    d: "M269.3,132.1v-17.9h-9.6l-4.9,11.7l-5.1-11.7h-9.7v17.9h5.8v-13.5l7,13.5h4.2l6.8-13.7v13.7H269.3z",
-    delay: 900
-  },
-  {
-    d: "M229.8,132.1v-17.9h-6v6.2h-11.6v-6.2h-5.9v17.9h5.9v-6.5h11.6v6.5H229.8z",
-    delay: 950
-  },
-  { d: "M204.5,118.7v-4.5h-21.1v4.5h7.7v13.3h5.9v-13.3H204.5z", delay: 1000 },
-  { d: "M181.1,132.1v-17.9h-5.7v17.9H181.1z", delay: 1050 },
-  {
-    d: "M173.1,114.2h-6l-5,14.2l-4.3-14.2h-6.3l-4.2,14.2l-5.3-14.2h-5.6l6.8,17.9h8.4l3.2-12.5l3.3,12.5h8.3L173.1,114.2z",
-    delay: 1100
-  },
-  {
-    d: "M127.3,114.2h-7.6l-5.9,7.5l-5.8-7.5h-7.5l10.2,11.6v6.3h6.2v-6.4L127.3,114.2z",
-    delay: 1150
-  },
-  {
-    d: "M99.4,132.1l-9.7-17.9h-7.9l-9.5,17.9h6.3l1.5-3.2h11.1l1.8,3.2H99.4z M89.3,124.9h-7.2l3.6-7L89.3,124.9z",
-    delay: 1200
-  },
-  { d: "M71.1,132.1v-4.7H58.9v-13.2h-5.5v17.9H71.1z", delay: 1250 },
-  {
-    d: "M51.2,120.8c0-2.5,0-4.8-2.2-6c-1.2-0.7-2.2-0.7-3.5-0.7H30.1v17.9h5.5v-4.7h8.6c2,0,3.9,0.1,5.2-0.7C51.1,125.4,51.2,123.2,51.2,120.8z M45.7,121.3c0,0.5-0.1,0.9-0.4,1.2c-0.5,0.5-1.1,0.4-1.7,0.4h-8v-4.4h7.9c0.5,0,1.3,0,1.8,0.4c0.5,0.3,0.5,0.7,0.5,1.3V121.3z",
-    delay: 1300
-  }
-];
+// Legacy tagline SVG paths preserved for reference (replaced by text element)
+// const taglinePaths = [...]; // Original "PLAY WITH MUSIC" vector outlines
 
 export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
   showTagline = false,
   className
 }) => {
-  const viewBox = showTagline ? "0 0 385 165" : "0 0 385 127";
+  // Always show tagline: expand viewBox to accommodate it plus the text tagline below
+  const viewBox = "0 0 385 165";
 
   return (
     <svg
@@ -107,9 +77,12 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
       xmlSpace="preserve"
       className={className}
     >
-      <style type="text/css">
-        {`.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#CECECE;}`}
-      </style>
+      <defs>
+        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#fffb00" />
+          <stop offset="100%" stopColor="#ffb300" />
+        </linearGradient>
+      </defs>
 
       {/* Main logo letters */}
       {letterPaths.map((letter, index) => (
@@ -117,19 +90,24 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
           key={index}
           d={letter.d}
           className={letter.class}
-          delay={letter.delay}
+          delay={index < 6 ? letterAnimConfig[index].delay : letter.delay}
+          duration={index < 6 ? letterAnimConfig[index].duration : 3000}
         />
       ))}
 
-      {/* Tagline (conditional) */}
-      {showTagline &&
-        taglinePaths.map((path, index) => (
-          <AnimatedPath
-            key={`tagline-${index}`}
-            d={path.d}
-            delay={path.delay}
-          />
-        ))}
+      {/* Tagline "PLAY WITH MUSIC" — rendered as text for clean styling */}
+      <text
+        x="192.5"
+        y="148"
+        textAnchor="middle"
+        fill="white"
+        fontFamily="'IBM Plex Mono', 'ibmplexmono_body_mono_semibold', monospace"
+        fontSize="12"
+        letterSpacing="0.15em"
+        style={{ textTransform: "uppercase" } as any}
+      >
+        PLAY WITH MUSIC
+      </text>
     </svg>
   );
 };
@@ -139,15 +117,21 @@ interface AnimatedPathProps {
   d: string;
   className?: string;
   delay: number;
+  duration?: number;
 }
 
-const AnimatedPath: React.FC<AnimatedPathProps> = ({ d, className, delay }) => {
+const AnimatedPath: React.FC<AnimatedPathProps> = ({
+  d,
+  className,
+  delay,
+  duration = 3000
+}) => {
   const animation = useSpring({
     from: { y: 0 },
     to: { y: 1 },
     loop: true,
     config: {
-      duration: 2000
+      duration
     },
     delay
   });
@@ -165,8 +149,8 @@ const AnimatedPath: React.FC<AnimatedPathProps> = ({ d, className, delay }) => {
   return (
     <animated.path
       d={d}
-      fill={isFilled ? "#E9C86F" : "none"}
-      stroke={isFilled ? "none" : "#E9C86F"}
+      fill={isFilled ? "url(#logoGradient)" : "none"}
+      stroke={isFilled ? "none" : "url(#logoGradient)"}
       strokeWidth={isFilled ? "0" : "0.5"}
       fillRule={isFilled ? "evenodd" : undefined}
       clipRule={isFilled ? "evenodd" : undefined}

@@ -22,31 +22,17 @@ export const LogoBlob = ({
   const [open, toggle] = useState(false);
   const [active, setActive] = useState(false);
 
-  const [{ freq, factor, scale, opacity }] = useSpring(() => ({
-    reverse: open,
-    from: { factor: 10, opacity: 0, scale: 0.9, freq: "0.1, 0.0" },
-    to: { factor: 150, opacity: 1, scale: 1, freq: "0.0, 0.0" },
-    config: { duration: 3000 }
-  }));
-
   const { x } = useSpring({
     config: {
-      loop: true,
-      duration: 2800,
-      clamp: true,
-      delay: 0
+      duration: 16000
     },
-    x: active ? 1 : 0,
-    // loop: true,
-    native: true
-    // reverse: false
-    // reset: true
+    x: active ? 1 : 0
   });
 
   useEffect(() => {
     const id = setTimeout(() => {
       setActive(!active);
-    }, 2800);
+    }, 16000);
 
     return () => clearTimeout(id);
   }, [active]);
@@ -54,10 +40,6 @@ export const LogoBlob = ({
   useEffect(() => {
     setActive(true);
   }, []);
-
-  const AnimFeTurbulence = animated("feTurbulence");
-  const AnimFeDisplacementMap = animated("feDisplacementMap");
-  const AnimFeGaussianBlur = animated("feGaussianBlur");
 
   const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH || "";
 
@@ -79,47 +61,17 @@ export const LogoBlob = ({
             width="220px"
             onClick={() => setActive(!active)}
           >
-            <defs>
-              <filter id="water">
-                <AnimFeTurbulence
-                  type="fractalNoise"
-                  baseFrequency={freq}
-                  numOctaves="2"
-                  result="TURB"
-                  seed="8"
-                />
-                <AnimFeDisplacementMap
-                  xChannelSelector="R"
-                  yChannelSelector="G"
-                  in="SourceGraphic"
-                  in2="TURB"
-                  result="DISP"
-                  scale={factor}
-                />
-              </filter>
-              <filter id="blur">
-                <AnimFeGaussianBlur stdDeviation="3"></AnimFeGaussianBlur>
-              </filter>
-            </defs>
-            <g filter="url(#blur)" transform="translate(100 100)">
+            <g transform="translate(100 100)">
               <animated.path
-                stroke="hotpink"
-                stroke-width="10"
-                fill="#9C1F60"
+                stroke="#ff008a"
+                strokeWidth="10"
+                fill="#7c3aed"
                 d={x.to({
                   range: [0, 0.33, 0.66, 1],
                   output: [blob1, blob2, blob3, blob4]
                 })}
                 style={{
-                  transform: "translate(100, 100)",
-                  opacity: x.to({
-                    range: [0, 0.33, 0.66, 1],
-                    output: [0.33, 0.22, 0.22, 0.33]
-                  }),
-                  fill: x.to({
-                    range: [0, 0.5, 1],
-                    output: ["#fdeae7", "#d3eacf", "#eae7fd"]
-                  })
+                  transform: "translate(100, 100)"
                 }}
               />
             </g>
@@ -149,47 +101,17 @@ export const LogoBlob = ({
           width="220px"
           onClick={() => setActive(!active)}
         >
-          <defs>
-            <filter id="water">
-              <AnimFeTurbulence
-                type="fractalNoise"
-                baseFrequency={freq}
-                numOctaves="2"
-                result="TURB"
-                seed="8"
-              />
-              <AnimFeDisplacementMap
-                xChannelSelector="R"
-                yChannelSelector="G"
-                in="SourceGraphic"
-                in2="TURB"
-                result="DISP"
-                scale={factor}
-              />
-            </filter>
-            <filter id="blur">
-              <AnimFeGaussianBlur stdDeviation="3"></AnimFeGaussianBlur>
-            </filter>
-          </defs>
-          <g filter="url(#blur)" transform="translate(100 100)">
+          <g transform="translate(100 100)">
             <animated.path
-              stroke="hotpink"
-              stroke-width="10"
-              fill="#9C1F60"
+              stroke="#ff008a"
+              strokeWidth="10"
+              fill="#7c3aed"
               d={x.to({
                 range: [0, 0.33, 0.66, 1],
                 output: [blob1, blob2, blob3, blob4]
               })}
               style={{
-                transform: "translate(100, 100)",
-                opacity: x.to({
-                  range: [0, 0.33, 0.66, 1],
-                  output: [0.33, 0.22, 0.22, 0.33]
-                }),
-                fill: x.to({
-                  range: [0, 0.5, 1],
-                  output: ["#fdeae7", "#d3eacf", "#eae7fd"]
-                })
+                transform: "translate(100, 100)"
               }}
             />
           </g>
