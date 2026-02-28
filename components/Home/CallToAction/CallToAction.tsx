@@ -51,7 +51,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
         {buttonText && (
           <button
             onClick={handleClick}
-            className="mt-4 rounded bg-white px-10 py-4 text-lg font-semibold text-brand transition-all hover:-translate-y-0.5 hover:shadow-lg sm:w-full sm:max-w-[300px]"
+            className="mt-4 rounded bg-white px-10 py-4 text-lg font-semibold text-neon-cyan transition-all hover:-translate-y-0.5 hover:shadow-lg sm:w-full sm:max-w-[300px]"
           >
             {buttonText}
           </button>

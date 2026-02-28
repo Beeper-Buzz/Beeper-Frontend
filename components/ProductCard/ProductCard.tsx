@@ -73,8 +73,8 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
             "absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border-none backdrop-blur-sm transition-all duration-200",
             "hover:scale-110 active:scale-95",
             isFavorited
-              ? "bg-brand/90 text-white"
-              : "bg-background/80 text-muted-foreground hover:bg-background/95 hover:text-brand"
+              ? "bg-neon-cyan/90 text-black"
+              : "bg-surface-deep/80 text-white/50 hover:bg-surface-deep/95 hover:text-neon-cyan"
           )}
           aria-label={
             isFavorited ? "Remove from favorites" : "Add to favorites"
@@ -94,7 +94,7 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
                 quantity: 1
               });
             }}
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-brand px-4 py-2.5 font-title text-sm font-medium text-white transition-colors hover:bg-brand/90"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-neon-cyan px-4 py-2.5 font-title text-sm font-medium text-black transition-colors hover:bg-neon-cyan/90"
           >
             <ShoppingCart className="h-4 w-4" />
             Add to Cart
@@ -105,7 +105,7 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
       {/* Footer */}
       <div className="mt-3 flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <h4 className="truncate font-title text-sm text-foreground">
+          <h4 className="truncate font-title text-sm text-white">
             {item.attributes.name}
           </h4>
           {/* Color Swatches */}
@@ -114,7 +114,7 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
               {opts.map((opt: any, index: number) => (
                 <span
                   key={`color-${index}`}
-                  className="h-3 w-3 rounded-full border border-border"
+                  className="h-3 w-3 rounded-full border border-glass-border"
                   style={{ backgroundColor: opt?.attributes?.presentation }}
                 />
               ))}
@@ -122,7 +122,7 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
           )}
         </div>
         <div className="flex flex-col items-end">
-          <span className="font-title text-sm font-semibold text-foreground">
+          <span className="font-title text-sm font-semibold text-white">
             ${item.attributes.price}
           </span>
         </div>

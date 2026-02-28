@@ -59,7 +59,7 @@ export const ProductMiniCard: React.FC<ProductMiniCardProps> = ({
           <button
             onClick={handleAddToCart}
             disabled={addToCart.isLoading}
-            className="absolute inset-x-0 bottom-0 flex items-center justify-center bg-brand/90 py-1.5 font-mono-semibold text-[9px] uppercase tracking-widest text-white opacity-0 backdrop-blur-sm transition-all group-hover:opacity-100 active:bg-brand disabled:opacity-50"
+            className="absolute inset-x-0 bottom-0 flex items-center justify-center bg-neon-cyan/90 py-1.5 font-mono-semibold text-[9px] uppercase tracking-widest text-black opacity-0 backdrop-blur-sm transition-all group-hover:opacity-100 active:bg-neon-cyan disabled:opacity-50"
           >
             {addToCart.isLoading ? "..." : "+ Add"}
           </button>
@@ -70,7 +70,7 @@ export const ProductMiniCard: React.FC<ProductMiniCardProps> = ({
           <h4 className="m-0 line-clamp-1 font-body text-[11px] leading-tight text-white/70">
             {product.attributes.name}
           </h4>
-          <span className="font-mono-bold text-[13px] text-brand">
+          <span className="font-mono-bold text-[13px] text-neon-cyan">
             ${product.attributes.price}
           </span>
         </div>
@@ -104,7 +104,7 @@ export const ProductMiniCard: React.FC<ProductMiniCardProps> = ({
           </h4>
         </div>
         <div className="flex items-center justify-between gap-2">
-          <span className="font-mono-bold text-[14px] text-brand">
+          <span className="font-mono-bold text-[14px] text-neon-cyan">
             ${product.attributes.price}
           </span>
           <button
@@ -114,7 +114,7 @@ export const ProductMiniCard: React.FC<ProductMiniCardProps> = ({
               "rounded-full px-3 py-1 font-mono-semibold text-[10px] uppercase tracking-wider transition-all active:scale-90",
               addToCart.isLoading
                 ? "bg-white/10 text-white/30"
-                : "bg-brand/15 text-brand hover:bg-brand/25"
+                : "bg-neon-cyan/15 text-neon-cyan hover:bg-neon-cyan/25"
             )}
           >
             {addToCart.isLoading ? "..." : "+ Cart"}

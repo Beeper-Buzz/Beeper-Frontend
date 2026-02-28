@@ -350,12 +350,12 @@ export const Browse: React.FC = () => {
   const FilterContent = () => (
     <>
       {/* Search */}
-      <div className="mb-6 border-b border-border/30 pb-6">
-        <h3 className="mb-3 font-title text-sm font-semibold text-foreground">
+      <div className="mb-6 border-b border-glass-border pb-6">
+        <h3 className="mb-3 font-title text-sm font-semibold text-white">
           Search
         </h3>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
           <input
             type="text"
             placeholder="Search products..."
@@ -363,28 +363,28 @@ export const Browse: React.FC = () => {
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, search: e.target.value }))
             }
-            className="w-full rounded-lg border border-border bg-background py-2.5 pl-10 pr-3 font-body text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            className="w-full rounded-lg border border-glass-border bg-surface-deep py-2.5 pl-10 pr-3 font-body text-sm text-white placeholder:text-white/50 transition-colors focus:border-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-cyan/20"
           />
         </div>
       </div>
 
       {/* Categories */}
       {availableCategories.length > 0 && (
-        <div className="mb-6 border-b border-border/30 pb-6">
-          <h3 className="mb-3 font-title text-sm font-semibold text-foreground">
+        <div className="mb-6 border-b border-glass-border pb-6">
+          <h3 className="mb-3 font-title text-sm font-semibold text-white">
             Categories
           </h3>
           <div className="space-y-2.5">
             {availableCategories.map((category) => (
               <label
                 key={category}
-                className="flex cursor-pointer select-none items-center gap-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="flex cursor-pointer select-none items-center gap-2.5 text-sm text-white/50 transition-colors hover:text-white"
               >
                 <input
                   type="checkbox"
                   checked={filters.categories.includes(category)}
                   onChange={() => handleCategoryToggle(category)}
-                  className="h-4 w-4 cursor-pointer rounded border-border accent-brand"
+                  className="h-4 w-4 cursor-pointer rounded border-glass-border accent-neon-cyan"
                 />
                 {category}
               </label>
@@ -395,7 +395,7 @@ export const Browse: React.FC = () => {
 
       {/* Price Range */}
       <div className="mb-6">
-        <h3 className="mb-3 font-title text-sm font-semibold text-foreground">
+        <h3 className="mb-3 font-title text-sm font-semibold text-white">
           Price Range
         </h3>
         <div className="mb-3 flex items-center gap-2">
@@ -406,9 +406,9 @@ export const Browse: React.FC = () => {
             onChange={(e) => setTempPriceMin(e.target.value)}
             min="0"
             step="0.01"
-            className="w-full flex-1 rounded-lg border border-border bg-background px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-full flex-1 rounded-lg border border-glass-border bg-surface-deep px-3 py-2 font-body text-sm text-white placeholder:text-white/50 transition-colors focus:border-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-cyan/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
-          <span className="text-muted-foreground">-</span>
+          <span className="text-white/50">-</span>
           <input
             type="number"
             placeholder="Max"
@@ -416,12 +416,12 @@ export const Browse: React.FC = () => {
             onChange={(e) => setTempPriceMax(e.target.value)}
             min="0"
             step="0.01"
-            className="w-full flex-1 rounded-lg border border-border bg-background px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-full flex-1 rounded-lg border border-glass-border bg-surface-deep px-3 py-2 font-body text-sm text-white placeholder:text-white/50 transition-colors focus:border-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-cyan/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
         </div>
         <button
           onClick={handleApplyPrice}
-          className="w-full rounded-lg bg-brand px-4 py-2 font-title text-sm font-semibold text-white transition-all hover:bg-brand/90 hover:-translate-y-px active:translate-y-0"
+          className="w-full rounded-lg bg-neon-cyan px-4 py-2 font-title text-sm font-semibold text-black transition-all hover:bg-neon-cyan/90 hover:-translate-y-px active:translate-y-0"
         >
           Apply
         </button>
@@ -431,7 +431,7 @@ export const Browse: React.FC = () => {
       {hasActiveFilters && (
         <button
           onClick={handleClearFilters}
-          className="mt-2 w-full rounded-lg border border-brand bg-transparent px-4 py-2.5 font-title text-sm font-semibold text-brand transition-all hover:bg-brand hover:text-white hover:-translate-y-px active:translate-y-0"
+          className="mt-2 w-full rounded-lg border border-neon-cyan bg-transparent px-4 py-2.5 font-title text-sm font-semibold text-neon-cyan transition-all hover:bg-neon-cyan hover:text-black hover:-translate-y-px active:translate-y-0"
         >
           Clear All Filters
         </button>
@@ -449,7 +449,7 @@ export const Browse: React.FC = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen w-full bg-background px-5 py-10 sm:px-5 md:px-10">
+      <div className="min-h-screen w-full bg-surface-deep px-5 py-10 sm:px-5 md:px-10">
         <div className="mx-auto max-w-[1400px]">
           {/* Page header */}
           <motion.div
@@ -528,12 +528,12 @@ export const Browse: React.FC = () => {
                 {/* Mobile Filter Toggle */}
                 <button
                   onClick={() => setShowMobileFilters(!showMobileFilters)}
-                  className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 font-title text-sm text-foreground md:hidden"
+                  className="flex items-center gap-2 rounded-lg border border-glass-border glass-panel px-4 py-3 font-title text-sm text-white md:hidden"
                 >
                   <SlidersHorizontal className="h-4 w-4" />
                   Filters
                   {hasActiveFilters && (
-                    <span className="ml-auto rounded-full bg-brand px-2 py-0.5 text-xs text-white">
+                    <span className="ml-auto rounded-full bg-neon-cyan px-2 py-0.5 text-xs text-black">
                       {filters.categories.length +
                         (filters.priceMin ? 1 : 0) +
                         (filters.priceMax ? 1 : 0) +
@@ -543,19 +543,19 @@ export const Browse: React.FC = () => {
                 </button>
 
                 {/* Desktop sidebar */}
-                <aside className="sticky top-24 hidden h-fit rounded-xl border border-border/30 bg-card p-6 shadow-sm md:block">
+                <aside className="sticky top-24 hidden h-fit rounded-xl border border-glass-border glass-panel p-6 shadow-sm md:block">
                   <FilterContent />
                 </aside>
 
                 {/* Mobile sidebar */}
                 {showMobileFilters && (
-                  <div className="rounded-xl border border-border/30 bg-card p-6 shadow-sm md:hidden">
+                  <div className="rounded-xl border border-glass-border glass-panel p-6 shadow-sm md:hidden">
                     <div className="mb-4 flex items-center justify-between">
                       <h2 className="font-title text-base font-semibold">
                         Filters
                       </h2>
                       <button onClick={() => setShowMobileFilters(false)}>
-                        <X className="h-5 w-5 text-muted-foreground" />
+                        <X className="h-5 w-5 text-white/50" />
                       </button>
                     </div>
                     <FilterContent />
@@ -568,12 +568,12 @@ export const Browse: React.FC = () => {
             <main className="min-h-[400px]">
               {/* Sort bar */}
               <div className="mb-6 flex flex-col items-start justify-between gap-3 glass-panel px-5 py-4 sm:flex-row sm:items-center">
-                <span className="font-title text-sm font-semibold text-foreground">
+                <span className="font-title text-sm font-semibold text-white">
                   {productCount}{" "}
                   {productCount === 1 ? "product" : "products"}
                 </span>
                 <div className="flex items-center gap-2.5">
-                  <span className="font-body text-sm text-muted-foreground">
+                  <span className="font-body text-sm text-white/50">
                     Sort by:
                   </span>
                   <select
@@ -675,16 +675,16 @@ const EmptyState: React.FC<{
   onClear: () => void;
 }> = ({ hasActiveFilters, onClear }) => (
   <div className="glass-panel flex flex-col items-center justify-center px-5 py-20 text-center">
-    <h2 className="mb-3 font-title text-lg text-foreground">
+    <h2 className="mb-3 font-title text-lg text-white">
       No products found
     </h2>
-    <p className="mb-6 font-body text-sm text-muted-foreground">
+    <p className="mb-6 font-body text-sm text-white/50">
       Try adjusting your filters or search terms
     </p>
     {hasActiveFilters && (
       <button
         onClick={onClear}
-        className="rounded-lg border border-brand bg-transparent px-6 py-2.5 font-title text-sm font-semibold text-brand transition-all hover:bg-brand hover:text-white"
+        className="rounded-lg border border-neon-cyan bg-transparent px-6 py-2.5 font-title text-sm font-semibold text-neon-cyan transition-all hover:bg-neon-cyan hover:text-black"
       >
         Clear All Filters
       </button>
