@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './synthwave.css';
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -54,6 +56,9 @@
 
   body {
     @apply bg-background text-foreground;
+    background: linear-gradient(180deg, #0A0020 0%, #000000 100%);
+    min-height: 100vh;
+    color: #e0e0e0;
     margin: 0;
     padding: 0;
     width: 100%;
