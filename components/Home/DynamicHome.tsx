@@ -14,6 +14,9 @@ import { Newsletter } from "./Newsletter";
 import { CallToAction } from "./CallToAction";
 import { useStreams } from "@hooks/useStreams";
 import { useProductFeed, FeedType } from "@hooks/useProductFeed";
+import { LogoBlob } from "../LogoBlob/LogoBlob";
+import { ShopMarketplaceSplit } from "./ShopMarketplaceSplit";
+import { SpecsGrid } from "./SpecsGrid";
 
 // Utility to parse settings (handles Ruby hash string or object)
 function parseSettings(settings: any): any {
@@ -31,7 +34,7 @@ function parseSettings(settings: any): any {
   return settings || {};
 }
 
-// Section renderers for each type
+// Section renderers for each type (used for CMS-driven sections)
 const SectionRenderers: Record<
   string,
   React.FC<{ section: HomepageSection; additionalData?: any }>
@@ -203,43 +206,52 @@ export const DynamicHome = () => {
 
   if (error) {
     console.error("Homepage error:", error);
-    return (
-      <Layout>
-        <div className="px-5 py-24 text-center">
-          <h2 className="text-2xl font-bold text-foreground">
-            Unable to load page
-          </h2>
-          <p className="mt-2 text-muted-foreground">Please try again later.</p>
-        </div>
-      </Layout>
-    );
   }
 
-  const sections =
+  // CMS-driven sections (if any)
+  const cmsSections =
     homepageData?.homepage_sections?.filter((s) => s.is_visible) || [];
 
   return (
     <Layout>
-      <div className="space-y-8">
-        {sections.map((section) => {
-          const Renderer = SectionRenderers[section.section_type];
-          if (!Renderer) {
-            console.warn(
-              `No renderer found for section type: ${section.section_type}`
-            );
-            return null;
-          }
-          return (
-            <div key={section.id} data-section-id={section.id}>
-              <Renderer section={section} />
-            </div>
-          );
-        })}
+      <div className="min-h-screen bg-surface-void">
+        {/* 0. LogoBlob Hero */}
+        <section className="flex items-center justify-center py-16 md:py-20">
+          <LogoBlob hasBlob isAnimated={true} showTagline={true} />
+        </section>
 
-        {sections.length === 0 && (
-          <div className="px-5 py-24 text-center">
-            <h2 className="text-2xl font-bold text-foreground">Welcome</h2>
-            <p className="mt-2 text-muted-foreground">Content coming soon...</p>
+        {/* 1. Hero Section -- Beeper Delta 8 */}
+        <Hero />
+
+        {/* 2. Featured Products Strip */}
+        <Featured />
+
+        {/* 3. Shop / Marketplace Split */}
+        <ShopMarketplaceSplit />
+
+        {/* 4. Specs Grid */}
+        <SpecsGrid />
+
+        {/* 5. Newsletter CTA */}
+        <Newsletter />
+
+        {/* CMS-driven sections (from Spree) rendered below */}
+        {cmsSections.length > 0 && (
+          <div className="space-y-8 py-8">
+            {cmsSections.map((section) => {
+              const Renderer = SectionRenderers[section.section_type];
+              if (!Renderer) {
+                console.warn(
+                  `No renderer found for section type: ${section.section_type}`
+                );
+                return null;
+              }
+              return (
+                <div key={section.id} data-section-id={section.id}>
+                  <Renderer section={section} />
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
