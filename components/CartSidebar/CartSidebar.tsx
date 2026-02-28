@@ -164,17 +164,22 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
         return (
           <div
             key={lineItemRef.id || `cart-item-${index}`}
-            className="flex items-center justify-between border-b border-border/30 py-3"
+            className="glass-panel mb-2 flex items-center justify-between px-4 py-3"
           >
-            <span className="flex-1 font-body text-sm text-foreground">
-              {product?.attributes?.name} - ${product?.attributes?.price}
-            </span>
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate font-title text-xs text-white">
+                {product?.attributes?.name}
+              </span>
+              <span className="font-title text-xs text-neon-cyan">
+                ${product?.attributes?.price}
+              </span>
+            </div>
             <div className="flex items-center gap-1">
               <button
                 onClick={() =>
                   handleUpdateItemQuantity(lineItemRef.id, quantity - 1)
                 }
-                className="flex h-7 w-7 items-center justify-center rounded border border-border bg-transparent text-foreground transition-colors hover:bg-muted"
+                className="glass-panel flex h-6 w-6 items-center justify-center !rounded text-white transition-colors hover:text-neon-cyan"
               >
                 <Minus className="h-3 w-3" />
               </button>
@@ -187,19 +192,19 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
                     handleUpdateItemQuantity(lineItemRef.id, newQty);
                   }
                 }}
-                className="w-10 border-none bg-transparent text-center font-body text-sm text-foreground outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="w-8 border-none bg-transparent text-center font-title text-xs text-white outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
               <button
                 onClick={() =>
                   handleUpdateItemQuantity(lineItemRef.id, quantity + 1)
                 }
-                className="flex h-7 w-7 items-center justify-center rounded border border-border bg-transparent text-foreground transition-colors hover:bg-muted"
+                className="glass-panel flex h-6 w-6 items-center justify-center !rounded text-white transition-colors hover:text-neon-cyan"
               >
                 <Plus className="h-3 w-3" />
               </button>
               <button
                 onClick={() => handleRemoveItem(lineItemRef.id)}
-                className="ml-1 flex h-7 w-7 items-center justify-center rounded border-none bg-transparent text-destructive transition-colors hover:bg-destructive/10"
+                className="ml-1 flex h-6 w-6 items-center justify-center rounded border-none bg-transparent text-white/40 transition-colors hover:text-neon-pink"
                 title="Remove item"
               >
                 <X className="h-3 w-3" />
@@ -223,39 +228,51 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
     <Sheet open={isVisible} onOpenChange={toggle}>
       <SheetTrigger asChild>
         <button
-          className="cursor-pointer border-none bg-transparent p-1 text-foreground transition-colors hover:text-brand outline-none"
+          className="cursor-pointer border-none bg-transparent p-1 text-white transition-colors hover:text-neon-cyan outline-none"
           aria-label="Open cart"
         >
           <ShoppingCart className="h-5 w-5" />
         </button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[360px] max-w-[90vw] p-0">
-        <SheetHeader className="border-b border-border/30 px-6 py-4">
-          <SheetTitle className="font-title text-lg">Cart</SheetTitle>
+      <SheetContent
+        side="right"
+        className="w-[360px] max-w-[90vw] border-l border-glass-border p-0"
+        style={{
+          background: "rgba(10, 0, 32, 0.95)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)"
+        }}
+      >
+        <SheetHeader className="border-b border-glass-border px-6 py-4">
+          <div className="flex items-center justify-between">
+            <SheetTitle className="neon-text-cyan font-pressstart text-xs">
+              Cart
+            </SheetTitle>
+          </div>
         </SheetHeader>
 
         <ScrollArea className="h-[calc(100vh-80px)]">
-          <div className="px-6 py-4">
+          <div className="px-4 py-4">
             {cartIsLoading ? (
               <div className="flex min-h-[200px] items-center justify-center">
                 <Loading />
               </div>
             ) : cartHasError ? (
-              <p className="text-center font-body text-sm text-muted-foreground">
+              <p className="text-center font-title text-sm text-white/40">
                 Cart Error
               </p>
             ) : (
               <>
                 {/* Item count & empty cart */}
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="font-body text-sm text-muted-foreground">
+                  <span className="font-title text-xs text-white/50">
                     {item_count} {item_count > 1 ? "items" : "item"} in your
                     cart
                   </span>
                   {item_count > 0 && (
                     <button
                       onClick={handleEmptyCart}
-                      className="flex items-center gap-1 rounded border border-destructive/30 bg-transparent px-2.5 py-1 font-body text-xs text-destructive transition-colors hover:bg-destructive/10"
+                      className="flex items-center gap-1 rounded border border-neon-pink/30 bg-transparent px-2 py-1 font-title text-[10px] text-neon-pink transition-colors hover:bg-neon-pink/10"
                     >
                       <Trash2 className="h-3 w-3" />
                       Empty
@@ -267,78 +284,75 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
                 <div>{renderCartItems()}</div>
 
                 {/* Totals */}
-                <div className="mt-4 space-y-2 border-t border-border/30 pt-4">
-                  <div className="flex justify-between font-body text-sm">
-                    <span className="text-muted-foreground">Subtotal:</span>
-                    <span className="font-semibold text-foreground">
+                <div className="glass-panel mt-4 space-y-2 p-4">
+                  <div className="flex justify-between font-title text-xs">
+                    <span className="text-white/50">Subtotal:</span>
+                    <span className="font-semibold text-white">
                       {display_item_total}
                     </span>
                   </div>
-                  <div className="flex justify-between font-body text-sm">
-                    <span className="text-muted-foreground">Tax:</span>
-                    <span className="text-foreground">
+                  <div className="flex justify-between font-title text-xs">
+                    <span className="text-white/50">Tax:</span>
+                    <span className="text-white">
                       {included_tax_total}
                     </span>
                   </div>
-                  <div className="flex justify-between font-title text-base font-bold">
-                    <span>Total:</span>
-                    <span>{display_total}</span>
+                  <div className="flex justify-between border-t border-glass-border pt-2 font-title text-sm font-bold">
+                    <span className="text-white">Total:</span>
+                    <span className="text-neon-cyan">{display_total}</span>
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="mt-6 flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    className="w-full"
+                  <button
+                    className="neon-btn w-full text-center text-xs"
                     onClick={() => {
                       toggle();
                       router.push("/cart");
                     }}
                   >
                     View Cart
-                  </Button>
+                  </button>
                   {user ? (
-                    <Button
-                      className="w-full"
+                    <button
+                      className="neon-btn w-full text-center text-xs"
                       onClick={() => {
                         toggle();
                         router.push("/checkout");
                       }}
                     >
                       Checkout
-                    </Button>
+                    </button>
                   ) : (
                     <>
-                      <Button
-                        className="w-full"
+                      <button
+                        className="neon-btn w-full text-center text-xs"
                         onClick={() => {
                           toggle();
                           router.push("/checkout");
                         }}
                       >
                         Checkout as Guest
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="w-full"
+                      </button>
+                      <button
+                        className="neon-btn w-full text-center text-xs"
                         onClick={() => {
                           toggle();
                           router.push("/login");
                         }}
                       >
                         Login
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="w-full"
+                      </button>
+                      <button
+                        className="neon-btn w-full text-center text-xs"
                         onClick={() => {
                           toggle();
                           router.push("/signup");
                         }}
                       >
                         Sign Up
-                      </Button>
+                      </button>
                     </>
                   )}
                 </div>
