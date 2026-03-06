@@ -15,6 +15,7 @@
 ## Task 1: Spree Seed Script — Setup & Auth
 
 **Files:**
+
 - Create: `scripts/seed-spree.ts`
 - Create: `scripts/seed-spree-data.ts`
 - Modify: `package.json` (add seed script command)
@@ -28,48 +29,48 @@ Create `scripts/seed-spree-data.ts` with all product/taxonomy definitions:
 // All Spree seed data — taxonomies, option types, properties, products, promotions
 
 export const TAXONOMIES = [
-  { name: 'Shop' },
-  { name: 'Marketplace' },
-  { name: 'Collections' },
+  { name: "Shop" },
+  { name: "Marketplace" },
+  { name: "Collections" }
 ] as const;
 
 export const TAXONS: Record<string, string[]> = {
-  'Shop': ['Devices', 'Accessories', 'Apparel'],
-  'Marketplace': ['Sample Packs', 'Synths', 'Visualizers'],
-  'Collections': ['Featured', 'New Arrivals', 'Pre-Order', 'Bundles'],
+  Shop: ["Devices", "Accessories", "Apparel"],
+  Marketplace: ["Sample Packs", "Synths", "Visualizers"],
+  Collections: ["Featured", "New Arrivals", "Pre-Order", "Bundles"]
 };
 
 export const OPTION_TYPES = [
   {
-    name: 'color',
-    presentation: 'Color',
+    name: "color",
+    presentation: "Color",
     values: [
-      { name: 'black', presentation: 'Black' },
-      { name: 'white', presentation: 'White' },
-    ],
+      { name: "black", presentation: "Black" },
+      { name: "white", presentation: "White" }
+    ]
   },
   {
-    name: 'size',
-    presentation: 'Size',
+    name: "size",
+    presentation: "Size",
     values: [
-      { name: 's', presentation: 'S' },
-      { name: 'm', presentation: 'M' },
-      { name: 'l', presentation: 'L' },
-      { name: 'xl', presentation: 'XL' },
-      { name: 'xxl', presentation: 'XXL' },
-    ],
-  },
+      { name: "s", presentation: "S" },
+      { name: "m", presentation: "M" },
+      { name: "l", presentation: "L" },
+      { name: "xl", presentation: "XL" },
+      { name: "xxl", presentation: "XXL" }
+    ]
+  }
 ] as const;
 
 export const PROPERTIES = [
-  { name: 'shipping_type', presentation: 'Shipping Type' },
-  { name: 'preorder', presentation: 'Pre-Order' },
-  { name: 'ships_date', presentation: 'Ships' },
-  { name: 'connectivity', presentation: 'Connectivity' },
-  { name: 'compatibility', presentation: 'Compatibility' },
-  { name: 'format', presentation: 'Format' },
-  { name: 'file_count', presentation: 'Files Included' },
-  { name: 'polyphony', presentation: 'Polyphony' },
+  { name: "shipping_type", presentation: "Shipping Type" },
+  { name: "preorder", presentation: "Pre-Order" },
+  { name: "ships_date", presentation: "Ships" },
+  { name: "connectivity", presentation: "Connectivity" },
+  { name: "compatibility", presentation: "Compatibility" },
+  { name: "format", presentation: "Format" },
+  { name: "file_count", presentation: "Files Included" },
+  { name: "polyphony", presentation: "Polyphony" }
 ] as const;
 
 export interface ProductDef {
@@ -79,7 +80,7 @@ export interface ProductDef {
   description: string;
   shippingWeight?: string;
   optionType?: string; // name of option type to assign
-  taxons: string[];    // taxon names to assign
+  taxons: string[]; // taxon names to assign
   properties: Record<string, string>;
   variants?: { optionValue: string; sku: string }[];
 }
@@ -87,122 +88,128 @@ export interface ProductDef {
 export const PRODUCTS: ProductDef[] = [
   // --- Physical Products ---
   {
-    name: 'Beeper Δ8',
-    slug: 'beeper-delta-8',
-    price: '199.99',
-    description: 'BLE MIDI controller with 8x FSR trigger pads, 2x capacitive-touch sliders, and an AMOLED heads-up display. PRE-ORDER NOW — SHIPS FALL 2026.',
-    shippingWeight: '0.5',
-    optionType: 'color',
-    taxons: ['Devices', 'Featured', 'Pre-Order'],
+    name: "Beeper Δ8",
+    slug: "beeper-delta-8",
+    price: "199.99",
+    description:
+      "BLE MIDI controller with 8x FSR trigger pads, 2x capacitive-touch sliders, and an AMOLED heads-up display. PRE-ORDER NOW — SHIPS FALL 2026.",
+    shippingWeight: "0.5",
+    optionType: "color",
+    taxons: ["Devices", "Featured", "Pre-Order"],
     properties: {
-      shipping_type: 'physical',
-      preorder: 'true',
-      ships_date: 'Fall 2026',
-      connectivity: 'BLE MIDI',
+      shipping_type: "physical",
+      preorder: "true",
+      ships_date: "Fall 2026",
+      connectivity: "BLE MIDI"
     },
     variants: [
-      { optionValue: 'black', sku: 'BEEPER-D8-BLK' },
-      { optionValue: 'white', sku: 'BEEPER-D8-WHT' },
-    ],
+      { optionValue: "black", sku: "BEEPER-D8-BLK" },
+      { optionValue: "white", sku: "BEEPER-D8-WHT" }
+    ]
   },
   {
-    name: 'Beeper Carrying Case',
-    slug: 'beeper-carrying-case',
-    price: '29.99',
-    description: 'Custom-fit carrying case for the Beeper Δ8 controller. Padded interior with accessory pocket.',
-    shippingWeight: '0.3',
-    taxons: ['Accessories'],
-    properties: { shipping_type: 'physical' },
+    name: "Beeper Carrying Case",
+    slug: "beeper-carrying-case",
+    price: "29.99",
+    description:
+      "Custom-fit carrying case for the Beeper Δ8 controller. Padded interior with accessory pocket.",
+    shippingWeight: "0.3",
+    taxons: ["Accessories"],
+    properties: { shipping_type: "physical" }
   },
   {
-    name: 'USB-C Cable',
-    slug: 'usb-c-cable',
-    price: '14.99',
-    description: 'Premium braided USB-C cable for charging and firmware updates. 6ft / 1.8m.',
-    shippingWeight: '0.1',
-    taxons: ['Accessories'],
-    properties: { shipping_type: 'physical' },
+    name: "USB-C Cable",
+    slug: "usb-c-cable",
+    price: "14.99",
+    description:
+      "Premium braided USB-C cable for charging and firmware updates. 6ft / 1.8m.",
+    shippingWeight: "0.1",
+    taxons: ["Accessories"],
+    properties: { shipping_type: "physical" }
   },
   {
-    name: 'Beeper T-Shirt',
-    slug: 'beeper-tshirt',
-    price: '34.99',
-    description: 'Beeper logo tee. 100% cotton, unisex fit.',
-    shippingWeight: '0.2',
-    optionType: 'size',
-    taxons: ['Apparel'],
-    properties: { shipping_type: 'physical' },
+    name: "Beeper T-Shirt",
+    slug: "beeper-tshirt",
+    price: "34.99",
+    description: "Beeper logo tee. 100% cotton, unisex fit.",
+    shippingWeight: "0.2",
+    optionType: "size",
+    taxons: ["Apparel"],
+    properties: { shipping_type: "physical" },
     variants: [
-      { optionValue: 's', sku: 'BEEPER-TEE-S' },
-      { optionValue: 'm', sku: 'BEEPER-TEE-M' },
-      { optionValue: 'l', sku: 'BEEPER-TEE-L' },
-      { optionValue: 'xl', sku: 'BEEPER-TEE-XL' },
-      { optionValue: 'xxl', sku: 'BEEPER-TEE-XXL' },
-    ],
+      { optionValue: "s", sku: "BEEPER-TEE-S" },
+      { optionValue: "m", sku: "BEEPER-TEE-M" },
+      { optionValue: "l", sku: "BEEPER-TEE-L" },
+      { optionValue: "xl", sku: "BEEPER-TEE-XL" },
+      { optionValue: "xxl", sku: "BEEPER-TEE-XXL" }
+    ]
   },
   // --- Digital Products ---
   {
-    name: 'Beeper iOS App',
-    slug: 'beeper-ios-app',
-    price: '4.99',
-    description: 'The Beeper companion app for iOS. Synths, samplers, visualizers, and direct BLE MIDI control.',
-    taxons: ['Synths'],
-    properties: { shipping_type: 'digital', compatibility: 'iOS 16+' },
+    name: "Beeper iOS App",
+    slug: "beeper-ios-app",
+    price: "4.99",
+    description:
+      "The Beeper companion app for iOS. Synths, samplers, visualizers, and direct BLE MIDI control.",
+    taxons: ["Synths"],
+    properties: { shipping_type: "digital", compatibility: "iOS 16+" }
   },
   {
-    name: 'Starter Sample Pack',
-    slug: 'starter-sample-pack',
-    price: '9.99',
-    description: '64 curated drum hits, loops, and one-shots. WAV + MIDI.',
-    taxons: ['Sample Packs', 'Featured'],
+    name: "Starter Sample Pack",
+    slug: "starter-sample-pack",
+    price: "9.99",
+    description: "64 curated drum hits, loops, and one-shots. WAV + MIDI.",
+    taxons: ["Sample Packs", "Featured"],
     properties: {
-      shipping_type: 'digital',
-      compatibility: 'iOS 16+',
-      format: 'WAV / MIDI',
-      file_count: '64 samples',
-    },
+      shipping_type: "digital",
+      compatibility: "iOS 16+",
+      format: "WAV / MIDI",
+      file_count: "64 samples"
+    }
   },
   {
-    name: 'Analog Dreams Synth',
-    slug: 'analog-dreams-synth',
-    price: '6.99',
-    description: 'Warm analog-modeled synth with 8-voice polyphony. Detune, filter, ADSR.',
-    taxons: ['Synths'],
+    name: "Analog Dreams Synth",
+    slug: "analog-dreams-synth",
+    price: "6.99",
+    description:
+      "Warm analog-modeled synth with 8-voice polyphony. Detune, filter, ADSR.",
+    taxons: ["Synths"],
     properties: {
-      shipping_type: 'digital',
-      compatibility: 'iOS 16+',
-      polyphony: '8 voices',
-    },
+      shipping_type: "digital",
+      compatibility: "iOS 16+",
+      polyphony: "8 voices"
+    }
   },
   {
-    name: 'Neon Grid Visualizer',
-    slug: 'neon-grid-visualizer',
-    price: '3.99',
-    description: 'Retro-futuristic wireframe grid visualizer. Responds to MIDI velocity and frequency.',
-    taxons: ['Visualizers'],
+    name: "Neon Grid Visualizer",
+    slug: "neon-grid-visualizer",
+    price: "3.99",
+    description:
+      "Retro-futuristic wireframe grid visualizer. Responds to MIDI velocity and frequency.",
+    taxons: ["Visualizers"],
     properties: {
-      shipping_type: 'digital',
-      compatibility: 'iOS 16+',
-    },
-  },
+      shipping_type: "digital",
+      compatibility: "iOS 16+"
+    }
+  }
 ];
 
 export const PROMOTIONS = [
   {
-    name: 'Pre-Order 10% Off',
-    description: '10% off Beeper Δ8 pre-orders',
-    code: 'PREORDER10',
+    name: "Pre-Order 10% Off",
+    description: "10% off Beeper Δ8 pre-orders",
+    code: "PREORDER10"
   },
   {
-    name: 'Bundle: Device + Case',
-    description: '$10 off when you buy Beeper Δ8 + Carrying Case together',
-    code: 'BUNDLE10',
+    name: "Bundle: Device + Case",
+    description: "$10 off when you buy Beeper Δ8 + Carrying Case together",
+    code: "BUNDLE10"
   },
   {
-    name: 'Launch Free Shipping',
-    description: 'Free shipping on orders over $150',
-    code: 'FREESHIP150',
-  },
+    name: "Launch Free Shipping",
+    description: "Free shipping on orders over $150",
+    code: "FREESHIP150"
+  }
 ];
 ```
 
@@ -232,34 +239,38 @@ import {
   PROPERTIES,
   PRODUCTS,
   PROMOTIONS,
-  ProductDef,
-} from './seed-spree-data';
+  ProductDef
+} from "./seed-spree-data";
 
-const SPREE_URL = process.env.SPREE_API_URL || process.env.NEXT_PUBLIC_SPREE_API_URL;
+const SPREE_URL =
+  process.env.SPREE_API_URL || process.env.NEXT_PUBLIC_SPREE_API_URL;
 const CLIENT_ID = process.env.SPREE_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPREE_CLIENT_SECRET;
 
 if (!SPREE_URL || !CLIENT_ID || !CLIENT_SECRET) {
-  console.error('Missing env vars: SPREE_API_URL, SPREE_CLIENT_ID, SPREE_CLIENT_SECRET');
+  console.error(
+    "Missing env vars: SPREE_API_URL, SPREE_CLIENT_ID, SPREE_CLIENT_SECRET"
+  );
   process.exit(1);
 }
 
-let accessToken = '';
+let accessToken = "";
 
 // --- Helpers ---
 
 async function getToken(): Promise<string> {
   const res = await fetch(`${SPREE_URL}/spree_oauth/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      grant_type: 'client_credentials',
+      grant_type: "client_credentials",
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
-      scope: 'admin',
-    }),
+      scope: "admin"
+    })
   });
-  if (!res.ok) throw new Error(`Auth failed: ${res.status} ${await res.text()}`);
+  if (!res.ok)
+    throw new Error(`Auth failed: ${res.status} ${await res.text()}`);
   const data = await res.json();
   return data.access_token;
 }
@@ -267,16 +278,16 @@ async function getToken(): Promise<string> {
 async function api(
   method: string,
   path: string,
-  body?: Record<string, unknown>,
+  body?: Record<string, unknown>
 ): Promise<any> {
   const url = `${SPREE_URL}/api/v2/platform${path}`;
   const res = await fetch(url, {
     method,
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? JSON.stringify(body) : undefined
   });
   if (!res.ok) {
     const text = await res.text();
@@ -289,7 +300,7 @@ async function listAll(path: string): Promise<any[]> {
   let page = 1;
   const all: any[] = [];
   while (true) {
-    const res = await api('GET', `${path}?page=${page}&per_page=100`);
+    const res = await api("GET", `${path}?page=${page}&per_page=100`);
     all.push(...(res.data || []));
     if (!res.data?.length || res.data.length < 100) break;
     page++;
@@ -303,9 +314,11 @@ function findByName(items: any[], name: string): any | undefined {
 
 // --- Seeders ---
 
-async function seedTaxonomies(): Promise<Record<string, { id: string; rootTaxonId: string }>> {
-  console.log('\n=== Taxonomies ===');
-  const existing = await listAll('/taxonomies');
+async function seedTaxonomies(): Promise<
+  Record<string, { id: string; rootTaxonId: string }>
+> {
+  console.log("\n=== Taxonomies ===");
+  const existing = await listAll("/taxonomies");
   const map: Record<string, { id: string; rootTaxonId: string }> = {};
 
   for (const t of TAXONOMIES) {
@@ -314,14 +327,16 @@ async function seedTaxonomies(): Promise<Record<string, { id: string; rootTaxonI
       console.log(`  ✓ ${t.name} (id: ${found.id}) — exists`);
       map[t.name] = {
         id: found.id,
-        rootTaxonId: found.relationships?.root?.data?.id,
+        rootTaxonId: found.relationships?.root?.data?.id
       };
     } else {
-      const res = await api('POST', '/taxonomies', { taxonomy: { name: t.name } });
+      const res = await api("POST", "/taxonomies", {
+        taxonomy: { name: t.name }
+      });
       console.log(`  + ${t.name} (id: ${res.data.id}) — created`);
       map[t.name] = {
         id: res.data.id,
-        rootTaxonId: res.data.relationships?.root?.data?.id,
+        rootTaxonId: res.data.relationships?.root?.data?.id
       };
     }
   }
@@ -329,10 +344,10 @@ async function seedTaxonomies(): Promise<Record<string, { id: string; rootTaxonI
 }
 
 async function seedTaxons(
-  taxonomyMap: Record<string, { id: string; rootTaxonId: string }>,
+  taxonomyMap: Record<string, { id: string; rootTaxonId: string }>
 ): Promise<Record<string, string>> {
-  console.log('\n=== Taxons ===');
-  const existing = await listAll('/taxons');
+  console.log("\n=== Taxons ===");
+  const existing = await listAll("/taxons");
   const taxonMap: Record<string, string> = {}; // taxon name → taxon id
 
   for (const [taxonomyName, taxonNames] of Object.entries(TAXONS)) {
@@ -347,14 +362,16 @@ async function seedTaxons(
         console.log(`  ✓ ${taxonomyName} > ${name} (id: ${found.id}) — exists`);
         taxonMap[name] = found.id;
       } else {
-        const res = await api('POST', '/taxons', {
+        const res = await api("POST", "/taxons", {
           taxon: {
             taxonomy_id: taxonomy.id,
             parent_id: taxonomy.rootTaxonId,
-            name,
-          },
+            name
+          }
         });
-        console.log(`  + ${taxonomyName} > ${name} (id: ${res.data.id}) — created`);
+        console.log(
+          `  + ${taxonomyName} > ${name} (id: ${res.data.id}) — created`
+        );
         taxonMap[name] = res.data.id;
       }
     }
@@ -362,39 +379,46 @@ async function seedTaxons(
   return taxonMap;
 }
 
-async function seedOptionTypes(): Promise<Record<string, { id: string; values: Record<string, string> }>> {
-  console.log('\n=== Option Types ===');
-  const existing = await listAll('/option_types');
-  const map: Record<string, { id: string; values: Record<string, string> }> = {};
+async function seedOptionTypes(): Promise<
+  Record<string, { id: string; values: Record<string, string> }>
+> {
+  console.log("\n=== Option Types ===");
+  const existing = await listAll("/option_types");
+  const map: Record<string, { id: string; values: Record<string, string> }> =
+    {};
 
   for (const ot of OPTION_TYPES) {
     let found = findByName(existing, ot.name);
     if (found) {
       console.log(`  ✓ ${ot.name} (id: ${found.id}) — exists`);
     } else {
-      const res = await api('POST', '/option_types', {
-        option_type: { name: ot.name, presentation: ot.presentation },
+      const res = await api("POST", "/option_types", {
+        option_type: { name: ot.name, presentation: ot.presentation }
       });
       found = res.data;
       console.log(`  + ${ot.name} (id: ${found.id}) — created`);
     }
 
     // Seed option values
-    const existingValues = await listAll(`/option_values?filter[option_type_id]=${found.id}`);
+    const existingValues = await listAll(
+      `/option_values?filter[option_type_id]=${found.id}`
+    );
     const valueMap: Record<string, string> = {};
 
     for (const ov of ot.values) {
-      const foundOv = existingValues.find((v: any) => v.attributes?.name === ov.name);
+      const foundOv = existingValues.find(
+        (v: any) => v.attributes?.name === ov.name
+      );
       if (foundOv) {
         console.log(`    ✓ ${ov.name} (id: ${foundOv.id}) — exists`);
         valueMap[ov.name] = foundOv.id;
       } else {
-        const res = await api('POST', '/option_values', {
+        const res = await api("POST", "/option_values", {
           option_value: {
             name: ov.name,
             presentation: ov.presentation,
-            option_type_id: found.id,
-          },
+            option_type_id: found.id
+          }
         });
         console.log(`    + ${ov.name} (id: ${res.data.id}) — created`);
         valueMap[ov.name] = res.data.id;
@@ -406,8 +430,8 @@ async function seedOptionTypes(): Promise<Record<string, { id: string; values: R
 }
 
 async function seedProperties(): Promise<Record<string, string>> {
-  console.log('\n=== Properties ===');
-  const existing = await listAll('/properties');
+  console.log("\n=== Properties ===");
+  const existing = await listAll("/properties");
   const map: Record<string, string> = {};
 
   for (const p of PROPERTIES) {
@@ -416,8 +440,8 @@ async function seedProperties(): Promise<Record<string, string>> {
       console.log(`  ✓ ${p.name} (id: ${found.id}) — exists`);
       map[p.name] = found.id;
     } else {
-      const res = await api('POST', '/properties', {
-        property: { name: p.name, presentation: p.presentation },
+      const res = await api("POST", "/properties", {
+        property: { name: p.name, presentation: p.presentation }
       });
       console.log(`  + ${p.name} (id: ${res.data.id}) — created`);
       map[p.name] = res.data.id;
@@ -429,10 +453,10 @@ async function seedProperties(): Promise<Record<string, string>> {
 async function seedProducts(
   taxonMap: Record<string, string>,
   optionTypeMap: Record<string, { id: string; values: Record<string, string> }>,
-  propertyMap: Record<string, string>,
+  propertyMap: Record<string, string>
 ): Promise<void> {
-  console.log('\n=== Products ===');
-  const existing = await listAll('/products');
+  console.log("\n=== Products ===");
+  const existing = await listAll("/products");
 
   for (const p of PRODUCTS) {
     const found = existing.find((e: any) => e.attributes?.slug === p.slug);
@@ -448,15 +472,15 @@ async function seedProducts(
         slug: p.slug,
         price: p.price,
         description: p.description,
-        status: 'active',
+        status: "active",
         available_on: new Date().toISOString(),
-        shipping_category_id: '1', // default
+        shipping_category_id: "1" // default
       };
       if (p.shippingWeight) {
         productBody.weight = p.shippingWeight;
       }
 
-      const res = await api('POST', '/products', { product: productBody });
+      const res = await api("POST", "/products", { product: productBody });
       productId = res.data.id;
       console.log(`  + ${p.name} (id: ${productId}) — created`);
     }
@@ -469,29 +493,25 @@ async function seedProducts(
         continue;
       }
       try {
-        await api('PATCH', `/products/${productId}`, {
+        await api("PATCH", `/products/${productId}`, {
           product: {
-            taxon_ids: [
-              ...(p.taxons
-                .map((t) => taxonMap[t])
-                .filter(Boolean)),
-            ],
-          },
+            taxon_ids: [...p.taxons.map((t) => taxonMap[t]).filter(Boolean)]
+          }
         });
       } catch (e) {
         // Taxon assignment may already exist — not fatal
       }
     }
     // Only log once per product
-    console.log(`    → Taxons: ${p.taxons.join(', ')}`);
+    console.log(`    → Taxons: ${p.taxons.join(", ")}`);
 
     // Assign option type
     if (p.optionType) {
       const ot = optionTypeMap[p.optionType];
       if (ot) {
         try {
-          await api('PATCH', `/products/${productId}`, {
-            product: { option_type_ids: [ot.id] },
+          await api("PATCH", `/products/${productId}`, {
+            product: { option_type_ids: [ot.id] }
           });
           console.log(`    → Option type: ${p.optionType}`);
         } catch (e) {
@@ -505,12 +525,12 @@ async function seedProducts(
       const propId = propertyMap[propName];
       if (!propId) continue;
       try {
-        await api('POST', '/product_properties', {
+        await api("POST", "/product_properties", {
           product_property: {
             product_id: productId,
             property_id: propId,
-            value: propValue,
-          },
+            value: propValue
+          }
         });
         console.log(`    → Property: ${propName}=${propValue}`);
       } catch (e) {
@@ -524,7 +544,9 @@ async function seedProducts(
       const ot = optionTypeMap[p.optionType];
       if (!ot) continue;
 
-      const existingVariants = await listAll(`/variants?filter[product_id]=${productId}`);
+      const existingVariants = await listAll(
+        `/variants?filter[product_id]=${productId}`
+      );
 
       for (const v of p.variants) {
         const ovId = ot.values[v.optionValue];
@@ -533,19 +555,21 @@ async function seedProducts(
           continue;
         }
         const existingVar = existingVariants.find(
-          (ev: any) => ev.attributes?.sku === v.sku,
+          (ev: any) => ev.attributes?.sku === v.sku
         );
         if (existingVar) {
-          console.log(`    ✓ Variant ${v.sku} (id: ${existingVar.id}) — exists`);
+          console.log(
+            `    ✓ Variant ${v.sku} (id: ${existingVar.id}) — exists`
+          );
         } else {
-          const res = await api('POST', '/variants', {
+          const res = await api("POST", "/variants", {
             variant: {
               product_id: productId,
               sku: v.sku,
               price: p.price,
               option_value_ids: [ovId],
-              track_inventory: true,
-            },
+              track_inventory: true
+            }
           });
           console.log(`    + Variant ${v.sku} (id: ${res.data.id}) — created`);
         }
@@ -555,22 +579,24 @@ async function seedProducts(
 }
 
 async function seedPromotions(): Promise<void> {
-  console.log('\n=== Promotions ===');
-  const existing = await listAll('/promotions');
+  console.log("\n=== Promotions ===");
+  const existing = await listAll("/promotions");
 
   for (const promo of PROMOTIONS) {
     const found = findByName(existing, promo.name);
     if (found) {
       console.log(`  ✓ ${promo.name} (id: ${found.id}) — exists`);
     } else {
-      const res = await api('POST', '/promotions', {
+      const res = await api("POST", "/promotions", {
         promotion: {
           name: promo.name,
           description: promo.description,
           code: promo.code,
           starts_at: new Date().toISOString(),
-          expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-        },
+          expires_at: new Date(
+            Date.now() + 365 * 24 * 60 * 60 * 1000
+          ).toISOString()
+        }
       });
       console.log(`  + ${promo.name} (id: ${res.data.id}) — created`);
       // Note: Promotion rules and actions must be configured in Spree Admin UI
@@ -584,9 +610,9 @@ async function seedPromotions(): Promise<void> {
 
 async function main() {
   console.log(`Seeding Spree 4.2.5 at ${SPREE_URL}`);
-  console.log('Authenticating...');
+  console.log("Authenticating...");
   accessToken = await getToken();
-  console.log('✓ Authenticated');
+  console.log("✓ Authenticated");
 
   const taxonomyMap = await seedTaxonomies();
   const taxonMap = await seedTaxons(taxonomyMap);
@@ -595,11 +621,11 @@ async function main() {
   await seedProducts(taxonMap, optionTypeMap, propertyMap);
   await seedPromotions();
 
-  console.log('\n✓ Seed complete!');
+  console.log("\n✓ Seed complete!");
 }
 
 main().catch((err) => {
-  console.error('\n✗ Seed failed:', err.message);
+  console.error("\n✗ Seed failed:", err.message);
   process.exit(1);
 });
 ```
@@ -607,6 +633,7 @@ main().catch((err) => {
 **Step 3: Add npm script to package.json**
 
 In `package.json`, add to `"scripts"`:
+
 ```json
 "seed": "ts-node scripts/seed-spree.ts"
 ```
@@ -631,6 +658,7 @@ git commit -m "feat: add Spree 4.2.5 seed script with Beeper product data"
 ## Task 2: Tailwind Tokens + Global Styles
 
 **Files:**
+
 - Modify: `tailwind.config.ts`
 - Modify: `styles/globals.css`
 - Modify: `styles/fonts.css`
@@ -666,8 +694,8 @@ In `styles/fonts.css`, add:
 
 ```css
 @font-face {
-  font-family: 'PressStart2P';
-  src: url('/fonts/PressStart2P-Regular.ttf') format('truetype');
+  font-family: "PressStart2P";
+  src: url("/fonts/PressStart2P-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -692,7 +720,7 @@ Create `styles/synthwave.css`:
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
 }
 
@@ -703,62 +731,63 @@ Create `styles/synthwave.css`:
 
 /* === Neon Text Glow === */
 .neon-text-cyan {
-  color: #00FFFF;
-  text-shadow: 0 0 7px #00FFFF, 0 0 20px #00FFFF, 0 0 42px #0077FF;
+  color: #00ffff;
+  text-shadow: 0 0 7px #00ffff, 0 0 20px #00ffff, 0 0 42px #0077ff;
 }
 
 .neon-text-magenta {
-  color: #FF00FF;
-  text-shadow: 0 0 7px #FF00FF, 0 0 20px #FF00FF, 0 0 42px #7700FF;
+  color: #ff00ff;
+  text-shadow: 0 0 7px #ff00ff, 0 0 20px #ff00ff, 0 0 42px #7700ff;
 }
 
 .neon-text-pink {
-  color: #FF1493;
-  text-shadow: 0 0 7px #FF1493, 0 0 20px #FF1493, 0 0 42px #FF0066;
+  color: #ff1493;
+  text-shadow: 0 0 7px #ff1493, 0 0 20px #ff1493, 0 0 42px #ff0066;
 }
 
 .neon-text-lime {
-  color: #39FF14;
-  text-shadow: 0 0 7px #39FF14, 0 0 20px #39FF14, 0 0 42px #00FF00;
+  color: #39ff14;
+  text-shadow: 0 0 7px #39ff14, 0 0 20px #39ff14, 0 0 42px #00ff00;
 }
 
 .neon-text-amber {
-  color: #FF6600;
-  text-shadow: 0 0 7px #FF6600, 0 0 20px #FF6600, 0 0 42px #FF3300;
+  color: #ff6600;
+  text-shadow: 0 0 7px #ff6600, 0 0 20px #ff6600, 0 0 42px #ff3300;
 }
 
 /* === Neon Border Glow === */
 .neon-border-cyan {
-  border: 1px solid #00FFFF;
-  box-shadow: 0 0 5px #00FFFF, inset 0 0 5px rgba(0, 255, 255, 0.1);
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 5px #00ffff, inset 0 0 5px rgba(0, 255, 255, 0.1);
 }
 
 .neon-border-magenta {
-  border: 1px solid #FF00FF;
-  box-shadow: 0 0 5px #FF00FF, inset 0 0 5px rgba(255, 0, 255, 0.1);
+  border: 1px solid #ff00ff;
+  box-shadow: 0 0 5px #ff00ff, inset 0 0 5px rgba(255, 0, 255, 0.1);
 }
 
 /* === Neon Button === */
 .neon-btn {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
-  border: 1px solid #00FFFF;
-  box-shadow: 0 0 5px #00FFFF, inset 0 0 5px rgba(0, 255, 255, 0.1);
-  color: #00FFFF;
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 5px #00ffff, inset 0 0 5px rgba(0, 255, 255, 0.1);
+  color: #00ffff;
   transition: all 0.3s ease;
 }
 
 .neon-btn:hover {
   background: rgba(0, 255, 255, 0.1);
-  box-shadow: 0 0 10px #00FFFF, 0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 10px #00ffff, 0 0 20px rgba(0, 255, 255, 0.3),
+    inset 0 0 10px rgba(0, 255, 255, 0.15);
 }
 
 /* === Pre-Order Badge === */
 .badge-preorder {
   background: rgba(255, 102, 0, 0.15);
   border: 1px solid rgba(255, 102, 0, 0.5);
-  color: #FF6600;
-  font-family: 'PressStart2P', monospace;
+  color: #ff6600;
+  font-family: "PressStart2P", monospace;
   font-size: 0.5rem;
   padding: 4px 8px;
   letter-spacing: 0.05em;
@@ -767,7 +796,7 @@ Create `styles/synthwave.css`:
 
 /* === CRT Scanline Overlay === */
 .scanlines::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
@@ -784,19 +813,31 @@ Create `styles/synthwave.css`:
 /* === Neon Focus Ring === */
 .neon-focus:focus {
   outline: none;
-  border-color: #00FFFF;
+  border-color: #00ffff;
   box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.3), 0 0 8px rgba(0, 255, 255, 0.2);
 }
 
 /* === Breathing Glow Animation === */
 @keyframes breathe {
-  0%, 100% { opacity: 0.45; transform: scale(0.38); }
-  50% { opacity: 0.6; transform: scale(0.42); }
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.38);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.42);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 10px #00FFFF; }
-  50% { box-shadow: 0 0 20px #00FFFF, 0 0 40px rgba(0, 255, 255, 0.3); }
+  0%,
+  100% {
+    box-shadow: 0 0 10px #00ffff;
+  }
+  50% {
+    box-shadow: 0 0 20px #00ffff, 0 0 40px rgba(0, 255, 255, 0.3);
+  }
 }
 
 .animate-breathe {
@@ -814,10 +855,10 @@ In `styles/globals.css`, add/update the body background:
 
 ```css
 /* At the top of the file, after @tailwind directives */
-@import './synthwave.css';
+@import "./synthwave.css";
 
 body {
-  background: linear-gradient(180deg, #0A0020 0%, #000000 100%);
+  background: linear-gradient(180deg, #0a0020 0%, #000000 100%);
   min-height: 100vh;
   color: #e0e0e0;
 }
@@ -840,6 +881,7 @@ git commit -m "feat: add synthwave design tokens, glass utilities, neon glow cla
 ## Task 3: LogoBlob — Match BeeperNative
 
 **Files:**
+
 - Modify: `components/LogoBlob/LogoBlob.tsx`
 - Modify: `components/LogoBlob/LogoBlob.styles.tsx`
 - Modify: `components/Logo/AnimatedLogo.tsx`
@@ -849,9 +891,11 @@ git commit -m "feat: add synthwave design tokens, glass utilities, neon glow cla
 Replace the blob fill color cycling with solid purple `#7c3aed`. Replace SVG `feTurbulence`/`feDisplacementMap` filter with `react-spring` path interpolation between the 4 blob shapes on a 16000ms loop. Add 10-layer graduated glow via stacked `box-shadow`.
 
 Reference the native implementation at:
+
 - `/Users/smokey/Internal/Beeper/code/BeeperNative/src/components/LogoBlob.tsx`
 
 Key changes:
+
 - Blob fill: `#7c3aed` (solid purple)
 - Blob stroke: `#ff008a` (hot pink)
 - Animation: `useSpring` with 16000ms duration cycling through blob1→blob2→blob3→blob4→blob1
@@ -900,6 +944,7 @@ git commit -m "feat: update LogoBlob to match BeeperNative synthwave style"
 ## Task 4: Header & Navigation — Glass Treatment
 
 **Files:**
+
 - Modify: `components/Header/Header.tsx`
 - Modify: `components/MainMenu/DesktopMenu.tsx`
 - Modify: `components/MainMenu/MobileMenu.tsx`
@@ -908,6 +953,7 @@ git commit -m "feat: update LogoBlob to match BeeperNative synthwave style"
 **Step 1: Glassmorphic header bar**
 
 Update Header.tsx:
+
 - Background: `glass-panel` class (translucent with backdrop blur)
 - Logo: Use AnimatedLogo component (small scale)
 - Nav links: IBM Plex Mono, white, neon-cyan on hover
@@ -917,6 +963,7 @@ Update Header.tsx:
 **Step 2: Desktop menu neon treatment**
 
 Update DesktopMenu.tsx:
+
 - Nav items: White text, neon-cyan underline on hover (animated width)
 - Active state: Neon glow text
 - Dropdown menus: Glass panel background
@@ -924,6 +971,7 @@ Update DesktopMenu.tsx:
 **Step 3: Mobile menu**
 
 Update MobileMenu.tsx:
+
 - Full-screen dark glass overlay
 - Links: PressStart2P for section headers, IBM Plex Mono for items
 - Neon accent dividers
@@ -944,6 +992,7 @@ git commit -m "feat: glassmorphic header and navigation"
 ## Task 5: Homepage Redesign
 
 **Files:**
+
 - Modify: `components/Home/DynamicHome.tsx`
 - Modify: `components/Home/Hero/Hero.tsx`
 - Modify: `components/Home/Featured/Featured.tsx`
@@ -960,6 +1009,7 @@ At the top of DynamicHome, render the updated LogoBlob component centered with t
 **Step 2: Hero section — Beeper Δ8 product**
 
 Update Hero.tsx:
+
 - Fetch `beeper-delta-8` product from Spree (from Featured taxon)
 - Dark gradient background with radial neon glow (magenta) behind product image
 - "BEEPER Δ8" in PressStart2P with neon magenta glow
@@ -970,6 +1020,7 @@ Update Hero.tsx:
 **Step 3: Featured products strip**
 
 Update Featured.tsx:
+
 - Fetch products from "Featured" taxon via existing `useProducts` hook with taxon filter
 - Horizontal scroll container with glass product cards
 - Each card: Image, name (IBM Plex Mono), price (neon-cyan), hover glow
@@ -977,6 +1028,7 @@ Update Featured.tsx:
 **Step 4: Shop / Marketplace split**
 
 Create `components/Home/ShopMarketplaceSplit/ShopMarketplaceSplit.tsx`:
+
 - Two glass panels side by side (CSS Grid, stack on mobile)
 - Left: "SHOP" — neon-cyan accent, device imagery silhouette
 - Right: "MARKETPLACE" — neon-magenta accent, waveform pattern
@@ -986,6 +1038,7 @@ Create `components/Home/ShopMarketplaceSplit/ShopMarketplaceSplit.tsx`:
 **Step 5: Specs grid**
 
 Create `components/Home/SpecsGrid/SpecsGrid.tsx`:
+
 - 4 glass pills: "8x FSR PADS", "2x CAP-TOUCH SLIDERS", "AMOLED HUD", "BLE MIDI"
 - PressStart2P labels at small size (0.6rem)
 - Subtle neon-cyan icon/accent per item
@@ -994,6 +1047,7 @@ Create `components/Home/SpecsGrid/SpecsGrid.tsx`:
 **Step 6: Newsletter CTA**
 
 Update Newsletter.tsx:
+
 - Glass panel, full-width
 - Input: Dark bg, neon-cyan focus ring (`neon-focus` class)
 - Submit button: `neon-btn` class
@@ -1002,6 +1056,7 @@ Update Newsletter.tsx:
 **Step 7: Wire up DynamicHome.tsx**
 
 Arrange sections in order:
+
 1. LogoBlob
 2. Hero (Beeper Δ8)
 3. Featured Products
@@ -1026,6 +1081,7 @@ git commit -m "feat: redesign homepage with glassmorphic synthwave sections"
 ## Task 6: Browse Page — Dual Mode
 
 **Files:**
+
 - Modify: `pages/browse.tsx`
 - Modify: `components/Browse/Browse.tsx`
 - Modify: `components/ProductCard/ProductCard.tsx`
@@ -1036,6 +1092,7 @@ git commit -m "feat: redesign homepage with glassmorphic synthwave sections"
 **Step 1: Mode toggle component**
 
 Create `components/Browse/ModeToggle.tsx`:
+
 - Two glass tab buttons: "SHOP" (neon-cyan) / "MARKETPLACE" (neon-magenta)
 - Active tab: Filled background with neon color, glow
 - Inactive tab: Glass panel, dim text
@@ -1054,6 +1111,7 @@ Read `mode` from `router.query.mode` (default: `shop`).
 **Step 3: Shop mode ProductCard**
 
 Update `components/ProductCard/ProductCard.tsx`:
+
 - Glass panel card with dark bg
 - Product image
 - Name in IBM Plex Mono (white)
@@ -1065,6 +1123,7 @@ Update `components/ProductCard/ProductCard.tsx`:
 **Step 4: Marketplace mode card**
 
 Create `components/Browse/MarketplaceCard.tsx`:
+
 - Wider/landscape glass card (different aspect ratio)
 - Artwork thumbnail
 - Name + type badge (Sample Pack/Synth/Visualizer) with neon tint
@@ -1086,6 +1145,7 @@ Support query params: `?mode=shop|marketplace&category=<taxon-name>&sort=newest|
 **Step 7: Verify**
 
 Run: `yarn dev`, navigate to:
+
 - `/browse` — defaults to shop mode
 - `/browse?mode=marketplace` — switches to marketplace
 - Click filter chips, verify filtering works
@@ -1103,6 +1163,7 @@ git commit -m "feat: dual-mode browse page with Shop and Marketplace views"
 ## Task 7: Product Detail Page — Glass Treatment
 
 **Files:**
+
 - Modify: `pages/[productSlug].tsx`
 - Modify: `components/ProductDetails/RetailProductDetails.tsx`
 
@@ -1149,6 +1210,7 @@ git commit -m "feat: glassmorphic product detail page with neon variant selector
 ## Task 8: Cart & Checkout — Glass Treatment
 
 **Files:**
+
 - Modify: `components/Cart/Cart.tsx`
 - Modify: `components/CartSidebar/CartSidebar.tsx`
 - Modify: `components/Checkout/Checkout.tsx`
@@ -1189,6 +1251,7 @@ git commit -m "feat: glassmorphic cart and checkout styling"
 ## Task 9: Footer & Remaining Pages
 
 **Files:**
+
 - Modify: `components/Footer/Footer.tsx`
 - Modify: `components/Login/Login.tsx`
 - Modify: `components/Account/Account.tsx`
@@ -1222,6 +1285,7 @@ git commit -m "feat: glassmorphic footer, auth, and account pages"
 **Step 1: Full visual audit**
 
 Navigate through all pages in dev mode, checking:
+
 - [ ] Homepage sections all render
 - [ ] Browse shop mode with products
 - [ ] Browse marketplace mode with products

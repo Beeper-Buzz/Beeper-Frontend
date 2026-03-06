@@ -17,9 +17,7 @@ const AccountPageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Layout>
       <div className="section-container min-h-[calc(100vh-400px)] py-10">
-        <h1 className="mb-8 font-pressstart text-lg text-neon-cyan">
-          Account
-        </h1>
+        <h1 className="mb-8 font-pressstart text-lg text-neon-cyan">Account</h1>
 
         <div className="flex flex-col gap-8 md:flex-row">
           {/* Sidebar */}

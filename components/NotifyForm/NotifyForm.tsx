@@ -172,9 +172,7 @@ export const NotifyForm = () => {
         </form>
 
         {status === "sending" && (
-          <p className="mt-3 font-body text-sm text-white/50">
-            sending...
-          </p>
+          <p className="mt-3 font-body text-sm text-white/50">sending...</p>
         )}
         {status === "error" && (
           <p className="mt-3 font-body text-sm text-destructive">

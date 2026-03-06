@@ -21,7 +21,11 @@ export const ResetPassword = () => {
   const SubmitButton = () => {
     const { submitForm, isSubmitting } = useFormikContext();
     return (
-      <Button onClick={submitForm} disabled={isSubmitting} className="neon-btn w-full py-3">
+      <Button
+        onClick={submitForm}
+        disabled={isSubmitting}
+        className="neon-btn w-full py-3"
+      >
         Reset Password
       </Button>
     );

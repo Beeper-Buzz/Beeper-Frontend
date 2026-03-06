@@ -199,17 +199,17 @@ Optional: faint scanline overlay at 2% opacity for CRT effect.
 
 Update `components/LogoBlob/` and `components/Logo/AnimatedLogo.tsx` to match the native app:
 
-| Aspect | Current Frontend | Target (Native) |
-|--------|-----------------|-----------------|
-| Blob fill | Animated peach/mint/lavender cycle | Solid purple `#7c3aed` |
-| Blob stroke | Hot pink (matches) | Hot pink `#ff008a` |
-| Blob animation | 2800ms SVG filter turbulence | 16000ms path interpolation morph between 4 shapes |
-| Glow | Single Gaussian blur | 10 graduated blur/shadow layers (radius 70→30, opacity 0.3→0.7) |
-| Breathing | None | Scale 0.38→0.42, opacity 0.45→0.6 on 4s loop |
-| Letter fill | Solid gold `#E9C86F` | Yellow→orange gradient `#fffb00`→`#ffb300` |
-| Letter details | Minimal strokes | Full interior detail paths + circles |
-| Letter timing | Fixed 2000ms, 100-200ms stagger | Variable 3600-4600ms, 0-900ms stagger per letter |
-| Tagline | Optional, not shown | "Play With Music" — IBM Plex Medium, white, uppercase, 12px |
+| Aspect         | Current Frontend                   | Target (Native)                                                 |
+| -------------- | ---------------------------------- | --------------------------------------------------------------- |
+| Blob fill      | Animated peach/mint/lavender cycle | Solid purple `#7c3aed`                                          |
+| Blob stroke    | Hot pink (matches)                 | Hot pink `#ff008a`                                              |
+| Blob animation | 2800ms SVG filter turbulence       | 16000ms path interpolation morph between 4 shapes               |
+| Glow           | Single Gaussian blur               | 10 graduated blur/shadow layers (radius 70→30, opacity 0.3→0.7) |
+| Breathing      | None                               | Scale 0.38→0.42, opacity 0.45→0.6 on 4s loop                    |
+| Letter fill    | Solid gold `#E9C86F`               | Yellow→orange gradient `#fffb00`→`#ffb300`                      |
+| Letter details | Minimal strokes                    | Full interior detail paths + circles                            |
+| Letter timing  | Fixed 2000ms, 100-200ms stagger    | Variable 3600-4600ms, 0-900ms stagger per letter                |
+| Tagline        | Optional, not shown                | "Play With Music" — IBM Plex Medium, white, uppercase, 12px     |
 
 Implementation: Replace SVG filter-based animation with `react-spring` path interpolation. Add CSS `box-shadow` stack for graduated glow layers. Use SVG `<linearGradient>` for letter fills.
 
@@ -332,28 +332,28 @@ Single page component with a `mode` query param that switches between two presen
 
 ## Modified Files
 
-| File                                     | Changes                                   |
-| ---------------------------------------- | ----------------------------------------- |
-| `tailwind.config.ts`                     | Add neon/glass/bg color tokens            |
-| `styles/globals.css`                     | Dark gradient body bg, neon CSS variables |
-| `styles/fonts.css`                       | Add PressStart2P font-face                |
-| `pages/home.tsx`                         | Redesigned homepage sections              |
-| `pages/browse.tsx`                       | Dual-mode browse with mode toggle         |
-| `pages/[productSlug].tsx`                | Glassmorphic product detail               |
-| `pages/cart.tsx`                         | Glass treatment                           |
-| `pages/checkout.tsx`                     | Glass treatment                           |
-| `components/Home/*`                      | Redesigned homepage components            |
-| `components/Browse/Browse.tsx`           | Mode-aware filtering, glass cards         |
-| `components/ProductCard/ProductCard.tsx` | Glass card with neon accents              |
-| `components/ProductList/ProductList.tsx` | Dual card layouts                         |
-| `components/ProductDetails/*`            | Neon variant selectors, glass panels      |
-| `components/LogoBlob/LogoBlob.tsx`       | Match native: purple blob, graduated glow |
-| `components/LogoBlob/LogoBlob.styles.tsx`| Updated glow/shadow styling               |
-| `components/Logo/AnimatedLogo.tsx`       | Gradient letters, detail strokes, timing  |
-| `components/Header/Header.tsx`           | Glass nav bar                             |
-| `components/Cart/Cart.tsx`               | Glass treatment                           |
-| `components/Checkout/Checkout.tsx`       | Glass treatment                           |
-| `components/ui/*`                        | Neon-themed Radix primitives              |
+| File                                      | Changes                                   |
+| ----------------------------------------- | ----------------------------------------- |
+| `tailwind.config.ts`                      | Add neon/glass/bg color tokens            |
+| `styles/globals.css`                      | Dark gradient body bg, neon CSS variables |
+| `styles/fonts.css`                        | Add PressStart2P font-face                |
+| `pages/home.tsx`                          | Redesigned homepage sections              |
+| `pages/browse.tsx`                        | Dual-mode browse with mode toggle         |
+| `pages/[productSlug].tsx`                 | Glassmorphic product detail               |
+| `pages/cart.tsx`                          | Glass treatment                           |
+| `pages/checkout.tsx`                      | Glass treatment                           |
+| `components/Home/*`                       | Redesigned homepage components            |
+| `components/Browse/Browse.tsx`            | Mode-aware filtering, glass cards         |
+| `components/ProductCard/ProductCard.tsx`  | Glass card with neon accents              |
+| `components/ProductList/ProductList.tsx`  | Dual card layouts                         |
+| `components/ProductDetails/*`             | Neon variant selectors, glass panels      |
+| `components/LogoBlob/LogoBlob.tsx`        | Match native: purple blob, graduated glow |
+| `components/LogoBlob/LogoBlob.styles.tsx` | Updated glow/shadow styling               |
+| `components/Logo/AnimatedLogo.tsx`        | Gradient letters, detail strokes, timing  |
+| `components/Header/Header.tsx`            | Glass nav bar                             |
+| `components/Cart/Cart.tsx`                | Glass treatment                           |
+| `components/Checkout/Checkout.tsx`        | Glass treatment                           |
+| `components/ui/*`                         | Neon-themed Radix primitives              |
 
 ---
 

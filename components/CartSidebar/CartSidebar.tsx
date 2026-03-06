@@ -241,7 +241,8 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
           background: "rgba(10, 0, 32, 0.95)",
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
-          boxShadow: "-8px 0 60px rgba(76, 29, 149, 0.4), -4px 0 30px rgba(76, 29, 149, 0.25)"
+          boxShadow:
+            "-8px 0 60px rgba(76, 29, 149, 0.4), -4px 0 30px rgba(76, 29, 149, 0.25)"
         }}
       >
         <SheetHeader className="border-b border-glass-border px-6 py-4">
@@ -294,9 +295,7 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
                   </div>
                   <div className="flex justify-between font-title text-xs">
                     <span className="text-white/50">Tax:</span>
-                    <span className="text-white">
-                      {included_tax_total}
-                    </span>
+                    <span className="text-white">{included_tax_total}</span>
                   </div>
                   <div className="flex justify-between border-t border-glass-border pt-2 font-title text-sm font-bold">
                     <span className="text-white">Total:</span>

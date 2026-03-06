@@ -18,7 +18,7 @@ const Hero: React.FC<HeroProps> = () => {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 0, 255, 0.12) 0%, rgba(255, 0, 255, 0.04) 40%, transparent 70%)",
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 0, 255, 0.12) 0%, rgba(255, 0, 255, 0.04) 40%, transparent 70%)"
         }}
       />
 
@@ -51,9 +51,9 @@ const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
           className="mt-4 max-w-xl font-title text-sm leading-relaxed text-gray-400"
         >
-          An expressive, pocket-sized instrument with 8 force-sensing pads,
-          dual capacitive sliders, an AMOLED display, and BLE MIDI &mdash;
-          designed to make music anywhere.
+          An expressive, pocket-sized instrument with 8 force-sensing pads, dual
+          capacitive sliders, an AMOLED display, and BLE MIDI &mdash; designed
+          to make music anywhere.
         </motion.p>
 
         {/* CTA Button */}

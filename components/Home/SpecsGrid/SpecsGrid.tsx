@@ -5,16 +5,16 @@ const specs = [
   { label: "8\u00D7 FSR PADS" },
   { label: "2\u00D7 CAP-TOUCH SLIDERS" },
   { label: "AMOLED HUD" },
-  { label: "BLE MIDI" },
+  { label: "BLE MIDI" }
 ];
 
 const containerVariants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.1,
-    },
-  },
+      staggerChildren: 0.1
+    }
+  }
 };
 
 const itemVariants = {
@@ -22,8 +22,8 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
+    transition: { duration: 0.5, ease: "easeOut" }
+  }
 };
 
 const SpecsGrid: React.FC = () => {

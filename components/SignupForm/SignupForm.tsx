@@ -156,9 +156,7 @@ export const SignupForm = () => {
                       </Field>
                       <span
                         className={`font-body text-sm ${
-                          privacyTerms
-                            ? "text-white"
-                            : "text-white/50"
+                          privacyTerms ? "text-white" : "text-white/50"
                         }`}
                       >
                         I have received and read the{" "}
@@ -185,9 +183,7 @@ export const SignupForm = () => {
                       </Field>
                       <span
                         className={`font-body text-sm ${
-                          reportingTerms
-                            ? "text-white"
-                            : "text-white/50"
+                          reportingTerms ? "text-white" : "text-white/50"
                         }`}
                       >
                         By clicking &quot;Signup&quot; I agree to the{" "}

@@ -64,7 +64,9 @@ export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
         ? menuItemsData.response_data.menu_location_listing[0].menu_item_listing
         : [];
     // Filter to root items only — children are nested via `childrens` field
-    const menuItems = allItems.filter((item: any) => !item.parent_id || item.parent_id === 0);
+    const menuItems = allItems.filter(
+      (item: any) => !item.parent_id || item.parent_id === 0
+    );
     return menuItems.map((menuItem: any) => ({
       title: menuItem.name,
       links:
@@ -94,7 +96,12 @@ export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
           href="/"
           className="no-underline text-white transition-opacity hover:opacity-80"
         >
-          <AnimatedLogo className="h-[50px] w-auto" animate={false} showTagline={false} variant="outline" />
+          <AnimatedLogo
+            className="h-[50px] w-auto"
+            animate={false}
+            showTagline={false}
+            variant="outline"
+          />
         </Link>
       </div>
 
@@ -122,7 +129,9 @@ export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
               </div>
             )}
             {item.subTitle && (
-              <div className={cn("font-title text-white/60", classes?.subTitle)}>
+              <div
+                className={cn("font-title text-white/60", classes?.subTitle)}
+              >
                 {item.subTitle}
               </div>
             )}

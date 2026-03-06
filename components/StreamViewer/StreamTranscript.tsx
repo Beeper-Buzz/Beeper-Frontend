@@ -166,7 +166,8 @@ export const StreamTranscript: React.FC<StreamTranscriptProps> = ({
                 <p
                   className={cn(
                     "m-0 font-body text-[13px] leading-[1.5] text-white/80",
-                    entry.isProductMention && "border-l-2 border-neon-cyan/40 pl-2"
+                    entry.isProductMention &&
+                      "border-l-2 border-neon-cyan/40 pl-2"
                   )}
                 >
                   {entry.text}

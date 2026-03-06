@@ -398,7 +398,8 @@ const CheckoutForm = () => {
       <div
         className="min-h-screen py-12"
         style={{
-          background: "linear-gradient(180deg, #0A0020 0%, #1a0040 50%, #0A0020 100%)"
+          background:
+            "linear-gradient(180deg, #0A0020 0%, #1a0040 50%, #0A0020 100%)"
         }}
       >
         <div className="section-container">
@@ -669,7 +670,8 @@ const CheckoutForm = () => {
                           className="accent-neon-cyan"
                         />
                         <span className="font-title text-sm text-white">
-                          {rate.attributes.name} - {rate.attributes.display_cost}
+                          {rate.attributes.name} -{" "}
+                          {rate.attributes.display_cost}
                         </span>
                       </label>
                     ))}
@@ -842,7 +844,8 @@ const CheckoutForm = () => {
 
               {/* Error */}
               {error && (
-                <div className="glass-panel border-neon-pink/30 px-4 py-3 font-title text-sm text-neon-pink"
+                <div
+                  className="glass-panel border-neon-pink/30 px-4 py-3 font-title text-sm text-neon-pink"
                   style={{ borderColor: "rgba(255, 20, 147, 0.3)" }}
                 >
                   {error}

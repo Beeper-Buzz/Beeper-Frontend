@@ -28,10 +28,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.08, ease: "easeOut" }}
     >
-      <Link
-        href={`/${product.slug}`}
-        className="group block no-underline"
-      >
+      <Link href={`/${product.slug}`} className="group block no-underline">
         <div
           className={cn(
             "glass-panel relative overflow-hidden rounded-xl transition-all duration-300",
@@ -77,9 +74,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({
               {product.format && <span>{product.format}</span>}
               {product.fileCount && (
                 <>
-                  {product.format && (
-                    <span className="text-white/20">·</span>
-                  )}
+                  {product.format && <span className="text-white/20">·</span>}
                   <span>{product.fileCount}</span>
                 </>
               )}

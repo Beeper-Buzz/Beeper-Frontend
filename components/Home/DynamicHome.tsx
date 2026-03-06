@@ -90,9 +90,7 @@ const SectionRenderers: Record<
   content: ({ section }) => (
     <div className="px-10 py-5">
       {section.title && (
-        <h2 className="mb-4 text-2xl font-bold text-white">
-          {section.title}
-        </h2>
+        <h2 className="mb-4 text-2xl font-bold text-white">{section.title}</h2>
       )}
       <div dangerouslySetInnerHTML={{ __html: section.content }} />
     </div>
@@ -200,18 +198,22 @@ export const DynamicHome = () => {
   // Transform Spree product feed into FeaturedProduct[] for the Featured strip
   const featuredProducts = useMemo<FeaturedProduct[] | undefined>(() => {
     if (!feedData?.data || feedData.data.length === 0) return undefined;
-    const allImages = feedData.included?.filter((e: any) => e.type === "image") || [];
+    const allImages =
+      feedData.included?.filter((e: any) => e.type === "image") || [];
     const apiUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
     return feedData.data.map((item: any) => {
       const imgId = item.relationships?.images?.data?.[0]?.id;
-      const imgRecord = imgId ? allImages.find((e: any) => e.id === imgId) : null;
-      const imgUrl = imgRecord?.attributes?.styles?.[4]?.url
-        || imgRecord?.attributes?.styles?.[0]?.url;
+      const imgRecord = imgId
+        ? allImages.find((e: any) => e.id === imgId)
+        : null;
+      const imgUrl =
+        imgRecord?.attributes?.styles?.[4]?.url ||
+        imgRecord?.attributes?.styles?.[0]?.url;
       return {
         name: item.attributes.name,
         price: item.attributes.display_price || `$${item.attributes.price}`,
         href: `/${item.attributes.slug}`,
-        image: imgUrl ? `${apiUrl}${imgUrl}` : undefined,
+        image: imgUrl ? `${apiUrl}${imgUrl}` : undefined
       };
     });
   }, [feedData]);
@@ -261,9 +263,10 @@ export const DynamicHome = () => {
       <div
         className="absolute inset-0 animate-gradient-sweep"
         style={{
-          background: "linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(255,0,138,0.2) 33%, rgba(0,255,255,0.15) 66%, rgba(124,58,237,0.3) 100%)",
+          background:
+            "linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(255,0,138,0.2) 33%, rgba(0,255,255,0.15) 66%, rgba(124,58,237,0.3) 100%)",
           backgroundSize: "300% 300%",
-          mixBlendMode: "overlay",
+          mixBlendMode: "overlay"
         }}
       />
     </div>

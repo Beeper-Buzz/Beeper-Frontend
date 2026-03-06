@@ -66,10 +66,14 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   }, []);
 
   return (
-    <header className={cn(
-      "sticky top-0 z-50 w-full !rounded-none",
-      isHomepage ? "bg-transparent border-b border-transparent" : "glass-panel border-b border-glass-border"
-    )}>
+    <header
+      className={cn(
+        "sticky top-0 z-50 w-full !rounded-none",
+        isHomepage
+          ? "bg-transparent border-b border-transparent"
+          : "glass-panel border-b border-glass-border"
+      )}
+    >
       {/* Top Header */}
       <div className="relative flex flex-row items-center justify-center pt-4 pb-3 sm:py-3">
         {/* Left Side - Social Links */}
@@ -86,7 +90,11 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
               href="/"
               className="no-underline transition-opacity hover:opacity-80 flex flex-col items-center gap-0"
             >
-              <AnimatedLogo className="h-[42px] w-auto" animate={true} showTagline={false} />
+              <AnimatedLogo
+                className="h-[42px] w-auto"
+                animate={true}
+                showTagline={false}
+              />
               <span
                 className="text-[7px] leading-none tracking-[0.15em] text-white uppercase -mt-[6px]"
                 style={{ fontFamily: "'IBM Plex Mono', monospace" }}

@@ -104,21 +104,21 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))"
         },
         neon: {
-          cyan: '#00FFFF',
-          magenta: '#FF00FF',
-          pink: '#FF1493',
-          lime: '#39FF14',
-          amber: '#FF6600',
+          cyan: "#00FFFF",
+          magenta: "#FF00FF",
+          pink: "#FF1493",
+          lime: "#39FF14",
+          amber: "#FF6600"
         },
         glass: {
-          bg: 'rgba(255, 255, 255, 0.05)',
-          border: 'rgba(255, 255, 255, 0.10)',
-          highlight: 'rgba(255, 255, 255, 0.15)',
+          bg: "rgba(255, 255, 255, 0.05)",
+          border: "rgba(255, 255, 255, 0.10)",
+          highlight: "rgba(255, 255, 255, 0.15)"
         },
         surface: {
-          deep: '#0A0020',
-          void: '#000000',
-        },
+          deep: "#0A0020",
+          void: "#000000"
+        }
       },
       fontFamily: {
         title: ["ibmplexmono_body_bold", "monospace"],
@@ -129,7 +129,7 @@ const config: Config = {
         "mono-bold": ["ibmplexmono_body_mono_bold", "monospace"],
         "mono-semibold": ["ibmplexmono_body_mono_semibold", "monospace"],
         "mono-extralight": ["ibmplexmono_body_mono_extralight", "monospace"],
-        pressstart: ['PressStart2P', 'monospace'],
+        pressstart: ["PressStart2P", "monospace"]
       },
       fontSize: {
         "title-xxl": ["72px", { lineHeight: "86px", fontWeight: "700" }],

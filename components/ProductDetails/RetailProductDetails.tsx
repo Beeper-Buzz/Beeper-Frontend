@@ -417,9 +417,7 @@ export const RetailProductDetails = ({
                     <Heart
                       className={cn("h-4 w-4", isFavorited && "fill-current")}
                     />
-                    {isFavorited
-                      ? "Remove from Favorites"
-                      : "Add to Favorites"}
+                    {isFavorited ? "Remove from Favorites" : "Add to Favorites"}
                   </button>
 
                   {/* Color Swatches */}
@@ -516,7 +514,10 @@ export const RetailProductDetails = ({
                             prev
                               ? {
                                   ...prev,
-                                  quantity: Math.max(1, (prev.quantity || 1) - 1)
+                                  quantity: Math.max(
+                                    1,
+                                    (prev.quantity || 1) - 1
+                                  )
                                 }
                               : prev
                           )
@@ -567,26 +568,24 @@ export const RetailProductDetails = ({
                       Specs
                     </h3>
                     <div className="divide-y divide-glass-border">
-                      {productProperties.map(
-                        (property: any, index: number) => (
-                          <div
-                            key={`property-${index}`}
-                            className={cn(
-                              "flex justify-between gap-4 px-2 py-2.5 font-mono text-sm",
-                              index % 2 === 0
-                                ? "bg-white/[0.02]"
-                                : "bg-transparent"
-                            )}
-                          >
-                            <span className="text-white/50">
-                              {property.attributes.name}
-                            </span>
-                            <span className="text-right text-white">
-                              {property.attributes.value}
-                            </span>
-                          </div>
-                        )
-                      )}
+                      {productProperties.map((property: any, index: number) => (
+                        <div
+                          key={`property-${index}`}
+                          className={cn(
+                            "flex justify-between gap-4 px-2 py-2.5 font-mono text-sm",
+                            index % 2 === 0
+                              ? "bg-white/[0.02]"
+                              : "bg-transparent"
+                          )}
+                        >
+                          <span className="text-white/50">
+                            {property.attributes.name}
+                          </span>
+                          <span className="text-right text-white">
+                            {property.attributes.value}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </motion.div>
                 )}

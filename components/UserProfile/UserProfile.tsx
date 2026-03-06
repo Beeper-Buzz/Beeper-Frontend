@@ -75,17 +75,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ username }) => {
               <span className="block font-title text-lg font-bold text-white">
                 {userData.followers_count?.toLocaleString()}
               </span>
-              <span className="font-body text-xs text-white/50">
-                Followers
-              </span>
+              <span className="font-body text-xs text-white/50">Followers</span>
             </div>
             <div className="text-center">
               <span className="block font-title text-lg font-bold text-white">
                 {userData.following_count?.toLocaleString()}
               </span>
-              <span className="font-body text-xs text-white/50">
-                Following
-              </span>
+              <span className="font-body text-xs text-white/50">Following</span>
             </div>
           </div>
         </div>

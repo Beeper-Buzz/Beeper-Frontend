@@ -34,7 +34,11 @@ export const LoginDialog: React.FC<LoginDialogProps> = ({
   const SubmitButton = () => {
     const { submitForm, isSubmitting } = useFormikContext();
     return (
-      <Button onClick={submitForm} disabled={isSubmitting} className="neon-btn w-full">
+      <Button
+        onClick={submitForm}
+        disabled={isSubmitting}
+        className="neon-btn w-full"
+      >
         {isSubmitting ? "Logging in..." : "Submit"}
       </Button>
     );

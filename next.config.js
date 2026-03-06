@@ -38,7 +38,8 @@ const DEPLOY_ENV_MAPPING = {
 const envFile = path.join(__dirname, `.env.${DEPLOY_ENV_MAPPING[DEPLOY_ENV]}`);
 loadEnvVariables();
 const isLocalDevEnvironment = !process.env.DEPLOY_ENV;
-const SPREE_API_URL = process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080";
+const SPREE_API_URL =
+  process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080";
 
 module.exports = {
   swcMinify: true,
@@ -46,8 +47,8 @@ module.exports = {
     return [
       {
         source: "/api/v2/:path*",
-        destination: `${SPREE_API_URL}/api/v2/:path*`,
-      },
+        destination: `${SPREE_API_URL}/api/v2/:path*`
+      }
     ];
   },
   webpack: (config, { webpack }) => {

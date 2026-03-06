@@ -13,6 +13,7 @@
 ## Task 1: Spree Seed Script — Config & Data Definitions
 
 **Files:**
+
 - Create: `scripts/seed-spree-config.ts`
 
 **Step 1: Create the seed data config file**
@@ -22,34 +23,35 @@ This file defines all Beeper product data as typed constants. No API calls — j
 ```typescript
 // scripts/seed-spree-config.ts
 
-export const SPREE_API_URL = process.env.SPREE_ADMIN_API_URL || 'https://admin.beeper.buzz';
+export const SPREE_API_URL =
+  process.env.SPREE_ADMIN_API_URL || "https://admin.beeper.buzz";
 
 export const taxonomies = [
-  { name: 'Shop' },
-  { name: 'Marketplace' },
-  { name: 'Collections' },
+  { name: "Shop" },
+  { name: "Marketplace" },
+  { name: "Collections" }
 ] as const;
 
 export const taxons: Record<string, string[]> = {
-  Shop: ['Devices', 'Accessories', 'Apparel'],
-  Marketplace: ['Sample Packs', 'Synths', 'Visualizers'],
-  Collections: ['Featured', 'New Arrivals', 'Pre-Order', 'Bundles'],
+  Shop: ["Devices", "Accessories", "Apparel"],
+  Marketplace: ["Sample Packs", "Synths", "Visualizers"],
+  Collections: ["Featured", "New Arrivals", "Pre-Order", "Bundles"]
 };
 
 export const optionTypes = [
-  { name: 'color', presentation: 'Color', values: ['Black', 'White'] },
-  { name: 'size', presentation: 'Size', values: ['S', 'M', 'L', 'XL', 'XXL'] },
+  { name: "color", presentation: "Color", values: ["Black", "White"] },
+  { name: "size", presentation: "Size", values: ["S", "M", "L", "XL", "XXL"] }
 ];
 
 export const properties = [
-  { name: 'shipping_type', presentation: 'Shipping Type' },
-  { name: 'preorder', presentation: 'Pre-Order' },
-  { name: 'ships_date', presentation: 'Ships' },
-  { name: 'connectivity', presentation: 'Connectivity' },
-  { name: 'compatibility', presentation: 'Compatibility' },
-  { name: 'format', presentation: 'Format' },
-  { name: 'file_count', presentation: 'Files Included' },
-  { name: 'polyphony', presentation: 'Polyphony' },
+  { name: "shipping_type", presentation: "Shipping Type" },
+  { name: "preorder", presentation: "Pre-Order" },
+  { name: "ships_date", presentation: "Ships" },
+  { name: "connectivity", presentation: "Connectivity" },
+  { name: "compatibility", presentation: "Compatibility" },
+  { name: "format", presentation: "Format" },
+  { name: "file_count", presentation: "Files Included" },
+  { name: "polyphony", presentation: "Polyphony" }
 ];
 
 export interface ProductDef {
@@ -59,7 +61,7 @@ export interface ProductDef {
   price: string;
   sku: string;
   optionType?: string; // name of option type
-  taxons: string[];    // "Taxonomy > Taxon" format
+  taxons: string[]; // "Taxonomy > Taxon" format
   properties: Record<string, string>;
   variants?: { optionValue: string; sku: string }[];
 }
@@ -67,114 +69,131 @@ export interface ProductDef {
 export const products: ProductDef[] = [
   // ── Physical Products ──
   {
-    name: 'Beeper Δ8',
-    slug: 'beeper-delta-8',
-    description: 'BLE MIDI controller with 8x FSR trigger pads, 2x capacitive-touch sliders, and AMOLED heads-up display. Pre-order now — ships Fall 2026.',
-    price: '199.99',
-    sku: 'BPR-D8',
-    optionType: 'color',
-    taxons: ['Shop > Devices', 'Collections > Featured', 'Collections > Pre-Order'],
+    name: "Beeper Δ8",
+    slug: "beeper-delta-8",
+    description:
+      "BLE MIDI controller with 8x FSR trigger pads, 2x capacitive-touch sliders, and AMOLED heads-up display. Pre-order now — ships Fall 2026.",
+    price: "199.99",
+    sku: "BPR-D8",
+    optionType: "color",
+    taxons: [
+      "Shop > Devices",
+      "Collections > Featured",
+      "Collections > Pre-Order"
+    ],
     properties: {
-      shipping_type: 'physical',
-      preorder: 'true',
-      ships_date: 'Fall 2026',
-      connectivity: 'BLE MIDI',
+      shipping_type: "physical",
+      preorder: "true",
+      ships_date: "Fall 2026",
+      connectivity: "BLE MIDI"
     },
     variants: [
-      { optionValue: 'Black', sku: 'BPR-D8-BLK' },
-      { optionValue: 'White', sku: 'BPR-D8-WHT' },
-    ],
+      { optionValue: "Black", sku: "BPR-D8-BLK" },
+      { optionValue: "White", sku: "BPR-D8-WHT" }
+    ]
   },
   {
-    name: 'Beeper Carrying Case',
-    slug: 'beeper-carrying-case',
-    description: 'Protective carrying case for Beeper Δ8.',
-    price: '29.99',
-    sku: 'BPR-CASE',
-    taxons: ['Shop > Accessories'],
-    properties: { shipping_type: 'physical' },
+    name: "Beeper Carrying Case",
+    slug: "beeper-carrying-case",
+    description: "Protective carrying case for Beeper Δ8.",
+    price: "29.99",
+    sku: "BPR-CASE",
+    taxons: ["Shop > Accessories"],
+    properties: { shipping_type: "physical" }
   },
   {
-    name: 'USB-C Cable',
-    slug: 'usb-c-cable',
-    description: 'High-quality braided USB-C cable for charging and data.',
-    price: '14.99',
-    sku: 'BPR-USBC',
-    taxons: ['Shop > Accessories'],
-    properties: { shipping_type: 'physical' },
+    name: "USB-C Cable",
+    slug: "usb-c-cable",
+    description: "High-quality braided USB-C cable for charging and data.",
+    price: "14.99",
+    sku: "BPR-USBC",
+    taxons: ["Shop > Accessories"],
+    properties: { shipping_type: "physical" }
   },
   {
-    name: 'Beeper T-Shirt',
-    slug: 'beeper-tshirt',
-    description: 'Premium cotton t-shirt with Beeper logo.',
-    price: '34.99',
-    sku: 'BPR-TEE',
-    optionType: 'size',
-    taxons: ['Shop > Apparel'],
-    properties: { shipping_type: 'physical' },
+    name: "Beeper T-Shirt",
+    slug: "beeper-tshirt",
+    description: "Premium cotton t-shirt with Beeper logo.",
+    price: "34.99",
+    sku: "BPR-TEE",
+    optionType: "size",
+    taxons: ["Shop > Apparel"],
+    properties: { shipping_type: "physical" },
     variants: [
-      { optionValue: 'S', sku: 'BPR-TEE-S' },
-      { optionValue: 'M', sku: 'BPR-TEE-M' },
-      { optionValue: 'L', sku: 'BPR-TEE-L' },
-      { optionValue: 'XL', sku: 'BPR-TEE-XL' },
-      { optionValue: 'XXL', sku: 'BPR-TEE-XXL' },
-    ],
+      { optionValue: "S", sku: "BPR-TEE-S" },
+      { optionValue: "M", sku: "BPR-TEE-M" },
+      { optionValue: "L", sku: "BPR-TEE-L" },
+      { optionValue: "XL", sku: "BPR-TEE-XL" },
+      { optionValue: "XXL", sku: "BPR-TEE-XXL" }
+    ]
   },
   // ── Digital Products ──
   {
-    name: 'Beeper iOS App',
-    slug: 'beeper-ios-app',
-    description: 'The Beeper companion app for iOS. Synths, sample pads, visualizers, and BLE MIDI connectivity.',
-    price: '4.99',
-    sku: 'BPR-APP-IOS',
-    taxons: ['Marketplace > Synths'],
-    properties: { shipping_type: 'digital', compatibility: 'iOS 16+' },
+    name: "Beeper iOS App",
+    slug: "beeper-ios-app",
+    description:
+      "The Beeper companion app for iOS. Synths, sample pads, visualizers, and BLE MIDI connectivity.",
+    price: "4.99",
+    sku: "BPR-APP-IOS",
+    taxons: ["Marketplace > Synths"],
+    properties: { shipping_type: "digital", compatibility: "iOS 16+" }
   },
   {
-    name: 'Starter Sample Pack',
-    slug: 'starter-sample-pack',
-    description: '64 samples — drums, bass, leads, and FX. WAV and MIDI formats.',
-    price: '9.99',
-    sku: 'BPR-SP-STARTER',
-    taxons: ['Marketplace > Sample Packs', 'Collections > Featured'],
-    properties: { shipping_type: 'digital', format: 'WAV / MIDI', file_count: '64 samples', compatibility: 'iOS 16+' },
+    name: "Starter Sample Pack",
+    slug: "starter-sample-pack",
+    description:
+      "64 samples — drums, bass, leads, and FX. WAV and MIDI formats.",
+    price: "9.99",
+    sku: "BPR-SP-STARTER",
+    taxons: ["Marketplace > Sample Packs", "Collections > Featured"],
+    properties: {
+      shipping_type: "digital",
+      format: "WAV / MIDI",
+      file_count: "64 samples",
+      compatibility: "iOS 16+"
+    }
   },
   {
-    name: 'Analog Dreams Synth',
-    slug: 'analog-dreams-synth',
-    description: 'Warm analog-modeled synthesizer with 8-voice polyphony.',
-    price: '6.99',
-    sku: 'BPR-SY-ANALOG',
-    taxons: ['Marketplace > Synths'],
-    properties: { shipping_type: 'digital', polyphony: '8 voices', compatibility: 'iOS 16+' },
+    name: "Analog Dreams Synth",
+    slug: "analog-dreams-synth",
+    description: "Warm analog-modeled synthesizer with 8-voice polyphony.",
+    price: "6.99",
+    sku: "BPR-SY-ANALOG",
+    taxons: ["Marketplace > Synths"],
+    properties: {
+      shipping_type: "digital",
+      polyphony: "8 voices",
+      compatibility: "iOS 16+"
+    }
   },
   {
-    name: 'Neon Grid Visualizer',
-    slug: 'neon-grid-visualizer',
-    description: 'Retro vaporwave visualizer — perspective grid, sunset disc, neon horizon.',
-    price: '3.99',
-    sku: 'BPR-VZ-NEONGRID',
-    taxons: ['Marketplace > Visualizers'],
-    properties: { shipping_type: 'digital', compatibility: 'iOS 16+' },
-  },
+    name: "Neon Grid Visualizer",
+    slug: "neon-grid-visualizer",
+    description:
+      "Retro vaporwave visualizer — perspective grid, sunset disc, neon horizon.",
+    price: "3.99",
+    sku: "BPR-VZ-NEONGRID",
+    taxons: ["Marketplace > Visualizers"],
+    properties: { shipping_type: "digital", compatibility: "iOS 16+" }
+  }
 ];
 
 export const promotions = [
   {
-    name: 'Pre-Order 10% Off',
-    description: '10% off Beeper Δ8 pre-orders',
-    code: 'PREORDER10',
+    name: "Pre-Order 10% Off",
+    description: "10% off Beeper Δ8 pre-orders",
+    code: "PREORDER10"
   },
   {
-    name: 'Bundle: Device + Case',
-    description: '$10 off when you buy Beeper Δ8 and Carrying Case together',
-    code: 'BUNDLE10',
+    name: "Bundle: Device + Case",
+    description: "$10 off when you buy Beeper Δ8 and Carrying Case together",
+    code: "BUNDLE10"
   },
   {
-    name: 'Launch Free Shipping',
-    description: 'Free shipping on orders over $150',
-    code: null, // auto-apply
-  },
+    name: "Launch Free Shipping",
+    description: "Free shipping on orders over $150",
+    code: null // auto-apply
+  }
 ];
 ```
 
@@ -190,6 +209,7 @@ git commit -m "feat: add Spree seed data config with all Beeper products"
 ## Task 2: Spree Seed Script — API Client & Runner
 
 **Files:**
+
 - Create: `scripts/seed-spree.ts`
 
 **Step 1: Write the seed script**
@@ -213,41 +233,50 @@ import {
   properties,
   products,
   promotions,
-  type ProductDef,
-} from './seed-spree-config';
+  type ProductDef
+} from "./seed-spree-config";
 
-const API = SPREE_API_URL.replace(/\/+$/, '');
-let TOKEN = '';
+const API = SPREE_API_URL.replace(/\/+$/, "");
+let TOKEN = "";
 
 // ── Auth ──────────────────────────────────────────────────────────
 
 async function authenticate(): Promise<string> {
   const email = process.env.SPREE_ADMIN_EMAIL;
   const password = process.env.SPREE_ADMIN_PASSWORD;
-  if (!email || !password) throw new Error('Set SPREE_ADMIN_EMAIL and SPREE_ADMIN_PASSWORD');
+  if (!email || !password)
+    throw new Error("Set SPREE_ADMIN_EMAIL and SPREE_ADMIN_PASSWORD");
 
   const res = await fetch(`${API}/spree_oauth/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      grant_type: 'password',
+      grant_type: "password",
       username: email,
       password: password,
-      scope: 'admin',
-    }),
+      scope: "admin"
+    })
   });
-  if (!res.ok) throw new Error(`Auth failed: ${res.status} ${await res.text()}`);
+  if (!res.ok)
+    throw new Error(`Auth failed: ${res.status} ${await res.text()}`);
   const data = await res.json();
   return data.access_token;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────
 
-async function apiGet(path: string, params?: Record<string, string>): Promise<any> {
+async function apiGet(
+  path: string,
+  params?: Record<string, string>
+): Promise<any> {
   const url = new URL(`${API}/api/v2/platform${path}`);
-  if (params) Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  if (params)
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
   const res = await fetch(url.toString(), {
-    headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+    headers: {
+      Authorization: `Bearer ${TOKEN}`,
+      "Content-Type": "application/json"
+    }
   });
   if (!res.ok) return null;
   return res.json();
@@ -255,9 +284,12 @@ async function apiGet(path: string, params?: Record<string, string>): Promise<an
 
 async function apiPost(path: string, body: Record<string, any>): Promise<any> {
   const res = await fetch(`${API}/api/v2/platform${path}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
   });
   if (!res.ok) {
     const text = await res.text();
@@ -271,10 +303,10 @@ async function apiPost(path: string, body: Record<string, any>): Promise<any> {
 const idCache: Record<string, string> = {};
 
 async function seedTaxonomies() {
-  console.log('\n── Taxonomies ──');
+  console.log("\n── Taxonomies ──");
   for (const t of taxonomies) {
     // Check if exists
-    const existing = await apiGet('/taxonomies', { 'filter[name]': t.name });
+    const existing = await apiGet("/taxonomies", { "filter[name]": t.name });
     if (existing?.data?.length > 0) {
       const id = existing.data[0].id;
       idCache[`taxonomy:${t.name}`] = id;
@@ -284,7 +316,7 @@ async function seedTaxonomies() {
       console.log(`  ✓ ${t.name} (exists, id=${id})`);
       continue;
     }
-    const result = await apiPost('/taxonomies', { taxonomy: { name: t.name } });
+    const result = await apiPost("/taxonomies", { taxonomy: { name: t.name } });
     const id = result.data.id;
     idCache[`taxonomy:${t.name}`] = id;
     const rootTaxonId = result.data.relationships?.root?.data?.id;
@@ -294,71 +326,78 @@ async function seedTaxonomies() {
 }
 
 async function seedTaxons() {
-  console.log('\n── Taxons ──');
+  console.log("\n── Taxons ──");
   for (const [taxonomyName, children] of Object.entries(taxons)) {
     const taxonomyId = idCache[`taxonomy:${taxonomyName}`];
     const parentId = idCache[`taxon:${taxonomyName}`]; // root taxon
-    if (!taxonomyId) { console.log(`  ✗ Taxonomy "${taxonomyName}" not found`); continue; }
+    if (!taxonomyId) {
+      console.log(`  ✗ Taxonomy "${taxonomyName}" not found`);
+      continue;
+    }
 
     for (const name of children) {
-      const existing = await apiGet('/taxons', { 'filter[name]': name });
-      const match = existing?.data?.find((t: any) =>
-        t.relationships?.taxonomy?.data?.id === taxonomyId
+      const existing = await apiGet("/taxons", { "filter[name]": name });
+      const match = existing?.data?.find(
+        (t: any) => t.relationships?.taxonomy?.data?.id === taxonomyId
       );
       if (match) {
         idCache[`taxon:${taxonomyName} > ${name}`] = match.id;
         console.log(`  ✓ ${taxonomyName} > ${name} (exists, id=${match.id})`);
         continue;
       }
-      const result = await apiPost('/taxons', {
-        taxon: { name, taxonomy_id: taxonomyId, parent_id: parentId },
+      const result = await apiPost("/taxons", {
+        taxon: { name, taxonomy_id: taxonomyId, parent_id: parentId }
       });
       idCache[`taxon:${taxonomyName} > ${name}`] = result.data.id;
-      console.log(`  + ${taxonomyName} > ${name} (created, id=${result.data.id})`);
+      console.log(
+        `  + ${taxonomyName} > ${name} (created, id=${result.data.id})`
+      );
     }
   }
 }
 
 async function seedOptionTypes() {
-  console.log('\n── Option Types ──');
+  console.log("\n── Option Types ──");
   for (const ot of optionTypes) {
-    const existing = await apiGet('/option_types', { 'filter[name]': ot.name });
+    const existing = await apiGet("/option_types", { "filter[name]": ot.name });
     if (existing?.data?.length > 0) {
       idCache[`option_type:${ot.name}`] = existing.data[0].id;
       console.log(`  ✓ ${ot.name} (exists, id=${existing.data[0].id})`);
       // Seed option values
       for (const val of ot.values) {
-        const existingVals = await apiGet('/option_values', { 'filter[name]': val.toLowerCase() });
+        const existingVals = await apiGet("/option_values", {
+          "filter[name]": val.toLowerCase()
+        });
         if (existingVals?.data?.length > 0) {
           idCache[`option_value:${ot.name}:${val}`] = existingVals.data[0].id;
           console.log(`    ✓ ${val} (exists)`);
           continue;
         }
-        const result = await apiPost('/option_values', {
+        const result = await apiPost("/option_values", {
           option_value: {
             name: val.toLowerCase(),
             presentation: val,
-            option_type_id: existing.data[0].id,
-          },
+            option_type_id: existing.data[0].id
+          }
         });
         idCache[`option_value:${ot.name}:${val}`] = result.data.id;
         console.log(`    + ${val} (created)`);
       }
       continue;
     }
-    const result = await apiPost('/option_types', {
-      option_type: { name: ot.name, presentation: ot.presentation },
+    const result = await apiPost("/option_types", {
+      option_type: { name: ot.name, presentation: ot.presentation }
     });
     idCache[`option_type:${ot.name}`] = result.data.id;
     console.log(`  + ${ot.name} (created, id=${result.data.id})`);
 
     for (const val of ot.values) {
-      const valResult = await apiPost('/option_values', {
+      const valResult = await apiPost("/option_values", {
         option_value: {
           name: val.toLowerCase(),
           presentation: val,
-          option_type_id: result.data.id,
-        },
+          option_type_id: result.data.id
+        }
       });
       idCache[`option_value:${ot.name}:${val}`] = valResult.data.id;
       console.log(`    + ${val} (created)`);
@@ -367,16 +406,16 @@ async function seedOptionTypes() {
 }
 
 async function seedProperties() {
-  console.log('\n── Properties ──');
+  console.log("\n── Properties ──");
   for (const prop of properties) {
-    const existing = await apiGet('/properties', { 'filter[name]': prop.name });
+    const existing = await apiGet("/properties", { "filter[name]": prop.name });
     if (existing?.data?.length > 0) {
       idCache[`property:${prop.name}`] = existing.data[0].id;
       console.log(`  ✓ ${prop.name} (exists)`);
       continue;
     }
-    const result = await apiPost('/properties', {
-      property: { name: prop.name, presentation: prop.presentation },
+    const result = await apiPost("/properties", {
+      property: { name: prop.name, presentation: prop.presentation }
     });
     idCache[`property:${prop.name}`] = result.data.id;
     console.log(`  + ${prop.name} (created)`);
@@ -384,10 +423,10 @@ async function seedProperties() {
 }
 
 async function seedProducts() {
-  console.log('\n── Products ──');
+  console.log("\n── Products ──");
   for (const p of products) {
     // Check if product exists by slug
-    const existing = await apiGet('/products', { 'filter[slug]': p.slug });
+    const existing = await apiGet("/products", { "filter[slug]": p.slug });
     if (existing?.data?.length > 0) {
       idCache[`product:${p.slug}`] = existing.data[0].id;
       console.log(`  ✓ ${p.name} (exists, id=${existing.data[0].id})`);
@@ -395,9 +434,7 @@ async function seedProducts() {
     }
 
     // Resolve taxon IDs
-    const taxonIds = p.taxons
-      .map((t) => idCache[`taxon:${t}`])
-      .filter(Boolean);
+    const taxonIds = p.taxons.map((t) => idCache[`taxon:${t}`]).filter(Boolean);
 
     // Resolve option type IDs
     const optionTypeIds = p.optionType
@@ -413,11 +450,11 @@ async function seedProducts() {
       permalink: p.slug,
       available_on: new Date().toISOString(),
       taxon_ids: taxonIds,
-      option_type_ids: optionTypeIds,
+      option_type_ids: optionTypeIds
       // Note: product_properties are set separately in Spree 4.2
     };
 
-    const result = await apiPost('/products', { product: payload });
+    const result = await apiPost("/products", { product: payload });
     const productId = result.data.id;
     idCache[`product:${p.slug}`] = productId;
     console.log(`  + ${p.name} (created, id=${productId})`);
@@ -427,12 +464,12 @@ async function seedProducts() {
       const propertyId = idCache[`property:${propName}`];
       if (!propertyId) continue;
       try {
-        await apiPost('/product_properties', {
+        await apiPost("/product_properties", {
           product_property: {
             product_id: productId,
             property_id: propertyId,
-            value: propValue,
-          },
+            value: propValue
+          }
         });
         console.log(`    + property: ${propName}=${propValue}`);
       } catch (e: any) {
@@ -443,20 +480,23 @@ async function seedProducts() {
     // Create variants if defined
     if (p.variants && p.optionType) {
       for (const v of p.variants) {
-        const optionValueId = idCache[`option_value:${p.optionType}:${v.optionValue}`];
+        const optionValueId =
+          idCache[`option_value:${p.optionType}:${v.optionValue}`];
         if (!optionValueId) {
-          console.log(`    ✗ variant ${v.sku}: option value "${v.optionValue}" not found`);
+          console.log(
+            `    ✗ variant ${v.sku}: option value "${v.optionValue}" not found`
+          );
           continue;
         }
         try {
-          await apiPost('/variants', {
+          await apiPost("/variants", {
             variant: {
               product_id: productId,
               sku: v.sku,
               price: p.price,
               option_value_ids: [optionValueId],
-              track_inventory: false,
-            },
+              track_inventory: false
+            }
           });
           console.log(`    + variant: ${v.sku} (${v.optionValue})`);
         } catch (e: any) {
@@ -468,20 +508,22 @@ async function seedProducts() {
 }
 
 async function seedPromotions() {
-  console.log('\n── Promotions ──');
+  console.log("\n── Promotions ──");
   for (const promo of promotions) {
-    const existing = await apiGet('/promotions', { 'filter[name]': promo.name });
+    const existing = await apiGet("/promotions", {
+      "filter[name]": promo.name
+    });
     if (existing?.data?.length > 0) {
       console.log(`  ✓ ${promo.name} (exists)`);
       continue;
     }
     const payload: Record<string, any> = {
       name: promo.name,
-      description: promo.description,
+      description: promo.description
     };
     if (promo.code) payload.code = promo.code;
     try {
-      await apiPost('/promotions', { promotion: payload });
+      await apiPost("/promotions", { promotion: payload });
       console.log(`  + ${promo.name} (created)`);
     } catch (e: any) {
       console.log(`  ✗ ${promo.name}: ${e.message}`);
@@ -494,7 +536,7 @@ async function seedPromotions() {
 async function main() {
   console.log(`Seeding Spree at ${API}...\n`);
   TOKEN = await authenticate();
-  console.log('Authenticated ✓');
+  console.log("Authenticated ✓");
 
   await seedTaxonomies();
   await seedTaxons();
@@ -503,11 +545,11 @@ async function main() {
   await seedProducts();
   await seedPromotions();
 
-  console.log('\n✓ Seed complete!\n');
+  console.log("\n✓ Seed complete!\n");
 }
 
 main().catch((e) => {
-  console.error('Seed failed:', e);
+  console.error("Seed failed:", e);
   process.exit(1);
 });
 ```
@@ -539,6 +581,7 @@ Expected: All taxonomies, taxons, option types, properties, products, variants, 
 ## Task 3: Tailwind Synthwave Tokens
 
 **Files:**
+
 - Modify: `tailwind.config.ts`
 
 **Step 1: Add synthwave color tokens and font**
@@ -615,6 +658,7 @@ git commit -m "feat: add synthwave neon/glass/synth tokens to Tailwind config"
 ## Task 4: Global Styles — Synthwave Foundation
 
 **Files:**
+
 - Modify: `styles/globals.css`
 - Modify: `styles/fonts.css`
 - Create: `styles/synthwave.css`
@@ -625,7 +669,7 @@ Append to end of `styles/fonts.css`:
 
 ```css
 /* Press Start 2P — retro pixel font (Google Fonts) */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 ```
 
 **Step 2: Create synthwave.css utility classes**
@@ -650,24 +694,24 @@ Append to end of `styles/fonts.css`:
 
   /* Neon text glow variants */
   .neon-text-cyan {
-    color: #00FFFF;
-    text-shadow: 0 0 7px #00FFFF, 0 0 20px #00FFFF, 0 0 42px #0077FF;
+    color: #00ffff;
+    text-shadow: 0 0 7px #00ffff, 0 0 20px #00ffff, 0 0 42px #0077ff;
   }
   .neon-text-magenta {
-    color: #FF00FF;
-    text-shadow: 0 0 7px #FF00FF, 0 0 20px #FF00FF, 0 0 42px #7700FF;
+    color: #ff00ff;
+    text-shadow: 0 0 7px #ff00ff, 0 0 20px #ff00ff, 0 0 42px #7700ff;
   }
   .neon-text-pink {
-    color: #FF1493;
-    text-shadow: 0 0 7px #FF1493, 0 0 20px #FF1493, 0 0 42px #FF0077;
+    color: #ff1493;
+    text-shadow: 0 0 7px #ff1493, 0 0 20px #ff1493, 0 0 42px #ff0077;
   }
   .neon-text-lime {
-    color: #39FF14;
-    text-shadow: 0 0 7px #39FF14, 0 0 20px #39FF14, 0 0 42px #00FF77;
+    color: #39ff14;
+    text-shadow: 0 0 7px #39ff14, 0 0 20px #39ff14, 0 0 42px #00ff77;
   }
   .neon-text-amber {
-    color: #FF6600;
-    text-shadow: 0 0 7px #FF6600, 0 0 20px #FF6600, 0 0 42px #FF3300;
+    color: #ff6600;
+    text-shadow: 0 0 7px #ff6600, 0 0 20px #ff6600, 0 0 42px #ff3300;
   }
 
   /* Neon border glow (for buttons, badges) */
@@ -680,7 +724,7 @@ Append to end of `styles/fonts.css`:
 
   /* Synthwave page background */
   .synth-bg {
-    background: linear-gradient(180deg, #0A0020 0%, #000000 100%);
+    background: linear-gradient(180deg, #0a0020 0%, #000000 100%);
     min-height: 100vh;
   }
 
@@ -722,7 +766,7 @@ Append to end of `styles/fonts.css`:
 }
 ```
 
-**Step 3: Import synthwave.css in _app.tsx**
+**Step 3: Import synthwave.css in \_app.tsx**
 
 Add this import after the existing style imports in `pages/_app.tsx`:
 
@@ -736,15 +780,15 @@ Replace the `.dark` block in globals.css with synthwave-appropriate values:
 
 ```css
 .dark {
-  --background: 260 100% 4%;      /* #0A0020 */
+  --background: 260 100% 4%; /* #0A0020 */
   --foreground: 0 0% 100%;
-  --card: 240 20% 6%;             /* dark surface */
+  --card: 240 20% 6%; /* dark surface */
   --card-foreground: 0 0% 100%;
   --popover: 240 20% 6%;
   --popover-foreground: 0 0% 100%;
-  --primary: 180 100% 50%;        /* neon cyan */
+  --primary: 180 100% 50%; /* neon cyan */
   --primary-foreground: 0 0% 0%;
-  --secondary: 300 100% 50%;      /* neon magenta */
+  --secondary: 300 100% 50%; /* neon magenta */
   --secondary-foreground: 0 0% 100%;
   --muted: 240 10% 15%;
   --muted-foreground: 0 0% 60%;
@@ -754,19 +798,22 @@ Replace the `.dark` block in globals.css with synthwave-appropriate values:
   --destructive-foreground: 0 0% 100%;
   --border: 0 0% 10%;
   --input: 0 0% 10%;
-  --ring: 180 100% 50%;           /* neon cyan */
+  --ring: 180 100% 50%; /* neon cyan */
 }
 ```
 
-**Step 5: Force dark mode in _app.tsx**
+**Step 5: Force dark mode in \_app.tsx**
 
 In `pages/_app.tsx`, add the `dark` class to the root div so synthwave theming applies:
 
 Change:
+
 ```tsx
 <div className="m-0 flex h-screen w-full flex-col overflow-visible bg-background p-0 font-body text-body-md text-foreground">
 ```
+
 To:
+
 ```tsx
 <div className="dark m-0 flex h-screen w-full flex-col overflow-visible bg-synth-gradient p-0 font-body text-body-md text-foreground">
 ```
@@ -783,6 +830,7 @@ git commit -m "feat: add synthwave foundation — glass/neon CSS, PressStart2P f
 ## Task 5: Homepage Redesign
 
 **Files:**
+
 - Modify: `components/Home/StaticHome.tsx`
 - Create: `components/Home/HeroSynthwave.tsx`
 - Create: `components/Home/FeaturedStrip.tsx`
@@ -793,9 +841,9 @@ git commit -m "feat: add synthwave foundation — glass/neon CSS, PressStart2P f
 
 ```tsx
 // components/Home/HeroSynthwave.tsx
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 export const HeroSynthwave: React.FC = () => {
   return (
@@ -818,8 +866,8 @@ export const HeroSynthwave: React.FC = () => {
           PRE-ORDER NOW — SHIPS FALL &apos;26
         </p>
         <p className="mt-6 max-w-lg font-body text-sm text-white/40 sm:text-base">
-          BLE MIDI controller with 8x FSR trigger pads, 2x capacitive-touch sliders,
-          and AMOLED heads-up display.
+          BLE MIDI controller with 8x FSR trigger pads, 2x capacitive-touch
+          sliders, and AMOLED heads-up display.
         </p>
         <Link href="/beeper-delta-8">
           <motion.div
@@ -840,9 +888,9 @@ export const HeroSynthwave: React.FC = () => {
 
 ```tsx
 // components/Home/FeaturedStrip.tsx
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface FeaturedProduct {
   id: string;
@@ -857,7 +905,10 @@ interface FeaturedStripProps {
   title?: string;
 }
 
-export const FeaturedStrip: React.FC<FeaturedStripProps> = ({ products, title = 'FEATURED' }) => {
+export const FeaturedStrip: React.FC<FeaturedStripProps> = ({
+  products,
+  title = "FEATURED"
+}) => {
   if (!products?.length) return null;
 
   return (
@@ -888,8 +939,12 @@ export const FeaturedStrip: React.FC<FeaturedStripProps> = ({ products, title = 
                     </div>
                   )}
                 </div>
-                <h3 className="font-mono-bold text-sm text-white">{product.name}</h3>
-                <p className="mt-1 font-mono-bold text-sm text-neon-cyan">${product.price}</p>
+                <h3 className="font-mono-bold text-sm text-white">
+                  {product.name}
+                </h3>
+                <p className="mt-1 font-mono-bold text-sm text-neon-cyan">
+                  ${product.price}
+                </p>
               </div>
             </Link>
           </motion.div>
@@ -904,9 +959,9 @@ export const FeaturedStrip: React.FC<FeaturedStripProps> = ({ products, title = 
 
 ```tsx
 // components/Home/ShopMarketplaceSplit.tsx
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 export const ShopMarketplaceSplit: React.FC = () => {
   return (
@@ -917,7 +972,9 @@ export const ShopMarketplaceSplit: React.FC = () => {
             whileHover={{ scale: 1.01 }}
             className="glass-panel group relative flex min-h-[280px] cursor-pointer flex-col items-center justify-center p-10 transition-all duration-300 hover:border-neon-cyan/30 hover:shadow-neon-cyan"
           >
-            <h2 className="font-pixel text-lg neon-text-cyan sm:text-xl">SHOP</h2>
+            <h2 className="font-pixel text-lg neon-text-cyan sm:text-xl">
+              SHOP
+            </h2>
             <p className="mt-4 text-center font-mono-bold text-xs uppercase tracking-widest text-white/40">
               Devices · Accessories · Apparel
             </p>
@@ -929,7 +986,9 @@ export const ShopMarketplaceSplit: React.FC = () => {
             whileHover={{ scale: 1.01 }}
             className="glass-panel group relative flex min-h-[280px] cursor-pointer flex-col items-center justify-center p-10 transition-all duration-300 hover:border-neon-magenta/30 hover:shadow-neon-magenta"
           >
-            <h2 className="font-pixel text-lg neon-text-magenta sm:text-xl">MARKETPLACE</h2>
+            <h2 className="font-pixel text-lg neon-text-magenta sm:text-xl">
+              MARKETPLACE
+            </h2>
             <p className="mt-4 text-center font-mono-bold text-xs uppercase tracking-widest text-white/40">
               Sample Packs · Synths · Visualizers
             </p>
@@ -945,14 +1004,14 @@ export const ShopMarketplaceSplit: React.FC = () => {
 
 ```tsx
 // components/Home/DeviceSpecs.tsx
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from "react";
+import { motion } from "framer-motion";
 
 const specs = [
-  { label: '8× FSR PADS', icon: '⬡' },
-  { label: '2× CAP-TOUCH', icon: '⫼' },
-  { label: 'AMOLED HUD', icon: '◈' },
-  { label: 'BLE MIDI', icon: '⟡' },
+  { label: "8× FSR PADS", icon: "⬡" },
+  { label: "2× CAP-TOUCH", icon: "⫼" },
+  { label: "AMOLED HUD", icon: "◈" },
+  { label: "BLE MIDI", icon: "⟡" }
 ];
 
 export const DeviceSpecs: React.FC = () => {
@@ -985,28 +1044,33 @@ export const DeviceSpecs: React.FC = () => {
 Replace `components/Home/StaticHome.tsx` contents with:
 
 ```tsx
-import React from 'react';
-import { Layout } from '../Layout';
-import { useProducts } from '../../hooks';
-import { Loading } from '../Loading';
-import { HeroSynthwave } from './HeroSynthwave';
-import { FeaturedStrip } from './FeaturedStrip';
-import { ShopMarketplaceSplit } from './ShopMarketplaceSplit';
-import { DeviceSpecs } from './DeviceSpecs';
-import { Newsletter } from './Newsletter';
+import React from "react";
+import { Layout } from "../Layout";
+import { useProducts } from "../../hooks";
+import { Loading } from "../Loading";
+import { HeroSynthwave } from "./HeroSynthwave";
+import { FeaturedStrip } from "./FeaturedStrip";
+import { ShopMarketplaceSplit } from "./ShopMarketplaceSplit";
+import { DeviceSpecs } from "./DeviceSpecs";
+import { Newsletter } from "./Newsletter";
 
 export const StaticHome = () => {
   const { data: productsData, isLoading } = useProducts(1);
 
-  if (isLoading) return <Layout><Loading /></Layout>;
+  if (isLoading)
+    return (
+      <Layout>
+        <Loading />
+      </Layout>
+    );
 
   // Extract featured products for the strip
   const featured = (productsData?.data || []).slice(0, 6).map((p: any) => ({
     id: p.id,
-    name: p.attributes?.name || '',
-    price: p.attributes?.price || '0.00',
-    slug: p.attributes?.slug || '',
-    imageUrl: p.attributes?.images?.[0]?.styles?.[2]?.url || null,
+    name: p.attributes?.name || "",
+    price: p.attributes?.price || "0.00",
+    slug: p.attributes?.slug || "",
+    imageUrl: p.attributes?.images?.[0]?.styles?.[2]?.url || null
   }));
 
   return (
@@ -1041,11 +1105,13 @@ git commit -m "feat: redesign homepage with synthwave hero, featured strip, shop
 ## Task 6: Browse Page — Dual Mode
 
 **Files:**
+
 - Modify: `components/Browse/Browse.tsx`
 
 **Step 1: Rewrite Browse component with mode toggle**
 
 The key changes:
+
 1. Add `mode` query param (`shop` | `marketplace`)
 2. Mode toggle tabs at top with neon styling
 3. Filter chips come from taxonomy taxon names
@@ -1080,11 +1146,13 @@ git commit -m "feat: dual-mode browse page with shop/marketplace toggle, synthwa
 ## Task 7: Product Card — Glass Treatment
 
 **Files:**
+
 - Modify: `components/ProductCard/ProductCard.tsx`
 
 **Step 1: Update ProductCard with glass + neon styling**
 
 Key changes:
+
 - Wrap card in `glass-panel-hover`
 - Price in `text-neon-cyan`
 - Pre-order badge if `taxon_names` includes "Pre-Order"
@@ -1104,11 +1172,13 @@ git commit -m "feat: glassmorphic product card with neon accents and pre-order b
 ## Task 8: Header — Glass Nav Bar
 
 **Files:**
+
 - Modify: `components/Header/Header.tsx`
 
 **Step 1: Update Header with glass treatment**
 
 Key changes:
+
 - Add `glass-panel` background with `backdrop-blur`
 - Make it sticky with `fixed top-0 z-50`
 - Logo text in neon (or use existing Logo component)
@@ -1127,11 +1197,13 @@ git commit -m "feat: glassmorphic header with neon accents"
 ## Task 9: Product Detail — Glass Treatment
 
 **Files:**
+
 - Modify: `components/ProductDetails/RetailProductDetails.tsx`
 
 **Step 1: Apply synthwave styling to product detail**
 
 Key changes:
+
 - Page wrapped in `synth-bg`
 - Product image container with radial neon glow behind (`bg-neon-magenta/10 blur-[100px]`)
 - Info section in `glass-panel`
@@ -1153,6 +1225,7 @@ git commit -m "feat: synthwave product detail page with glass panels and neon ac
 ## Task 10: Cart & Checkout — Glass Treatment
 
 **Files:**
+
 - Modify: `components/Cart/Cart.tsx`
 - Modify: `components/Checkout/Checkout.tsx`
 
@@ -1183,6 +1256,7 @@ git commit -m "feat: glassmorphic cart and checkout pages"
 ## Task 11: LogoBlob — Match BeeperNative
 
 **Files:**
+
 - Modify: `components/LogoBlob/LogoBlob.tsx`
 - Modify: `components/LogoBlob/LogoBlob.styles.tsx`
 - Modify: `components/Logo/AnimatedLogo.tsx`
@@ -1190,6 +1264,7 @@ git commit -m "feat: glassmorphic cart and checkout pages"
 **Step 1: Update blob to purple with graduated glow**
 
 Key changes to `LogoBlob.tsx`:
+
 - Blob fill: solid `#7c3aed` (purple) instead of animated peach/mint/lavender
 - Blob stroke: keep `#ff008a` (hot pink)
 - Animation: slow to 16000ms morph cycle (react-spring path interpolation between 4 blob shapes)
@@ -1197,6 +1272,7 @@ Key changes to `LogoBlob.tsx`:
 - Add graduated glow: `box-shadow` stack with 5-10 layers of purple/magenta at decreasing opacity
 
 Key changes to `AnimatedLogo.tsx`:
+
 - Letter fill: SVG `<linearGradient>` from `#fffb00` to `#ffb300` (yellow→orange)
 - Letter animation timing: variable per letter (3600-4600ms, staggered 0-900ms)
 - Add "Play With Music" tagline below in white uppercase IBM Plex Mono

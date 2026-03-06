@@ -338,10 +338,10 @@ export const Browse: React.FC = () => {
 
   const hasActiveFilters = Boolean(
     filters.categories.length > 0 ||
-    filters.priceMin ||
-    filters.priceMax ||
-    filters.search ||
-    activeChips.length > 0
+      filters.priceMin ||
+      filters.priceMax ||
+      filters.search ||
+      activeChips.length > 0
   );
 
   // ── Sidebar filters (Spree-powered, for Shop mode with Spree data) ──

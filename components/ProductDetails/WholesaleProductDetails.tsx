@@ -415,9 +415,7 @@ export const WholesaleProductDetails = ({
                     <Heart
                       className={cn("h-4 w-4", isFavorited && "fill-current")}
                     />
-                    {isFavorited
-                      ? "Remove from Favorites"
-                      : "Add to Favorites"}
+                    {isFavorited ? "Remove from Favorites" : "Add to Favorites"}
                   </button>
 
                   {/* Color Swatches */}
@@ -476,7 +474,8 @@ export const WholesaleProductDetails = ({
                   {productColors && productColors.length > 0 && (
                     <div className="my-8">
                       {/* Table Head */}
-                      <div className="grid grid-cols-[30%_25%_20%_20%] rounded-t-lg font-mono text-xs font-semibold uppercase tracking-wider text-neon-cyan"
+                      <div
+                        className="grid grid-cols-[30%_25%_20%_20%] rounded-t-lg font-mono text-xs font-semibold uppercase tracking-wider text-neon-cyan"
                         style={{
                           background: "rgba(0, 255, 255, 0.08)",
                           borderBottom: "1px solid rgba(0, 255, 255, 0.2)"

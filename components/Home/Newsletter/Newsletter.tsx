@@ -11,7 +11,9 @@ export interface NewsletterProps {
 
 const Newsletter: React.FC<NewsletterProps> = () => {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,10 +25,10 @@ const Newsletter: React.FC<NewsletterProps> = () => {
       const res = await fetch("/api/subscribe", {
         body: JSON.stringify({
           email,
-          newContact: true,
+          newContact: true
         }),
         headers: { "Content-Type": "application/json" },
-        method: "POST",
+        method: "POST"
       });
       const body = await res.json();
       if (body.error) {
@@ -72,7 +74,11 @@ const Newsletter: React.FC<NewsletterProps> = () => {
             required
             className="neon-focus flex-1 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 font-title text-sm text-white placeholder:text-gray-500"
           />
-          <button type="submit" className="neon-btn whitespace-nowrap" disabled={status === "sending"}>
+          <button
+            type="submit"
+            className="neon-btn whitespace-nowrap"
+            disabled={status === "sending"}
+          >
             {status === "sending" ? "SENDING..." : "SUBSCRIBE"}
           </button>
         </form>

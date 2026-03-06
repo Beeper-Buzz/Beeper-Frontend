@@ -324,9 +324,7 @@ const CheckoutWizard: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           })}
 
           <div className="mt-3 flex justify-between border-t border-white/10 pt-3">
-            <span className="text-sm font-medium text-white/50">
-              Total
-            </span>
+            <span className="text-sm font-medium text-white/50">Total</span>
             <span className="text-base font-semibold text-white">
               {displayTotal}
             </span>
@@ -678,9 +676,7 @@ const CheckoutWizard: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <div className="px-5 py-10 text-center">
           <div className="mb-4 text-5xl">🎉</div>
           <div className="mb-2 text-base text-white">Order Complete!</div>
-          <div className="text-sm text-white/50">
-            Order #{orderNumber}
-          </div>
+          <div className="text-sm text-white/50">Order #{orderNumber}</div>
           <div className="mt-5 flex gap-3">
             <button
               onClick={onClose}

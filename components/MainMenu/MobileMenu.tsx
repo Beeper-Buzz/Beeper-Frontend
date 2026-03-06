@@ -112,9 +112,19 @@ export const MobileMenu = ({
           <Menu className="h-6 w-6" />
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[66vw] max-w-[320px] p-0 border-r border-glass-border" style={{ background: 'rgba(10, 0, 32, 0.95)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
+      <SheetContent
+        side="left"
+        className="w-[66vw] max-w-[320px] p-0 border-r border-glass-border"
+        style={{
+          background: "rgba(10, 0, 32, 0.95)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)"
+        }}
+      >
         <SheetHeader className="border-b border-neon-cyan/20 px-6 py-4">
-          <SheetTitle className="font-pressstart text-sm text-neon-cyan">Menu</SheetTitle>
+          <SheetTitle className="font-pressstart text-sm text-neon-cyan">
+            Menu
+          </SheetTitle>
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-60px)]">
           <div className="flex flex-col px-6 py-4">

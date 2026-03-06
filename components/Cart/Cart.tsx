@@ -122,7 +122,9 @@ export const Cart = () => {
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-deep">
-                  <span className="font-pressstart text-[8px] text-neon-cyan/40">IMG</span>
+                  <span className="font-pressstart text-[8px] text-neon-cyan/40">
+                    IMG
+                  </span>
                 </div>
                 <span className="truncate font-title text-sm text-white">
                   {product?.attributes?.name}
@@ -188,7 +190,8 @@ export const Cart = () => {
       <div
         className="flex min-h-[60vh] items-center justify-center"
         style={{
-          background: "linear-gradient(180deg, #0A0020 0%, #1a0040 50%, #0A0020 100%)"
+          background:
+            "linear-gradient(180deg, #0A0020 0%, #1a0040 50%, #0A0020 100%)"
         }}
       >
         <p className="font-pressstart text-xs leading-relaxed text-white/40">
@@ -203,7 +206,8 @@ export const Cart = () => {
       <div
         className="min-h-screen py-12"
         style={{
-          background: "linear-gradient(180deg, #0A0020 0%, #1a0040 50%, #0A0020 100%)"
+          background:
+            "linear-gradient(180deg, #0A0020 0%, #1a0040 50%, #0A0020 100%)"
         }}
       >
         <div className="section-container">

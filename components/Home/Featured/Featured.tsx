@@ -20,42 +20,42 @@ const PLACEHOLDER_PRODUCTS: FeaturedProduct[] = [
   {
     name: "Beeper \u03948",
     price: "$199.99",
-    href: "/beeper-8",
+    href: "/beeper-8"
   },
   {
     name: "Beeper \u03948 Pro",
     price: "$349.99",
-    href: "/beeper-delta-8-pro",
+    href: "/beeper-delta-8-pro"
   },
   {
     name: "USB-C Cable",
     price: "$12.99",
-    href: "/browse",
+    href: "/browse"
   },
   {
     name: "Carry Case",
     price: "$29.99",
-    href: "/browse",
+    href: "/browse"
   },
   {
     name: "Lo-Fi Starter Kit",
     price: "$9.99",
-    href: "/browse?mode=marketplace",
+    href: "/browse?mode=marketplace"
   },
   {
     name: "Synthwave Pack",
     price: "$14.99",
-    href: "/browse?mode=marketplace",
-  },
+    href: "/browse?mode=marketplace"
+  }
 ];
 
 const containerVariants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.08,
-    },
-  },
+      staggerChildren: 0.08
+    }
+  }
 };
 
 const cardVariants = {
@@ -63,8 +63,8 @@ const cardVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
+    transition: { duration: 0.5, ease: "easeOut" }
+  }
 };
 
 const Featured: React.FC<FeaturedProps> = ({ products, title }) => {
@@ -92,7 +92,7 @@ const Featured: React.FC<FeaturedProps> = ({ products, title }) => {
         viewport={{ once: true, margin: "-50px" }}
         style={{
           scrollbarWidth: "thin",
-          scrollbarColor: "rgba(0, 255, 255, 0.3) transparent",
+          scrollbarColor: "rgba(0, 255, 255, 0.3) transparent"
         }}
       >
         {items.map((product) => (

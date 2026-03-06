@@ -7,7 +7,7 @@ const BLOB_BOX_SHADOW = [
   "0 0 30px rgba(124, 58, 237, 0.25)",
   "0 0 20px rgba(124, 58, 237, 0.3)",
   "0 0 12px rgba(255, 0, 138, 0.25)",
-  "0 0 8px rgba(255, 0, 138, 0.3)",
+  "0 0 8px rgba(255, 0, 138, 0.3)"
 ].join(", ");
 
 const blob1 =
@@ -54,13 +54,11 @@ export const LogoBlob = ({
     return (
       <div className="relative flex items-center justify-center">
         {/* Blob behind the logo — absolutely centered via inset-0 + m-auto */}
-        <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        >
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div
             className="rounded-full animate-blob-breathe"
             style={{
-              filter: "blur(6px)",
+              filter: "blur(6px)"
             }}
           >
             <animated.svg
