@@ -107,6 +107,12 @@
   box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.3), 0 0 8px rgba(0, 255, 255, 0.2);
 }
 
+/* === Letter Bob Animation (loops twice on page load) === */
+@keyframes letter-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
 /* === Breathing Glow Animation === */
 @keyframes breathe {
   0%, 100% { opacity: 0.45; transform: scale(0.38); }

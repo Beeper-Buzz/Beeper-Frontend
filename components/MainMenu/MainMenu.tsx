@@ -26,10 +26,12 @@ export const MainMenu = (props: MainMenuProps) => {
   if (menuItemsIsLoading || menuLocationIsLoading || !menuItemsData)
     return null;
 
-  const menuItems =
+  const allMenuItems =
     menuItemsData?.response_data?.menu_location_listing?.length > 0
       ? menuItemsData.response_data.menu_location_listing[0].menu_item_listing
       : [];
+  // Filter to root items only — children are nested via `childrens` field
+  const menuItems = allMenuItems.filter((item: any) => !item.parent_id || item.parent_id === 0);
 
   return (
     <>

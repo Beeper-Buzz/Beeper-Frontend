@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import { useSpring, animated } from "@react-spring/web";
 
-import { LogoMark, BlobWrapper, AnimatedLogoWrapper } from "./LogoBlob.styles";
 import { AnimatedLogo } from "../Logo/AnimatedLogo";
+
+const BLOB_BOX_SHADOW = [
+  "0 0 30px rgba(124, 58, 237, 0.25)",
+  "0 0 20px rgba(124, 58, 237, 0.3)",
+  "0 0 12px rgba(255, 0, 138, 0.25)",
+  "0 0 8px rgba(255, 0, 138, 0.3)",
+].join(", ");
 
 const blob1 =
   "M43.3,-69.7C51.1,-62.3,49,-41.9,53.7,-26.1C58.4,-10.4,69.9,0.6,68.8,10.1C67.8,19.6,54.4,27.5,43.4,34.4C32.4,41.2,24,46.9,14.5,50.1C5,53.4,-5.6,54,-19.9,55.4C-34.2,56.8,-52.3,58.9,-58.2,51C-64.1,43.1,-57.9,25.3,-58.1,9.7C-58.3,-6,-65,-19.4,-65,-34C-65,-48.6,-58.4,-64.5,-46.4,-70C-34.4,-75.6,-17.2,-70.8,0.3,-71.2C17.7,-71.6,35.5,-77.2,43.3,-69.7Z";
@@ -17,7 +23,8 @@ export const LogoBlob = ({
   hasBlob,
   isDark,
   isAnimated = false,
-  showTagline = false
+  showTagline = false,
+  animateLetters = true
 }: any) => {
   const [open, toggle] = useState(false);
   const [active, setActive] = useState(false);
@@ -45,48 +52,66 @@ export const LogoBlob = ({
 
   if (isAnimated) {
     return (
-      <>
-        <BlobWrapper>
-          <animated.svg
-            style={{ position: "relative" }}
-            xmlns="http://www.w3.org/2000/svg"
-            fillRule="evenodd"
-            clipRule="evenodd"
-            imageRendering="optimizeQuality"
-            shapeRendering="geometricPrecision"
-            textRendering="geometricPrecision"
-            version="1.1"
-            viewBox="0 0 200 200"
-            height="220px"
-            width="220px"
-            onClick={() => setActive(!active)}
+      <div className="relative flex items-center justify-center">
+        {/* Blob behind the logo — absolutely centered via inset-0 + m-auto */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        >
+          <div
+            className="rounded-full animate-blob-breathe"
+            style={{
+              filter: "blur(6px)",
+            }}
           >
-            <g transform="translate(100 100)">
-              <animated.path
-                stroke="#ff008a"
-                strokeWidth="10"
-                fill="#7c3aed"
-                d={x.to({
-                  range: [0, 0.33, 0.66, 1],
-                  output: [blob1, blob2, blob3, blob4]
-                })}
-                style={{
-                  transform: "translate(100, 100)"
-                }}
-              />
-            </g>
-          </animated.svg>
-        </BlobWrapper>
-        <AnimatedLogoWrapper onClick={() => toggle(!open)}>
-          <AnimatedLogo showTagline={showTagline} />
-        </AnimatedLogoWrapper>
-      </>
+            <animated.svg
+              style={{ position: "relative", display: "block" }}
+              xmlns="http://www.w3.org/2000/svg"
+              fillRule="evenodd"
+              clipRule="evenodd"
+              imageRendering="optimizeQuality"
+              shapeRendering="geometricPrecision"
+              textRendering="geometricPrecision"
+              version="1.1"
+              viewBox="0 0 200 200"
+              height="220px"
+              width="220px"
+              onClick={() => setActive(!active)}
+              className="pointer-events-auto"
+            >
+              <g transform="translate(100 100)">
+                <animated.path
+                  stroke="#ff008a"
+                  strokeWidth="10"
+                  fill="#7c3aed"
+                  d={x.to({
+                    range: [0, 0.33, 0.66, 1],
+                    output: [blob1, blob2, blob3, blob4]
+                  })}
+                  style={{
+                    transform: "translate(100, 100)"
+                  }}
+                />
+              </g>
+            </animated.svg>
+          </div>
+        </div>
+        {/* Logo on top — z-10 */}
+        <div
+          className="relative z-10 w-[90%] h-auto sm:w-auto sm:h-[160px] [&_svg]:w-full [&_svg]:h-auto sm:[&_svg]:w-auto sm:[&_svg]:h-[160px]"
+          onClick={() => toggle(!open)}
+        >
+          <AnimatedLogo showTagline={showTagline} animate={animateLetters} />
+        </div>
+      </div>
     );
   }
 
   return (
     <>
-      <BlobWrapper>
+      <div
+        className="absolute -mt-[100px] sm:-mt-[200px] rounded-full animate-blob-breathe"
+        style={{ boxShadow: BLOB_BOX_SHADOW }}
+      >
         <animated.svg
           style={{ position: "relative" }}
           xmlns="http://www.w3.org/2000/svg"
@@ -116,8 +141,14 @@ export const LogoBlob = ({
             />
           </g>
         </animated.svg>
-      </BlobWrapper>
-      <LogoMark src={logoPath} onClick={() => toggle(!open)} />
+      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className="w-[90%] h-auto -mt-10 relative sm:w-auto sm:h-[160px]"
+        src={logoPath}
+        alt=""
+        onClick={() => toggle(!open)}
+      />
     </>
   );
 };

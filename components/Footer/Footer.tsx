@@ -12,6 +12,7 @@ import {
 } from "../../hooks";
 import { SocialLinks } from "../SocialLinks";
 import { Logo } from "@components/shared/Logo";
+import { AnimatedLogo } from "../Logo/AnimatedLogo";
 import hardcodedColumns from "./footer.json";
 
 export type CLASSESTYPE = {
@@ -58,16 +59,18 @@ export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
 
   const apiColumns = useMemo(() => {
     if (!menuItemsIsSuccess || !menuItemsData?.response_data) return null;
-    const menuItems =
+    const allItems =
       menuItemsData?.response_data?.menu_location_listing?.length > 0
         ? menuItemsData.response_data.menu_location_listing[0].menu_item_listing
         : [];
+    // Filter to root items only — children are nested via `childrens` field
+    const menuItems = allItems.filter((item: any) => !item.parent_id || item.parent_id === 0);
     return menuItems.map((menuItem: any) => ({
       title: menuItem.name,
       links:
         menuItem.childrens?.map((child: any) => ({
           text: child.name,
-          url: child.link || ""
+          url: child.url || ""
         })) || []
     }));
   }, [menuItemsIsSuccess, menuItemsData]);
@@ -91,23 +94,7 @@ export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
           href="/"
           className="no-underline text-white transition-opacity hover:opacity-80"
         >
-          {logoPath ? (
-            <Image
-              src={
-                logoPath.startsWith("/") || logoPath.startsWith("http")
-                  ? logoPath
-                  : `/${logoPath}`
-              }
-              alt={siteTitle}
-              width={0}
-              height={0}
-              sizes="(max-width: 768px) 100px, 141px"
-              style={{ width: "auto", height: "65px" }}
-              priority
-            />
-          ) : (
-            FooterLogo
-          )}
+          <AnimatedLogo className="h-[50px] w-auto" animate={false} showTagline={false} variant="outline" />
         </Link>
       </div>
 

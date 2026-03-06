@@ -251,6 +251,15 @@ const config: Config = {
             transform:
               "translateY(-120px) translateX(var(--drift-x, 0px)) scale(1.3)"
           }
+        },
+        "blob-breathe": {
+          "0%, 100%": { transform: "scale(0.98)", opacity: "0.85" },
+          "50%": { transform: "scale(1.02)", opacity: "1" }
+        },
+        "gradient-sweep": {
+          "0%": { backgroundPosition: "0% 0%" },
+          "50%": { backgroundPosition: "100% 100%" },
+          "100%": { backgroundPosition: "0% 0%" }
         }
       },
       animation: {
@@ -274,7 +283,9 @@ const config: Config = {
         "spin-around": "spin-around calc(var(--speed, 3s) * 2) infinite linear",
         shine: "shine var(--duration, 14s) infinite linear",
         gradient: "gradient 8s linear infinite",
-        "float-up": "float-up 2s ease-expo-out forwards"
+        "float-up": "float-up 2s ease-expo-out forwards",
+        "blob-breathe": "blob-breathe 4s ease-in-out infinite",
+        "gradient-sweep": "gradient-sweep 12s ease-in-out infinite"
       }
     }
   },

@@ -1,69 +1,54 @@
-import React from "react";
-import { useSpring, animated, config } from "@react-spring/web";
+import React, { useId } from "react";
 
 interface AnimatedLogoProps {
   showTagline?: boolean;
   className?: string;
+  animate?: boolean;
+  variant?: "default" | "outline";
 }
 
-// Per-letter animation config matching BeeperNative stagger pattern
-const letterAnimConfig = [
-  { duration: 3800, delay: 0 },     // B
-  { duration: 4200, delay: 400 },   // E
-  { duration: 4600, delay: 800 },   // E
-  { duration: 4000, delay: 200 },   // P
-  { duration: 4400, delay: 600 },   // E
-  { duration: 3600, delay: 900 },   // R
+// Per-letter bob stagger — each letter bobs at a slightly different speed/delay
+const letterBobConfig = [
+  { duration: 1900, delay: 0 },
+  { duration: 2100, delay: 150 },
+  { duration: 2300, delay: 300 },
+  { duration: 2000, delay: 100 },
+  { duration: 2200, delay: 250 },
+  { duration: 1800, delay: 400 },
 ];
 
-// Individual letter/element paths with stagger delays
+// Filled letter paths only (construction guide lines excluded for clean rendering)
 const letterPaths = [
   {
     d: "M142.8,69c2.9-2.4,5.7-4.8,4.7-8.2c-4.3-15.2-20.1-24.1-35.3-19.8C97,45.3,88.1,61.1,92.4,76.3c4.3,15.2,20.1,24.1,35.3,19.8c9.3-2.6,23.1-6.5,10.1-21.2C138.6,72.5,140.7,70.7,142.8,69z M122.8,57.1c-1.8,0.5-3.7-0.6-4.2-2.5s0.5-3.8,2.3-4.3c1.8-0.5,3.7,0.6,4.2,2.5C125.7,54.7,124.6,56.6,122.8,57.1z",
-    class: "st0",
-    delay: 0
-  },
-  {
-    d: "M137.8,74.8l-1.2-0.4c-0.2,0.4-0.1,0.9,0.2,1.2L137.8,74.8z M146.4,54.6c-0.3-0.6-1.1-0.8-1.7-0.5c-0.6,0.3-0.8,1.1-0.5,1.7L146.4,54.6z M143.4,54.3c0.4,0.6,1.1,0.8,1.7,0.4c0.6-0.4,0.8-1.1,0.4-1.7L143.4,54.3z M122.8,38.8c-0.7-0.1-1.3,0.4-1.4,1.1s0.4,1.3,1.1,1.4L122.8,38.8z M118.2,41.2c0.7,0,1.2-0.6,1.2-1.3s-0.6-1.2-1.3-1.2L118.2,41.2z M106.2,42c-0.6,0.3-0.8,1.1-0.5,1.7c0.3,0.6,1.1,0.8,1.7,0.5L106.2,42z M105.8,45.1c0.6-0.4,0.8-1.1,0.4-1.7c-0.4-0.6-1.1-0.8-1.7-0.4L105.8,45.1z M90.3,65.6c-0.1,0.7,0.4,1.3,1.1,1.4c0.7,0.1,1.3-0.4,1.4-1.1L90.3,65.6z M92.7,70.3c0-0.7-0.6-1.2-1.3-1.2c-0.7,0-1.2,0.6-1.2,1.3L92.7,70.3z M93.5,82.3c0.3,0.6,1.1,0.8,1.7,0.5c0.6-0.3,0.8-1.1,0.5-1.7L93.5,82.3z M96.6,82.7c-0.4-0.6-1.1-0.8-1.7-0.4c-0.6,0.4-0.8,1.1-0.4,1.7L96.6,82.7z M117.2,98.2c0.7,0.1,1.3-0.4,1.4-1.1c0.1-0.7-0.4-1.3-1.1-1.4L117.2,98.2z M121.8,95.8c-0.7,0-1.2,0.6-1.2,1.3c0,0.7,0.6,1.2,1.3,1.2L121.8,95.8z M132.2,96c0.7-0.2,1-0.9,0.8-1.6c-0.2-0.7-0.9-1-1.6-0.8L132.2,96z M132.7,93.2c-0.6,0.2-1,0.9-0.8,1.6c0.2,0.7,0.9,1,1.6,0.8L132.7,93.2z M143.2,80.4c-0.3-0.6-1-0.9-1.7-0.6c-0.6,0.3-0.9,1-0.6,1.7L143.2,80.4z M139.4,78.8c0.4,0.6,1.2,0.7,1.7,0.3c0.6-0.4,0.7-1.2,0.3-1.7L139.4,78.8z M139.3,74.4c0.3-0.6,0.1-1.4-0.5-1.7c-0.6-0.3-1.4-0.1-1.7,0.5L139.3,74.4z M137.3,72.9c-0.4,0.6-0.2,1.4,0.4,1.7c0.6,0.3,1.4,0.2,1.7-0.4L137.3,72.9z M142.2,71.1c0.5-0.5,0.6-1.2,0.1-1.8c-0.5-0.5-1.2-0.6-1.8-0.1L142.2,71.1z M141.2,68.7c-0.5,0.4-0.6,1.2-0.1,1.8c0.4,0.5,1.2,0.6,1.8,0.1L141.2,68.7z M144.6,69.1c0.5-0.4,0.6-1.2,0.1-1.8s-1.2-0.6-1.8-0.1L144.6,69.1z M143.3,66.9c-0.5,0.5-0.6,1.2-0.1,1.8c0.5,0.5,1.2,0.6,1.8,0.1L143.3,66.9z M148.8,63.4c0.1-0.7-0.3-1.3-1-1.5c-0.7-0.1-1.3,0.3-1.5,1L148.8,63.4z M146.5,62.1c0,0.7,0.6,1.2,1.3,1.2c0.7,0,1.2-0.6,1.2-1.3L146.5,62.1z M119.7,53.8c-0.1-0.7-0.7-1.2-1.3-1.1c-0.7,0.1-1.2,0.7-1.1,1.3L119.7,53.8z M117.2,53.7c0,0.7,0.6,1.2,1.3,1.2c0.7,0,1.2-0.6,1.2-1.3L117.2,53.7z M120.6,51.8c0.5-0.4,0.6-1.2,0.2-1.7s-1.2-0.6-1.7-0.2L120.6,51.8z M119.7,49.4c-0.6,0.3-0.8,1.1-0.5,1.7c0.3,0.6,1.1,0.8,1.7,0.5L119.7,49.4z M121.7,51.4c0.7,0,1.2-0.6,1.2-1.3s-0.6-1.2-1.3-1.2L121.7,51.4z M121.9,48.9c-0.7,0-1.3,0.5-1.3,1.2s0.5,1.3,1.2,1.3L121.9,48.9z M123.6,52.3c0.4,0.6,1.2,0.7,1.7,0.3c0.6-0.4,0.7-1.2,0.3-1.7L123.6,52.3z M126,51.5c-0.3-0.6-1.1-0.9-1.7-0.5c-0.6,0.3-0.9,1.1-0.6,1.7L126,51.5z M124,53.6c0.1,0.7,0.7,1.2,1.3,1.1c0.6-0.1,1.2-0.7,1.1-1.3L124,53.6z M126.5,53.7c0-0.7-0.6-1.2-1.3-1.2c-0.7,0-1.2,0.6-1.2,1.3L126.5,53.7z M123.2,55.6c-0.5,0.4-0.6,1.2-0.2,1.7c0.4,0.5,1.2,0.6,1.7,0.2L123.2,55.6z M124.1,57.9c0.6-0.3,0.8-1.1,0.5-1.7c-0.3-0.6-1.1-0.8-1.7-0.5L124.1,57.9z M122.1,56c-0.7,0-1.2,0.6-1.2,1.3s0.6,1.2,1.3,1.2L122.1,56z M121.9,58.5c0.7,0,1.3-0.5,1.3-1.2S122.7,56,122,56L121.9,58.5z M120.2,55c-0.4-0.6-1.2-0.7-1.7-0.3c-0.6,0.4-0.7,1.2-0.3,1.7L120.2,55z M117.8,55.8c0.3,0.6,1.1,0.9,1.7,0.6c0.6-0.3,0.9-1.1,0.5-1.7L117.8,55.8z M148.7,60.4c-0.6-2-1.3-4-2.3-5.8l-2.2,1.2c0.9,1.7,1.6,3.4,2.1,5.3L148.7,60.4z M145.5,53c-4.9-8.1-13.4-13.3-22.7-14.2l-0.2,2.5c8.5,0.8,16.3,5.6,20.8,13L145.5,53z M118,38.7c-2,0.1-4.1,0.5-6.1,1.1l0.7,2.4c1.9-0.5,3.7-0.8,5.6-1L118,38.7z M111.9,39.7c-2,0.6-4,1.3-5.8,2.3l1.2,2.2c1.7-0.9,3.4-1.6,5.3-2.1L111.9,39.7z M104.5,43c-8.1,4.9-13.3,13.4-14.2,22.7l2.5,0.2c0.8-8.5,5.6-16.3,13-20.8L104.5,43z M90.2,70.4c0.1,2,0.5,4.1,1.1,6.1l2.4-0.7c-0.5-1.9-0.8-3.7-1-5.6L90.2,70.4z M91.3,76.5c0.6,2,1.3,4,2.3,5.8l2.2-1.2c-0.9-1.7-1.6-3.4-2.1-5.3L91.3,76.5z M94.5,84c4.9,8.1,13.4,13.3,22.7,14.2l0.2-2.5c-8.5-0.8-16.3-5.6-20.8-13L94.5,84z M121.9,98.3c2-0.1,4.1-0.5,6.1-1.1l-0.7-2.4c-1.9,0.5-3.7,0.8-5.6,1L121.9,98.3z M128.1,97.2c1.3-0.4,2.7-0.8,4.1-1.2l-0.8-2.4c-1.4,0.4-2.7,0.8-4,1.2L128.1,97.2z M133.5,95.6c3.3-1.1,6.7-2.7,8.8-5.1c1.1-1.2,1.8-2.7,2-4.4c0.2-1.7-0.2-3.6-1.1-5.7l-2.3,1c0.8,1.8,1,3.2,0.9,4.3c-0.1,1.2-0.6,2.2-1.4,3.1c-1.7,1.9-4.5,3.2-7.8,4.3L133.5,95.6z M141.5,77.4c-0.8-1.1-1.7-2.3-2.7-3.5l-1.9,1.6c1,1.2,1.9,2.2,2.5,3.2L141.5,77.4z M139,75.2c0.1-0.3,0.2-0.5,0.3-0.8l-2.2-1.2c-0.2,0.4-0.4,0.7-0.5,1.1L139,75.2z M139.4,74.2c0.6-1.1,1.6-2.1,2.8-3.1l-1.6-1.9c-1.2,1.1-2.4,2.3-3.3,3.7L139.4,74.2z M142.8,70.6c0.3-0.2,0.5-0.4,0.8-0.7L142,68c-0.3,0.2-0.5,0.4-0.8,0.7L142.8,70.6z M143.6,70c0.3-0.3,0.7-0.6,1-0.9l-1.6-1.9c-0.3,0.3-0.7,0.6-1,0.9L143.6,70z M145,68.8c1.7-1.5,3.4-3.2,3.9-5.4l-2.4-0.5c-0.3,1.4-1.4,2.6-3.1,4.1L145,68.8z M149,62.1c0-0.5-0.1-1.1-0.2-1.6l-2.4,0.7c0.1,0.4,0.1,0.7,0.2,1L149,62.1z M119.8,54.3c0-0.2-0.1-0.3-0.1-0.5l-2.5,0.2c0,0.3,0.1,0.6,0.2,0.9L119.8,54.3z M119.7,53.6c0-0.7,0.3-1.4,0.8-1.8l-1.5-2c-1.2,0.9-1.8,2.3-1.8,3.8H119.7z M120.8,51.6c0.1-0.1,0.3-0.1,0.4-0.2l-0.7-2.4c-0.3,0.1-0.6,0.2-0.9,0.4L120.8,51.6z M121.3,51.5c0.1,0,0.3-0.1,0.4-0.1l-0.1-2.5c-0.3,0-0.7,0.1-1,0.2L121.3,51.5z M121.8,51.4c0.7,0,1.3,0.4,1.8,1l2-1.4c-0.9-1.2-2.2-2-3.7-2L121.8,51.4z M123.8,52.7c0.1,0.1,0.1,0.3,0.2,0.4l2.4-0.7c-0.1-0.3-0.2-0.6-0.3-0.9L123.8,52.7z M124,53.1c0,0.2,0.1,0.3,0.1,0.5l2.5-0.2c0-0.3-0.1-0.6-0.2-0.9L124,53.1z M124,53.7c0,0.7-0.3,1.4-0.8,1.8l1.5,2c1.2-0.9,1.8-2.3,1.8-3.8H124z M122.9,55.7c-0.1,0.1-0.3,0.1-0.4,0.2l0.7,2.4c0.3-0.1,0.6-0.2,0.9-0.4L122.9,55.7z M122.5,55.9c-0.1,0-0.3,0.1-0.4,0.1l0.1,2.5c0.3,0,0.7-0.1,1-0.2L122.5,55.9z M121.9,56c-0.7,0-1.3-0.4-1.8-1l-2,1.4c0.9,1.2,2.2,2,3.7,2L121.9,56z M120,54.7c-0.1-0.1-0.1-0.3-0.2-0.4l-2.4,0.7c0.1,0.3,0.2,0.6,0.3,0.9L120,54.7z",
-    delay: 100
   },
   {
     d: "M98.9,65.9c-2.2-7.2-14-12.4-22.5-9.7c19.8-6.1,11-34.6-22-24.4c-18.2,5.6-28.4,25-22.8,43.3s25,28.6,43.2,22.9C93,92.4,104.5,84.2,98.9,65.9z M63.7,47.7c0.7,2.3,3,3.6,5.2,2.9c2.2-0.7,3.4-3.1,2.7-5.3c-0.7-2.3-3-3.6-5.2-2.9C64.2,43.1,63,45.4,63.7,47.7z M77,76.8c-2.2,0.7-4.5-0.5-5.1-2.7c-0.7-2.2,0.5-4.5,2.7-5.1c2.2-0.7,4.5,0.5,5.1,2.7C80.4,73.9,79.2,76.2,77,76.8z",
-    class: "st0",
-    delay: 200
   },
-  // Add more letter paths with incremental delays...
   {
     d: "M192.9,55.9c1.9-3.2,3.8-6.4,1.8-9.3c-9-13-26.8-16.2-39.8-7.2s-16.2,26.8-7.2,39.8s26.8,16.2,39.8,7.2c7.9-5.5,19.7-13.7,2.6-23.4C190.1,60.6,191.5,58.2,192.9,55.9z M170.1,51.2c-1.5,1.1-3.7,0.6-4.8-1c-1.1-1.6-0.8-3.8,0.8-4.9c1.5-1.1,3.7-0.6,4.8,1C172,48,171.7,50.1,170.1,51.2z",
-    class: "st0",
-    delay: 300
   },
   {
     d: "M288.9,76.1c3.6-1.2,7.1-2.3,7.4-5.9c1.6-15.7-9.8-29.8-25.5-31.4c-15.7-1.6-29.8,9.8-31.4,25.5s9.8,29.8,25.5,31.4c9.6,1,23.9,2.5,17.2-16C283.7,77.9,286.3,77,288.9,76.1z M274.7,57.7c-1.9-0.2-3.2-1.9-3-3.9c0.2-2,1.9-3.4,3.7-3.2c1.9,0.2,3.2,1.9,3,3.9S276.5,57.9,274.7,57.7z",
-    class: "st0",
-    delay: 400
   },
   {
     d: "M194.5,78c2.3,15.6,13.3,26.9,22.3,25.5c13.3-2,12.1-11.5,11.3-18c-0.4-3.4-0.8-6.1,1.2-6.4c8.5-1.3,20.5-9.4,18.8-20.7S234,43.2,218.4,45.5C202.9,47.8,192.2,62.4,194.5,78z M229.1,62.4c-1.9,0.3-3.6-1-3.9-2.9c-0.3-1.9,1-3.6,2.9-3.9c1.9-0.3,3.6,1,3.9,2.9C232.3,60.3,231,62.1,229.1,62.4z",
-    class: "st0",
-    delay: 500
   },
   {
     d: "M341.4,60.8c2.3-4.7,5.1-10.5,0.1-17.4c-9.3-12.8-24.8-9.6-37.6-0.4s-15.6,27.1-6.4,39.9c6.7,9.3,25.4,17.7,33.3,12c3.1-2.2,2.1-5.1,1.3-7.6c-0.7-2-1.3-3.8,0.3-4.9c1.5-1.1,3.5-0.5,5.8,0.2c3.2,0.9,6.9,1.9,10.7-0.8c7.4-5.3-3.7-12.9-9.5-15.1C339.3,65.1,340.3,63.1,341.4,60.8z M327,54.4c-1.5,1.1-3.7,0.7-4.8-0.9c-1.1-1.6-0.8-3.8,0.7-4.9s3.7-0.7,4.8,0.9C328.9,51.1,328.6,53.3,327,54.4z",
-    class: "st0",
-    delay: 600
   }
 ];
 
-// Legacy tagline SVG paths preserved for reference (replaced by text element)
-// const taglinePaths = [...]; // Original "PLAY WITH MUSIC" vector outlines
-
 export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
   showTagline = false,
-  className
+  className,
+  animate = true,
+  variant = "default"
 }) => {
-  // Always show tagline: expand viewBox to accommodate it plus the text tagline below
-  const viewBox = "0 0 385 165";
+  const isOutline = variant === "outline";
+  const viewBox = "-20 -10 425 185";
+  // Unique gradient ID per instance to avoid conflicts when multiple logos render
+  const gradientId = useId().replace(/:/g, "_");
 
   return (
     <svg
@@ -73,91 +58,102 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
       x="0px"
       y="0px"
       viewBox={viewBox}
-      style={{ enableBackground: `new ${viewBox}` } as any}
+      style={{ enableBackground: `new ${viewBox}`, overflow: "visible" } as any}
       xmlSpace="preserve"
       className={className}
     >
       <defs>
-        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        {/* Single horizontal gradient spanning the full SVG width — shared across all letters */}
+        <linearGradient id={`logoGrad_${gradientId}`} x1="0" y1="65" x2="385" y2="65" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#fffb00" />
           <stop offset="100%" stopColor="#ffb300" />
         </linearGradient>
+        {/* Big soft pink glow — applied to the background copy only */}
+        <filter id={`pinkGlow_${gradientId}`} x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
+          <feFlood floodColor="#FF1493" floodOpacity="0.7" result="color" />
+          <feComposite in="color" in2="blur" operator="in" result="glow" />
+          <feMerge>
+            <feMergeNode in="glow" />
+            <feMergeNode in="glow" />
+          </feMerge>
+        </filter>
       </defs>
 
-      {/* Main logo letters */}
-      {letterPaths.map((letter, index) => (
-        <AnimatedPath
-          key={index}
-          d={letter.d}
-          className={letter.class}
-          delay={index < 6 ? letterAnimConfig[index].delay : letter.delay}
-          duration={index < 6 ? letterAnimConfig[index].duration : 3000}
-        />
-      ))}
+      {/* Background glow layer — all letters rendered as a single blurred pink group */}
+      {!isOutline && (
+        <g filter={`url(#pinkGlow_${gradientId})`}>
+          {letterPaths.map((letter, index) => {
+            const bobConfig = letterBobConfig[index] || { duration: 2000, delay: 0 };
+            return (
+              <path
+                key={`glow-${index}`}
+                d={letter.d}
+                fill={`url(#logoGrad_${gradientId})`}
+                fillRule="evenodd"
+                clipRule="evenodd"
+                style={animate ? {
+                  animation: `letter-bob ${bobConfig.duration}ms ease-in-out ${bobConfig.delay}ms infinite both`,
+                } : undefined}
+              />
+            );
+          })}
+        </g>
+      )}
 
-      {/* Tagline "PLAY WITH MUSIC" — rendered as text for clean styling */}
-      <text
-        x="192.5"
-        y="148"
-        textAnchor="middle"
-        fill="white"
-        fontFamily="'IBM Plex Mono', 'ibmplexmono_body_mono_semibold', monospace"
-        fontSize="12"
-        letterSpacing="0.15em"
-        style={{ textTransform: "uppercase" } as any}
-      >
-        PLAY WITH MUSIC
-      </text>
+      {/* Foreground letter paths — crisp, no filter */}
+      {letterPaths.map((letter, index) => {
+        const bobConfig = letterBobConfig[index] || { duration: 2000, delay: 0 };
+
+        if (isOutline) {
+          return (
+            <path
+              key={index}
+              d={letter.d}
+              fill="none"
+              stroke="white"
+              strokeWidth="1"
+              fillRule="evenodd"
+              clipRule="evenodd"
+              vectorEffect="non-scaling-stroke"
+            />
+          );
+        }
+
+        return (
+          <path
+            key={index}
+            d={letter.d}
+            fill={`url(#logoGrad_${gradientId})`}
+            stroke="#4c1d95"
+            strokeWidth="3"
+            strokeDasharray="56 5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fillRule="evenodd"
+            clipRule="evenodd"
+            style={animate ? {
+              animation: `letter-bob ${bobConfig.duration}ms ease-in-out ${bobConfig.delay}ms infinite both`,
+            } : undefined}
+          />
+        );
+      })}
+
+      {/* Tagline "PLAY WITH MUSIC" */}
+      {showTagline && (
+        <text
+          x="192.5"
+          y="118"
+          textAnchor="middle"
+          fill="white"
+          fontFamily="'IBM Plex Mono', 'ibmplexmono_body_mono_semibold', monospace"
+          fontSize="12"
+          letterSpacing="0.15em"
+          style={{ textTransform: "uppercase" } as any}
+        >
+          PLAY WITH MUSIC
+        </text>
+      )}
     </svg>
-  );
-};
-
-// Individual animated path component
-interface AnimatedPathProps {
-  d: string;
-  className?: string;
-  delay: number;
-  duration?: number;
-}
-
-const AnimatedPath: React.FC<AnimatedPathProps> = ({
-  d,
-  className,
-  delay,
-  duration = 3000
-}) => {
-  const animation = useSpring({
-    from: { y: 0 },
-    to: { y: 1 },
-    loop: true,
-    config: {
-      duration
-    },
-    delay
-  });
-
-  const transform = animation.y.to((value) => {
-    // Smooth sine wave for seamless looping
-    const offset = Math.sin(value * Math.PI * 2) * 4;
-    return `translate(0, ${offset})`;
-  });
-
-  // Paths with className="st0" should be filled
-  // Paths without className should have strokes
-  const isFilled = className === "st0";
-
-  return (
-    <animated.path
-      d={d}
-      fill={isFilled ? "url(#logoGradient)" : "none"}
-      stroke={isFilled ? "none" : "url(#logoGradient)"}
-      strokeWidth={isFilled ? "0" : "0.5"}
-      fillRule={isFilled ? "evenodd" : undefined}
-      clipRule={isFilled ? "evenodd" : undefined}
-      vectorEffect="non-scaling-stroke"
-      style={{
-        transform
-      }}
-    />
   );
 };

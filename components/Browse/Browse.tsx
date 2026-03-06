@@ -31,7 +31,7 @@ export interface ShopProduct {
 const SHOP_PRODUCTS: ShopProduct[] = [
   {
     name: "Beeper \u03948",
-    slug: "beeper-delta-8",
+    slug: "beeper-8",
     price: "$199.99",
     category: "Devices",
     preorder: true,
@@ -51,7 +51,7 @@ const SHOP_PRODUCTS: ShopProduct[] = [
   },
   {
     name: "Beeper T-Shirt",
-    slug: "beeper-tshirt",
+    slug: "beeper-t-shirt",
     price: "$34.99",
     category: "Apparel"
   }
@@ -280,8 +280,7 @@ export const Browse: React.FC = () => {
       const s = filters.search.toLowerCase();
       items = items.filter(
         (p) =>
-          p.name.toLowerCase().includes(s) ||
-          p.slug.toLowerCase().includes(s)
+          p.name.toLowerCase().includes(s) || p.slug.toLowerCase().includes(s)
       );
     }
     return items;
@@ -297,8 +296,7 @@ export const Browse: React.FC = () => {
       const s = filters.search.toLowerCase();
       items = items.filter(
         (p) =>
-          p.name.toLowerCase().includes(s) ||
-          p.slug.toLowerCase().includes(s)
+          p.name.toLowerCase().includes(s) || p.slug.toLowerCase().includes(s)
       );
     }
     return items;
@@ -338,12 +336,13 @@ export const Browse: React.FC = () => {
     setActiveChips([]);
   };
 
-  const hasActiveFilters =
+  const hasActiveFilters = Boolean(
     filters.categories.length > 0 ||
     filters.priceMin ||
     filters.priceMax ||
     filters.search ||
-    activeChips.length > 0;
+    activeChips.length > 0
+  );
 
   // ── Sidebar filters (Spree-powered, for Shop mode with Spree data) ──
 
@@ -569,8 +568,7 @@ export const Browse: React.FC = () => {
               {/* Sort bar */}
               <div className="mb-6 flex flex-col items-start justify-between gap-3 glass-panel px-5 py-4 sm:flex-row sm:items-center">
                 <span className="font-title text-sm font-semibold text-white">
-                  {productCount}{" "}
-                  {productCount === 1 ? "product" : "products"}
+                  {productCount} {productCount === 1 ? "product" : "products"}
                 </span>
                 <div className="flex items-center gap-2.5">
                   <span className="font-body text-sm text-white/50">
@@ -643,20 +641,18 @@ export const Browse: React.FC = () => {
                         />
                       )
                     ) : null
+                  ) : // ── Marketplace mode ──
+                  filteredMarketplacePlaceholders.length > 0 ? (
+                    <ProductList
+                      marketplaceProducts={filteredMarketplacePlaceholders}
+                      title=""
+                      mode="marketplace"
+                    />
                   ) : (
-                    // ── Marketplace mode ──
-                    filteredMarketplacePlaceholders.length > 0 ? (
-                      <ProductList
-                        marketplaceProducts={filteredMarketplacePlaceholders}
-                        title=""
-                        mode="marketplace"
-                      />
-                    ) : (
-                      <EmptyState
-                        hasActiveFilters={hasActiveFilters}
-                        onClear={handleClearFilters}
-                      />
-                    )
+                    <EmptyState
+                      hasActiveFilters={hasActiveFilters}
+                      onClear={handleClearFilters}
+                    />
                   )}
                 </motion.div>
               </AnimatePresence>
@@ -675,9 +671,7 @@ const EmptyState: React.FC<{
   onClear: () => void;
 }> = ({ hasActiveFilters, onClear }) => (
   <div className="glass-panel flex flex-col items-center justify-center px-5 py-20 text-center">
-    <h2 className="mb-3 font-title text-lg text-white">
-      No products found
-    </h2>
+    <h2 className="mb-3 font-title text-lg text-white">No products found</h2>
     <p className="mb-6 font-body text-sm text-white/50">
       Try adjusting your filters or search terms
     </p>

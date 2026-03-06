@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { useRouter } from "next/router";
-import Image from "next/image";
+import Router, { useRouter } from "next/router";
 import Link from "next/link";
 import { ChevronDown, Heart } from "lucide-react";
 import { cn } from "@lib/utils";
@@ -17,11 +16,10 @@ import { HeaderProps } from "./types";
 import { useAuth } from "../../config/auth";
 import { useCart } from "../../hooks/useCart";
 import { useFavorites } from "../../hooks/useFavorites";
-import { useStore } from "../../hooks/useStore";
 import SearchBar from "../SearchBar";
 import { CartSidebar } from "../CartSidebar/CartSidebar";
 import { SocialLinks } from "../SocialLinks";
-import { Logo } from "@components/shared/Logo";
+import { AnimatedLogo } from "../Logo/AnimatedLogo";
 
 export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const router = useRouter();
@@ -30,17 +28,23 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const [cartVisible, setCartVisible] = useState(false);
   const toggleCart = () => setCartVisible((isVisible) => !isVisible);
+  const [isLoading, setIsLoading] = useState(false);
   const isMaint = process.env.NEXT_PUBLIC_IS_MAINT_MODE || "false";
   const siteTitle = process.env.NEXT_PUBLIC_SHORT_TITLE || "DNA";
+  const isHomepage = pathname === "/" || pathname === "/home";
 
-  const logoPath =
-    process.env.NEXT_PUBLIC_LOGO_PATH || "images/open-graph-instinct-dna.jpg";
-
-  // Get store logo from API if available
-  const { data: storeData } = useStore();
-  // Assume logo URL is in storeData.attributes.logo_url (customize if needed)
-  const storeLogoUrl = storeData?.attributes?.logo_url;
-  const displayLogo = storeLogoUrl || logoPath;
+  useEffect(() => {
+    const handleStart = () => setIsLoading(true);
+    const handleComplete = () => setIsLoading(false);
+    Router.events.on("routeChangeStart", handleStart);
+    Router.events.on("routeChangeComplete", handleComplete);
+    Router.events.on("routeChangeError", handleComplete);
+    return () => {
+      Router.events.off("routeChangeStart", handleStart);
+      Router.events.off("routeChangeComplete", handleComplete);
+      Router.events.off("routeChangeError", handleComplete);
+    };
+  }, []);
 
   const {
     data: cartData,
@@ -62,9 +66,12 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   }, []);
 
   return (
-    <header className="glass-panel sticky top-0 z-50 w-full !rounded-none border-b border-glass-border">
+    <header className={cn(
+      "sticky top-0 z-50 w-full !rounded-none",
+      isHomepage ? "bg-transparent border-b border-transparent" : "glass-panel border-b border-glass-border"
+    )}>
       {/* Top Header */}
-      <div className="relative flex flex-row items-center justify-center py-2.5 pb-3 sm:py-3">
+      <div className="relative flex flex-row items-center justify-center pt-4 pb-3 sm:py-3">
         {/* Left Side - Social Links */}
         {!isMobile && (
           <div className="absolute left-2.5 z-[2] flex items-center justify-between sm:left-2.5">
@@ -72,31 +79,23 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           </div>
         )}
 
-        {/* Center - Logo */}
-        <div className="flex w-[355px] cursor-pointer items-center justify-center px-7 py-4">
-          <Link
-            href="/"
-            className="text-sm no-underline text-white hover:text-neon-cyan transition-colors"
-          >
-            {displayLogo ? (
-              <Image
-                src={
-                  displayLogo.startsWith("/") || displayLogo.startsWith("http")
-                    ? displayLogo
-                    : `/${displayLogo}`
-                }
-                alt={siteTitle}
-                width={0}
-                height={0}
-                sizes="(max-width: 768px) 100px, 141px"
-                style={{ width: "auto", height: "65px" }}
-                priority
-              />
-            ) : (
-              <Logo />
-            )}
-          </Link>
-        </div>
+        {/* Center - Beeper Logo (hidden on homepage) */}
+        {!isHomepage && (
+          <div className="flex cursor-pointer items-center justify-center">
+            <Link
+              href="/"
+              className="no-underline transition-opacity hover:opacity-80 flex flex-col items-center gap-0"
+            >
+              <AnimatedLogo className="h-[42px] w-auto" animate={true} showTagline={false} />
+              <span
+                className="text-[7px] leading-none tracking-[0.15em] text-white uppercase -mt-[6px]"
+                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+              >
+                PLAY WITH MUSIC
+              </span>
+            </Link>
+          </div>
+        )}
 
         {/* Right Side */}
         <div className="absolute right-2.5 z-[2] flex w-auto flex-row items-center justify-between sm:justify-end">
@@ -230,7 +229,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           )}
 
           {/* Cart */}
-          <div className="-mt-2.5 mr-0.5 relative text-white sm:-mt-2.5">
+          <div className="mr-2 relative text-white">
             <CartSidebar isVisible={cartVisible} toggle={toggleCart} />
             {cartItemCount > 0 && (
               <Badge className="absolute -right-2 -top-1 flex h-5 min-w-[20px] items-center justify-center bg-neon-cyan text-surface-deep px-1 text-[10px] font-bold">

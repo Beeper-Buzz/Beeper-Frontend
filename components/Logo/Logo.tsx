@@ -1,6 +1,5 @@
 import React from "react";
 
-import { LogoMark, AnimatedLogoWrapper } from "./Logo.styles";
 import { AnimatedLogo } from "./AnimatedLogo";
 
 export const Logo = ({
@@ -11,15 +10,20 @@ export const Logo = ({
 }: any) => {
   if (animated) {
     return (
-      <AnimatedLogoWrapper>
+      <div className="w-[90%] h-auto -mt-[100px] sm:w-auto sm:h-[240px] [&_svg]:w-full [&_svg]:h-auto sm:[&_svg]:w-auto sm:[&_svg]:h-[240px]">
         <AnimatedLogo showTagline={showTagline} />
-      </AnimatedLogoWrapper>
+      </div>
     );
   }
 
   return (
     <>
-      <LogoMark src={process.env.NEXT_PUBLIC_LOGO_PATH} />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className="w-[90%] h-auto -mt-[100px] sm:w-auto sm:h-[240px]"
+        src={process.env.NEXT_PUBLIC_LOGO_PATH}
+        alt=""
+      />
     </>
   );
 };

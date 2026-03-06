@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { Carousel } from "react-responsive-carousel";
 import { Formik, Form, Field, useFormikContext } from "formik";
 import parse from "html-react-parser";
+import { ArrowLeft } from "lucide-react";
 
 import constants from "@utilities/constants";
 import { useAuth } from "@config/auth";
@@ -55,11 +56,19 @@ export const SignupForm = () => {
     return { __html: "Signup for an account to get started." };
   }, []);
 
+  const handleBack = useCallback(() => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  }, [router]);
+
   const { title, subtitle, description } = Static.questions.account;
 
   return (
     <div className="relative z-[1] flex flex-col pb-20">
-      <div className="mx-auto flex w-full max-w-2xl flex-row flex-wrap justify-center px-5 py-5 sm:px-10">
+      <div className="mx-4 flex w-full max-w-2xl flex-row flex-wrap justify-center py-5 sm:mx-auto sm:px-10">
         <Formik
           initialValues={signupForm.fields}
           validationSchema={signupForm.validate}
@@ -78,7 +87,15 @@ export const SignupForm = () => {
           }}
         >
           {({ isSubmitting, handleSubmit }) => (
-            <Form className="glass-panel w-full p-6 sm:p-8">
+            <Form className="glass-panel w-full p-5 sm:p-8">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="mb-3 flex items-center gap-1.5 border-none bg-transparent p-0 font-body text-sm text-white/50 transition-colors hover:text-neon-cyan cursor-pointer"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </button>
               <TipBot speech={speechMarkup()} />
               <div className="mt-4">
                 <h1 className="mb-2 text-center font-pressstart text-sm text-neon-cyan">

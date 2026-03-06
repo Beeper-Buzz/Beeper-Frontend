@@ -32,7 +32,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
     <div
       className="px-5 py-20 text-center sm:py-16"
       style={{
-        background: backgroundColor || "hsl(var(--brand))",
+        background: backgroundColor || "transparent",
         color: textColor || "white"
       }}
     >

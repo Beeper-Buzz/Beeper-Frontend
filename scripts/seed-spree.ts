@@ -1,17 +1,16 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env npx tsx
 /**
- * Spree 4.2.5 Platform Admin API Seed Script
+ * Spree 4.2 v1 API Seed Script
  *
- * Idempotent — safe to run multiple times. Checks for existing records by name
- * before creating. Uses OAuth2 client_credentials grant for authentication.
+ * Idempotent — checks for existing records before creating.
+ * Uses X-Spree-Token header authentication (admin API token).
  *
  * Required env vars:
- *   SPREE_API_URL (or NEXT_PUBLIC_SPREE_API_URL) — e.g. http://localhost:4000
- *   SPREE_CLIENT_ID
- *   SPREE_CLIENT_SECRET
+ *   SPREE_API_URL          — e.g. https://admin.beeper.buzz
+ *   SPREE_PLATFORM_TOKEN   — admin API token
  *
  * Usage:
- *   yarn seed
+ *   SPREE_API_URL=https://admin.beeper.buzz SPREE_PLATFORM_TOKEN=xxx npx tsx scripts/seed-spree.ts
  */
 
 import {
@@ -20,6 +19,8 @@ import {
   OPTION_TYPES,
   PROPERTIES,
   PRODUCTS,
+  PROTOTYPES,
+  MENU_LOCATIONS,
   PROMOTIONS,
   ProductDef,
 } from './seed-spree-data';
@@ -31,381 +32,263 @@ import {
 const BASE_URL =
   process.env.SPREE_API_URL ||
   process.env.NEXT_PUBLIC_SPREE_API_URL ||
-  'http://localhost:4000';
+  'http://localhost:8080';
 
-const CLIENT_ID = process.env.SPREE_CLIENT_ID;
-const CLIENT_SECRET = process.env.SPREE_CLIENT_SECRET;
-
-const PLATFORM_PREFIX = '/api/v2/platform';
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-let accessToken = '';
-
-async function authenticate(): Promise<void> {
-  if (!CLIENT_ID || !CLIENT_SECRET) {
-    throw new Error(
-      'Missing SPREE_CLIENT_ID and/or SPREE_CLIENT_SECRET environment variables.',
-    );
-  }
-
-  console.log(`\nAuthenticating with Spree at ${BASE_URL} ...`);
-
-  const res = await fetch(`${BASE_URL}/spree_oauth/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      grant_type: 'client_credentials',
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      scope: 'admin',
-    }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`OAuth token request failed (${res.status}): ${body}`);
-  }
-
-  const data = (await res.json()) as { access_token: string };
-  accessToken = data.access_token;
-  console.log('Authenticated successfully.');
+const TOKEN = process.env.SPREE_PLATFORM_TOKEN;
+if (!TOKEN) {
+  console.error('Missing SPREE_PLATFORM_TOKEN environment variable.');
+  process.exit(1);
 }
 
-/** Standard headers for Platform API requests. */
+const V1 = '/api/v1';
+
 function headers(): Record<string, string> {
   return {
+    'X-Spree-Token': TOKEN!,
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${accessToken}`,
   };
 }
 
-/**
- * Generic GET with pagination support. Returns all items from all pages.
- * Spree 4.2.5 Platform API uses `?page=N&per_page=N`.
- */
-async function fetchAll<T extends { id: string }>(
-  endpoint: string,
-  perPage = 100,
-): Promise<T[]> {
-  const items: T[] = [];
-  let page = 1;
-  let hasMore = true;
+// ---------------------------------------------------------------------------
+// Generic API helpers
+// ---------------------------------------------------------------------------
 
-  while (hasMore) {
-    const url = `${BASE_URL}${PLATFORM_PREFIX}${endpoint}?page=${page}&per_page=${perPage}`;
-    const res = await fetch(url, { headers: headers() });
-
-    if (!res.ok) {
-      const body = await res.text();
-      throw new Error(`GET ${endpoint} page ${page} failed (${res.status}): ${body}`);
-    }
-
-    const json = (await res.json()) as { data: Array<{ id: string; attributes: Record<string, unknown> }> };
-    const pageItems = json.data.map((d) => ({ id: d.id, ...d.attributes } as unknown as T));
-    items.push(...pageItems);
-
-    if (json.data.length < perPage) {
-      hasMore = false;
-    } else {
-      page++;
-    }
+async function get<T>(path: string): Promise<T> {
+  const res = await fetch(`${BASE_URL}${V1}${path}`, { headers: headers() });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`GET ${path} failed (${res.status}): ${text}`);
   }
-
-  return items;
+  return res.json() as Promise<T>;
 }
 
-/**
- * POST a new resource. Uses SINGULAR resource key per Spree 4.2.5 JSON:API format.
- */
-async function create<T>(
-  endpoint: string,
-  resourceKey: string,
-  body: Record<string, unknown>,
-): Promise<T> {
-  const url = `${BASE_URL}${PLATFORM_PREFIX}${endpoint}`;
-  const res = await fetch(url, {
+async function post<T>(path: string, body: Record<string, unknown>): Promise<T> {
+  const res = await fetch(`${BASE_URL}${V1}${path}`, {
     method: 'POST',
     headers: headers(),
-    body: JSON.stringify({ [resourceKey]: body }),
+    body: JSON.stringify(body),
   });
-
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`POST ${endpoint} failed (${res.status}): ${text}`);
+    throw new Error(`POST ${path} failed (${res.status}): ${text}`);
   }
-
-  const json = (await res.json()) as { data: { id: string; attributes: Record<string, unknown> } };
-  return { id: json.data.id, ...json.data.attributes } as unknown as T;
+  return res.json() as Promise<T>;
 }
 
-/**
- * PATCH an existing resource.
- */
-async function update<T>(
-  endpoint: string,
-  id: string,
-  resourceKey: string,
-  body: Record<string, unknown>,
-): Promise<T> {
-  const url = `${BASE_URL}${PLATFORM_PREFIX}${endpoint}/${id}`;
-  const res = await fetch(url, {
-    method: 'PATCH',
+async function put<T>(path: string, body: Record<string, unknown>): Promise<T> {
+  const res = await fetch(`${BASE_URL}${V1}${path}`, {
+    method: 'PUT',
     headers: headers(),
-    body: JSON.stringify({ [resourceKey]: body }),
+    body: JSON.stringify(body),
   });
-
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`PATCH ${endpoint}/${id} failed (${res.status}): ${text}`);
+    throw new Error(`PUT ${path} failed (${res.status}): ${text}`);
   }
-
-  const json = (await res.json()) as { data: { id: string; attributes: Record<string, unknown> } };
-  return { id: json.data.id, ...json.data.attributes } as unknown as T;
-}
-
-// ---------------------------------------------------------------------------
-// Entity types (minimal, for lookup purposes)
-// ---------------------------------------------------------------------------
-
-interface SpreeRecord {
-  id: string;
-  name: string;
-}
-
-interface SpreeTaxon extends SpreeRecord {
-  taxonomy_id: number;
-  parent_id: number | null;
-  permalink: string;
-}
-
-interface SpreeOptionType extends SpreeRecord {
-  presentation: string;
-}
-
-interface SpreeOptionValue extends SpreeRecord {
-  presentation: string;
-  option_type_id: number;
-}
-
-interface SpreeProperty extends SpreeRecord {
-  presentation: string;
-}
-
-interface SpreeProduct extends SpreeRecord {
-  slug: string;
-  price: string;
-}
-
-interface SpreeVariant {
-  id: string;
-  sku: string;
-  is_master: boolean;
-  price: string;
-  option_values: Array<{ id: string; name: string }>;
+  return res.json() as Promise<T>;
 }
 
 // ---------------------------------------------------------------------------
 // Seed functions
 // ---------------------------------------------------------------------------
 
-/**
- * Step 1 — Taxonomies
- * Creates top-level taxonomies (Shop, Marketplace, Collections).
- * Returns a map of taxonomy name -> id.
- */
-async function seedTaxonomies(): Promise<Map<string, string>> {
+async function seedTaxonomies(): Promise<Map<string, number>> {
   console.log('\n--- Seeding Taxonomies ---');
-  const existing = await fetchAll<SpreeRecord>('/taxonomies');
-  const nameToId = new Map<string, string>();
+  const { taxonomies: existing } = await get<{ taxonomies: Array<{ id: number; name: string }> }>('/taxonomies');
+  const map = new Map<string, number>();
+
+  for (const t of existing) {
+    map.set(t.name, t.id);
+  }
 
   for (const { name } of TAXONOMIES) {
-    const found = existing.find((t) => t.name === name);
-    if (found) {
-      console.log(`  [skip] Taxonomy "${name}" already exists (id=${found.id})`);
-      nameToId.set(name, found.id);
+    if (map.has(name)) {
+      console.log(`  [skip] Taxonomy "${name}" (id=${map.get(name)})`);
     } else {
-      const created = await create<SpreeRecord>('/taxonomies', 'taxonomy', { name });
+      const created = await post<{ id: number; name: string }>('/taxonomies', {
+        taxonomy: { name },
+      });
+      map.set(name, created.id);
       console.log(`  [create] Taxonomy "${name}" (id=${created.id})`);
-      nameToId.set(name, created.id);
     }
   }
 
-  return nameToId;
+  return map;
 }
 
-/**
- * Step 2 — Taxons
- * Creates child taxons under each taxonomy.
- * Returns a map of taxon name -> id.
- */
-async function seedTaxons(
-  taxonomyIds: Map<string, string>,
-): Promise<Map<string, string>> {
+async function seedTaxons(taxonomyIds: Map<string, number>): Promise<Map<string, number>> {
   console.log('\n--- Seeding Taxons ---');
-  const existing = await fetchAll<SpreeTaxon>('/taxons');
-  const nameToId = new Map<string, string>();
-
-  // The root taxons created automatically by Spree share the taxonomy name.
-  for (const t of existing) {
-    nameToId.set(t.name, t.id);
-  }
+  const map = new Map<string, number>();
 
   for (const [taxonomyName, children] of Object.entries(TAXONS)) {
     const taxonomyId = taxonomyIds.get(taxonomyName);
     if (!taxonomyId) {
-      console.warn(`  [warn] Taxonomy "${taxonomyName}" not found, skipping its taxons.`);
+      console.warn(`  [warn] Taxonomy "${taxonomyName}" not found`);
       continue;
     }
 
-    // The root taxon for this taxonomy is the one whose name matches the taxonomy
-    const rootTaxon = existing.find(
-      (t) => t.name === taxonomyName && t.parent_id === null,
+    // Get existing taxons for this taxonomy
+    const { taxons: existing } = await get<{ taxons: Array<{ id: number; name: string }> }>(
+      `/taxonomies/${taxonomyId}/taxons`
     );
-    const parentId = rootTaxon?.id;
+
+    for (const t of existing) {
+      map.set(t.name, t.id);
+    }
 
     for (const childName of children) {
-      const found = existing.find((t) => t.name === childName);
-      if (found) {
-        console.log(`  [skip] Taxon "${childName}" already exists (id=${found.id})`);
-        nameToId.set(childName, found.id);
+      if (map.has(childName)) {
+        console.log(`  [skip] Taxon "${childName}" (id=${map.get(childName)})`);
       } else {
-        const payload: Record<string, unknown> = {
-          name: childName,
-          taxonomy_id: taxonomyId,
-        };
-        if (parentId) {
-          payload.parent_id = parentId;
-        }
-        const created = await create<SpreeTaxon>('/taxons', 'taxon', payload);
+        const created = await post<{ id: number; name: string }>(
+          `/taxonomies/${taxonomyId}/taxons`,
+          { taxon: { name: childName } }
+        );
+        map.set(childName, created.id);
         console.log(`  [create] Taxon "${childName}" under "${taxonomyName}" (id=${created.id})`);
-        nameToId.set(childName, created.id);
       }
     }
   }
 
-  return nameToId;
+  return map;
 }
 
-/**
- * Step 3 — Option Types + Option Values
- * Returns maps of option type name -> id and option value name -> id.
- */
 async function seedOptionTypes(): Promise<{
-  typeIds: Map<string, string>;
-  valueIds: Map<string, string>;
+  typeIds: Map<string, number>;
+  valueIds: Map<string, number>;
 }> {
   console.log('\n--- Seeding Option Types ---');
-  const existingTypes = await fetchAll<SpreeOptionType>('/option_types');
-  const typeIds = new Map<string, string>();
-  const valueIds = new Map<string, string>();
+  // v1 API returns bare array for option_types
+  const rawOts = await get<
+    | Array<{ id: number; name: string; option_values: Array<{ id: number; name: string }> }>
+    | { option_types: Array<{ id: number; name: string; option_values: Array<{ id: number; name: string }> }> }
+  >('/option_types');
+  const existing = Array.isArray(rawOts) ? rawOts : rawOts.option_types;
 
-  const existingValues = await fetchAll<SpreeOptionValue>('/option_values');
+  const typeIds = new Map<string, number>();
+  const valueIds = new Map<string, number>();
 
-  for (const ot of OPTION_TYPES) {
-    let typeRecord = existingTypes.find((t) => t.name === ot.name);
-    if (typeRecord) {
-      console.log(`  [skip] Option type "${ot.name}" already exists (id=${typeRecord.id})`);
-    } else {
-      typeRecord = await create<SpreeOptionType>('/option_types', 'option_type', {
-        name: ot.name,
-        presentation: ot.presentation,
-      });
-      console.log(`  [create] Option type "${ot.name}" (id=${typeRecord.id})`);
+  // Index existing
+  for (const ot of existing) {
+    typeIds.set(ot.name, ot.id);
+    for (const ov of ot.option_values || []) {
+      valueIds.set(ov.name, ov.id);
     }
-    typeIds.set(ot.name, typeRecord.id);
+  }
 
-    // Seed option values for this type
-    for (const ov of ot.values) {
-      let valRecord = existingValues.find(
-        (v) => v.name === ov.name && String(v.option_type_id) === typeRecord!.id,
-      );
-      if (valRecord) {
-        console.log(`    [skip] Option value "${ov.name}" already exists (id=${valRecord.id})`);
-      } else {
-        valRecord = await create<SpreeOptionValue>('/option_values', 'option_value', {
-          name: ov.name,
-          presentation: ov.presentation,
-          option_type_id: typeRecord.id,
-        });
-        console.log(`    [create] Option value "${ov.name}" (id=${valRecord.id})`);
+  for (const otDef of OPTION_TYPES) {
+    let typeId = typeIds.get(otDef.name);
+
+    if (typeId) {
+      console.log(`  [skip] Option type "${otDef.name}" (id=${typeId})`);
+    } else {
+      // Create option type with nested option_values
+      const created = await post<{
+        id: number;
+        name: string;
+        option_values: Array<{ id: number; name: string }>;
+      }>('/option_types', {
+        option_type: {
+          name: otDef.name,
+          presentation: otDef.presentation,
+          option_values_attributes: otDef.values.map((v, i) => ({
+            name: v.name,
+            presentation: v.presentation,
+            position: i + 1,
+          })),
+        },
+      });
+      typeId = created.id;
+      typeIds.set(otDef.name, typeId);
+      console.log(`  [create] Option type "${otDef.name}" (id=${typeId})`);
+
+      // Index the created option values
+      for (const ov of created.option_values || []) {
+        valueIds.set(ov.name, ov.id);
+        console.log(`    [create] Option value "${ov.name}" (id=${ov.id})`);
       }
-      valueIds.set(ov.name, valRecord.id);
+    }
+
+    // Ensure all option values exist (in case type existed but values were missing)
+    for (const ovDef of otDef.values) {
+      if (!valueIds.has(ovDef.name)) {
+        const created = await post<{ id: number; name: string }>(
+          `/option_types/${typeId}/option_values`,
+          { option_value: { name: ovDef.name, presentation: ovDef.presentation } }
+        );
+        valueIds.set(ovDef.name, created.id);
+        console.log(`    [create] Option value "${ovDef.name}" (id=${created.id})`);
+      }
     }
   }
 
   return { typeIds, valueIds };
 }
 
-/**
- * Step 4 — Properties
- * Returns a map of property name -> id.
- */
-async function seedProperties(): Promise<Map<string, string>> {
+async function seedProperties(): Promise<Map<string, number>> {
   console.log('\n--- Seeding Properties ---');
-  const existing = await fetchAll<SpreeProperty>('/properties');
-  const nameToId = new Map<string, string>();
+  const { properties: existing } = await get<{
+    properties: Array<{ id: number; name: string }>;
+  }>('/properties');
 
-  for (const prop of PROPERTIES) {
-    const found = existing.find((p) => p.name === prop.name);
-    if (found) {
-      console.log(`  [skip] Property "${prop.name}" already exists (id=${found.id})`);
-      nameToId.set(prop.name, found.id);
+  const map = new Map<string, number>();
+  for (const p of existing) {
+    map.set(p.name, p.id);
+  }
+
+  for (const propDef of PROPERTIES) {
+    if (map.has(propDef.name)) {
+      console.log(`  [skip] Property "${propDef.name}" (id=${map.get(propDef.name)})`);
     } else {
-      const created = await create<SpreeProperty>('/properties', 'property', {
-        name: prop.name,
-        presentation: prop.presentation,
+      const created = await post<{ id: number; name: string }>('/properties', {
+        property: { name: propDef.name, presentation: propDef.presentation },
       });
-      console.log(`  [create] Property "${prop.name}" (id=${created.id})`);
-      nameToId.set(prop.name, created.id);
+      map.set(propDef.name, created.id);
+      console.log(`  [create] Property "${propDef.name}" (id=${created.id})`);
     }
   }
 
-  return nameToId;
+  return map;
 }
 
-/**
- * Step 5 — Products
- * Creates products, assigns taxons, sets product properties, option types, and variants.
- */
 async function seedProducts(
-  taxonIds: Map<string, string>,
-  propertyIds: Map<string, string>,
-  optionTypeIds: Map<string, string>,
-  optionValueIds: Map<string, string>,
+  taxonIds: Map<string, number>,
+  propertyIds: Map<string, number>,
+  optionTypeIds: Map<string, number>,
+  optionValueIds: Map<string, number>,
 ): Promise<void> {
   console.log('\n--- Seeding Products ---');
-  const existingProducts = await fetchAll<SpreeProduct>('/products');
+
+  // Fetch existing products (paginated)
+  const { products: existing } = await get<{
+    products: Array<{ id: number; slug: string; name: string }>;
+  }>('/products?per_page=100');
 
   for (const def of PRODUCTS) {
-    let product = existingProducts.find((p) => p.slug === def.slug || p.name === def.name);
+    let product = existing.find((p) => p.slug === def.slug);
 
     if (product) {
-      console.log(`  [skip] Product "${def.name}" already exists (id=${product.id})`);
+      console.log(`  [skip] Product "${def.name}" (id=${product.id})`);
     } else {
-      // Build taxon_ids array
+      // Resolve taxon IDs
       const taxonIdList = def.taxons
         .map((t) => taxonIds.get(t))
-        .filter(Boolean) as string[];
+        .filter((id): id is number => id !== undefined);
 
-      // Build the product payload
       const productPayload: Record<string, unknown> = {
         name: def.name,
         slug: def.slug,
         price: def.price,
         description: def.description,
         available_on: new Date().toISOString(),
-        status: 'active',
+        shipping_category_id: 1, // Default
         taxon_ids: taxonIdList,
       };
 
       if (def.shippingWeight) {
-        productPayload.weight = def.shippingWeight;
+        productPayload.weight = parseFloat(def.shippingWeight);
       }
 
-      // Assign option type if the product has variants
       if (def.optionType) {
         const otId = optionTypeIds.get(def.optionType);
         if (otId) {
@@ -413,225 +296,212 @@ async function seedProducts(
         }
       }
 
-      product = await create<SpreeProduct>('/products', 'product', productPayload);
+      product = await post<{ id: number; slug: string; name: string }>('/products', {
+        product: productPayload,
+      });
       console.log(`  [create] Product "${def.name}" (id=${product.id})`);
-    }
 
-    // --- Product Properties ---
-    await seedProductProperties(product.id, def, propertyIds);
+      // Set product properties
+      for (const [propName, propValue] of Object.entries(def.properties)) {
+        const propId = propertyIds.get(propName);
+        if (!propId) continue;
 
-    // --- Variants ---
-    if (def.variants && def.variants.length > 0) {
-      await seedVariants(product.id, def, optionValueIds);
-    }
-  }
-}
-
-/**
- * Assigns property values to a product via the product_properties endpoint.
- */
-async function seedProductProperties(
-  productId: string,
-  def: ProductDef,
-  propertyIds: Map<string, string>,
-): Promise<void> {
-  // Fetch existing product properties for this product
-  let existingProdProps: Array<{ id: string; property_id: number; value: string }> = [];
-  try {
-    const url = `${BASE_URL}${PLATFORM_PREFIX}/products/${productId}/product_properties?per_page=100`;
-    const res = await fetch(url, { headers: headers() });
-    if (res.ok) {
-      const json = (await res.json()) as {
-        data: Array<{ id: string; attributes: { property_id: number; value: string } }>;
-      };
-      existingProdProps = json.data.map((d) => ({
-        id: d.id,
-        property_id: d.attributes.property_id,
-        value: d.attributes.value,
-      }));
-    }
-  } catch {
-    // If the nested route doesn't exist, fall back to creating via the flat endpoint
-  }
-
-  for (const [propName, propValue] of Object.entries(def.properties)) {
-    const propId = propertyIds.get(propName);
-    if (!propId) {
-      console.warn(`    [warn] Property "${propName}" not found, skipping.`);
-      continue;
-    }
-
-    const alreadySet = existingProdProps.find(
-      (pp) => String(pp.property_id) === propId,
-    );
-    if (alreadySet) {
-      continue; // Already assigned
-    }
-
-    try {
-      await create('/product_properties', 'product_property', {
-        product_id: productId,
-        property_id: propId,
-        value: propValue,
-      });
-    } catch (err) {
-      // Some Spree versions use a nested route instead
-      try {
-        const url = `${BASE_URL}${PLATFORM_PREFIX}/products/${productId}/product_properties`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: headers(),
-          body: JSON.stringify({
-            product_property: {
-              property_id: propId,
-              value: propValue,
-            },
-          }),
-        });
-        if (!res.ok) {
-          const text = await res.text();
-          console.warn(`    [warn] Could not set property "${propName}" on product ${productId}: ${text}`);
+        try {
+          await post(`/products/${product.id}/product_properties`, {
+            product_property: { property_name: propName, value: propValue },
+          });
+        } catch {
+          console.warn(`    [warn] Could not set property "${propName}"`);
         }
-      } catch (innerErr) {
-        console.warn(`    [warn] Failed to set property "${propName}": ${innerErr}`);
       }
-    }
-  }
-}
 
-/**
- * Creates variants for a product with option value assignments and pricing.
- */
-async function seedVariants(
-  productId: string,
-  def: ProductDef,
-  optionValueIds: Map<string, string>,
-): Promise<void> {
-  // Fetch existing variants for this product
-  let existingVariants: SpreeVariant[] = [];
-  try {
-    const url = `${BASE_URL}${PLATFORM_PREFIX}/products/${productId}/variants?per_page=100`;
-    const res = await fetch(url, { headers: headers() });
-    if (res.ok) {
-      const json = (await res.json()) as {
-        data: Array<{
-          id: string;
-          attributes: { sku: string; is_master: boolean; price: string };
-          relationships?: { option_values?: { data: Array<{ id: string }> } };
-        }>;
-      };
-      existingVariants = json.data.map((d) => ({
-        id: d.id,
-        sku: d.attributes.sku,
-        is_master: d.attributes.is_master,
-        price: d.attributes.price,
-        option_values: [],
-      }));
-    }
-  } catch {
-    // Fall back to creating variants via the flat endpoint
-  }
+      // Create variants
+      if (def.variants) {
+        for (const v of def.variants) {
+          const ovId = optionValueIds.get(v.optionValue);
+          if (!ovId) {
+            console.warn(`    [warn] Option value "${v.optionValue}" not found`);
+            continue;
+          }
 
-  if (!def.variants) return;
+          try {
+            const variant = await post<{ id: number; sku: string }>(
+              `/products/${product.id}/variants`,
+              {
+                variant: {
+                  sku: v.sku,
+                  price: def.price,
+                  weight: def.shippingWeight ? parseFloat(def.shippingWeight) : undefined,
+                  option_value_ids: [ovId],
+                },
+              }
+            );
+            console.log(`    [create] Variant "${v.sku}" (id=${variant.id})`);
 
-  for (const variantDef of def.variants) {
-    const existingBySku = existingVariants.find(
-      (v) => v.sku === variantDef.sku && !v.is_master,
-    );
-
-    if (existingBySku) {
-      console.log(`    [skip] Variant "${variantDef.sku}" already exists (id=${existingBySku.id})`);
-      continue;
-    }
-
-    const ovId = optionValueIds.get(variantDef.optionValue);
-    if (!ovId) {
-      console.warn(`    [warn] Option value "${variantDef.optionValue}" not found, skipping variant.`);
-      continue;
-    }
-
-    const variantPayload: Record<string, unknown> = {
-      sku: variantDef.sku,
-      price: def.price,
-      product_id: productId,
-      option_value_ids: [ovId],
-    };
-
-    if (def.shippingWeight) {
-      variantPayload.weight = def.shippingWeight;
-    }
-
-    try {
-      const created = await create<{ id: string }>('/variants', 'variant', variantPayload);
-      console.log(`    [create] Variant "${variantDef.sku}" (id=${created.id})`);
-    } catch (err) {
-      // Try nested route as fallback
-      try {
-        const url = `${BASE_URL}${PLATFORM_PREFIX}/products/${productId}/variants`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: headers(),
-          body: JSON.stringify({
-            variant: {
-              sku: variantDef.sku,
-              price: def.price,
-              option_value_ids: [ovId],
-              weight: def.shippingWeight || undefined,
-            },
-          }),
-        });
-        if (res.ok) {
-          const json = (await res.json()) as { data: { id: string } };
-          console.log(`    [create] Variant "${variantDef.sku}" via nested route (id=${json.data.id})`);
-        } else {
-          const text = await res.text();
-          console.warn(`    [warn] Could not create variant "${variantDef.sku}": ${text}`);
+            // Set stock for variant
+            await setStock(variant.id);
+          } catch (err) {
+            console.warn(`    [warn] Could not create variant "${v.sku}": ${err}`);
+          }
         }
-      } catch (innerErr) {
-        console.warn(`    [warn] Failed to create variant "${variantDef.sku}": ${innerErr}`);
       }
+
+      // Set stock for master variant
+      await setMasterStock(product.id);
     }
   }
 }
 
-/**
- * Step 6 — Promotions
- * Creates promotion shells. Rules and actions should be configured in Spree Admin UI.
- */
-async function seedPromotions(): Promise<void> {
-  console.log('\n--- Seeding Promotions ---');
-
-  // Spree 4.2.5 promotions list endpoint
-  let existingPromotions: Array<{ id: string; name: string; code: string }> = [];
+async function setStock(variantId: number): Promise<void> {
   try {
-    const items = await fetchAll<{ id: string; name: string; code: string }>('/promotions');
-    existingPromotions = items;
+    // Find the stock item for this variant
+    const { stock_items } = await get<{
+      stock_items: Array<{ id: number; variant_id: number; count_on_hand: number }>;
+    }>('/stock_locations/1/stock_items?per_page=200');
+
+    const stockItem = stock_items.find((si) => si.variant_id === variantId);
+    if (stockItem && stockItem.count_on_hand === 0) {
+      await put(`/stock_locations/1/stock_items/${stockItem.id}`, {
+        stock_item: { count_on_hand: 100, force: true },
+      });
+    }
   } catch {
-    console.warn('  [warn] Could not fetch existing promotions (endpoint may not be available).');
+    // Stock adjustment is best-effort
+  }
+}
+
+async function setMasterStock(productId: number): Promise<void> {
+  try {
+    const { variants } = await get<{
+      variants: Array<{ id: number; is_master: boolean }>;
+    }>(`/products/${productId}/variants?per_page=100`);
+
+    const master = variants.find((v) => v.is_master);
+    if (master) {
+      await setStock(master.id);
+    }
+  } catch {
+    // Best-effort
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Menus (via v1 API — requires CRUD endpoints deployed to admin)
+// ---------------------------------------------------------------------------
+
+interface MenuLocationResponse {
+  response_code: number;
+  response_data: {
+    menu_location_listing: Array<{ id: number; title: string }>;
+  };
+}
+
+interface MenuItemResponse {
+  response_code: number;
+  response_data: {
+    menu_location_listing: Array<{
+      id: number;
+      title: string;
+      menu_item_listing: Array<{ id: number; name: string; parent_id: number; childrens: unknown[] }>;
+    }>;
+  };
+}
+
+async function seedMenus(): Promise<void> {
+  console.log('\n--- Seeding Menus ---');
+
+  // Check existing menu locations
+  const existing = await get<MenuLocationResponse>('/menu_locations').catch(() => null);
+  const existingLocations = existing?.response_data?.menu_location_listing || [];
+
+  if (existingLocations.length >= MENU_LOCATIONS.length) {
+    console.log(`  [skip] ${existingLocations.length} menu location(s) already exist`);
+    return;
   }
 
-  for (const promo of PROMOTIONS) {
-    const found = existingPromotions.find(
-      (p) => p.name === promo.name || p.code === promo.code,
-    );
+  const locationIds = new Map<string, number>();
+  for (const loc of existingLocations) {
+    locationIds.set(loc.title, loc.id);
+  }
 
-    if (found) {
-      console.log(`  [skip] Promotion "${promo.name}" already exists (id=${found.id})`);
+  // Create menu locations via v1 API
+  for (const menuDef of MENU_LOCATIONS) {
+    if (locationIds.has(menuDef.title)) {
+      console.log(`  [skip] Menu location "${menuDef.title}" (id=${locationIds.get(menuDef.title)})`);
       continue;
     }
 
     try {
-      const created = await create<{ id: string }>('/promotions', 'promotion', {
-        name: promo.name,
-        description: promo.description,
-        code: promo.code,
-        starts_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      const created = await post<{
+        response_code: number;
+        response_data: { id: number; title: string };
+      }>('/menu_locations', {
+        menu_location: {
+          title: menuDef.title,
+          location: menuDef.location,
+          is_visible: true,
+        },
       });
-      console.log(`  [create] Promotion "${promo.name}" (id=${created.id})`);
-      console.log(`           Code: ${promo.code} — configure rules/actions in Spree Admin UI.`);
+      const id = created.response_data?.id;
+      if (id) {
+        locationIds.set(menuDef.title, id);
+        console.log(`  [create] Menu location "${menuDef.title}" (id=${id})`);
+      }
     } catch (err) {
-      console.warn(`  [warn] Could not create promotion "${promo.name}": ${err}`);
+      console.warn(`  [warn] Could not create menu location "${menuDef.title}": ${err}`);
+    }
+  }
+
+  // Create menu items for each location
+  for (const menuDef of MENU_LOCATIONS) {
+    const locId = locationIds.get(menuDef.title);
+    if (!locId) continue;
+
+    for (let i = 0; i < menuDef.items.length; i++) {
+      const item = menuDef.items[i];
+      try {
+        const created = await post<{
+          response_code: number;
+          response_data: { id: number; name: string };
+        }>('/menu_items', {
+          menu_item: {
+            name: item.name,
+            url: item.url,
+            menu_location_id: locId,
+            is_visible: true,
+            position: i + 1,
+          },
+        });
+        const parentId = created.response_data?.id;
+        console.log(`    [create] Menu item "${item.name}" (id=${parentId})`);
+
+        // Create children
+        if (item.children && parentId) {
+          for (let j = 0; j < item.children.length; j++) {
+            const child = item.children[j];
+            try {
+              const childCreated = await post<{
+                response_code: number;
+                response_data: { id: number; name: string };
+              }>('/menu_items', {
+                menu_item: {
+                  name: child.name,
+                  url: child.url,
+                  menu_location_id: locId,
+                  parent_id: parentId,
+                  is_visible: true,
+                  position: j + 1,
+                },
+              });
+              console.log(`      [create] Child "${child.name}" (id=${childCreated.response_data?.id})`);
+            } catch (err) {
+              console.warn(`      [warn] Could not create child "${child.name}": ${err}`);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn(`    [warn] Could not create menu item "${item.name}": ${err}`);
+      }
     }
   }
 }
@@ -641,18 +511,23 @@ async function seedPromotions(): Promise<void> {
 // ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
-  console.log('=== Beeper Spree Seed Script ===');
+  console.log('=== Beeper Spree Seed Script (v1 API) ===');
   console.log(`Target: ${BASE_URL}`);
 
   try {
-    await authenticate();
-
     const taxonomyIds = await seedTaxonomies();
     const taxonIds = await seedTaxons(taxonomyIds);
     const { typeIds: optionTypeIds, valueIds: optionValueIds } = await seedOptionTypes();
     const propertyIds = await seedProperties();
     await seedProducts(taxonIds, propertyIds, optionTypeIds, optionValueIds);
-    await seedPromotions();
+    await seedMenus();
+
+    // Note: Prototypes cannot be created via v1 API (endpoint doesn't exist).
+    // They are defined in seed-spree-data.ts for reference and can be created
+    // via rails runner or the Spree admin panel.
+    console.log('\n--- Prototypes ---');
+    console.log('  [info] Prototypes defined in seed-spree-data.ts but cannot be created via API.');
+    console.log('         Create via admin panel or: docker exec -it beeper-admin-web-1 rails runner db/seed_products.rb');
 
     console.log('\n=== Seed complete! ===\n');
   } catch (err) {

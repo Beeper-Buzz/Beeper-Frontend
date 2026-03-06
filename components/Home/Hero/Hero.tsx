@@ -15,10 +15,10 @@ const Hero: React.FC<HeroProps> = () => {
     <section className="relative overflow-hidden px-6 py-20 sm:px-12 sm:py-28 md:px-24 md:py-32">
       {/* Dark gradient background with radial neon glow */}
       <div
-        className="absolute inset-0 bg-surface-void"
+        className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 0, 255, 0.12) 0%, rgba(255, 0, 255, 0.04) 40%, transparent 70%), #000000",
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 0, 255, 0.12) 0%, rgba(255, 0, 255, 0.04) 40%, transparent 70%)",
         }}
       />
 
@@ -63,7 +63,7 @@ const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.45 }}
           className="mt-8"
         >
-          <Link href="/beeper-delta-8" className="neon-btn inline-block">
+          <Link href="/beeper-8" className="neon-btn inline-block">
             PRE-ORDER NOW
           </Link>
         </motion.div>

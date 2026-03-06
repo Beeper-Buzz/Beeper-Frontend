@@ -20,7 +20,7 @@ const PLACEHOLDER_PRODUCTS: FeaturedProduct[] = [
   {
     name: "Beeper \u03948",
     price: "$199.99",
-    href: "/beeper-delta-8",
+    href: "/beeper-8",
   },
   {
     name: "Beeper \u03948 Pro",

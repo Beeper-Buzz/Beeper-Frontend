@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useRef, useEffect } from "react";
 import { useHomepage, HomepageSection } from "@hooks/useHomepage";
 import { Layout } from "../Layout";
 import { Loading } from "../Loading";
@@ -6,7 +6,7 @@ import Hero from "./Hero";
 import Products from "./Products";
 import { StreamList } from "../StreamList";
 import { VideoJS } from "../VideoJS";
-import Featured from "./Featured";
+import Featured, { FeaturedProduct } from "./Featured";
 import Banner from "./Banner";
 import { Features } from "./Features";
 import { Testimonials } from "./Testimonials";
@@ -195,6 +195,38 @@ const SectionRenderers: Record<
 
 export const DynamicHome = () => {
   const { data: homepageData, isLoading, error } = useHomepage();
+  const { data: feedData } = useProductFeed("latest", { per_page: 8 });
+
+  // Transform Spree product feed into FeaturedProduct[] for the Featured strip
+  const featuredProducts = useMemo<FeaturedProduct[] | undefined>(() => {
+    if (!feedData?.data || feedData.data.length === 0) return undefined;
+    const allImages = feedData.included?.filter((e: any) => e.type === "image") || [];
+    const apiUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
+    return feedData.data.map((item: any) => {
+      const imgId = item.relationships?.images?.data?.[0]?.id;
+      const imgRecord = imgId ? allImages.find((e: any) => e.id === imgId) : null;
+      const imgUrl = imgRecord?.attributes?.styles?.[4]?.url
+        || imgRecord?.attributes?.styles?.[0]?.url;
+      return {
+        name: item.attributes.name,
+        price: item.attributes.display_price || `$${item.attributes.price}`,
+        href: `/${item.attributes.slug}`,
+        image: imgUrl ? `${apiUrl}${imgUrl}` : undefined,
+      };
+    });
+  }, [feedData]);
+
+  // Ensure video is muted for autoplay (iOS requires muted attribute set via JS)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.play().catch(() => {});
+  }, []);
 
   if (isLoading) {
     return (
@@ -212,9 +244,34 @@ export const DynamicHome = () => {
   const cmsSections =
     homepageData?.homepage_sections?.filter((s) => s.is_visible) || [];
 
+  // Fixed background — rendered outside <main> scroll container to avoid
+  // cross-browser issues with position:fixed inside overflow:auto
+  const videoBackground = (
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+      <video
+        ref={videoRef}
+        src="/device-rotate.mp4"
+        muted
+        autoPlay
+        loop
+        playsInline
+        preload="auto"
+        className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover opacity-25"
+      />
+      <div
+        className="absolute inset-0 animate-gradient-sweep"
+        style={{
+          background: "linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(255,0,138,0.2) 33%, rgba(0,255,255,0.15) 66%, rgba(124,58,237,0.3) 100%)",
+          backgroundSize: "300% 300%",
+          mixBlendMode: "overlay",
+        }}
+      />
+    </div>
+  );
+
   return (
-    <Layout>
-      <div className="min-h-screen bg-surface-void">
+    <Layout background={videoBackground}>
+      <div className="relative z-10">
         {/* 0. LogoBlob Hero */}
         <section className="flex items-center justify-center py-16 md:py-20">
           <LogoBlob hasBlob isAnimated={true} showTagline={true} />
@@ -224,7 +281,7 @@ export const DynamicHome = () => {
         <Hero />
 
         {/* 2. Featured Products Strip */}
-        <Featured />
+        <Featured products={featuredProducts} />
 
         {/* 3. Shop / Marketplace Split */}
         <ShopMarketplaceSplit />

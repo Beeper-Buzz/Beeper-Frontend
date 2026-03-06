@@ -1,5 +1,5 @@
 // scripts/seed-spree-data.ts
-// All Spree seed data — taxonomies, option types, properties, products, promotions
+// All Spree seed data — taxonomies, option types, properties, products, prototypes, menus, promotions
 
 export const TAXONOMIES = [
   { name: 'Shop' },
@@ -18,8 +18,8 @@ export const OPTION_TYPES = [
     name: 'color',
     presentation: 'Color',
     values: [
-      { name: 'black', presentation: 'Black' },
-      { name: 'white', presentation: 'White' },
+      { name: 'black', presentation: '#000000' },
+      { name: 'white', presentation: '#ffffff' },
     ],
   },
   {
@@ -61,7 +61,7 @@ export interface ProductDef {
 export const PRODUCTS: ProductDef[] = [
   {
     name: 'Beeper \u03948',
-    slug: 'beeper-delta-8',
+    slug: 'beeper-8',
     price: '199.99',
     description: 'BLE MIDI controller with 8x FSR trigger pads, 2x capacitive-touch sliders, and an AMOLED heads-up display. PRE-ORDER NOW \u2014 SHIPS FALL 2026.',
     shippingWeight: '0.5',
@@ -98,7 +98,7 @@ export const PRODUCTS: ProductDef[] = [
   },
   {
     name: 'Beeper T-Shirt',
-    slug: 'beeper-tshirt',
+    slug: 'beeper-t-shirt',
     price: '34.99',
     description: 'Beeper logo tee. 100% cotton, unisex fit.',
     shippingWeight: '0.2',
@@ -156,6 +156,129 @@ export const PRODUCTS: ProductDef[] = [
       shipping_type: 'digital',
       compatibility: 'iOS 16+',
     },
+  },
+];
+
+// --- Prototypes ---
+// Prototypes group option types, properties, and taxons for quick product creation in admin.
+// Note: Spree 4.2 /api/v1/prototypes endpoint may not exist; these are seeded via rails runner.
+export interface PrototypeDef {
+  name: string;
+  optionTypes: string[];
+  properties: string[];
+  taxons: string[];
+}
+
+export const PROTOTYPES: PrototypeDef[] = [
+  {
+    name: 'Physical Device',
+    optionTypes: ['color'],
+    properties: ['shipping_type', 'preorder', 'ships_date', 'connectivity'],
+    taxons: ['Devices'],
+  },
+  {
+    name: 'Apparel',
+    optionTypes: ['size'],
+    properties: ['shipping_type'],
+    taxons: ['Apparel'],
+  },
+  {
+    name: 'Accessory',
+    optionTypes: [],
+    properties: ['shipping_type'],
+    taxons: ['Accessories'],
+  },
+  {
+    name: 'Digital Product',
+    optionTypes: [],
+    properties: ['shipping_type', 'compatibility', 'format', 'file_count', 'polyphony'],
+    taxons: ['Sample Packs', 'Synths', 'Visualizers'],
+  },
+];
+
+// --- Menu Locations & Items ---
+// Menu location 1 = Header nav (MainMenu), Menu location 2 = Footer columns.
+// The custom Spree menu API is read-only; menus must be created via admin panel or rails runner.
+export interface MenuItemDef {
+  name: string;
+  url: string;
+  children?: MenuItemDef[];
+}
+
+export interface MenuLocationDef {
+  title: string;
+  location: string;
+  items: MenuItemDef[];
+}
+
+export const MENU_LOCATIONS: MenuLocationDef[] = [
+  {
+    title: 'Header Navigation',
+    location: 'header',
+    items: [
+      {
+        name: 'Shop',
+        url: '/browse?mode=shop',
+        children: [
+          { name: 'Devices', url: '/browse?mode=shop&category=Devices' },
+          { name: 'Accessories', url: '/browse?mode=shop&category=Accessories' },
+          { name: 'Apparel', url: '/browse?mode=shop&category=Apparel' },
+        ],
+      },
+      {
+        name: 'Marketplace',
+        url: '/browse?mode=marketplace',
+        children: [
+          { name: 'Sample Packs', url: '/browse?mode=marketplace&category=Sample+Packs' },
+          { name: 'Synths', url: '/browse?mode=marketplace&category=Synths' },
+          { name: 'Visualizers', url: '/browse?mode=marketplace&category=Visualizers' },
+        ],
+      },
+      { name: 'Pre-Order', url: '/beeper-8' },
+    ],
+  },
+  {
+    title: 'Footer Navigation',
+    location: 'footer',
+    items: [
+      {
+        name: 'Shop',
+        url: '#',
+        children: [
+          { name: 'All Products', url: '/browse' },
+          { name: 'Devices', url: '/browse?mode=shop&category=Devices' },
+          { name: 'Accessories', url: '/browse?mode=shop&category=Accessories' },
+          { name: 'Apparel', url: '/browse?mode=shop&category=Apparel' },
+        ],
+      },
+      {
+        name: 'Marketplace',
+        url: '#',
+        children: [
+          { name: 'Sample Packs', url: '/browse?mode=marketplace&category=Sample+Packs' },
+          { name: 'Synths', url: '/browse?mode=marketplace&category=Synths' },
+          { name: 'Visualizers', url: '/browse?mode=marketplace&category=Visualizers' },
+        ],
+      },
+      {
+        name: 'Support',
+        url: '#',
+        children: [
+          { name: 'Contact Us', url: '/contact' },
+          { name: 'Shipping & Returns', url: '/shipping' },
+          { name: 'FAQ', url: '/faq' },
+        ],
+      },
+      {
+        name: 'Company',
+        url: '#',
+        children: [
+          { name: 'About', url: '/about' },
+          { name: 'Privacy Policy', url: '/privacy' },
+          { name: 'Terms & Conditions', url: '/terms' },
+        ],
+      },
+    ],
   },
 ];
 
