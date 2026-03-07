@@ -77,8 +77,11 @@ export const MobileMenu = ({
               <button
                 onClick={() => handleItemClick(item, hasChildren, pathSlug)}
                 className={cn(
-                  "flex w-full items-center justify-between border-none bg-transparent py-2.5 text-left font-title text-base text-white transition-colors hover:text-neon-cyan",
-                  "cursor-pointer outline-none"
+                  "flex w-full items-center justify-between border-none bg-transparent py-2.5 text-left font-title transition-colors hover:text-neon-cyan",
+                  "cursor-pointer outline-none",
+                  level === 0 && "text-base text-white",
+                  level === 1 && "text-sm text-white/70",
+                  level >= 2 && "text-sm text-white/50"
                 )}
                 style={{ paddingLeft: `${level * 20}px` }}
               >
@@ -106,7 +109,7 @@ export const MobileMenu = ({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button
-          className="fixed left-4 top-4 z-[60] flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-white outline-none"
+          className="fixed left-4 top-4 z-[60] flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-white outline-none sm:hidden"
           aria-label="Open menu"
         >
           <Menu className="h-6 w-6" />

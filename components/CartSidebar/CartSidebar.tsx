@@ -47,30 +47,17 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
   const { data: productsData } = useProducts(1);
 
   useEffect(() => {
-    if (
-      cartData?.data?.attributes?.item_count &&
-      cartData?.data?.relationships?.line_items?.data
-    ) {
-      const lineItems = cartData?.data.relationships.line_items.data;
-      const itemCount = cartData?.data.attributes.item_count;
-      const lineItemsArray = Array.isArray(lineItems) ? lineItems : [lineItems];
-      const avgQty = Math.ceil(itemCount / lineItemsArray.length);
-
+    if (Array.isArray(cartData?.included)) {
+      const lineItems = cartData?.included.filter(
+        (item) => item.type === "line_item"
+      );
       const initialQuantities: Record<string, number> = {};
-      lineItemsArray.forEach((item: any) => {
-        if (!quantities[item.id]) {
-          initialQuantities[item.id] = avgQty;
-        }
+      lineItems?.forEach((item: any) => {
+        initialQuantities[item.id] = item.attributes.quantity || 1;
       });
-
-      if (Object.keys(initialQuantities).length > 0) {
-        setQuantities((prev) => ({ ...prev, ...initialQuantities }));
-      }
+      setQuantities(initialQuantities);
     }
-  }, [
-    cartData?.data?.attributes?.item_count,
-    cartData?.data?.relationships?.line_items?.data
-  ]);
+  }, [cartData?.included]);
 
   const removeFromCartMutation = useMutation(
     (itemId: string) => removeItemFromCart(itemId),
@@ -132,52 +119,46 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
 
   const handleEmptyCart = () => {
     if (window.confirm("Are you sure you want to empty your cart?")) {
-      const lineItemRefs =
-        cartData?.data?.relationships?.line_items?.data || [];
-      const lineItemsArray = Array.isArray(lineItemRefs)
-        ? lineItemRefs
-        : [lineItemRefs];
-      lineItemsArray.forEach((item: any) => {
+      const lineItems =
+        cartData?.included?.filter((item) => item.type === "line_item") || [];
+      lineItems.forEach((item: any) => {
         removeFromCartMutation.mutate(item.id);
       });
     }
   };
 
   const renderCartItems = () => {
-    if (!productsData || !Array.isArray(productsData.data)) return null;
+    if (!Array.isArray(cartData?.included) || !productsData) return null;
 
-    const lineItemRefs = cartData?.data?.relationships?.line_items?.data || [];
-    const variantRefs = cartData?.data?.relationships?.variants?.data || [];
+    return cartData?.included
+      .filter((item) => item.type === "line_item")
+      .map((lineItem) => {
+        const product = foundProduct(
+          lineItem.relationships.variant.data.id,
+          productsData
+        );
 
-    if (
-      Array.isArray(variantRefs) &&
-      variantRefs.length > 0 &&
-      Array.isArray(lineItemRefs)
-    ) {
-      return variantRefs.map((variantRef, index): any => {
-        const lineItemRef = lineItemRefs[index];
-        if (!lineItemRef) return null;
-
-        const quantity = quantities[lineItemRef.id] || 1;
-        const product = foundProduct(variantRef.id, productsData);
+        const lineItemId = lineItem.id;
+        const quantity =
+          quantities[lineItemId] || lineItem.attributes.quantity;
 
         return (
           <div
-            key={lineItemRef.id || `cart-item-${index}`}
+            key={`cart-item-${lineItemId}`}
             className="glass-panel mb-2 flex items-center justify-between px-4 py-3"
           >
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="truncate font-title text-xs text-white">
                 {product?.attributes?.name}
               </span>
-              <span className="font-title text-xs text-neon-cyan">
+              <span className="font-ds-digital text-sm tracking-wider text-neon-cyan">
                 ${product?.attributes?.price}
               </span>
             </div>
             <div className="flex items-center gap-1">
               <button
                 onClick={() =>
-                  handleUpdateItemQuantity(lineItemRef.id, quantity - 1)
+                  handleUpdateItemQuantity(lineItemId, quantity - 1)
                 }
                 className="glass-panel flex h-6 w-6 items-center justify-center !rounded text-white transition-colors hover:text-neon-cyan"
               >
@@ -189,21 +170,21 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
                 onChange={(e: any) => {
                   const newQty = parseInt(e.target.value) || 1;
                   if (newQty > 0) {
-                    handleUpdateItemQuantity(lineItemRef.id, newQty);
+                    handleUpdateItemQuantity(lineItemId, newQty);
                   }
                 }}
-                className="w-8 border-none bg-transparent text-center font-title text-xs text-white outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="w-8 border-none bg-transparent text-center font-digital7 text-sm text-white outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
               <button
                 onClick={() =>
-                  handleUpdateItemQuantity(lineItemRef.id, quantity + 1)
+                  handleUpdateItemQuantity(lineItemId, quantity + 1)
                 }
                 className="glass-panel flex h-6 w-6 items-center justify-center !rounded text-white transition-colors hover:text-neon-cyan"
               >
                 <Plus className="h-3 w-3" />
               </button>
               <button
-                onClick={() => handleRemoveItem(lineItemRef.id)}
+                onClick={() => handleRemoveItem(lineItemId)}
                 className="ml-1 flex h-6 w-6 items-center justify-center rounded border-none bg-transparent text-white/40 transition-colors hover:text-neon-pink"
                 title="Remove item"
               >
@@ -213,8 +194,6 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
           </div>
         );
       });
-    }
-    return null;
   };
 
   const {
@@ -267,7 +246,7 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
               <>
                 {/* Item count & empty cart */}
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="font-title text-xs text-white/50">
+                  <span className="font-micro5 text-xs text-white/50">
                     {item_count} {item_count > 1 ? "items" : "item"} in your
                     cart
                   </span>
@@ -289,17 +268,17 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
                 <div className="glass-panel mt-4 space-y-2 p-4">
                   <div className="flex justify-between font-title text-xs">
                     <span className="text-white/50">Subtotal:</span>
-                    <span className="font-semibold text-white">
+                    <span className="font-ds-digital text-sm tracking-wider text-white">
                       {display_item_total}
                     </span>
                   </div>
                   <div className="flex justify-between font-title text-xs">
                     <span className="text-white/50">Tax:</span>
-                    <span className="text-white">{included_tax_total}</span>
+                    <span className="font-ds-digital text-sm tracking-wider text-white">{included_tax_total}</span>
                   </div>
                   <div className="flex justify-between border-t border-glass-border pt-2 font-title text-sm font-bold">
                     <span className="text-white">Total:</span>
-                    <span className="text-neon-cyan">{display_total}</span>
+                    <span className="font-ds-digital text-base tracking-wider text-neon-cyan">{display_total}</span>
                   </div>
                 </div>
 

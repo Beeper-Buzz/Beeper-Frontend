@@ -6,11 +6,17 @@ import { QueryKeys } from "@hooks/queryKeys";
 import constants from "@utilities/constants";
 
 export const showCart = async () => {
-  console.log("[showCart] Starting...");
+  constants.IS_DEBUG && console.log("[showCart] Starting...");
   const storage = (await import("../../config/storage")).default;
   const token = await storage.getToken();
   const guestToken = await storage.getGuestOrderToken();
-  console.log("[showCart] Auth token:", token ? "exists" : "none", "| Guest token:", guestToken ? "exists" : "none");
+  constants.IS_DEBUG &&
+    console.log(
+      "[showCart] Auth token:",
+      token ? "exists" : "none",
+      "| Guest token:",
+      guestToken ? "exists" : "none"
+    );
 
   if (token) {
     try {
@@ -90,17 +96,23 @@ export const showCart = async () => {
       }
     } else {
       // No guest token, create new cart
-      console.log("[showCart] No guest token, creating new cart...");
+      constants.IS_DEBUG &&
+        console.log("[showCart] No guest token, creating new cart...");
       const response = await spreeClient.cart.create(undefined, {
         include: "line_items,variants"
       });
       if (response.isSuccess()) {
         const result = response.success();
-        console.log("[showCart] New cart created, token:", result.data.attributes.token);
+        constants.IS_DEBUG &&
+          console.log(
+            "[showCart] New cart created, token:",
+            result.data.attributes.token
+          );
         storage.setGuestOrderToken(result.data.attributes.token);
         return result;
       } else {
-        console.error("[showCart] Cart create FAILED:", response.fail());
+        constants.IS_DEBUG &&
+          console.error("[showCart] Cart create FAILED:", response.fail());
         throw new Error(response.fail().message);
       }
     }
@@ -177,7 +189,8 @@ export const removeItemFromCart = async (itemId: string) => {
   if (token?.access_token) {
     const response = await spreeClient.cart.removeItem(
       { bearerToken: token.access_token },
-      itemId
+      itemId,
+      { include: "line_items,variants" }
     );
     if (response.isSuccess()) {
       return response.success();
@@ -192,7 +205,11 @@ export const removeItemFromCart = async (itemId: string) => {
     throw new Error("No cart token available");
   }
 
-  const response = await spreeClient.cart.removeItem({ orderToken }, itemId);
+  const response = await spreeClient.cart.removeItem(
+    { orderToken },
+    itemId,
+    { include: "line_items,variants" }
+  );
   if (response.isSuccess()) {
     return response.success();
   } else {
@@ -208,10 +225,10 @@ export const updateItemQuantity = async (itemId: string, quantity: number) => {
   if (token?.access_token) {
     const response = await spreeClient.cart.setQuantity(
       { bearerToken: token.access_token },
-      { line_item_id: itemId, quantity }
+      { line_item_id: itemId, quantity, include: "line_items,variants" }
     );
 
-    console.log("UPDATE ITEM RESPONSE: ", response);
+    constants.IS_DEBUG && console.log("UPDATE ITEM RESPONSE: ", response);
 
     if (response.isSuccess()) {
       return response.success();
@@ -228,10 +245,10 @@ export const updateItemQuantity = async (itemId: string, quantity: number) => {
 
   const response = await spreeClient.cart.setQuantity(
     { orderToken },
-    { line_item_id: itemId, quantity }
+    { line_item_id: itemId, quantity, include: "line_items,variants" }
   );
 
-  console.log("UPDATE ITEM RESPONSE: ", response);
+  constants.IS_DEBUG && console.log("UPDATE ITEM RESPONSE: ", response);
 
   if (response.isSuccess()) {
     return response.success();
@@ -239,10 +256,6 @@ export const updateItemQuantity = async (itemId: string, quantity: number) => {
     throw new Error(response.fail().message);
   }
 };
-
-// export const useCart = () => {
-//   return useQuery<IOrder, false>([QueryKeys.CART], () => showCart());
-// };
 
 export const useCart = () => {
   return useQuery<IOrder, Error>([QueryKeys.CART], showCart, {

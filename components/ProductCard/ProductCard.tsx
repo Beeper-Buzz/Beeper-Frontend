@@ -103,26 +103,24 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
       </div>
 
       {/* Footer */}
-      <div className="mt-3 flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <h4 className="truncate font-title text-sm text-white">
-            {item.attributes.name}
-          </h4>
-          {/* Color Swatches */}
-          {opts && opts.length > 0 && (
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-              {opts.map((opt: any, index: number) => (
-                <span
-                  key={`color-${index}`}
-                  className="h-3 w-3 rounded-full border border-glass-border"
-                  style={{ backgroundColor: opt?.attributes?.presentation }}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col items-end">
-          <span className="font-title text-sm font-semibold text-white">
+      <div className="mt-3 space-y-2">
+        <h4 className="truncate font-title text-base font-medium text-white">
+          {item.attributes.name}
+        </h4>
+        {/* Color Swatches */}
+        {opts && opts.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {opts.map((opt: any, index: number) => (
+              <span
+                key={`color-${index}`}
+                className="h-3 w-3 rounded-full border border-glass-border"
+                style={{ backgroundColor: opt?.attributes?.presentation }}
+              />
+            ))}
+          </div>
+        )}
+        <div className="inline-block rounded-md bg-surface-deep/80 px-2.5 py-1">
+          <span className="font-ds-digital text-lg tracking-wider text-neon-cyan">
             ${item.attributes.price}
           </span>
         </div>
@@ -173,7 +171,7 @@ export const PlaceholderProductCard: React.FC<PlaceholderProductCardProps> = ({
           {/* Image area (dark placeholder) */}
           <div className="relative aspect-[3/4] w-full bg-surface-deep">
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neon-cyan/5 via-surface-deep to-neon-magenta/5">
-              <span className="font-pressstart text-xl text-white/10">
+              <span className="font-micro5-charted text-3xl text-white/10">
                 {product.category === "Devices" && "\u0394"}
                 {product.category === "Accessories" && "+"}
                 {product.category === "Apparel" && "T"}
@@ -189,26 +187,24 @@ export const PlaceholderProductCard: React.FC<PlaceholderProductCardProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="p-4">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <h4 className="truncate font-title text-sm text-white">
-                  {product.name}
-                </h4>
-                {/* Color Swatches */}
-                {product.colors && product.colors.length > 0 && (
-                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                    {product.colors.map((color, i) => (
-                      <span
-                        key={`swatch-${i}`}
-                        className="h-3 w-3 rounded-full border border-glass-border"
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
-                  </div>
-                )}
+          <div className="p-4 space-y-2">
+            <h4 className="truncate font-title text-base font-medium text-white">
+              {product.name}
+            </h4>
+            {/* Color Swatches */}
+            {product.colors && product.colors.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {product.colors.map((color, i) => (
+                  <span
+                    key={`swatch-${i}`}
+                    className="h-3 w-3 rounded-full border border-glass-border"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
               </div>
-              <span className="font-title text-sm font-semibold text-neon-cyan">
+            )}
+            <div className="inline-block rounded-md bg-surface-deep/80 px-2.5 py-1">
+              <span className="font-ds-digital text-lg tracking-wider text-neon-cyan">
                 {product.price}
               </span>
             </div>

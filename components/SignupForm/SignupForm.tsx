@@ -64,7 +64,8 @@ export const SignupForm = () => {
     }
   }, [router]);
 
-  const { title, subtitle, description } = Static.questions.account;
+  const { title = "", subtitle = "", description = "" } =
+    Static?.questions?.account || {};
 
   return (
     <div className="relative z-[1] flex flex-col pb-20">
@@ -204,7 +205,7 @@ export const SignupForm = () => {
               <div className="mt-6 flex justify-center">
                 <button
                   type="submit"
-                  disabled={!(privacyTerms || !reportingTerms)}
+                  disabled={!(privacyTerms && reportingTerms)}
                   className="neon-btn w-full max-w-xs"
                 >
                   Submit
