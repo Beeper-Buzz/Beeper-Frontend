@@ -102,6 +102,22 @@ const config: Config = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))"
+        },
+        neon: {
+          cyan: "#00FFFF",
+          magenta: "#FF00FF",
+          pink: "#FF1493",
+          lime: "#39FF14",
+          amber: "#FF6600"
+        },
+        glass: {
+          bg: "rgba(255, 255, 255, 0.05)",
+          border: "rgba(255, 255, 255, 0.10)",
+          highlight: "rgba(255, 255, 255, 0.15)"
+        },
+        surface: {
+          deep: "#0A0020",
+          void: "#000000"
         }
       },
       fontFamily: {
@@ -112,7 +128,8 @@ const config: Config = {
         "body-bold": ["Anybody Light", "sans-serif"],
         "mono-bold": ["ibmplexmono_body_mono_bold", "monospace"],
         "mono-semibold": ["ibmplexmono_body_mono_semibold", "monospace"],
-        "mono-extralight": ["ibmplexmono_body_mono_extralight", "monospace"]
+        "mono-extralight": ["ibmplexmono_body_mono_extralight", "monospace"],
+        pressstart: ["PressStart2P", "monospace"]
       },
       fontSize: {
         "title-xxl": ["72px", { lineHeight: "86px", fontWeight: "700" }],
@@ -234,6 +251,15 @@ const config: Config = {
             transform:
               "translateY(-120px) translateX(var(--drift-x, 0px)) scale(1.3)"
           }
+        },
+        "blob-breathe": {
+          "0%, 100%": { transform: "scale(0.98)", opacity: "0.85" },
+          "50%": { transform: "scale(1.02)", opacity: "1" }
+        },
+        "gradient-sweep": {
+          "0%": { backgroundPosition: "0% 0%" },
+          "50%": { backgroundPosition: "100% 100%" },
+          "100%": { backgroundPosition: "0% 0%" }
         }
       },
       animation: {
@@ -257,7 +283,9 @@ const config: Config = {
         "spin-around": "spin-around calc(var(--speed, 3s) * 2) infinite linear",
         shine: "shine var(--duration, 14s) infinite linear",
         gradient: "gradient 8s linear infinite",
-        "float-up": "float-up 2s ease-expo-out forwards"
+        "float-up": "float-up 2s ease-expo-out forwards",
+        "blob-breathe": "blob-breathe 4s ease-in-out infinite",
+        "gradient-sweep": "gradient-sweep 12s ease-in-out infinite"
       }
     }
   },

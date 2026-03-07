@@ -237,7 +237,7 @@ export const StreamViewer = ({ props }: any) => {
               </p>
               <button
                 onClick={handleRetry}
-                className="rounded-full bg-brand px-5 py-2 font-mono-semibold text-[11px] uppercase tracking-wider text-white transition-all hover:bg-brand/80 active:scale-95"
+                className="rounded-full bg-neon-cyan px-5 py-2 font-mono-semibold text-[11px] uppercase tracking-wider text-black transition-all hover:bg-neon-cyan/80 active:scale-95"
               >
                 Retry
               </button>
@@ -246,7 +246,7 @@ export const StreamViewer = ({ props }: any) => {
             <VideoJS
               options={videoJsOptions}
               onReady={handlePlayerReady}
-              className="h-full w-full cursor-pointer [&_.vjs-big-play-button]:!border-brand/50 [&_.vjs-big-play-button]:!bg-black/60"
+              className="h-full w-full cursor-pointer [&_.vjs-big-play-button]:!border-neon-cyan/50 [&_.vjs-big-play-button]:!bg-black/60"
             />
           )}
         </div>
@@ -288,12 +288,12 @@ export const StreamViewer = ({ props }: any) => {
 
               {/* Active indicator */}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-brand transition-all" />
+                <div className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-neon-cyan transition-all" />
               )}
 
               {/* Product count badge */}
               {tab.id === "products" && featuredProducts.length > 0 && (
-                <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand/20 px-1 text-[9px] font-bold text-brand">
+                <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-neon-cyan/20 px-1 text-[9px] font-bold text-neon-cyan">
                   {featuredProducts.length}
                 </span>
               )}

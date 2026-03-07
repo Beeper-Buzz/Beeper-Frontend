@@ -183,12 +183,12 @@ export const StreamChat: React.FC<StreamChatProps> = ({
                   <span
                     className={cn(
                       "truncate font-mono-semibold text-[11px] tracking-wide",
-                      msg.isStreamer ? "text-brand" : "text-white/70"
+                      msg.isStreamer ? "text-neon-cyan" : "text-white/70"
                     )}
                   >
                     {msg.user}
                     {msg.isStreamer && (
-                      <span className="ml-1 inline-block rounded bg-brand/20 px-1 py-px text-[9px] font-bold uppercase tracking-widest text-brand">
+                      <span className="ml-1 inline-block rounded bg-neon-cyan/20 px-1 py-px text-[9px] font-bold uppercase tracking-widest text-neon-cyan">
                         Host
                       </span>
                     )}
@@ -245,7 +245,7 @@ export const StreamChat: React.FC<StreamChatProps> = ({
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder="Say something..."
-            className="flex-1 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 font-body text-[13px] text-white placeholder:text-white/30 focus:border-brand/40 focus:outline-none"
+            className="flex-1 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 font-body text-[13px] text-white placeholder:text-white/30 focus:border-neon-cyan/40 focus:outline-none"
           />
           <button
             onClick={handleSend}
@@ -253,7 +253,7 @@ export const StreamChat: React.FC<StreamChatProps> = ({
             className={cn(
               "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full transition-all",
               inputValue.trim()
-                ? "bg-brand text-white hover:bg-brand/80 active:scale-90"
+                ? "bg-neon-cyan text-black hover:bg-neon-cyan/80 active:scale-90"
                 : "bg-white/10 text-white/30"
             )}
           >

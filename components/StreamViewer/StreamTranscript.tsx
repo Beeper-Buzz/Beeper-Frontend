@@ -113,7 +113,7 @@ export const StreamTranscript: React.FC<StreamTranscriptProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
         <div className="flex items-center gap-2">
-          <div className="h-1.5 w-1.5 animate-live-pulse rounded-full bg-brand" />
+          <div className="h-1.5 w-1.5 animate-live-pulse rounded-full bg-neon-cyan" />
           <span className="font-mono-semibold text-[11px] uppercase tracking-widest text-white/50">
             Live Transcript
           </span>
@@ -144,7 +144,7 @@ export const StreamTranscript: React.FC<StreamTranscriptProps> = ({
               className={cn(
                 "group relative flex gap-3 rounded-lg px-2 py-2 transition-all duration-300",
                 activeId === entry.id
-                  ? "bg-brand/10 shadow-[inset_0_0_20px_rgba(235,139,139,0.05)]"
+                  ? "bg-neon-cyan/10 shadow-[inset_0_0_20px_rgba(235,139,139,0.05)]"
                   : "hover:bg-white/[0.03]",
                 "animate-fade-up"
               )}
@@ -156,7 +156,7 @@ export const StreamTranscript: React.FC<StreamTranscriptProps> = ({
               {/* Timestamp pill */}
               <button
                 onClick={() => handleTimestampClick(entry)}
-                className="mt-0.5 flex h-5 flex-shrink-0 items-center rounded bg-white/[0.06] px-1.5 font-mono-semibold text-[10px] tabular-nums text-white/40 transition-all hover:bg-brand/20 hover:text-brand"
+                className="mt-0.5 flex h-5 flex-shrink-0 items-center rounded bg-white/[0.06] px-1.5 font-mono-semibold text-[10px] tabular-nums text-white/40 transition-all hover:bg-neon-cyan/20 hover:text-neon-cyan"
               >
                 {entry.timestamp}
               </button>
@@ -166,14 +166,15 @@ export const StreamTranscript: React.FC<StreamTranscriptProps> = ({
                 <p
                   className={cn(
                     "m-0 font-body text-[13px] leading-[1.5] text-white/80",
-                    entry.isProductMention && "border-l-2 border-brand/40 pl-2"
+                    entry.isProductMention &&
+                      "border-l-2 border-neon-cyan/40 pl-2"
                   )}
                 >
                   {entry.text}
                 </p>
 
                 {entry.isProductMention && (
-                  <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-brand/[0.08] px-2.5 py-1 shadow-[0_0_12px_rgba(235,139,139,0.06)] transition-all hover:bg-brand/15 hover:shadow-[0_0_16px_rgba(235,139,139,0.12)]">
+                  <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-neon-cyan/[0.08] px-2.5 py-1 shadow-[0_0_12px_rgba(235,139,139,0.06)] transition-all hover:bg-neon-cyan/15 hover:shadow-[0_0_16px_rgba(235,139,139,0.12)]">
                     <svg
                       width="10"
                       height="10"
@@ -181,12 +182,12 @@ export const StreamTranscript: React.FC<StreamTranscriptProps> = ({
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2.5"
-                      className="text-brand"
+                      className="text-neon-cyan"
                     >
                       <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
                       <line x1="7" y1="7" x2="7.01" y2="7" />
                     </svg>
-                    <span className="font-mono-semibold text-[10px] uppercase tracking-wider text-brand/80">
+                    <span className="font-mono-semibold text-[10px] uppercase tracking-wider text-neon-cyan/80">
                       Product mentioned
                     </span>
                   </div>
