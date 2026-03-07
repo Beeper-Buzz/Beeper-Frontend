@@ -23,9 +23,9 @@ const PLACEHOLDER_PRODUCTS: FeaturedProduct[] = [
     href: "/beeper-8"
   },
   {
-    name: "Beeper \u03948 Pro",
-    price: "$349.99",
-    href: "/beeper-delta-8-pro"
+    name: "Carrying Case",
+    price: "$29.99",
+    href: "/beeper-carrying-case"
   },
   {
     name: "USB-C Cable",
@@ -71,7 +71,7 @@ const Featured: React.FC<FeaturedProps> = ({ products, title }) => {
   const items = products || PLACEHOLDER_PRODUCTS;
 
   return (
-    <section className="px-6 py-16 sm:px-12 md:px-24 md:py-20">
+    <section className="overflow-x-clip px-6 py-16 sm:px-12 md:px-24 md:py-20">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -98,7 +98,7 @@ const Featured: React.FC<FeaturedProps> = ({ products, title }) => {
         {items.map((product) => (
           <motion.div key={product.name} variants={cardVariants}>
             <Link href={product.href} className="block">
-              <div className="glass-panel group flex w-[200px] flex-shrink-0 flex-col items-center p-5 transition-all duration-300 hover:-translate-y-1 hover:border-neon-cyan/30 sm:w-[220px]">
+              <div className="glass-panel group flex w-[200px] flex-shrink-0 flex-col items-center p-5 transition-all duration-500 hover:-translate-y-1 hover:border-transparent hover:bg-white/[0.08] hover:shadow-[0_0_18px_rgba(0,255,255,0.25)] sm:w-[220px]">
                 {/* Image placeholder */}
                 <div className="mb-4 flex h-[140px] w-full items-center justify-center rounded-lg bg-white/[0.03] sm:h-[160px]">
                   {product.image ? (

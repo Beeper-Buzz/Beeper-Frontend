@@ -37,8 +37,8 @@ export const MainMenu = (props: MainMenuProps) => {
 
   return (
     <>
-      {/* Mobile: Sheet slide-out menu */}
-      <div className="sm:hidden">
+      {/* Global: Sheet slide-out menu */}
+      <div>
         <MobileMenu
           showMenuHeader={showMenuHeader}
           onMenuItemClick={onMenuItemClick}

@@ -6,8 +6,11 @@ import { QueryKeys } from "@hooks/queryKeys";
 import constants from "@utilities/constants";
 
 export const showCart = async () => {
+  console.log("[showCart] Starting...");
   const storage = (await import("../../config/storage")).default;
   const token = await storage.getToken();
+  const guestToken = await storage.getGuestOrderToken();
+  console.log("[showCart] Auth token:", token ? "exists" : "none", "| Guest token:", guestToken ? "exists" : "none");
 
   if (token) {
     try {
@@ -87,16 +90,17 @@ export const showCart = async () => {
       }
     } else {
       // No guest token, create new cart
+      console.log("[showCart] No guest token, creating new cart...");
       const response = await spreeClient.cart.create(undefined, {
         include: "line_items,variants"
       });
       if (response.isSuccess()) {
-        constants.IS_DEBUG &&
-          console.log("creating cart: ", response.success());
         const result = response.success();
+        console.log("[showCart] New cart created, token:", result.data.attributes.token);
         storage.setGuestOrderToken(result.data.attributes.token);
         return result;
       } else {
+        console.error("[showCart] Cart create FAILED:", response.fail());
         throw new Error(response.fail().message);
       }
     }
@@ -151,7 +155,8 @@ export const addItemToCart = async (item: AddItem) => {
     { orderToken: orderToken },
     {
       variant_id: item.variant_id,
-      quantity: item.quantity
+      quantity: item.quantity,
+      include: "line_items,variants"
     }
   );
 

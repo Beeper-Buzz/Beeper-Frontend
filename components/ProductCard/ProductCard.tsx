@@ -56,10 +56,10 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
   return (
     <Link
       href={`/${item.attributes.slug}`}
-      className="group mt-4 block cursor-pointer no-underline"
+      className="group mt-4 block cursor-pointer no-underline p-2"
     >
       {/* Image Container */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-muted">
+      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-muted transition-all duration-500 group-hover:shadow-[0_0_18px_rgba(0,255,255,0.25)] group-hover:bg-white/[0.08]">
         <img
           src={imgSrc}
           alt={item.attributes.name}
@@ -161,13 +161,13 @@ export const PlaceholderProductCard: React.FC<PlaceholderProductCardProps> = ({
     >
       <Link
         href={`/${product.slug}`}
-        className="group block cursor-pointer no-underline"
+        className="group block cursor-pointer no-underline p-2"
       >
         <div
           className={cn(
-            "glass-panel relative overflow-hidden rounded-xl transition-all duration-300",
-            "group-hover:-translate-y-1 group-hover:border-neon-cyan/40",
-            "group-hover:shadow-[0_0_20px_rgba(0,255,255,0.15)]"
+            "glass-panel relative overflow-hidden rounded-xl transition-all duration-500",
+            "group-hover:-translate-y-1 group-hover:border-transparent group-hover:bg-white/[0.08]",
+            "group-hover:shadow-[0_0_20px_rgba(0,255,255,0.3)]"
           )}
         >
           {/* Image area (dark placeholder) */}

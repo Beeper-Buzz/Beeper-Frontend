@@ -52,14 +52,14 @@ export const RetailProductDetails = ({
   const router = useRouter();
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { user } = useAuth();
-  const { asPath: productSlug } = router;
+  const productSlug = (router.query.productSlug as string) || "";
   const {
     data: thisProduct,
     isLoading,
     isSuccess,
     isError,
     error: productError
-  } = useProduct(`${productSlug.toLowerCase().replace("/", "")}`);
+  } = useProduct(productSlug);
 
   const defaultVariantData =
     thisProduct?.data?.relationships?.default_variant?.data;
@@ -192,8 +192,12 @@ export const RetailProductDetails = ({
   };
 
   const addToCart = useMutation(addItemToCart, {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("[AddToCart] SUCCESS:", data);
       queryClient.invalidateQueries(QueryKeys.CART);
+    },
+    onError: (error: any) => {
+      console.error("[AddToCart] ERROR:", error?.message || error);
     }
   });
 

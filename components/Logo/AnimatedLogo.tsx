@@ -58,7 +58,7 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
       x="0px"
       y="0px"
       viewBox={viewBox}
-      style={{ enableBackground: `new ${viewBox}`, overflow: "visible" } as any}
+      style={{ enableBackground: `new ${viewBox}` } as any}
       xmlSpace="preserve"
       className={className}
     >

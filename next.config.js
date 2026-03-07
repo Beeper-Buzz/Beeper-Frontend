@@ -46,6 +46,10 @@ module.exports = {
   async rewrites() {
     return [
       {
+        source: "/api/v1/:path*",
+        destination: `${SPREE_API_URL}/api/v1/:path*`
+      },
+      {
         source: "/api/v2/:path*",
         destination: `${SPREE_API_URL}/api/v2/:path*`
       }

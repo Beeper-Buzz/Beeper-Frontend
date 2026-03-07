@@ -68,14 +68,14 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full !rounded-none",
+        "sticky top-0 z-50 w-full overflow-x-clip !rounded-none !border-0",
         isHomepage
-          ? "bg-transparent border-b border-transparent"
-          : "glass-panel border-b border-glass-border"
+          ? "bg-transparent"
+          : "bg-surface-deep/80 backdrop-blur-xl"
       )}
     >
       {/* Top Header */}
-      <div className="relative flex flex-row items-center justify-center pt-4 pb-3 sm:py-3">
+      <div className="relative flex flex-row items-center justify-center pt-[36px] pb-3 sm:pt-[28px] sm:pb-3">
         {/* Left Side - Social Links */}
         {!isMobile && (
           <div className="absolute left-2.5 z-[2] flex items-center justify-between sm:left-2.5">
@@ -85,13 +85,17 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
 
         {/* Center - Beeper Logo (hidden on homepage) */}
         {!isHomepage && (
-          <div className="flex cursor-pointer items-center justify-center">
-            <Link
+          <div
+            className="relative z-[3] flex cursor-pointer items-center justify-center"
+            onClick={() => { window.location.href = "/"; }}
+          >
+            <a
               href="/"
-              className="no-underline transition-opacity hover:opacity-80 flex flex-col items-center gap-0"
+              className="no-underline opacity-[0.77] transition-all duration-500 hover:opacity-100 hover:drop-shadow-[0_0_12px_rgba(0,255,255,0.5)] flex flex-col items-center gap-0"
+              onClick={(e) => { e.preventDefault(); window.location.href = "/"; }}
             >
               <AnimatedLogo
-                className="h-[42px] w-auto"
+                className="h-[80px] w-auto"
                 animate={true}
                 showTagline={false}
               />
@@ -101,7 +105,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
               >
                 PLAY WITH MUSIC
               </span>
-            </Link>
+            </a>
           </div>
         )}
 
