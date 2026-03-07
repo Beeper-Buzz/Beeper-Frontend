@@ -109,7 +109,7 @@ export const MobileMenu = ({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button
-          className="fixed left-4 top-4 z-[60] flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-white outline-none sm:hidden"
+          className="fixed left-3 top-[42px] z-[60] flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-white outline-none sm:hidden"
           aria-label="Open menu"
         >
           <Menu className="h-6 w-6" />

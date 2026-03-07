@@ -59,7 +59,7 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
       className="group mt-4 block cursor-pointer no-underline p-2"
     >
       {/* Image Container */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-muted transition-all duration-500 group-hover:shadow-[0_0_18px_rgba(0,255,255,0.25)] group-hover:bg-white/[0.08]">
+      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-surface-deep transition-all duration-500 group-hover:shadow-[0_0_18px_rgba(0,255,255,0.25)]">
         <img
           src={imgSrc}
           alt={item.attributes.name}

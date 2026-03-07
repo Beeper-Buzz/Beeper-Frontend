@@ -69,9 +69,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
     <header
       className={cn(
         "sticky top-0 z-50 w-full overflow-x-clip !rounded-none !border-0",
-        isHomepage
-          ? "bg-transparent"
-          : "bg-surface-deep/80 backdrop-blur-xl"
+        isHomepage ? "bg-transparent" : "bg-surface-deep/80 backdrop-blur-xl"
       )}
     >
       {/* Top Header */}
@@ -87,12 +85,17 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
         {!isHomepage && (
           <div
             className="relative z-[3] flex cursor-pointer items-center justify-center"
-            onClick={() => { window.location.href = "/"; }}
+            onClick={() => {
+              window.location.href = "/";
+            }}
           >
             <a
               href="/"
               className="no-underline opacity-[0.77] transition-all duration-500 hover:opacity-100 hover:drop-shadow-[0_0_12px_rgba(0,255,255,0.5)] flex flex-col items-center gap-0"
-              onClick={(e) => { e.preventDefault(); window.location.href = "/"; }}
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "/";
+              }}
             >
               <AnimatedLogo
                 className="h-[80px] w-auto"
@@ -110,7 +113,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
         )}
 
         {/* Right Side */}
-        <div className="absolute right-2.5 z-[2] flex w-auto flex-row items-center justify-between sm:justify-end">
+        <div className="absolute right-2.5 top-[36px] z-[2] flex w-auto flex-row items-center justify-between sm:top-auto sm:justify-end">
           {isMobile ? null : <SearchBar darkMode={darkMode} />}
 
           {user ? (
@@ -244,7 +247,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           <div className="mr-2 relative text-white">
             <CartSidebar isVisible={cartVisible} toggle={toggleCart} />
             {cartItemCount > 0 && (
-              <Badge className="absolute -right-2 -top-1 flex h-5 min-w-[20px] items-center justify-center bg-neon-cyan text-surface-deep px-1 text-[10px] font-bold">
+              <Badge className="absolute -right-2 -top-1 flex h-5 min-w-[20px] items-center justify-center bg-neon-cyan text-surface-deep px-1 font-digital7 text-xs">
                 {cartItemCount}
               </Badge>
             )}
