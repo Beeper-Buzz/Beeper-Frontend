@@ -129,7 +129,13 @@ const config: Config = {
         "mono-bold": ["ibmplexmono_body_mono_bold", "monospace"],
         "mono-semibold": ["ibmplexmono_body_mono_semibold", "monospace"],
         "mono-extralight": ["ibmplexmono_body_mono_extralight", "monospace"],
-        pressstart: ["PressStart2P", "monospace"]
+        pressstart: ["PressStart2P", "monospace"],
+        microtechnic: ["MicroTechnic", "sans-serif"],
+        "ds-digital": ["DS-Digital", "monospace"],
+        digital7: ["Digital7Mono", "Digital7", "monospace"],
+        michroma: ["Michroma", "sans-serif"],
+        micro5: ["Micro5", "monospace"],
+        "micro5-charted": ["Micro5Charted", "monospace"]
       },
       fontSize: {
         "title-xxl": ["72px", { lineHeight: "86px", fontWeight: "700" }],

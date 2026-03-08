@@ -122,7 +122,7 @@ export const Cart = () => {
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-deep">
-                  <span className="font-pressstart text-[8px] text-neon-cyan/40">
+                  <span className="font-micro5-charted text-base text-neon-cyan/40">
                     IMG
                   </span>
                 </div>
@@ -140,7 +140,7 @@ export const Cart = () => {
                   >
                     <Minus className="h-3.5 w-3.5" />
                   </button>
-                  <span className="w-8 text-center font-title text-sm text-white">
+                  <span className="w-8 text-center font-digital7 text-lg text-white">
                     {quantity}
                   </span>
                   <button
@@ -152,7 +152,7 @@ export const Cart = () => {
                     <Plus className="h-3.5 w-3.5" />
                   </button>
                 </div>
-                <span className="ml-2 min-w-[60px] text-right font-title text-sm text-neon-cyan">
+                <span className="ml-2 min-w-[60px] text-right font-ds-digital text-base tracking-wider text-neon-cyan">
                   ${product?.attributes?.price}
                 </span>
                 <button
@@ -214,7 +214,7 @@ export const Cart = () => {
           <h2 className="neon-text-cyan mb-8 font-pressstart text-lg">Cart</h2>
 
           <div className="mb-6 flex items-center justify-between">
-            <span className="font-title text-sm text-white/60">
+            <span className="font-micro5 text-sm text-white/60">
               {item_count} {item_count > 1 ? "items" : "item"} in your cart
             </span>
             {item_count > 0 && (
@@ -234,17 +234,21 @@ export const Cart = () => {
           <div className="glass-panel mt-8 space-y-3 p-6">
             <div className="flex justify-between font-title text-sm">
               <span className="text-white/60">Subtotal:</span>
-              <span className="font-semibold text-white">
+              <span className="font-ds-digital text-base tracking-wider text-white">
                 {display_item_total}
               </span>
             </div>
             <div className="flex justify-between font-title text-sm">
               <span className="text-white/60">Tax:</span>
-              <span className="text-white">{included_tax_total}</span>
+              <span className="font-ds-digital text-base tracking-wider text-white">
+                {included_tax_total}
+              </span>
             </div>
             <div className="flex justify-between border-t border-glass-border pt-3 font-title text-lg font-bold">
               <span className="text-white">Total:</span>
-              <span className="text-neon-cyan">{display_total}</span>
+              <span className="font-ds-digital text-xl tracking-wider text-neon-cyan">
+                {display_total}
+              </span>
             </div>
           </div>
 

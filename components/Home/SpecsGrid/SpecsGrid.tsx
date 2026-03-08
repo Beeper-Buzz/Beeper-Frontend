@@ -53,7 +53,7 @@ const SpecsGrid: React.FC = () => {
               variants={itemVariants}
               className="glass-panel flex items-center justify-center px-6 py-4 text-center"
             >
-              <span className="neon-text-cyan font-pressstart text-[0.5rem] leading-relaxed sm:text-[0.6rem]">
+              <span className="neon-text-cyan font-micro5 text-sm leading-relaxed sm:text-base">
                 {spec.label}
               </span>
             </motion.div>

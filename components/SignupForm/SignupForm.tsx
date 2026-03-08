@@ -64,8 +64,11 @@ export const SignupForm = () => {
     }
   }, [router]);
 
-  const { title = "", subtitle = "", description = "" } =
-    Static?.questions?.account || {};
+  const {
+    title = "",
+    subtitle = "",
+    description = ""
+  } = Static?.questions?.account || {};
 
   return (
     <div className="relative z-[1] flex flex-col pb-20">

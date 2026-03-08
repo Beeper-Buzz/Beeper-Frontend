@@ -3,6 +3,10 @@ import { useSpring, animated } from "@react-spring/web";
 
 import { AnimatedLogo } from "../Logo/AnimatedLogo";
 
+const AnimFeTurbulence = animated("feTurbulence");
+const AnimFeDisplacementMap = animated("feDisplacementMap");
+const AnimFeGaussianBlur = animated("feGaussianBlur");
+
 const BLOB_BOX_SHADOW = [
   "0 0 30px rgba(124, 58, 237, 0.25)",
   "0 0 20px rgba(124, 58, 237, 0.3)",
@@ -28,6 +32,13 @@ export const LogoBlob = ({
 }: any) => {
   const [open, toggle] = useState(false);
   const [active, setActive] = useState(false);
+
+  // Intro spring — drives the SVG water displacement filter
+  const [{ freq, factor }] = useSpring(() => ({
+    from: { factor: 10, freq: "0.1, 0.0" },
+    to: { factor: 150, freq: "0.0, 0.0" },
+    config: { duration: 3000 }
+  }));
 
   const { x } = useSpring({
     config: {
@@ -76,7 +87,29 @@ export const LogoBlob = ({
               onClick={() => setActive(!active)}
               className="pointer-events-auto"
             >
-              <g transform="translate(100 100)">
+              <defs>
+                <filter id="water-animated">
+                  <AnimFeTurbulence
+                    type="fractalNoise"
+                    baseFrequency={freq}
+                    numOctaves="2"
+                    result="TURB"
+                    seed="8"
+                  />
+                  <AnimFeDisplacementMap
+                    xChannelSelector="R"
+                    yChannelSelector="G"
+                    in="SourceGraphic"
+                    in2="TURB"
+                    result="DISP"
+                    scale={factor}
+                  />
+                </filter>
+                <filter id="blur-animated">
+                  <AnimFeGaussianBlur stdDeviation="3" />
+                </filter>
+              </defs>
+              <g filter="url(#blur-animated)" transform="translate(100 100)">
                 <animated.path
                   stroke="#ff008a"
                   strokeWidth="10"
@@ -86,7 +119,15 @@ export const LogoBlob = ({
                     output: [blob1, blob2, blob3, blob4]
                   })}
                   style={{
-                    transform: "translate(100, 100)"
+                    transform: "translate(100, 100)",
+                    opacity: x.to({
+                      range: [0, 0.33, 0.66, 1],
+                      output: [0.33, 0.22, 0.22, 0.33]
+                    }),
+                    fill: x.to({
+                      range: [0, 0.5, 1],
+                      output: ["#7c3aed", "#ff008a", "#7c3aed"]
+                    })
                   }}
                 />
               </g>
@@ -124,7 +165,29 @@ export const LogoBlob = ({
           width="220px"
           onClick={() => setActive(!active)}
         >
-          <g transform="translate(100 100)">
+          <defs>
+            <filter id="water-default">
+              <AnimFeTurbulence
+                type="fractalNoise"
+                baseFrequency={freq}
+                numOctaves="2"
+                result="TURB"
+                seed="8"
+              />
+              <AnimFeDisplacementMap
+                xChannelSelector="R"
+                yChannelSelector="G"
+                in="SourceGraphic"
+                in2="TURB"
+                result="DISP"
+                scale={factor}
+              />
+            </filter>
+            <filter id="blur-default">
+              <AnimFeGaussianBlur stdDeviation="3" />
+            </filter>
+          </defs>
+          <g filter="url(#blur-default)" transform="translate(100 100)">
             <animated.path
               stroke="#ff008a"
               strokeWidth="10"
@@ -134,7 +197,15 @@ export const LogoBlob = ({
                 output: [blob1, blob2, blob3, blob4]
               })}
               style={{
-                transform: "translate(100, 100)"
+                transform: "translate(100, 100)",
+                opacity: x.to({
+                  range: [0, 0.33, 0.66, 1],
+                  output: [0.33, 0.22, 0.22, 0.33]
+                }),
+                fill: x.to({
+                  range: [0, 0.5, 1],
+                  output: ["#7c3aed", "#ff008a", "#7c3aed"]
+                })
               }}
             />
           </g>

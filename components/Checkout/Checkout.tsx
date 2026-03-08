@@ -237,11 +237,11 @@ const CheckoutForm = () => {
               <p className="truncate font-title text-sm font-medium text-white">
                 {product?.attributes?.name}
               </p>
-              <p className="font-title text-xs text-white/40">
+              <p className="font-micro5 text-xs text-white/40">
                 Qty: {lineItem.attributes.quantity}
               </p>
             </div>
-            <span className="font-title text-sm font-semibold text-neon-cyan">
+            <span className="font-ds-digital text-base tracking-wider text-neon-cyan">
               {lineItem.attributes.price}
             </span>
           </div>
@@ -913,11 +913,13 @@ const CheckoutForm = () => {
                 <div className="mt-5 space-y-2 border-t border-glass-border pt-4">
                   <div className="flex justify-between font-title text-sm">
                     <span className="text-white/50">Subtotal:</span>
-                    <span className="text-white">{display_item_total}</span>
+                    <span className="font-ds-digital text-base tracking-wider text-white">
+                      {display_item_total}
+                    </span>
                   </div>
                   <div className="flex justify-between font-title text-sm">
                     <span className="text-white/50">Shipping:</span>
-                    <span className="text-white">
+                    <span className="font-ds-digital text-base tracking-wider text-white">
                       {estimateShippingMutation.isLoading
                         ? "Calculating..."
                         : shippingCost}
@@ -926,16 +928,22 @@ const CheckoutForm = () => {
                   {promo_total && (
                     <div className="flex justify-between font-title text-sm">
                       <span className="text-white/50">Discount:</span>
-                      <span className="text-neon-lime">{promo_total}</span>
+                      <span className="font-ds-digital text-base tracking-wider text-neon-lime">
+                        {promo_total}
+                      </span>
                     </div>
                   )}
                   <div className="flex justify-between font-title text-sm">
                     <span className="text-white/50">Tax:</span>
-                    <span className="text-white">{included_tax_total}</span>
+                    <span className="font-ds-digital text-base tracking-wider text-white">
+                      {included_tax_total}
+                    </span>
                   </div>
                   <div className="flex justify-between border-t border-glass-border pt-3 font-title text-lg font-bold">
                     <span className="text-white">Total:</span>
-                    <span className="text-neon-cyan">{display_total}</span>
+                    <span className="font-ds-digital text-xl tracking-wider text-neon-cyan">
+                      {display_total}
+                    </span>
                   </div>
                 </div>
               </div>

@@ -102,13 +102,7 @@ export const SignupWizard = () => {
   };
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center px-4 py-12"
-      style={{
-        background:
-          "linear-gradient(180deg, #0A0020 0%, #1a0040 50%, #0A0020 100%)"
-      }}
-    >
+    <div className="animate-gradient-shift flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
         {/* Progress bar */}
         <div className="mb-8">
@@ -120,8 +114,8 @@ export const SignupWizard = () => {
                     i < currentStep
                       ? "border-neon-cyan bg-neon-cyan/20 text-neon-cyan"
                       : i === currentStep
-                        ? "border-neon-cyan text-neon-cyan shadow-[0_0_12px_rgba(0,255,255,0.4)]"
-                        : "border-white/20 text-white/30"
+                      ? "border-neon-cyan text-neon-cyan shadow-[0_0_12px_rgba(0,255,255,0.4)]"
+                      : "border-white/20 text-white/30"
                   }`}
                 >
                   {i < currentStep ? "\u2713" : i + 1}
@@ -193,7 +187,10 @@ export const SignupWizard = () => {
                       type="submit"
                       disabled={
                         isSubmitting ||
-                        !(values.acceptPrivacyTerms && values.acceptReportingTerms)
+                        !(
+                          values.acceptPrivacyTerms &&
+                          values.acceptReportingTerms
+                        )
                       }
                       className="neon-btn flex items-center gap-1 text-xs disabled:pointer-events-none disabled:opacity-40"
                     >

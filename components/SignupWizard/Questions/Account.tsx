@@ -29,13 +29,11 @@ export const Account = () => {
   const [privacyTerms, setPrivacyCheckbox] = useState(false);
   const [reportingTerms, setReportingCheckbox] = useState(false);
 
-  const toggleSignatureModal = () =>
-    setOpenSignatureModal(!openSignatureModal);
+  const toggleSignatureModal = () => setOpenSignatureModal(!openSignatureModal);
   const togglePrivacyModal = () => setOpenPrivacyModal(!openPrivacyModal);
 
   const handlePrivacyCheckbox = () => setPrivacyCheckbox(!privacyTerms);
-  const handleReportingCheckbox = () =>
-    setReportingCheckbox(!reportingTerms);
+  const handleReportingCheckbox = () => setReportingCheckbox(!reportingTerms);
 
   const speechMarkup = useCallback(() => {
     return {
@@ -122,9 +120,7 @@ export const Account = () => {
             <div
               className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
               onClick={toggleSignatureModal}
-              onKeyDown={(e) =>
-                e.key === "Escape" && toggleSignatureModal()
-              }
+              onKeyDown={(e) => e.key === "Escape" && toggleSignatureModal()}
               role="dialog"
               aria-modal="true"
             >
@@ -141,9 +137,7 @@ export const Account = () => {
             <div
               className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
               onClick={togglePrivacyModal}
-              onKeyDown={(e) =>
-                e.key === "Escape" && togglePrivacyModal()
-              }
+              onKeyDown={(e) => e.key === "Escape" && togglePrivacyModal()}
               role="dialog"
               aria-modal="true"
             >

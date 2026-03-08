@@ -80,9 +80,10 @@ export const showCart = async () => {
           }
         }
       } catch (error) {
-        // If cart.show fails, create a new cart
+        // If cart.show fails, clear stale token and create a new cart
         constants.IS_DEBUG &&
-          console.log("Guest cart fetch failed, creating new cart");
+          console.log("Guest cart fetch failed, clearing stale token");
+        storage.setGuestOrderToken("");
         const response = await spreeClient.cart.create(undefined, {
           include: "line_items,variants"
         });
@@ -152,7 +153,9 @@ export const addItemToCart = async (item: AddItem) => {
 
   // No guest order token, create new cart and store new token
   if (!orderToken) {
-    const newCart = await spreeClient.cart.create();
+    const newCart = await spreeClient.cart.create(undefined, {
+      include: "line_items,variants"
+    });
     if (newCart.isSuccess()) {
       orderToken = newCart.success().data.attributes.token;
       storage.setGuestOrderToken(orderToken);
@@ -205,11 +208,9 @@ export const removeItemFromCart = async (itemId: string) => {
     throw new Error("No cart token available");
   }
 
-  const response = await spreeClient.cart.removeItem(
-    { orderToken },
-    itemId,
-    { include: "line_items,variants" }
-  );
+  const response = await spreeClient.cart.removeItem({ orderToken }, itemId, {
+    include: "line_items,variants"
+  });
   if (response.isSuccess()) {
     return response.success();
   } else {
@@ -259,6 +260,8 @@ export const updateItemQuantity = async (itemId: string, quantity: number) => {
 
 export const useCart = () => {
   return useQuery<IOrder, Error>([QueryKeys.CART], showCart, {
+    retry: 2,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
     onError: (error) => {
       console.error("Failed to fetch cart:", error.message);
     },

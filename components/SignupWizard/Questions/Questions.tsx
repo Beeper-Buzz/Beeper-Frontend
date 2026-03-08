@@ -65,11 +65,7 @@ export const Questions: WizardStep[] = [
         .typeError("Invalid date")
         .min(new Date("1/1/1900"), Static.errors.minDateOfBirth)
         .max(
-          new Date(
-            today.getFullYear() - 18,
-            today.getMonth(),
-            today.getDate()
-          ),
+          new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()),
           Static.errors.maxDateOfBirth
         )
     }),
@@ -101,9 +97,7 @@ export const Questions: WizardStep[] = [
     }),
     actionLabel: "Next",
     onAction: (values: any) => {
-      const incomeNumber = parseFloat(
-        values.yearlyIncome.replace(/\$|,/g, "")
-      );
+      const incomeNumber = parseFloat(values.yearlyIncome.replace(/\$|,/g, ""));
       if (incomeNumber < 4000) {
         Alert.fire({
           icon: "info",

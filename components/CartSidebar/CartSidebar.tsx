@@ -41,7 +41,8 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
   const {
     data: cartData,
     isLoading: cartIsLoading,
-    isError: cartHasError
+    isError: cartHasError,
+    refetch: refetchCart
   } = useCart();
 
   const { data: productsData } = useProducts(1);
@@ -139,8 +140,7 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
         );
 
         const lineItemId = lineItem.id;
-        const quantity =
-          quantities[lineItemId] || lineItem.attributes.quantity;
+        const quantity = quantities[lineItemId] || lineItem.attributes.quantity;
 
         return (
           <div
@@ -239,9 +239,17 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
                 <Loading />
               </div>
             ) : cartHasError ? (
-              <p className="text-center font-title text-sm text-white/40">
-                Cart Error
-              </p>
+              <div className="flex min-h-[200px] flex-col items-center justify-center gap-3">
+                <p className="text-center font-title text-sm text-white/40">
+                  Couldn&apos;t load cart
+                </p>
+                <button
+                  onClick={() => refetchCart()}
+                  className="neon-btn text-xs"
+                >
+                  Retry
+                </button>
+              </div>
             ) : (
               <>
                 {/* Item count & empty cart */}
@@ -274,11 +282,15 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
                   </div>
                   <div className="flex justify-between font-title text-xs">
                     <span className="text-white/50">Tax:</span>
-                    <span className="font-ds-digital text-sm tracking-wider text-white">{included_tax_total}</span>
+                    <span className="font-ds-digital text-sm tracking-wider text-white">
+                      {included_tax_total}
+                    </span>
                   </div>
                   <div className="flex justify-between border-t border-glass-border pt-2 font-title text-sm font-bold">
                     <span className="text-white">Total:</span>
-                    <span className="font-ds-digital text-base tracking-wider text-neon-cyan">{display_total}</span>
+                    <span className="font-ds-digital text-base tracking-wider text-neon-cyan">
+                      {display_total}
+                    </span>
                   </div>
                 </div>
 

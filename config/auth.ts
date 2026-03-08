@@ -92,8 +92,7 @@ async function mergeCarts(guestOrderToken: string) {
         ? fullLineItem.attributes.quantity
         : 1;
     // Extract variant_id from the line item's relationship, not the line_item id
-    const variantId =
-      fullLineItem?.relationships?.variant?.data?.id || item.id;
+    const variantId = fullLineItem?.relationships?.variant?.data?.id || item.id;
     constants.IS_DEBUG &&
       console.log(
         `Adding item to user cart: variant ${variantId} with quantity: ${quantity}`

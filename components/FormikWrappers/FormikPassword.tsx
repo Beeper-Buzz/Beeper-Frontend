@@ -4,7 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@lib/utils";
 
 const inputClass =
-  "neon-focus w-full rounded-lg border border-glass-border bg-surface-deep px-3 py-3 pr-10 font-body text-sm text-white outline-none transition-colors placeholder:text-white/30";
+  "neon-focus w-full rounded-lg border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm px-3 py-3 pr-10 font-body text-sm text-white outline-none transition-all duration-300 placeholder:text-white/30 shadow-[inset_0_1px_3px_rgba(0,0,0,0.3),inset_0_-1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.15] hover:bg-white/[0.06]";
 
 const errorClass = "mt-1 text-left font-body text-xs font-bold text-neon-pink";
 

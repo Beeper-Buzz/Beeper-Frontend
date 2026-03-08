@@ -68,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full overflow-x-clip !rounded-none !border-0",
+        "sticky top-0 z-50 w-full !rounded-none !border-0",
         isHomepage ? "bg-transparent" : "bg-surface-deep/80 backdrop-blur-xl"
       )}
     >

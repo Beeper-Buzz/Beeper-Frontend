@@ -31,14 +31,8 @@ import homeData from "../Home/home.json";
 import { useProductFeed } from "../../hooks/useProductFeed";
 import { useRecentlyViewed } from "../../hooks/useRecentlyViewed";
 import { RecentlyViewed } from "../RecentlyViewed";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext
-} from "@components/ui";
 import constants from "../../utilities/constants";
+import { ProductGallery } from "./ProductGallery";
 
 interface RetailProductDetailsProps {
   wholesale?: boolean;
@@ -68,7 +62,7 @@ export const RetailProductDetails = ({
     : defaultVariantData?.id || "";
   const { data: favoriteCheck } = useCheckFavorite(defaultVariantId, !!user);
   const toggleFavorite = useToggleFavorite();
-  const productImgs =
+  const allProductImgs =
     thisProduct &&
     thisProduct?.included?.filter((e: any) => e["type"] === "image");
   const productOptions =
@@ -164,6 +158,27 @@ export const RetailProductDetails = ({
   const [addItem, setAddItem] = useState<any>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("");
+  const [cartButtonState, setCartButtonState] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+
+  // Find the variant matching the selected color (if any)
+  const selectedVariant = selectedColor
+    ? productVariants?.find((variant: any) =>
+        variant.relationships?.option_values?.data?.some(
+          (ov: any) => ov.id === selectedColor
+        )
+      )
+    : null;
+
+  // Filter images: if a color variant is selected and has its own images, show those; otherwise show all
+  const variantImageIds = selectedVariant?.relationships?.images?.data?.map(
+    (img: any) => img.id
+  );
+  const productImgs =
+    variantImageIds && variantImageIds.length > 0
+      ? allProductImgs?.filter((img: any) => variantImageIds.includes(img.id))
+      : allProductImgs;
 
   const renderSimilarProducts = () => {
     if (similarLoading) return <Loading />;
@@ -192,12 +207,19 @@ export const RetailProductDetails = ({
   };
 
   const addToCart = useMutation(addItemToCart, {
+    onMutate: () => {
+      setCartButtonState("loading");
+    },
     onSuccess: (data) => {
-      console.log("[AddToCart] SUCCESS:", data);
+      constants.IS_DEBUG && console.log("[AddToCart] SUCCESS:", data);
       queryClient.invalidateQueries(QueryKeys.CART);
+      setCartButtonState("success");
+      setTimeout(() => setCartButtonState("idle"), 2000);
     },
     onError: (error: any) => {
       console.error("[AddToCart] ERROR:", error?.message || error);
+      setCartButtonState("error");
+      setTimeout(() => setCartButtonState("idle"), 3000);
     }
   });
 
@@ -240,19 +262,50 @@ export const RetailProductDetails = ({
     }
   };
 
+  // Initialize addItem when product loads
   useEffect(() => {
     setAddItem({
       variant_id: foundVariants ? foundVariants[0].id : "",
       quantity: 1
     });
-    if (constants.IS_DEBUG) {
-      const foundVariants = thisProduct?.included?.filter(
-        (elem) => elem.type === "variant"
-      );
-      console.log("VARIANTS: ", foundVariants);
-      console.log("PRODUCT ID: ", thisProduct?.data?.id);
-    }
+    // Reset selections when product changes
+    setSelectedColor("");
+    setSelectedSize("");
   }, [thisProduct]);
+
+  // Update variant_id when color or size selection changes
+  useEffect(() => {
+    if (!productVariants?.length) return;
+
+    // Find variant matching selected color AND/OR size
+    const matchingVariant = productVariants.find((variant: any) => {
+      const optionValueIds =
+        variant.relationships?.option_values?.data?.map((ov: any) => ov.id) ||
+        [];
+
+      const colorMatch = !selectedColor || optionValueIds.includes(selectedColor);
+
+      // For size, we need to find the option_value ID by matching presentation text
+      let sizeMatch = true;
+      if (selectedSize) {
+        const sizeOptionValue = productOptions?.find(
+          (opt: any) => opt.attributes.presentation === selectedSize
+        );
+        sizeMatch = sizeOptionValue
+          ? optionValueIds.includes(sizeOptionValue.id)
+          : true;
+      }
+
+      return colorMatch && sizeMatch;
+    });
+
+    if (matchingVariant) {
+      setAddItem((prev: any) => ({
+        ...prev,
+        variant_id: matchingVariant.id
+      }));
+    }
+  }, [selectedColor, selectedSize, productVariants, productOptions]);
 
   const handleAddToCart = (i: any) => {
     console.log("ITEM: ", i);
@@ -279,16 +332,20 @@ export const RetailProductDetails = ({
       });
 
       // Track this product as recently viewed
-      const firstImg = productImgs?.[0];
-      const imgUrl = firstImg?.attributes?.styles?.filter(
-        (e: any) => e["width"] == "600"
-      )[0]?.url;
+      const firstImg = allProductImgs?.[0];
+      const trackImgUrl =
+        firstImg?.attributes?.transformed_url ||
+        firstImg?.attributes?.styles?.filter((e: any) => e["width"] == "600")[0]
+          ?.url;
+      const trackImgSrc = trackImgUrl?.startsWith("http")
+        ? trackImgUrl
+        : trackImgUrl
+        ? `${process.env.NEXT_PUBLIC_SPREE_API_URL}${trackImgUrl}`
+        : "";
       trackView({
         slug: thisProduct.data.attributes.slug,
         name: thisProduct.data.attributes.name,
-        imgSrc: imgUrl
-          ? `${process.env.NEXT_PUBLIC_SPREE_API_URL}${imgUrl}`
-          : ""
+        imgSrc: trackImgSrc
       });
     }
     window.addEventListener("keydown", handleKeyPress);
@@ -332,58 +389,38 @@ export const RetailProductDetails = ({
           <div className="section-container py-10 md:py-16">
             {/* Product Layout */}
             <div className="flex flex-col gap-8 md:flex-row md:gap-12">
-              {/* Image Carousel with neon glow backdrop */}
+              {/* Product Image Gallery */}
               <motion.div
                 className="w-full md:w-1/2"
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
               >
-                <div
-                  className="relative rounded-2xl p-1"
-                  style={{
-                    background:
-                      "radial-gradient(circle at center, rgba(0, 255, 255, 0.1) 0%, transparent 70%)"
-                  }}
-                >
-                  <Carousel className="w-full">
-                    <CarouselContent>
-                      {productImgs && productImgs.length > 0 ? (
-                        productImgs.map((image: any, index: number) => {
-                          const imgUrl = image.attributes.styles?.filter(
-                            (e: any) => e["width"] == "600"
-                          )[0]?.url;
-                          const imgSrc = `${process.env.NEXT_PUBLIC_SPREE_API_URL}${imgUrl}`;
-                          return (
-                            <CarouselItem key={`image-${index}`}>
-                              <div className="aspect-square overflow-hidden rounded-xl bg-surface-deep">
-                                <img
-                                  src={imgSrc}
-                                  alt={`${
-                                    thisProduct?.data?.attributes?.name
-                                  } - Image ${index + 1}`}
-                                  className="h-full w-full object-cover"
-                                />
-                              </div>
-                            </CarouselItem>
-                          );
-                        })
-                      ) : (
-                        <CarouselItem>
-                          <div className="flex aspect-square items-center justify-center rounded-xl bg-surface-deep">
-                            <Loading />
-                          </div>
-                        </CarouselItem>
-                      )}
-                    </CarouselContent>
-                    {productImgs && productImgs.length > 1 && (
-                      <>
-                        <CarouselPrevious className="left-3" />
-                        <CarouselNext className="right-3" />
-                      </>
-                    )}
-                  </Carousel>
-                </div>
+                {productImgs && productImgs.length > 0 ? (
+                  <ProductGallery
+                    images={productImgs.map((image: any, index: number) => {
+                      // Prefer transformed_url (aspect-ratio-preserving), fall back to 600px style
+                      const transformedUrl = image.attributes?.transformed_url;
+                      const styleUrl = image.attributes.styles?.filter(
+                        (e: any) => e["width"] == "600"
+                      )[0]?.url;
+                      const rawUrl = transformedUrl || styleUrl;
+                      const src = rawUrl?.startsWith("http")
+                        ? rawUrl
+                        : `${process.env.NEXT_PUBLIC_SPREE_API_URL}${rawUrl}`;
+                      return {
+                        src,
+                        alt: `${thisProduct?.data?.attributes?.name} - Image ${
+                          index + 1
+                        }`
+                      };
+                    })}
+                  />
+                ) : (
+                  <div className="flex aspect-square items-center justify-center rounded-xl bg-surface-deep">
+                    <Loading />
+                  </div>
+                )}
               </motion.div>
 
               {/* Product Info — Glass Panel */}
@@ -427,7 +464,7 @@ export const RetailProductDetails = ({
                   {/* Color Swatches */}
                   {productColors && productColors.length > 0 && (
                     <div className="mt-6">
-                      <span className="font-mono text-xs uppercase tracking-wider text-white/50">
+                      <span className="font-micro5 text-sm uppercase tracking-wider text-white/50">
                         Color
                       </span>
                       <div className="mt-2 flex items-center gap-3">
@@ -459,7 +496,7 @@ export const RetailProductDetails = ({
                   <hr className="my-6 border-glass-border" />
 
                   {/* Price */}
-                  <div className="text-2xl font-bold text-neon-cyan">
+                  <div className="font-ds-digital text-3xl tracking-wider text-neon-cyan">
                     ${thisProduct?.data?.attributes?.price}
                   </div>
 
@@ -482,7 +519,7 @@ export const RetailProductDetails = ({
                   {/* Size Selection — glass pill buttons */}
                   {productSizes && productSizes.length > 0 && (
                     <div className="mt-4">
-                      <span className="font-mono text-xs uppercase tracking-wider text-white/50">
+                      <span className="font-micro5 text-sm uppercase tracking-wider text-white/50">
                         Size
                       </span>
                       <div className="mt-2 flex flex-wrap gap-2">
@@ -508,7 +545,7 @@ export const RetailProductDetails = ({
 
                   {/* Quantity selector */}
                   <div className="mt-4">
-                    <span className="font-mono text-xs uppercase tracking-wider text-white/50">
+                    <span className="font-micro5 text-sm uppercase tracking-wider text-white/50">
                       Qty
                     </span>
                     <div className="glass-panel mt-2 flex w-32 items-center overflow-hidden">
@@ -530,7 +567,7 @@ export const RetailProductDetails = ({
                       >
                         -
                       </button>
-                      <span className="flex-1 text-center font-mono text-sm text-white">
+                      <span className="flex-1 text-center font-digital7 text-lg text-white">
                         {addItem?.quantity || 1}
                       </span>
                       <button
@@ -554,9 +591,23 @@ export const RetailProductDetails = ({
                   {/* ADD TO CART — neon button */}
                   <button
                     onClick={() => handleAddToCart(addItem)}
-                    className="neon-btn mt-6 w-full text-center"
+                    disabled={cartButtonState === "loading"}
+                    className={cn(
+                      "neon-btn mt-6 w-full text-center transition-all",
+                      cartButtonState === "loading" && "opacity-70 cursor-wait",
+                      cartButtonState === "success" &&
+                        "!border-green-400 !shadow-[0_0_20px_rgba(74,222,128,0.4)] !text-green-400",
+                      cartButtonState === "error" &&
+                        "!border-red-400 !shadow-[0_0_20px_rgba(248,113,113,0.4)] !text-red-400"
+                    )}
                   >
-                    ADD TO CART
+                    {cartButtonState === "loading"
+                      ? "ADDING..."
+                      : cartButtonState === "success"
+                      ? "ADDED TO CART!"
+                      : cartButtonState === "error"
+                      ? "FAILED — TRY AGAIN"
+                      : "ADD TO CART"}
                   </button>
                 </div>
 
@@ -618,8 +669,15 @@ export const RetailProductDetails = ({
 
 export async function getServerSideProps() {
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery(["streams", 1], () => fetchStreams(1));
-  await queryClient.prefetchQuery(["products", 1], () => fetchProducts(1));
+  try {
+    await Promise.allSettled([
+      queryClient.prefetchQuery(["streams", 1], () => fetchStreams(1)),
+      queryClient.prefetchQuery(["products", 1], () => fetchProducts(1))
+    ]);
+  } catch (err) {
+    // Don't block navigation — client-side react-query will refetch
+    console.error("[getServerSideProps] Prefetch error:", err);
+  }
 
   return {
     props: {

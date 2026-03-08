@@ -11,7 +11,7 @@ const fetchProduct = async (slug: string): Promise<IProduct> => {
     typeof window !== "undefined"
       ? ""
       : process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080";
-  const productUrl = `${spreeUrl}/api/v2/storefront/products/${slug}?include=default_variant,variants,option_types,product_properties,taxons,images,variants.option_values`;
+  const productUrl = `${spreeUrl}/api/v2/storefront/products/${slug}?include=default_variant,variants,option_types,product_properties,taxons,images,variants.option_values,variants.images&image_transformation[size]=1200x&image_transformation[quality]=85`;
 
   const response = await fetch(productUrl, {
     method: "GET",
