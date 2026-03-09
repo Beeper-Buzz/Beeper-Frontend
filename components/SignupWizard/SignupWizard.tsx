@@ -1,215 +1,138 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { Formik, Form } from "formik";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Formik, Form, Field } from "formik";
+import { object, string, bool, ref } from "yup";
 
 import { useAuth } from "../../config/auth";
-import { Questions } from "./Questions";
+import { FormikInput, FormikPassword } from "../FormikWrappers";
 import { Alert } from "../Alerts";
 import constants from "@utilities/constants";
 
+const SignupSchema = object().shape({
+  email: string().email("Invalid email").required("Required"),
+  password: string()
+    .min(6, "Too Short")
+    .matches(
+      constants.PASSWORD_REGEX,
+      "Must include uppercase, lowercase, and number"
+    )
+    .required("Required"),
+  passwordConfirm: string()
+    .required("Required")
+    .oneOf([ref("password"), null], "Passwords must match"),
+  acceptTerms: bool().oneOf([true], "You must accept the terms")
+});
+
 export const SignupWizard = () => {
   const router = useRouter();
-  const { register } = useAuth();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [direction, setDirection] = useState(1);
+  const { register, login } = useAuth();
+  const [serverError, setServerError] = useState("");
 
-  const step = Questions[currentStep];
-  const isFirstStep = currentStep === 0;
-  const isLastStep = currentStep === Questions.length - 1;
-
-  const initialValues = useMemo(
-    () =>
-      Questions.reduce(
-        (acc, q) => ({ ...acc, ...(q.initialValues || {}) }),
-        {} as Record<string, any>
-      ),
-    []
-  );
-
-  const goNext = useCallback(
-    async (values: any, validateForm: any, setTouched: any) => {
-      if (step.validationSchema) {
-        try {
-          await step.validationSchema.validate(values, { abortEarly: false });
-        } catch {
-          // Mark all current step fields as touched to show errors
-          const fields = Object.keys(step.initialValues || {});
-          const touched = fields.reduce(
-            (acc, f) => ({ ...acc, [f]: true }),
-            {}
-          );
-          setTouched(touched, true);
-          return;
+  const handleSubmit = async (values: any, { setSubmitting }: any) => {
+    setServerError("");
+    try {
+      await register({
+        user: {
+          email: values.email,
+          password: values.password,
+          password_confirmation: values.passwordConfirm
         }
-      }
+      });
 
-      if (step.onAction) {
-        try {
-          step.onAction(values);
-        } catch {
-          return;
-        }
-      }
-
-      setDirection(1);
-      setCurrentStep((s) => Math.min(s + 1, Questions.length - 1));
-      window.scrollTo(0, 0);
-    },
-    [step]
-  );
-
-  const goBack = useCallback(() => {
-    setDirection(-1);
-    setCurrentStep((s) => Math.max(s - 1, 0));
-    window.scrollTo(0, 0);
-  }, []);
-
-  const handleSubmit = useCallback(
-    async (values: any, { setSubmitting }: any) => {
+      // Auto-login after successful registration
       try {
-        const res = await register({ user: values });
-        constants.IS_DEBUG && console.log("Registration successful:", res);
-        router.push("/account");
-      } catch (err) {
-        const errorMessage =
-          err && typeof err === "object" && "message" in err
-            ? (err as { message?: string }).message
-            : String(err);
-        Alert.fire({ icon: "error", title: "Uh oh!", text: errorMessage });
-      } finally {
-        setSubmitting(false);
+        await login({ username: values.email, password: values.password });
+        router.push("/account/profile?welcome=true");
+      } catch {
+        // If auto-login fails, redirect to login page
+        router.push("/login");
       }
-    },
-    [register, router]
-  );
-
-  const slideVariants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? 80 : -80,
-      opacity: 0
-    }),
-    center: {
-      x: 0,
-      opacity: 1
-    },
-    exit: (dir: number) => ({
-      x: dir > 0 ? -80 : 80,
-      opacity: 0
-    })
+    } catch (err: any) {
+      const msg = err?.message || String(err);
+      setServerError(msg);
+      Alert.fire({ icon: "error", title: "Registration failed", text: msg });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="animate-gradient-shift flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg">
-        {/* Progress bar */}
-        <div className="mb-8">
-          <div className="mb-3 flex items-center justify-between">
-            {Questions.map((q, i) => (
-              <div key={q.id} className="flex flex-1 items-center">
-                <div
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold transition-all duration-300 ${
-                    i < currentStep
-                      ? "border-neon-cyan bg-neon-cyan/20 text-neon-cyan"
-                      : i === currentStep
-                      ? "border-neon-cyan text-neon-cyan shadow-[0_0_12px_rgba(0,255,255,0.4)]"
-                      : "border-white/20 text-white/30"
-                  }`}
-                >
-                  {i < currentStep ? "\u2713" : i + 1}
-                </div>
-                {i < Questions.length - 1 && (
-                  <div className="mx-1 h-px flex-1">
-                    <div
-                      className="h-full transition-all duration-500"
-                      style={{
-                        background:
-                          i < currentStep
-                            ? "linear-gradient(90deg, #00ffff, #00ffff)"
-                            : "rgba(255,255,255,0.1)"
-                      }}
-                    />
+      <div className="w-full max-w-md">
+        <h1 className="font-pressstart text-center text-lg text-white mb-2">
+          Create Account
+        </h1>
+        <p className="font-micro5 text-center text-xs tracking-widest text-white/50 mb-8">
+          Join the Beeper marketplace
+        </p>
+
+        <Formik
+          initialValues={{
+            email: "",
+            password: "",
+            passwordConfirm: "",
+            acceptTerms: false
+          }}
+          validationSchema={SignupSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, values }) => (
+            <Form>
+              <div className="glass-panel p-6 sm:p-8 space-y-4">
+                {serverError && (
+                  <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+                    {serverError}
                   </div>
                 )}
-              </div>
-            ))}
-          </div>
-          <p className="font-micro5 text-xs tracking-widest text-white/50">
-            Step {currentStep + 1} of {Questions.length} &mdash; {step.label}
-          </p>
-        </div>
 
-        {/* Form card */}
-        <Formik
-          initialValues={initialValues}
-          validationSchema={isLastStep ? step.validationSchema : undefined}
-          onSubmit={handleSubmit}
-          validateOnChange={false}
-          validateOnBlur={true}
-        >
-          {({ values, validateForm, setTouched, isSubmitting }) => (
-            <Form>
-              <div className="glass-panel overflow-hidden p-6 sm:p-8">
-                <AnimatePresence mode="wait" custom={direction}>
-                  <motion.div
-                    key={step.id}
-                    custom={direction}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                      x: { type: "spring", stiffness: 300, damping: 30 },
-                      opacity: { duration: 0.2 }
-                    }}
-                  >
-                    <step.component />
-                  </motion.div>
-                </AnimatePresence>
+                <Field name="email" component={FormikInput} label="Email" />
+                <Field
+                  name="password"
+                  component={FormikPassword}
+                  label="Password"
+                />
+                <Field
+                  name="passwordConfirm"
+                  component={FormikPassword}
+                  label="Confirm Password"
+                />
 
-                {/* Navigation */}
-                <div className="mt-6 flex items-center gap-3">
-                  {!isFirstStep && (
-                    <button
-                      type="button"
-                      onClick={goBack}
-                      className="neon-btn flex items-center gap-1 text-xs"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Back
-                    </button>
-                  )}
-                  <div className="flex-1" />
-                  {isLastStep ? (
-                    <button
-                      type="submit"
-                      disabled={
-                        isSubmitting ||
-                        !(
-                          values.acceptPrivacyTerms &&
-                          values.acceptReportingTerms
-                        )
-                      }
-                      className="neon-btn flex items-center gap-1 text-xs disabled:pointer-events-none disabled:opacity-40"
-                    >
-                      {isSubmitting ? "Submitting..." : step.actionLabel}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => goNext(values, validateForm, setTouched)}
-                      className="neon-btn flex items-center gap-1 text-xs"
-                    >
-                      {step.actionLabel}
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  )}
+                <div className="pt-2">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <Field
+                      type="checkbox"
+                      name="acceptTerms"
+                      className="mt-1 accent-cyan-400"
+                    />
+                    <span className="text-xs text-white/60">
+                      I agree to the{" "}
+                      <Link
+                        href="/terms"
+                        className="text-neon-cyan hover:underline"
+                      >
+                        Terms & Conditions
+                      </Link>{" "}
+                      and{" "}
+                      <Link
+                        href="/privacy"
+                        className="text-neon-cyan hover:underline"
+                      >
+                        Privacy Policy
+                      </Link>
+                    </span>
+                  </label>
                 </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !values.acceptTerms}
+                  className="neon-btn w-full text-center text-xs disabled:pointer-events-none disabled:opacity-40"
+                >
+                  {isSubmitting ? "Creating Account..." : "Create Account"}
+                </button>
               </div>
 
-              {/* Login link */}
               <div className="mt-6 text-center">
                 <Link
                   href="/login"

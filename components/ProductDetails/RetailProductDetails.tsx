@@ -46,7 +46,10 @@ export const RetailProductDetails = ({
   const router = useRouter();
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { user } = useAuth();
-  const productSlug = (router.query.productSlug as string) || "";
+  const productSlug =
+    (router.query.slug as string) ||
+    (router.query.productSlug as string) ||
+    "";
   const {
     data: thisProduct,
     isLoading,
@@ -283,7 +286,8 @@ export const RetailProductDetails = ({
         variant.relationships?.option_values?.data?.map((ov: any) => ov.id) ||
         [];
 
-      const colorMatch = !selectedColor || optionValueIds.includes(selectedColor);
+      const colorMatch =
+        !selectedColor || optionValueIds.includes(selectedColor);
 
       // For size, we need to find the option_value ID by matching presentation text
       let sizeMatch = true;
