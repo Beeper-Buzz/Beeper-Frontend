@@ -191,9 +191,13 @@ const SectionRenderers: Record<
   }
 };
 
-export const DynamicHome = () => {
+interface DynamicHomeProps {
+  initialProducts?: any;
+}
+
+export const DynamicHome = ({ initialProducts }: DynamicHomeProps = {}) => {
   const { data: homepageData, isLoading, error } = useHomepage();
-  const { data: feedData } = useProductFeed("latest", { per_page: 8 });
+  const { data: feedData } = useProductFeed("latest", { per_page: 8 }, true, initialProducts);
 
   // Transform Spree product feed into FeaturedProduct[] for the Featured strip
   const featuredProducts = useMemo<FeaturedProduct[] | undefined>(() => {
@@ -249,7 +253,7 @@ export const DynamicHome = () => {
   // Fixed background — rendered outside <main> scroll container to avoid
   // cross-browser issues with position:fixed inside overflow:auto
   const videoBackground = (
-    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" style={{ willChange: "transform" }}>
       <video
         ref={videoRef}
         src="/device-rotate.mp4"
@@ -276,7 +280,7 @@ export const DynamicHome = () => {
     <Layout background={videoBackground}>
       <div className="relative z-10">
         {/* 0. LogoBlob Hero */}
-        <section className="flex items-center justify-center py-16 md:py-20">
+        <section className="flex items-center justify-center py-16 md:py-20" style={{ contain: "layout style paint" }}>
           <LogoBlob hasBlob isAnimated={true} showTagline={true} />
         </section>
 
