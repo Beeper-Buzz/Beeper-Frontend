@@ -39,7 +39,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080";
   try {
     const productRes = await fetch(
-      `${spreeUrl}/api/v2/storefront/products?filter[slug]=${encodeURIComponent(slug)}&include=images,variants,option_types`,
+      `${spreeUrl}/api/v2/storefront/products?filter[slug]=${encodeURIComponent(
+        slug
+      )}&include=images,variants,option_types`,
       { headers: { "Content-Type": "application/vnd.api+json" } }
     );
     if (productRes.ok) {

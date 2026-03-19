@@ -82,16 +82,13 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({ images }) => {
     [emblaApi]
   );
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!mainImageRef.current) return;
-      const rect = mainImageRef.current.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-      setZoomPosition({ x, y });
-    },
-    []
-  );
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!mainImageRef.current) return;
+    const rect = mainImageRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomPosition({ x, y });
+  }, []);
 
   const handleMouseEnter = useCallback(() => setIsZoomed(true), []);
   const handleMouseLeave = useCallback(() => setIsZoomed(false), []);

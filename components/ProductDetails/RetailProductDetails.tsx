@@ -47,9 +47,7 @@ export const RetailProductDetails = ({
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { user } = useAuth();
   const productSlug =
-    (router.query.slug as string) ||
-    (router.query.productSlug as string) ||
-    "";
+    (router.query.slug as string) || (router.query.productSlug as string) || "";
   const {
     data: thisProduct,
     isLoading,
