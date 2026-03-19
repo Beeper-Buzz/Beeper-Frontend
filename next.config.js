@@ -52,6 +52,10 @@ module.exports = {
       {
         source: "/api/v2/:path*",
         destination: `${SPREE_API_URL}/api/v2/:path*`
+      },
+      {
+        source: "/spree_oauth/:path*",
+        destination: `${SPREE_API_URL}/spree_oauth/:path*`
       }
     ];
   },
