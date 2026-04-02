@@ -193,10 +193,11 @@ const SectionRenderers: Record<
 
 interface DynamicHomeProps {
   initialProducts?: any;
+  initialHomepage?: any;
 }
 
-export const DynamicHome = ({ initialProducts }: DynamicHomeProps = {}) => {
-  const { data: homepageData, isLoading, error } = useHomepage();
+export const DynamicHome = ({ initialProducts, initialHomepage }: DynamicHomeProps = {}) => {
+  const { data: homepageData, error } = useHomepage(initialHomepage);
   const { data: feedData } = useProductFeed(
     "latest",
     { per_page: 8 },
@@ -238,14 +239,6 @@ export const DynamicHome = ({ initialProducts }: DynamicHomeProps = {}) => {
     video.setAttribute("webkit-playsinline", "");
     video.play().catch(() => {});
   }, []);
-
-  if (isLoading) {
-    return (
-      <Layout>
-        <Loading />
-      </Layout>
-    );
-  }
 
   if (error) {
     console.error("Homepage error:", error);
