@@ -286,7 +286,6 @@ export const DynamicHome = ({
         {/* 0. LogoBlob Hero */}
         <section
           className="relative z-0 flex items-center justify-center py-16 md:py-20"
-          style={{ contain: "layout style paint" }}
         >
           <LogoBlob hasBlob isAnimated={true} showTagline={true} />
         </section>

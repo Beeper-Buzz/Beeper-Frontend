@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useCallback } from "react";
 import { useRouter } from "next/router";
-import { Menu, ChevronDown, ChevronUp } from "lucide-react";
+import { Menu, ChevronDown, ChevronUp, User, LogOut } from "lucide-react";
 import { cn } from "@lib/utils";
 import {
   Sheet,
@@ -15,6 +15,7 @@ import {
   ScrollArea
 } from "@components/ui";
 import { SocialLinks } from "../SocialLinks";
+import { useAuth } from "../../config/auth";
 import constants from "../../utilities/constants";
 
 export const MobileMenu = ({
@@ -23,6 +24,7 @@ export const MobileMenu = ({
   menusData
 }: any) => {
   const router = useRouter();
+  const { user, logout } = useAuth();
   const currYear = new Date().getFullYear();
   const [open, setOpen] = useState(false);
   const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set());
@@ -138,24 +140,53 @@ export const MobileMenu = ({
 
             <hr className="my-4 border-neon-cyan/20" />
 
-            <button
-              onClick={() => {
-                setOpen(false);
-                router.push("/login");
-              }}
-              className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-base text-white transition-colors hover:text-neon-cyan outline-none"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => {
-                setOpen(false);
-                router.push("/signup");
-              }}
-              className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-base text-white transition-colors hover:text-neon-cyan outline-none"
-            >
-              Sign Up
-            </button>
+            {user ? (
+              <>
+                <div className="flex items-center gap-2 py-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full border border-neon-cyan/50 bg-neon-cyan/10">
+                    <User className="h-3.5 w-3.5 text-neon-cyan" />
+                  </div>
+                  <span className="font-title text-xs text-neon-cyan truncate">
+                    {user.data.attributes.email}
+                  </span>
+                </div>
+                {[
+                  { label: "My Account", href: "/account" },
+                  { label: "My Orders", href: "/account/orders" },
+                  { label: "My Favorites", href: "/account/favorites" },
+                ].map((link) => (
+                  <button
+                    key={link.href}
+                    onClick={() => { setOpen(false); router.push(link.href); }}
+                    className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-sm text-white/80 transition-colors hover:text-neon-cyan outline-none"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+                <button
+                  onClick={() => { setOpen(false); logout(); }}
+                  className="flex w-full cursor-pointer items-center gap-2 border-none bg-transparent py-2.5 text-left font-title text-sm text-white/50 transition-colors hover:text-neon-magenta outline-none"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => { setOpen(false); router.push("/login"); }}
+                  className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-base text-white transition-colors hover:text-neon-cyan outline-none"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => { setOpen(false); router.push("/signup"); }}
+                  className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-base text-white transition-colors hover:text-neon-cyan outline-none"
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
 
             <div className="mt-4">
               <SocialLinks />
