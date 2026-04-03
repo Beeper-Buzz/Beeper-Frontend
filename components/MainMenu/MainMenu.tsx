@@ -48,7 +48,7 @@ export const MainMenu = (props: MainMenuProps) => {
       </div>
 
       {/* Desktop: Mega menu */}
-      <div className="relative z-[3] hidden shadow-[0_6px_12px_rgba(0,0,0,0.05)] sm:flex">
+      <div className="relative z-[51] hidden shadow-[0_6px_12px_rgba(0,0,0,0.05)] sm:flex">
         {menuItemsIsSuccess ? (
           <MegaMenu menuItems={menuItems} loading={menuItemsIsLoading} />
         ) : null}

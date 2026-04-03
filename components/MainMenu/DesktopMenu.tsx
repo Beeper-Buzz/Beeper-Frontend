@@ -33,7 +33,7 @@ const DesktopMenu: React.FC<IDesktopMenuProps> = (props: IDesktopMenuProps) => {
   }, []);
 
   if (menusLoading) {
-    return <div className="text-sm text-white/50">Loading...</div>;
+    return null;
   }
 
   return (
