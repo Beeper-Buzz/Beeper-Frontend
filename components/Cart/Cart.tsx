@@ -66,7 +66,9 @@ export const Cart = () => {
     }
   );
 
-  const foundProduct = (productId: string, productsData: IProducts) => {
+  const apiUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
+
+  const foundProduct = (variantId: string, productsData: IProducts) => {
     if (!productsData || !Array.isArray(productsData.data)) return null;
     for (const product of productsData.data) {
       if (
@@ -74,12 +76,27 @@ export const Cart = () => {
         Array.isArray(product.relationships.variants.data)
       ) {
         const variant = product.relationships.variants.data.find(
-          (variant) => variant.id === productId
+          (variant) => variant.id === variantId
         );
         if (variant) return product;
       }
     }
     return null;
+  };
+
+  const getProductImage = (product: any) => {
+    if (!product || !productsData?.included) return null;
+    const imgId = product.relationships?.images?.data?.[0]?.id;
+    if (!imgId) return null;
+    const imgRecord = productsData.included.find(
+      (inc: any) => inc.type === "image" && inc.id === imgId
+    );
+    const imgUrl =
+      imgRecord?.attributes?.styles?.[3]?.url ||
+      imgRecord?.attributes?.styles?.[2]?.url ||
+      imgRecord?.attributes?.styles?.[0]?.url;
+    if (!imgUrl) return null;
+    return imgUrl.startsWith("http") ? imgUrl : `${apiUrl}${imgUrl}`;
   };
 
   const handleRemoveItem = (itemId: string) => {
@@ -115,53 +132,79 @@ export const Cart = () => {
           const quantity =
             quantities[lineItemId] || lineItem.attributes.quantity;
 
+          const imageUrl = getProductImage(product);
+          const optionsText = lineItem.attributes?.options_text;
+          const displayPrice = lineItem.attributes?.display_total || `$${(parseFloat(product?.attributes?.price || "0") * quantity).toFixed(2)}`;
+
           return (
             <div
               key={`cart-item-${lineItemId}`}
-              className="glass-panel mb-3 flex items-center justify-between px-5 py-4"
+              className="glass-panel mb-3 px-4 py-4"
             >
-              <div className="flex min-w-0 flex-1 items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-deep">
-                  <span className="font-micro5-charted text-base text-neon-cyan/40">
-                    IMG
-                  </span>
+              <div className="flex gap-4">
+                {/* Product Image */}
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-deep">
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={product?.attributes?.name || "Product"}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="font-micro5-charted text-2xl text-neon-cyan/30">
+                      ?
+                    </span>
+                  )}
                 </div>
-                <span className="truncate font-title text-sm text-white">
-                  {product?.attributes?.name}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() =>
-                      handleUpdateItemQuantity(lineItemId, quantity - 1)
-                    }
-                    className="glass-panel flex h-8 w-8 items-center justify-center !rounded-md text-white transition-colors hover:text-neon-cyan"
-                  >
-                    <Minus className="h-3.5 w-3.5" />
-                  </button>
-                  <span className="w-8 text-center font-digital7 text-lg text-white">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={() =>
-                      handleUpdateItemQuantity(lineItemId, quantity + 1)
-                    }
-                    className="glass-panel flex h-8 w-8 items-center justify-center !rounded-md text-white transition-colors hover:text-neon-cyan"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                  </button>
+
+                {/* Product Info */}
+                <div className="flex min-w-0 flex-1 flex-col justify-between">
+                  <div>
+                    <h3 className="font-title text-sm leading-tight text-white">
+                      {product?.attributes?.name}
+                    </h3>
+                    {optionsText && (
+                      <p className="mt-0.5 font-title text-xs text-white/50">
+                        {optionsText}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-2 flex items-center justify-between">
+                    {/* Quantity controls */}
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => handleUpdateItemQuantity(lineItemId, quantity - 1)}
+                        className="glass-panel flex h-7 w-7 items-center justify-center !rounded-md text-white transition-colors hover:text-neon-cyan"
+                      >
+                        <Minus className="h-3 w-3" />
+                      </button>
+                      <span className="w-8 text-center font-digital7 text-base text-white">
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={() => handleUpdateItemQuantity(lineItemId, quantity + 1)}
+                        className="glass-panel flex h-7 w-7 items-center justify-center !rounded-md text-white transition-colors hover:text-neon-cyan"
+                      >
+                        <Plus className="h-3 w-3" />
+                      </button>
+                    </div>
+
+                    {/* Price + Remove */}
+                    <div className="flex items-center gap-2">
+                      <span className="font-ds-digital text-base tracking-wider text-neon-cyan">
+                        {displayPrice}
+                      </span>
+                      <button
+                        onClick={() => handleRemoveItem(lineItemId)}
+                        className="flex h-7 w-7 items-center justify-center rounded-md border-none bg-transparent text-white/40 transition-colors hover:text-neon-pink"
+                        title="Remove item"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <span className="ml-2 min-w-[60px] text-right font-ds-digital text-base tracking-wider text-neon-cyan">
-                  ${product?.attributes?.price}
-                </span>
-                <button
-                  onClick={() => handleRemoveItem(lineItemId)}
-                  className="ml-1 flex h-8 w-8 items-center justify-center rounded-md border-none bg-transparent text-white/50 transition-colors hover:text-neon-pink"
-                  title="Remove item"
-                >
-                  <X className="h-4 w-4" />
-                </button>
               </div>
             </div>
           );
