@@ -335,14 +335,16 @@ export const RetailProductDetails = ({
 
       // Track this product as recently viewed
       const firstImg = allProductImgs?.[0];
+      const styles = firstImg?.attributes?.styles || [];
       const trackImgUrl =
+        firstImg?.attributes?.original_url ||
         firstImg?.attributes?.transformed_url ||
-        firstImg?.attributes?.styles?.filter((e: any) => e["width"] == "600")[0]
-          ?.url;
-      const trackImgSrc = trackImgUrl?.startsWith("http")
-        ? trackImgUrl
-        : trackImgUrl
-        ? `${process.env.NEXT_PUBLIC_SPREE_API_URL}${trackImgUrl}`
+        styles.find((s: any) => parseInt(s.width, 10) >= 600)?.url ||
+        styles.find((s: any) => parseInt(s.width, 10) >= 240)?.url ||
+        styles[styles.length - 1]?.url;
+      const apiUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
+      const trackImgSrc = trackImgUrl
+        ? trackImgUrl.startsWith("http") ? trackImgUrl : `${apiUrl}${trackImgUrl}`
         : "";
       trackView({
         slug: thisProduct.data.attributes.slug,

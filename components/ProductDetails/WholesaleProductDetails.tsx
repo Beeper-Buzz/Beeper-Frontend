@@ -284,14 +284,18 @@ export const WholesaleProductDetails = ({
 
       // Track this product as recently viewed
       const firstImg = productImgs?.[0];
-      const imgUrl = firstImg?.attributes?.styles?.filter(
-        (e: any) => e["width"] == "600"
-      )[0]?.url;
+      const styles = firstImg?.attributes?.styles || [];
+      const imgUrl =
+        firstImg?.attributes?.original_url ||
+        styles.find((s: any) => parseInt(s.width, 10) >= 600)?.url ||
+        styles.find((s: any) => parseInt(s.width, 10) >= 240)?.url ||
+        styles[styles.length - 1]?.url;
+      const apiUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
       trackView({
         slug: thisProduct.data.attributes.slug,
         name: thisProduct.data.attributes.name,
         imgSrc: imgUrl
-          ? `${process.env.NEXT_PUBLIC_SPREE_API_URL}${imgUrl}`
+          ? imgUrl.startsWith("http") ? imgUrl : `${apiUrl}${imgUrl}`
           : ""
       });
     }

@@ -25,12 +25,20 @@ export const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
             href={`/${product.slug}`}
             className="w-36 flex-shrink-0 no-underline md:w-auto"
           >
-            <div className="aspect-[3/4] overflow-hidden rounded-lg bg-muted">
-              <img
-                src={product.imgSrc}
-                alt={product.name}
-                className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-              />
+            <div className="aspect-[3/4] overflow-hidden rounded-lg bg-surface-deep">
+              {product.imgSrc ? (
+                <img
+                  src={product.imgSrc}
+                  alt={product.name}
+                  className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <span className="font-pressstart text-[10px] text-neon-cyan/20">
+                    {product.name?.[0] || "?"}
+                  </span>
+                </div>
+              )}
             </div>
             <h4 className="mt-2 truncate font-title text-sm text-white">
               {product.name}
