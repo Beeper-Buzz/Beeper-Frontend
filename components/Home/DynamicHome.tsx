@@ -196,7 +196,10 @@ interface DynamicHomeProps {
   initialHomepage?: any;
 }
 
-export const DynamicHome = ({ initialProducts, initialHomepage }: DynamicHomeProps = {}) => {
+export const DynamicHome = ({
+  initialProducts,
+  initialHomepage
+}: DynamicHomeProps = {}) => {
   const { data: homepageData, error } = useHomepage(initialHomepage);
   const { data: feedData } = useProductFeed(
     "latest",
@@ -282,7 +285,7 @@ export const DynamicHome = ({ initialProducts, initialHomepage }: DynamicHomePro
       <div className="relative z-10">
         {/* 0. LogoBlob Hero */}
         <section
-          className="flex items-center justify-center py-16 md:py-20"
+          className="relative z-0 flex items-center justify-center py-16 md:py-20"
           style={{ contain: "layout style paint" }}
         >
           <LogoBlob hasBlob isAnimated={true} showTagline={true} />
