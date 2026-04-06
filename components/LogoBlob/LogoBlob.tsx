@@ -16,7 +16,9 @@ const blobs = [
 // ── CSS keyframes (injected once) ─────────────────────────────────
 const TOTAL_DURATION = 56;
 const blobKeyframes = blobs
-  .map((d, i) => `${((i / blobs.length) * 100).toFixed(2)}% { d: path("${d}"); }`)
+  .map(
+    (d, i) => `${((i / blobs.length) * 100).toFixed(2)}% { d: path("${d}"); }`
+  )
   .concat([`100% { d: path("${blobs[0]}"); }`])
   .join("\n  ");
 
@@ -55,7 +57,10 @@ const BLOB_BOX_SHADOW = [
 // Generates a short brand jingle using Web Audio API oscillators.
 // Returns an AnalyserNode for real-time frequency visualization.
 
-function playSonicSignature(): { analyser: AnalyserNode; ctx: AudioContext } | null {
+function playSonicSignature(): {
+  analyser: AnalyserNode;
+  ctx: AudioContext;
+} | null {
   if (typeof window === "undefined" || !window.AudioContext) return null;
 
   const ctx = new AudioContext();
@@ -85,11 +90,11 @@ function playSonicSignature(): { analyser: AnalyserNode; ctx: AudioContext } | n
   // Beeper sonic signature: ascending arpeggio with detuned unison
   // C4 → E4 → G4 → C5 → E5 (bright major arpeggio)
   const notes = [
-    { freq: 261.63, time: 0.0,   dur: 0.6 },  // C4
-    { freq: 329.63, time: 0.15,  dur: 0.5 },  // E4
-    { freq: 392.00, time: 0.30,  dur: 0.5 },  // G4
-    { freq: 523.25, time: 0.50,  dur: 0.7 },  // C5
-    { freq: 659.25, time: 0.70,  dur: 0.9 },  // E5 (ring out)
+    { freq: 261.63, time: 0.0, dur: 0.6 }, // C4
+    { freq: 329.63, time: 0.15, dur: 0.5 }, // E4
+    { freq: 392.0, time: 0.3, dur: 0.5 }, // G4
+    { freq: 523.25, time: 0.5, dur: 0.7 }, // C5
+    { freq: 659.25, time: 0.7, dur: 0.9 } // E5 (ring out)
   ];
 
   notes.forEach(({ freq, time, dur }) => {
@@ -150,7 +155,7 @@ const ReactiveBlobSvg = ({
 }: {
   filterId: string;
   energy: number; // 0..1 overall amplitude
-  bass: number;   // 0..1 low-frequency energy
+  bass: number; // 0..1 low-frequency energy
   onClick?: () => void;
 }) => {
   // Energy drives: scale, blur, glow intensity, stroke width
@@ -165,7 +170,7 @@ const ReactiveBlobSvg = ({
         position: "relative",
         display: "block",
         transform: `scale(${scale})`,
-        transition: "transform 0.06s ease-out",
+        transition: "transform 0.06s ease-out"
       }}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 200 200"
@@ -187,7 +192,7 @@ const ReactiveBlobSvg = ({
           d={blobs[0]}
           style={{
             opacity: glowOpacity,
-            animation: `blob-morph ${TOTAL_DURATION}s ease-in-out infinite, blob-color ${TOTAL_DURATION}s ease-in-out infinite`,
+            animation: `blob-morph ${TOTAL_DURATION}s ease-in-out infinite, blob-color ${TOTAL_DURATION}s ease-in-out infinite`
           }}
         />
       </g>
@@ -225,7 +230,9 @@ const StaticBlobSvg = ({
         fill="#7c3aed"
         d={blobs[0]}
         style={{
-          animation: `blob-morph ${TOTAL_DURATION}s ease-in-out infinite, blob-color ${TOTAL_DURATION}s ease-in-out infinite, blob-opacity ${TOTAL_DURATION * 0.5}s ease-in-out infinite`
+          animation: `blob-morph ${TOTAL_DURATION}s ease-in-out infinite, blob-color ${TOTAL_DURATION}s ease-in-out infinite, blob-opacity ${
+            TOTAL_DURATION * 0.5
+          }s ease-in-out infinite`
         }}
       />
     </g>
@@ -240,7 +247,8 @@ interface LogoBlobProps {
   isAnimated?: boolean;
   showTagline?: boolean;
   animateLetters?: boolean;
-  playSonic?: boolean; // Play the sonic signature on mount/click
+  playSonic?: boolean; // Play the synthesized sonic signature on mount/click
+  soundSrc?: string; // Path to an mp3/wav file to play instead of the synth jingle
 }
 
 export const LogoBlob = ({
@@ -249,13 +257,16 @@ export const LogoBlob = ({
   isAnimated = false,
   showTagline = false,
   animateLetters = true,
-  playSonic = false
+  playSonic = false,
+  soundSrc
 }: LogoBlobProps) => {
   const [open, toggle] = useState(false);
   const [energy, setEnergy] = useState(0);
   const [bass, setBass] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<{ analyser: AnalyserNode; ctx: AudioContext } | null>(null);
+  const audioRef = useRef<{ analyser: AnalyserNode; ctx: AudioContext } | null>(
+    null
+  );
   const rafRef = useRef<number>(0);
   const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH || "";
 
@@ -291,10 +302,44 @@ export const LogoBlob = ({
     rafRef.current = requestAnimationFrame(analyseFrame);
   }, []);
 
+  const playAudioFile = useCallback(
+    (src: string): { analyser: AnalyserNode; ctx: AudioContext } | null => {
+      if (typeof window === "undefined" || !window.AudioContext) return null;
+
+      const ctx = new AudioContext();
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.8;
+
+      const audio = new Audio(src);
+      const source = ctx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(ctx.destination);
+
+      audio.play().catch((e) => console.warn("[LogoBlob] Audio play failed:", e));
+
+      // Auto-cleanup when audio ends
+      audio.addEventListener("ended", () => {
+        cancelAnimationFrame(rafRef.current);
+        setEnergy(0);
+        setBass(0);
+        setIsPlaying(false);
+        ctx.close().catch(() => {});
+        audioRef.current = null;
+      });
+
+      return { analyser, ctx };
+    },
+    []
+  );
+
   const triggerSonic = useCallback(() => {
     if (isPlaying) return;
 
-    const result = playSonicSignature();
+    // If soundSrc is provided, play the audio file; otherwise synthesize
+    const result = soundSrc
+      ? playAudioFile(soundSrc)
+      : playSonicSignature();
     if (!result) return;
 
     audioRef.current = result;
@@ -302,16 +347,18 @@ export const LogoBlob = ({
 
     rafRef.current = requestAnimationFrame(analyseFrame);
 
-    // Clean up after jingle ends (~2.5s)
-    setTimeout(() => {
-      cancelAnimationFrame(rafRef.current);
-      setEnergy(0);
-      setBass(0);
-      setIsPlaying(false);
-      result.ctx.close().catch(() => {});
-      audioRef.current = null;
-    }, 2500);
-  }, [isPlaying, analyseFrame]);
+    // Fallback cleanup for synthesized jingle (no "ended" event)
+    if (!soundSrc) {
+      setTimeout(() => {
+        cancelAnimationFrame(rafRef.current);
+        setEnergy(0);
+        setBass(0);
+        setIsPlaying(false);
+        result.ctx.close().catch(() => {});
+        audioRef.current = null;
+      }, 2500);
+    }
+  }, [isPlaying, analyseFrame, soundSrc, playAudioFile]);
 
   // Auto-play sonic signature on mount if prop is set
   useEffect(() => {
@@ -344,7 +391,7 @@ export const LogoBlob = ({
             className="rounded-full animate-blob-breathe"
             style={{
               filter: `blur(${6 + energy * 10}px)`,
-              transition: "filter 0.06s ease-out",
+              transition: "filter 0.06s ease-out"
             }}
           >
             {isPlaying ? (
@@ -355,7 +402,10 @@ export const LogoBlob = ({
                 onClick={handleBlobClick}
               />
             ) : (
-              <StaticBlobSvg filterId="blur-animated" onClick={handleBlobClick} />
+              <StaticBlobSvg
+                filterId="blur-animated"
+                onClick={handleBlobClick}
+              />
             )}
           </div>
         </div>
@@ -364,7 +414,7 @@ export const LogoBlob = ({
           className="relative z-10 w-[90%] h-auto sm:w-auto sm:h-[160px] [&_svg]:w-full [&_svg]:h-auto sm:[&_svg]:w-auto sm:[&_svg]:h-[160px]"
           style={{
             transform: `scale(${1 + energy * 0.05})`,
-            transition: "transform 0.06s ease-out",
+            transition: "transform 0.06s ease-out"
           }}
           onClick={handleBlobClick}
         >
