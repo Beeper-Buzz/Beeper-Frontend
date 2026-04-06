@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimatedLogo } from "../Logo/AnimatedLogo";
 
 // 8 unique SVG blob paths — sequenced for smooth morphing
-// Each shape flows naturally into the next, and shape 8 loops back to shape 1
 const blobs = [
   "M43.3,-69.7C51.1,-62.3,49,-41.9,53.7,-26.1C58.4,-10.4,69.9,0.6,68.8,10.1C67.8,19.6,54.4,27.5,43.4,34.4C32.4,41.2,24,46.9,14.5,50.1C5,53.4,-5.6,54,-19.9,55.4C-34.2,56.8,-52.3,58.9,-58.2,51C-64.1,43.1,-57.9,25.3,-58.1,9.7C-58.3,-6,-65,-19.4,-65,-34C-65,-48.6,-58.4,-64.5,-46.4,-70C-34.4,-75.6,-17.2,-70.8,0.3,-71.2C17.7,-71.6,35.5,-77.2,43.3,-69.7Z",
   "M40.8,-63.9C54.3,-54.8,67.7,-45.9,76.2,-33.1C84.6,-20.3,88.1,-3.6,82,9C75.9,21.6,60.1,30,48.3,39.5C36.4,49,28.5,59.6,18.1,63.3C7.8,67,-5,63.9,-19.6,61.8C-34.1,59.7,-50.3,58.7,-59.9,50.4C-69.5,42.1,-72.5,26.5,-73.4,11.4C-74.3,-3.7,-73.2,-18.3,-65.9,-28.3C-58.6,-38.3,-45.1,-43.8,-33.1,-53.6C-21.1,-63.4,-10.5,-77.5,1.6,-80C13.7,-82.4,27.3,-73.1,40.8,-63.9Z",
@@ -14,29 +13,13 @@ const blobs = [
   "M42.7,-73.1C53.1,-63.5,57.8,-47.7,64.8,-33.1C71.7,-18.5,80.8,-5.1,81.1,8.9C81.4,23,72.9,37.7,61.3,47.5C49.8,57.3,35.2,62.3,20.8,66.6C6.3,70.9,-8,74.6,-22.3,72.4C-36.7,70.3,-51,62.3,-60,50.2C-68.9,38,-72.5,21.7,-72.8,5.6C-73.2,-10.5,-70.3,-26.3,-62.1,-38.1C-53.9,-49.9,-40.5,-57.6,-27.5,-66C-14.4,-74.4,-1.8,-83.5,10.2,-83.2C22.2,-82.8,32.4,-82.7,42.7,-73.1Z"
 ];
 
-// Build CSS keyframes string — 8 shapes over 56s (7s per shape), loops seamlessly
-const TOTAL_DURATION = 56; // 7s per shape × 8 shapes
+// ── CSS keyframes (injected once) ─────────────────────────────────
+const TOTAL_DURATION = 56;
 const blobKeyframes = blobs
-  .map((d, i) => {
-    const pct = ((i / blobs.length) * 100).toFixed(2);
-    return `${pct}% { d: path("${d}"); }`;
-  })
-  .concat([`100% { d: path("${blobs[0]}"); }`]) // loop back to first
+  .map((d, i) => `${((i / blobs.length) * 100).toFixed(2)}% { d: path("${d}"); }`)
+  .concat([`100% { d: path("${blobs[0]}"); }`])
   .join("\n  ");
 
-const colorKeyframes = `
-  0%, 100% { fill: #7c3aed; stroke: #ff008a; }
-  25% { fill: #ff008a; stroke: #7c3aed; }
-  50% { fill: #7c3aed; stroke: #00ffff; }
-  75% { fill: #ff008a; stroke: #ff008a; }
-`;
-
-const opacityKeyframes = `
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.28; }
-`;
-
-// Inject keyframes into a <style> tag (CSR-safe)
 const STYLE_ID = "logoblob-keyframes";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const style = document.createElement("style");
@@ -46,10 +29,14 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       ${blobKeyframes}
     }
     @keyframes blob-color {
-      ${colorKeyframes}
+      0%, 100% { fill: #7c3aed; stroke: #ff008a; }
+      25% { fill: #ff008a; stroke: #7c3aed; }
+      50% { fill: #7c3aed; stroke: #00ffff; }
+      75% { fill: #ff008a; stroke: #ff008a; }
     }
     @keyframes blob-opacity {
-      ${opacityKeyframes}
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.28; }
     }
   `;
   document.head.appendChild(style);
@@ -64,16 +51,162 @@ const BLOB_BOX_SHADOW = [
   "0 0 15px rgba(0, 255, 255, 0.3)"
 ].join(", ");
 
-const BlobSvg = ({ filterId, onClick }: { filterId: string; onClick?: () => void }) => (
+// ── Sonic Signature Synthesizer ───────────────────────────────────
+// Generates a short brand jingle using Web Audio API oscillators.
+// Returns an AnalyserNode for real-time frequency visualization.
+
+function playSonicSignature(): { analyser: AnalyserNode; ctx: AudioContext } | null {
+  if (typeof window === "undefined" || !window.AudioContext) return null;
+
+  const ctx = new AudioContext();
+  const analyser = ctx.createAnalyser();
+  analyser.fftSize = 256;
+  analyser.smoothingTimeConstant = 0.8;
+
+  const masterGain = ctx.createGain();
+  masterGain.gain.setValueAtTime(0.25, ctx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.8);
+  masterGain.connect(analyser);
+  analyser.connect(ctx.destination);
+
+  // Convolver for space (simple reverb via feedback delay)
+  const delay = ctx.createDelay();
+  delay.delayTime.value = 0.12;
+  const feedback = ctx.createGain();
+  feedback.gain.value = 0.3;
+  const wetGain = ctx.createGain();
+  wetGain.gain.value = 0.4;
+  masterGain.connect(delay);
+  delay.connect(feedback);
+  feedback.connect(delay);
+  delay.connect(wetGain);
+  wetGain.connect(analyser);
+
+  // Beeper sonic signature: ascending arpeggio with detuned unison
+  // C4 → E4 → G4 → C5 → E5 (bright major arpeggio)
+  const notes = [
+    { freq: 261.63, time: 0.0,   dur: 0.6 },  // C4
+    { freq: 329.63, time: 0.15,  dur: 0.5 },  // E4
+    { freq: 392.00, time: 0.30,  dur: 0.5 },  // G4
+    { freq: 523.25, time: 0.50,  dur: 0.7 },  // C5
+    { freq: 659.25, time: 0.70,  dur: 0.9 },  // E5 (ring out)
+  ];
+
+  notes.forEach(({ freq, time, dur }) => {
+    const t = ctx.currentTime + time;
+
+    // Main oscillator (saw for that synth character)
+    const osc = ctx.createOscillator();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(freq, t);
+
+    // Detuned unison oscillator (±7 cents for width)
+    const osc2 = ctx.createOscillator();
+    osc2.type = "sawtooth";
+    osc2.frequency.setValueAtTime(freq * Math.pow(2, 7 / 1200), t);
+
+    // Sub oscillator (sine, one octave down)
+    const sub = ctx.createOscillator();
+    sub.type = "sine";
+    sub.frequency.setValueAtTime(freq / 2, t);
+
+    // Per-note envelope
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0, t);
+    env.gain.linearRampToValueAtTime(0.3, t + 0.02);
+    env.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+    // Filter sweep per note
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(freq * 4, t);
+    filter.frequency.exponentialRampToValueAtTime(freq * 1.5, t + dur);
+    filter.Q.value = 2;
+
+    osc.connect(filter);
+    osc2.connect(filter);
+    sub.connect(env);
+    filter.connect(env);
+    env.connect(masterGain);
+
+    osc.start(t);
+    osc.stop(t + dur + 0.1);
+    osc2.start(t);
+    osc2.stop(t + dur + 0.1);
+    sub.start(t);
+    sub.stop(t + dur + 0.1);
+  });
+
+  return { analyser, ctx };
+}
+
+// ── Reactive Blob SVG ─────────────────────────────────────────────
+
+const ReactiveBlobSvg = ({
+  filterId,
+  energy,
+  bass,
+  onClick
+}: {
+  filterId: string;
+  energy: number; // 0..1 overall amplitude
+  bass: number;   // 0..1 low-frequency energy
+  onClick?: () => void;
+}) => {
+  // Energy drives: scale, blur, glow intensity, stroke width
+  const scale = 1 + energy * 0.35;
+  const blurAmount = 3 + energy * 8;
+  const strokeWidth = 10 + bass * 15;
+  const glowOpacity = 0.4 + energy * 0.5;
+
+  return (
+    <svg
+      style={{
+        position: "relative",
+        display: "block",
+        transform: `scale(${scale})`,
+        transition: "transform 0.06s ease-out",
+      }}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 200 200"
+      height="220px"
+      width="220px"
+      onClick={onClick}
+      className={onClick ? "pointer-events-auto" : undefined}
+    >
+      <defs>
+        <filter id={filterId}>
+          <feGaussianBlur stdDeviation={blurAmount} />
+        </filter>
+      </defs>
+      <g filter={`url(#${filterId})`} transform="translate(100 100)">
+        <path
+          stroke="#ff008a"
+          strokeWidth={strokeWidth}
+          fill="#7c3aed"
+          d={blobs[0]}
+          style={{
+            opacity: glowOpacity,
+            animation: `blob-morph ${TOTAL_DURATION}s ease-in-out infinite, blob-color ${TOTAL_DURATION}s ease-in-out infinite`,
+          }}
+        />
+      </g>
+    </svg>
+  );
+};
+
+// ── Static Blob SVG (no audio) ────────────────────────────────────
+
+const StaticBlobSvg = ({
+  filterId,
+  onClick
+}: {
+  filterId: string;
+  onClick?: () => void;
+}) => (
   <svg
     style={{ position: "relative", display: "block" }}
     xmlns="http://www.w3.org/2000/svg"
-    fillRule="evenodd"
-    clipRule="evenodd"
-    imageRendering="optimizeQuality"
-    shapeRendering="geometricPrecision"
-    textRendering="geometricPrecision"
-    version="1.1"
     viewBox="0 0 200 200"
     height="220px"
     width="220px"
@@ -99,15 +232,108 @@ const BlobSvg = ({ filterId, onClick }: { filterId: string; onClick?: () => void
   </svg>
 );
 
+// ── LogoBlob Component ────────────────────────────────────────────
+
+interface LogoBlobProps {
+  hasBlob?: boolean;
+  isDark?: boolean;
+  isAnimated?: boolean;
+  showTagline?: boolean;
+  animateLetters?: boolean;
+  playSonic?: boolean; // Play the sonic signature on mount/click
+}
+
 export const LogoBlob = ({
   hasBlob,
   isDark,
   isAnimated = false,
   showTagline = false,
-  animateLetters = true
-}: any) => {
+  animateLetters = true,
+  playSonic = false
+}: LogoBlobProps) => {
   const [open, toggle] = useState(false);
+  const [energy, setEnergy] = useState(0);
+  const [bass, setBass] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<{ analyser: AnalyserNode; ctx: AudioContext } | null>(null);
+  const rafRef = useRef<number>(0);
   const logoPath = process.env.NEXT_PUBLIC_LOGO_PATH || "";
+
+  // Frequency analysis loop
+  const analyseFrame = useCallback(() => {
+    if (!audioRef.current) return;
+    const { analyser, ctx } = audioRef.current;
+
+    if (ctx.state === "closed") {
+      setEnergy(0);
+      setBass(0);
+      setIsPlaying(false);
+      return;
+    }
+
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data);
+
+    // Overall energy (RMS of all bins)
+    let sum = 0;
+    for (let i = 0; i < data.length; i++) sum += data[i];
+    const avg = sum / data.length / 255;
+
+    // Bass energy (first 8 bins ≈ 0-340Hz)
+    let bassSum = 0;
+    const bassBins = Math.min(8, data.length);
+    for (let i = 0; i < bassBins; i++) bassSum += data[i];
+    const bassAvg = bassSum / bassBins / 255;
+
+    setEnergy(avg);
+    setBass(bassAvg);
+
+    rafRef.current = requestAnimationFrame(analyseFrame);
+  }, []);
+
+  const triggerSonic = useCallback(() => {
+    if (isPlaying) return;
+
+    const result = playSonicSignature();
+    if (!result) return;
+
+    audioRef.current = result;
+    setIsPlaying(true);
+
+    rafRef.current = requestAnimationFrame(analyseFrame);
+
+    // Clean up after jingle ends (~2.5s)
+    setTimeout(() => {
+      cancelAnimationFrame(rafRef.current);
+      setEnergy(0);
+      setBass(0);
+      setIsPlaying(false);
+      result.ctx.close().catch(() => {});
+      audioRef.current = null;
+    }, 2500);
+  }, [isPlaying, analyseFrame]);
+
+  // Auto-play sonic signature on mount if prop is set
+  useEffect(() => {
+    if (playSonic) {
+      // Delay slightly to ensure user gesture context (autoplay policy)
+      const id = setTimeout(triggerSonic, 500);
+      return () => clearTimeout(id);
+    }
+  }, [playSonic]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      audioRef.current?.ctx.close().catch(() => {});
+    };
+  }, []);
+
+  const handleBlobClick = () => {
+    triggerSonic();
+    toggle(!open);
+  };
 
   if (isAnimated) {
     return (
@@ -116,15 +342,31 @@ export const LogoBlob = ({
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div
             className="rounded-full animate-blob-breathe"
-            style={{ filter: "blur(6px)" }}
+            style={{
+              filter: `blur(${6 + energy * 10}px)`,
+              transition: "filter 0.06s ease-out",
+            }}
           >
-            <BlobSvg filterId="blur-animated" />
+            {isPlaying ? (
+              <ReactiveBlobSvg
+                filterId="blur-animated"
+                energy={energy}
+                bass={bass}
+                onClick={handleBlobClick}
+              />
+            ) : (
+              <StaticBlobSvg filterId="blur-animated" onClick={handleBlobClick} />
+            )}
           </div>
         </div>
         {/* Logo on top */}
         <div
           className="relative z-10 w-[90%] h-auto sm:w-auto sm:h-[160px] [&_svg]:w-full [&_svg]:h-auto sm:[&_svg]:w-auto sm:[&_svg]:h-[160px]"
-          onClick={() => toggle(!open)}
+          style={{
+            transform: `scale(${1 + energy * 0.05})`,
+            transition: "transform 0.06s ease-out",
+          }}
+          onClick={handleBlobClick}
         >
           <AnimatedLogo showTagline={showTagline} animate={animateLetters} />
         </div>
@@ -138,14 +380,14 @@ export const LogoBlob = ({
         className="absolute -mt-[100px] sm:-mt-[200px] rounded-full animate-blob-breathe"
         style={{ boxShadow: BLOB_BOX_SHADOW }}
       >
-        <BlobSvg filterId="blur-default" />
+        <StaticBlobSvg filterId="blur-default" onClick={handleBlobClick} />
       </div>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className="w-[90%] h-auto -mt-10 relative sm:w-auto sm:h-[160px]"
         src={logoPath}
         alt=""
-        onClick={() => toggle(!open)}
+        onClick={handleBlobClick}
       />
     </>
   );
