@@ -13,29 +13,19 @@ const blobs = [
   "M42.7,-73.1C53.1,-63.5,57.8,-47.7,64.8,-33.1C71.7,-18.5,80.8,-5.1,81.1,8.9C81.4,23,72.9,37.7,61.3,47.5C49.8,57.3,35.2,62.3,20.8,66.6C6.3,70.9,-8,74.6,-22.3,72.4C-36.7,70.3,-51,62.3,-60,50.2C-68.9,38,-72.5,21.7,-72.8,5.6C-73.2,-10.5,-70.3,-26.3,-62.1,-38.1C-53.9,-49.9,-40.5,-57.6,-27.5,-66C-14.4,-74.4,-1.8,-83.5,10.2,-83.2C22.2,-82.8,32.4,-82.7,42.7,-73.1Z"
 ];
 
-// ── CSS keyframes (injected once) ─────────────────────────────────
+// ── SMIL animation values (widely supported, no CSS d: path needed) ──
 const TOTAL_DURATION = 56;
-const blobKeyframes = blobs
-  .map(
-    (d, i) => `${((i / blobs.length) * 100).toFixed(2)}% { d: path("${d}"); }`
-  )
-  .concat([`100% { d: path("${blobs[0]}"); }`])
-  .join("\n  ");
+// Chain the shapes and loop back to the first for a seamless morph
+const blobAnimateValues = [...blobs, blobs[0]].join(";");
+const fillAnimateValues = "#7c3aed;#ff008a;#7c3aed;#00ffff;#7c3aed";
+const strokeAnimateValues = "#ff008a;#7c3aed;#ff008a;#00ffff;#ff008a";
 
+// Keep minimal CSS keyframes (only for the static opacity pulse)
 const STYLE_ID = "logoblob-keyframes";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const style = document.createElement("style");
   style.id = STYLE_ID;
   style.textContent = `
-    @keyframes blob-morph {
-      ${blobKeyframes}
-    }
-    @keyframes blob-color {
-      0%, 100% { fill: #7c3aed; stroke: #ff008a; }
-      25% { fill: #ff008a; stroke: #7c3aed; }
-      50% { fill: #7c3aed; stroke: #00ffff; }
-      75% { fill: #ff008a; stroke: #ff008a; }
-    }
     @keyframes blob-opacity {
       0%, 100% { opacity: 0.4; }
       50% { opacity: 0.28; }
@@ -190,11 +180,29 @@ const ReactiveBlobSvg = ({
           strokeWidth={strokeWidth}
           fill="#7c3aed"
           d={blobs[0]}
-          style={{
-            opacity: glowOpacity,
-            animation: `blob-morph ${TOTAL_DURATION}s ease-in-out infinite, blob-color ${TOTAL_DURATION}s ease-in-out infinite`
-          }}
-        />
+          style={{ opacity: glowOpacity }}
+        >
+          <animate
+            attributeName="d"
+            values={blobAnimateValues}
+            dur={`${TOTAL_DURATION}s`}
+            repeatCount="indefinite"
+            calcMode="spline"
+            keySplines={Array(blobs.length).fill("0.42 0 0.58 1").join(";")}
+          />
+          <animate
+            attributeName="fill"
+            values={fillAnimateValues}
+            dur={`${TOTAL_DURATION}s`}
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="stroke"
+            values={strokeAnimateValues}
+            dur={`${TOTAL_DURATION}s`}
+            repeatCount="indefinite"
+          />
+        </path>
       </g>
     </svg>
   );
@@ -230,11 +238,30 @@ const StaticBlobSvg = ({
         fill="#7c3aed"
         d={blobs[0]}
         style={{
-          animation: `blob-morph ${TOTAL_DURATION}s ease-in-out infinite, blob-color ${TOTAL_DURATION}s ease-in-out infinite, blob-opacity ${
-            TOTAL_DURATION * 0.5
-          }s ease-in-out infinite`
+          animation: `blob-opacity ${TOTAL_DURATION * 0.5}s ease-in-out infinite`
         }}
-      />
+      >
+        <animate
+          attributeName="d"
+          values={blobAnimateValues}
+          dur={`${TOTAL_DURATION}s`}
+          repeatCount="indefinite"
+          calcMode="spline"
+          keySplines={Array(blobs.length).fill("0.42 0 0.58 1").join(";")}
+        />
+        <animate
+          attributeName="fill"
+          values={fillAnimateValues}
+          dur={`${TOTAL_DURATION}s`}
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="stroke"
+          values={strokeAnimateValues}
+          dur={`${TOTAL_DURATION}s`}
+          repeatCount="indefinite"
+        />
+      </path>
     </g>
   </svg>
 );
