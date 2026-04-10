@@ -1,0 +1,44 @@
+FROM node:18-bullseye
+# FROM node:16-alpine
+# FROM node:alpine
+# FROM node:21-alpine3.18
+
+RUN apt-get update \
+  && for i in 1 2 3; do \
+       apt-get install -y --no-install-recommends \
+         git python3 make g++ libvips-dev \
+       && break \
+       || { echo "apt-get attempt $i failed, retrying..."; apt-get update; }; \
+     done \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# COPY contrib/spree-storefront-api-v2-sdk-4.5.1003.tgz contrib/spree-storefront-api-v2-sdk-4.5.1003.tgz
+# COPY package.json yarn.lock ./
+COPY package.json yarn.lock contrib/spree-storefront-api-v2-sdk-4.5.1003.tgz ./
+
+RUN sed -i 's,file:spree-storefront-api-v2-sdk-4.5.1003.tgz,file:/app/spree-storefront-api-v2-sdk-4.5.1003.tgz,' package.json
+# RUN yarn add file:spree-storefront-api-v2-sdk-4.5.1003.tgz
+
+RUN npm install --legacy-peer-deps /app/spree-storefront-api-v2-sdk-4.5.1003.tgz
+
+RUN npm install --legacy-peer-deps sharp@0.26.3
+
+# RUN yarn install
+RUN yarn install --network-concurrency 1 --network-timeout 1000000
+
+COPY . .
+
+# Next.js production build reads .env.production, not .env.development.
+# NEXT_PUBLIC_* vars are inlined at build time — they must be present here.
+RUN cp .env.development .env.production 2>/dev/null || true
+
+RUN yarn build
+
+ENV PORT 3000
+
+EXPOSE 3000
+
+CMD ["yarn", "start"]
+

@@ -1,41 +1,28 @@
-// Reference:
-// https://leerob.io/blog/mailchimp-next-js
-
 import React, { useEffect, useState } from "react";
-
-import {
-  Container,
-  NotifyText,
-  ErrorText,
-  FormWrapper,
-  QuestionWrapper,
-  EmailInput,
-  Button,
-  MailTo
-} from "./NotifyForm.styles";
+import { cn } from "@lib/utils";
 
 const notifyQuestions = [
   {
     id: "email",
-    question: "Get notified when we launch.",
+    question: "Wanna know when the product becomes available?",
     placeholder: "Email",
     buttonText: "Get Updates"
   },
   {
     id: "firstName",
-    question: "Thanks. What should we call you?",
+    question: "Great. Btw, what's your name?",
     placeholder: "First Name",
     buttonText: "Save Name"
   },
   {
     id: "lastName",
-    question: "Nice, wanna share your last name?",
+    question: "Ok, and your last name?",
     placeholder: "Last Name",
     buttonText: "Save Name"
   },
   {
     id: "phone",
-    question: "Perfect, if you want we'll text.",
+    question: "Perfect, wanna get text updates from us?",
     placeholder: "Phone",
     buttonText: "Sure"
   }
@@ -82,16 +69,23 @@ export const NotifyForm = () => {
   };
 
   const renderQuestions = (questionIndex: number) => {
-    const isCurrent = questionIndex === currentQuestion;
-    const isFirst = currentQuestion < 1;
     const isLast = currentQuestion >= notifyQuestions.length;
     return notifyQuestions.map((question, i) => {
+      const isCurrent = i === currentQuestion;
       return (
-        <QuestionWrapper key={`question-${i}`} isVisible={isCurrent}>
+        <div
+          key={`question-${i}`}
+          className={cn(
+            "transition-all duration-300",
+            isCurrent ? "block" : "hidden"
+          )}
+        >
           {!isLast && (
-            <>
-              <NotifyText>{question.question}</NotifyText>
-              <EmailInput
+            <div className="space-y-3">
+              <p className="font-title text-base font-semibold text-white">
+                {question.question}
+              </p>
+              <input
                 id={question.id}
                 type="text"
                 placeholder={question.placeholder}
@@ -100,20 +94,24 @@ export const NotifyForm = () => {
                 onChange={(e: any) =>
                   switchQuestionSetter(question.id, e.target.value)
                 }
+                className="w-full rounded-lg border border-glass-border bg-surface-deep px-4 py-3 font-body text-sm text-white transition-colors placeholder:text-white/50 focus:border-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-cyan/20"
               />
-              <Button id="signup-button" type="submit">
+              <button
+                id="signup-button"
+                type="submit"
+                className="w-full cursor-pointer rounded-lg border-none bg-neon-cyan px-6 py-3 font-title text-sm font-semibold uppercase tracking-wider text-black transition-all hover:bg-neon-cyan/90 hover:-translate-y-px active:translate-y-0"
+              >
                 {question.buttonText}
-              </Button>
-            </>
+              </button>
+            </div>
           )}
-        </QuestionWrapper>
+        </div>
       );
     });
   };
 
   const handleSubmit = async (e: any, newContact: boolean) => {
     e.preventDefault();
-    console.log("Submitting!");
 
     const res = await fetch("/api/subscribe", {
       body: JSON.stringify({
@@ -130,7 +128,6 @@ export const NotifyForm = () => {
     });
 
     const resBody = await res.json();
-    console.log("Response: ", resBody);
     setStatus("sending");
 
     if (resBody.error) {
@@ -148,71 +145,53 @@ export const NotifyForm = () => {
     }
   };
 
-  const clearFields = () => {
-    setEmail("");
-    // setFirstName('');
-    // setLastName('');
-  };
-
-  useEffect(() => {
-    // if (status === "success") clearFields();
-    // if(modalOpen && status === "success") clearFields();
-  }, [status]);
-
   return (
-    <>
-      <Container>
-        <FormWrapper index={currentQuestion}>
-          <form
-            onSubmit={(e: any) =>
-              currentQuestion > 0
-                ? handleSubmit(e, false)
-                : handleSubmit(e, true)
-            }
-          >
-            {currentQuestion < notifyQuestions.length
-              ? renderQuestions(currentQuestion)
-              : null}
-            {/* MailChimp anti-spam fields, real people should not fill this in and expect good things - do not remove this or risk form bot signups */}
-
-            <div
-              style={{ position: "absolute", left: "-5000px" }}
-              aria-hidden="true"
-            >
-              <input
-                type="text"
-                name="b_eb05e4f830c2a04be30171b01_8281a64779"
-                tabIndex={-1}
-                onChange={(e: any) => null}
-                value=""
-              />
-            </div>
-          </form>
-          {/* MailChimp Status */}
-          {status === "sending" && (
-            <NotifyText className="mc__alert mc__alert--sending">
-              sending...
-            </NotifyText>
-          )}
-          {status === "error" && (
-            <NotifyText>
-              {message === "Bad Request"
-                ? `${message} or Email already exists`
-                : message}
-            </NotifyText>
-          )}
-          {status === "success" &&
-            currentQuestion >= notifyQuestions.length && (
-              <NotifyText>{message}</NotifyText>
-            )}
-        </FormWrapper>
-        <MailTo
-          id="mailto"
-          href={`mailto:${process.env.NEXT_PUBLIC_COMPANY_EMAIL}`}
+    <div className="mx-auto w-full max-w-md px-5 py-8">
+      <div>
+        <form
+          onSubmit={(e: any) =>
+            currentQuestion > 0 ? handleSubmit(e, false) : handleSubmit(e, true)
+          }
         >
-          Got Questions? We'd love to hear from you.
-        </MailTo>
-      </Container>
-    </>
+          {currentQuestion < notifyQuestions.length
+            ? renderQuestions(currentQuestion)
+            : null}
+          {/* MailChimp anti-spam fields */}
+          <div
+            style={{ position: "absolute", left: "-5000px" }}
+            aria-hidden="true"
+          >
+            <input
+              type="text"
+              name="b_eb05e4f830c2a04be30171b01_8281a64779"
+              tabIndex={-1}
+              onChange={() => null}
+              value=""
+            />
+          </div>
+        </form>
+
+        {status === "sending" && (
+          <p className="mt-3 font-body text-sm text-white/50">sending...</p>
+        )}
+        {status === "error" && (
+          <p className="mt-3 font-body text-sm text-destructive">
+            {message === "Bad Request"
+              ? `${message} or Email already exists`
+              : message}
+          </p>
+        )}
+        {status === "success" && currentQuestion >= notifyQuestions.length && (
+          <p className="mt-3 font-body text-sm text-green-600">{message}</p>
+        )}
+      </div>
+      <a
+        id="mailto"
+        href={`mailto:${process.env.NEXT_PUBLIC_COMPANY_EMAIL}`}
+        className="mt-6 block text-center font-body text-sm text-neon-cyan transition-colors hover:underline"
+      >
+        Got Questions? We'd love to hear from you.
+      </a>
+    </div>
   );
 };

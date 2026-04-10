@@ -19,9 +19,56 @@
   font-weight: normal;
   font-style: normal;
 }
+/* @font-face {
+  font-family: "Anybody ExtraLight";
+  src: url("../public/fonts/Anybody/Anybody-ExtraLight.ttf") format("truetype");
+  src: url("../font/Anonymous/Anonymous.eot");
+  src: url("../font/Anonymous/Anonymous.eot?#iefix") format("embedded-opentype"),
+    url("../font/Anonymous/Anonymous.woff2") format("woff2"),
+    url("../font/Anonymous/Anonymous.woff") format("woff"),
+    url("../font/Anonymous/Anonymous.ttf") format("truetype"),
+    url("../font/Anonymous/Anonymous.svg#Anonymous") format("svg");
+  font-weight: normal;
+  font-style: normal;
+} */
 @font-face {
   font-family: "Anybody ExtraLight";
   src: url("../public/fonts/Anybody/Anybody-ExtraLight.ttf") format("truetype");
+  src: url("../font/Anonymous/Anonymous.woff") format("woff"),
+    url("../font/Anonymous/Anonymous.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+}
+
+/* Hide Next.js default loading text */
+#__next:empty::before {
+  content: "";
+  display: none;
+}
+
+/* Prevent flash of loading text */
+#__next {
+  min-height: 100vh;
+}
+
+body > div:first-child,
+body > div:first-child > div:first-child {
+  min-height: 100vh;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: #000;
+}
+
+/* Hide any default browser loading indicators */
+body:empty::before,
+#__next:empty::before,
+#__next:empty::after {
+  display: none !important;
+  content: none !important;
+  visibility: hidden !important;
 }

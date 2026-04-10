@@ -1,67 +1,48 @@
 import React from "react";
-import { Facebook, Twitter, Instagram } from "@material-ui/icons";
+import { Instagram, Facebook, Twitter } from "lucide-react";
 
-import {
-  SocialContainer,
-  SocialList,
-  SocialListItem,
-  SocialIcon
-} from "./SocialLinks.styles";
+export const SocialLinks = ({ darkMode }: any) => {
+  const socialLinks = [
+    {
+      icon: Instagram,
+      href: `http://www.instagram.com/${
+        process.env.NEXT_PUBLIC_INSTAGRAM_SLUG || ""
+      }`,
+      label: "Instagram"
+    },
+    {
+      icon: Facebook,
+      href: `http://www.facebook.com/${
+        process.env.NEXT_PUBLIC_FACEBOOK_SLUG || ""
+      }`,
+      label: "Facebook"
+    },
+    {
+      icon: Twitter,
+      href: `http://www.twitter.com/${
+        process.env.NEXT_PUBLIC_TWITTER_SLUG || ""
+      }`,
+      label: "Twitter"
+    }
+  ];
 
-interface SocialLinksProps {
-  darkMode?: boolean;
-}
-
-export const SocialLinks = ({ darkMode }: SocialLinksProps) => {
-  const instagramSlug =
-    process.env.NEXT_PUBLIC_INSTAGRAM_SLUG || "gaggle_of_lawyers";
-  const facebookSlug =
-    process.env.NEXT_PUBLIC_FACEBOOK_SLUG || "materialinstinct";
-  const twitterSlug = process.env.NEXT_PUBLIC_TWITTER_SLUG || "aaronsmulktis";
   return (
-    <>
-      <SocialContainer>
-        <SocialList>
-          <SocialListItem>
-            <a
-              href={
-                `http://www.instagram.com/${process.env.NEXT_PUBLIC_INSTAGRAM_SLUG}` ||
-                "http://www.instagram.com"
-              }
-              target="_blank"
-            >
-              <SocialIcon src="images/social-icon-instagram.png" />
-              {/* <Instagram />{" "} */}
-            </a>
-          </SocialListItem>
-
-          <SocialListItem>
-            <a
-              href={
-                `http://www.facebook.com/${process.env.NEXT_PUBLIC_FACEBOOK_SLUG}` ||
-                "http://www.facebook.com"
-              }
-              target="_blank"
-            >
-              <SocialIcon src="images/social-icon-facebook.png" />{" "}
-              {/* <Facebook />{" "} */}
-            </a>
-          </SocialListItem>
-
-          <SocialListItem>
-            <a
-              href={
-                `http://www.twitter.com/${process.env.NEXT_PUBLIC_TWITTER_SLUG}` ||
-                "http://www.twitter.com"
-              }
-              target="_blank"
-            >
-              <SocialIcon src="images/social-icon-twitter.png" />{" "}
-              {/* <Twitter />{" "} */}
-            </a>
-          </SocialListItem>
-        </SocialList>
-      </SocialContainer>
-    </>
+    <div className="flex items-center justify-center gap-4">
+      {socialLinks.map((social) => {
+        const Icon = social.icon;
+        return (
+          <a
+            key={social.label}
+            href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={social.label}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-white/70 transition-all hover:text-neon-cyan hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]"
+          >
+            <Icon className="h-5 w-5" />
+          </a>
+        );
+      })}
+    </div>
   );
 };

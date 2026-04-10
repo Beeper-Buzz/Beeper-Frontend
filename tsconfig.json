@@ -13,12 +13,22 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "incremental": true,
-    // @emotion
     "jsx": "preserve",
-    "jsxImportSource": "@emotion/react",
+    "incremental": true,
+    "baseUrl": ".",
     "paths": {
-      "react": ["./node_modules/@types/react"]
+      "@components/*": ["components/*"],
+      "@config/*": ["config/*"],
+      "@contrib/*": ["contrib/*"],
+      "@data/*": ["data/*"],
+      "@hooks/*": ["hooks/*"],
+      "@lib/*": ["lib/*"],
+      "@models/*": ["models/*"],
+      "@pages/*": ["pages/*"],
+      "@public/*": ["public/*"],
+      "@styles/*": ["styles/*"],
+      "@typings/*": ["typings/*"],
+      "@utilities/*": ["utilities/*"]
     }
   },
   "include": [
@@ -26,6 +36,7 @@
     "**/*.ts",
     "**/*.tsx",
     "typings",
+    "typings/**/*.d.ts",
     "pages/api/subscribe.js"
   ],
   "exclude": ["node_modules"]

@@ -1,7 +1,21 @@
 import React from "react";
-import { TextField } from "@material-ui/core";
+import MaskedInput from "react-text-mask";
+import createNumberMask from "text-mask-addons/dist/createNumberMask";
 
-import { Error } from "./FormikInput.styles";
+import { BasicField, Error } from "./FormikInput.styles";
+
+const currencyMask = createNumberMask({
+  prefix: "$",
+  suffix: "",
+  includeThousandsSeparator: true,
+  thousandsSeparatorSymbol: ",",
+  allowDecimal: false,
+  decimalSymbol: ".",
+  decimalLimit: 0,
+  integerLimit: 10,
+  allowNegative: false,
+  allowLeadingZeroes: false
+});
 
 export const FormikIncome = ({
   field,
@@ -10,15 +24,20 @@ export const FormikIncome = ({
   ...props
 }: any) => (
   <>
-    {/* <Input id="income" variant="income" input="number" selectedTheme="dark" {...props} {...fields} invalid={Boolean(touched[fields.name] && errors[fields.name])} /> */}
-    <TextField
-      id="income"
-      variant="outlined"
-      input="number"
-      selectedTheme="dark"
-      {...props}
+    <MaskedInput
+      placeholder="Yearly Income"
+      mask={currencyMask}
+      id="yearly-income"
       {...fields}
-      invalid={touched[fields.name] && errors[fields.name] ? 1 : 0}
+      render={(ref: any, inputProps: any) => (
+        <BasicField
+          {...inputProps}
+          innerRef={ref}
+          id="income"
+          placeholder="Yearly Income"
+          invalid={touched[fields.name] && errors[fields.name] ? 1 : 0}
+        />
+      )}
     />
     {touched[fields.name] && errors[fields.name] ? (
       <Error>{errors[fields.name]}</Error>

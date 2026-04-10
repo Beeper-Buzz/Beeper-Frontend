@@ -7,26 +7,32 @@ import constants from "../utilities/constants";
 
 const storage = {
   getToken: async (): Promise<IOAuthToken | undefined> => {
-    const token = window.localStorage.getItem("token");
-    if (token) {
-      const parsedToken: IOAuthToken = JSON.parse(token);
-      const expiresAt = parsedToken.created_at + parsedToken.expires_in;
-      const now = Math.round(Date.now() / 1000);
-      const tokenExpired = now - expiresAt > 0;
-      if (tokenExpired) {
-        const response = await spreeClient.authentication.refreshToken({
-          refresh_token: parsedToken.refresh_token
-        });
-        if (response.isSuccess()) {
-          const newToken = response.success();
-          storage.setToken(newToken);
-          return newToken;
-        } else {
-          constants.IS_DEBUG && console.warn("COULD NOT REFRESH TOKEN");
-          storage.clearToken();
+    try {
+      const token = window.localStorage.getItem("token");
+      if (token) {
+        const parsedToken: IOAuthToken = JSON.parse(token);
+        const expiresAt = parsedToken.created_at + parsedToken.expires_in;
+        const now = Math.round(Date.now() / 1000);
+        const tokenExpired = now - expiresAt > 0;
+        if (tokenExpired) {
+          const response = await spreeClient.authentication.refreshToken({
+            refresh_token: parsedToken.refresh_token
+          });
+          if (response.isSuccess()) {
+            const newToken = response.success();
+            storage.setToken(newToken);
+            return newToken;
+          } else {
+            constants.IS_DEBUG && console.warn("COULD NOT REFRESH TOKEN");
+            storage.clearToken();
+          }
         }
+        return JSON.parse(token);
       }
-      return JSON.parse(token);
+    } catch (e) {
+      constants.IS_DEBUG && console.warn("Failed to parse auth token:", e);
+      storage.clearToken();
+      return undefined;
     }
   },
   isTokenExpired: (token: IOAuthToken): boolean => {
@@ -50,21 +56,60 @@ const storage = {
       return undefined;
     }
   },
-  setToken: (token: IOAuthToken) =>
-    window.localStorage.setItem("token", JSON.stringify(token)),
+  setToken: (token: IOAuthToken) => {
+    window.localStorage.setItem("token", JSON.stringify(token));
+    // Also set cookie for middleware access
+    const isSecure = window.location.protocol === "https:";
+    const tokenStr = JSON.stringify(token);
+    const cookieString = `storefront_token=${encodeURIComponent(
+      tokenStr
+    )}; path=/; max-age=${token.expires_in}; SameSite=Lax${
+      isSecure ? "; Secure" : ""
+    }`;
+
+    constants.IS_DEBUG &&
+      console.log("[Storage] Setting cookie:", {
+        isSecure,
+        expiresIn: token.expires_in,
+        cookieLength: cookieString.length,
+        cookiePreview: cookieString.substring(0, 100)
+      });
+
+    document.cookie = cookieString;
+
+    // Verify cookie was set
+    constants.IS_DEBUG &&
+      console.log(
+        "[Storage] Cookie after set:",
+        document.cookie.includes("storefront_token") ? "SUCCESS" : "FAILED"
+      );
+  },
   getGuestOrderToken: async (): Promise<string | undefined> => {
-    const token = window.localStorage.getItem("guestOrderToken");
-    if (token) {
-      return JSON.parse(token);
+    try {
+      const token = window.localStorage.getItem("guestOrderToken");
+      if (token) {
+        return JSON.parse(token);
+      }
+    } catch (e) {
+      constants.IS_DEBUG &&
+        console.warn("Failed to parse guest order token:", e);
+      window.localStorage.removeItem("guestOrderToken");
+      return undefined;
     }
   },
   setGuestOrderToken: (token: string) => {
     window.localStorage.setItem("guestOrderToken", JSON.stringify(token));
   },
   getOrderToken: async (): Promise<string | undefined> => {
-    const token = window.localStorage.getItem("orderToken");
-    if (token) {
-      return JSON.parse(token);
+    try {
+      const token = window.localStorage.getItem("orderToken");
+      if (token) {
+        return JSON.parse(token);
+      }
+    } catch (e) {
+      constants.IS_DEBUG && console.warn("Failed to parse order token:", e);
+      window.localStorage.removeItem("orderToken");
+      return undefined;
     }
   },
   setOrderToken: (token: string) => {
@@ -72,6 +117,14 @@ const storage = {
   },
   clearToken: () => {
     window.localStorage.removeItem("token");
+    window.localStorage.removeItem("orderToken");
+    window.localStorage.removeItem("guestOrderToken");
+    // Also clear the cookie
+    document.cookie =
+      "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+  },
+  clearGuestToken: () => {
+    // Only clear guest-related tokens, preserve auth token
     window.localStorage.removeItem("orderToken");
     window.localStorage.removeItem("guestOrderToken");
   }

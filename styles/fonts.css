@@ -1,79 +1,142 @@
 @font-face {
-  font-family: "ibm mono bold";
-  src: url("/fonts/ibmplexmono-bold-webfont.woff2") format("woff2"),
-    url("/fonts/ibmplexmono-bold-webfont.woff") format("woff");
+  font-family: "ibmplexmono_body_mono_bold";
+  src: url("../public/fonts/ibmplexmono-bold-webfont.woff2") format("woff2"),
+    url("../public/fonts/ibmplexmono-bold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
-  font-family: "body_mono_bold_italic";
-  src: url("/fonts/ibmplexmono-bolditalic-webfont.woff2") format("woff2"),
-    url("/fonts/ibmplexmono-bolditalic-webfont.woff") format("woff");
+  font-family: "ibmplexmono_body_mono_bold_italic";
+  src: url("../public/fonts/ibmplexmono-bolditalic-webfont.woff2")
+      format("woff2"),
+    url("../public/fonts/ibmplexmono-bolditalic-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
-  font-family: "ibm mono italic";
-  src: url("/fonts/ibmplexmono-italic-webfont.woff2") format("woff2"),
-    url("/fonts/ibmplexmono-italic-webfont.woff") format("woff");
+  font-family: "ibmplexmono_body_mono_italic";
+  src: url("../public/fonts/ibmplexmono-italic-webfont.woff2") format("woff2"),
+    url("../public/fonts/ibmplexmono-italic-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
-  font-family: "ibm mono bold italic";
-  src: url("/fonts/ibmplexmono-bolditalic-webfont.woff2") format("woff2"),
-    url("/fonts/ibmplexmono-bolditalic-webfont.woff") format("woff");
+  font-family: "ibmplexmono_body_mono_bold_italic";
+  src: url("../public/fonts/ibmplexmono-bolditalic-webfont.woff2")
+      format("woff2"),
+    url("../public/fonts/ibmplexmono-bolditalic-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
-  font-family: "ibm mono extra light";
-  src: url("/fonts/ibmplexmono-extralight-webfont.woff2") format("woff2"),
-    url("/fonts/ibmplexmono-extralight-webfont.woff") format("woff");
+  font-family: "ibmplexmono_body_mono_extralight";
+  src: url("../public/fonts/ibmplexmono-extralight-webfont.woff2")
+      format("woff2"),
+    url("../public/fonts/ibmplexmono-extralight-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
-  font-family: "ibm mono extra light italic";
-  src: url("/fonts/ibmplexmono-extralightitalic-webfont.woff2") format("woff2"),
-    url("/fonts/ibmplexmono-extralightitalic-webfont.woff") format("woff");
+  font-family: "ibmplexmono_body_mono_extralightitalic";
+  src: url("../public/fonts/ibmplexmono-extralightitalic-webfont.woff2")
+      format("woff2"),
+    url("../public/fonts/ibmplexmono-extralightitalic-webfont.woff")
+      format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
-  font-family: "ibm mono semibold";
-  src: url("/fonts/ibmplexmono-semibold-webfont.woff2") format("woff2"),
-    url("/fonts/ibmplexmono-semibold-webfont.woff") format("woff");
+  font-family: "ibmplexmono_body_mono_semibold";
+  src: url("../public/fonts/ibmplexmono-semibold-webfont.woff2") format("woff2"),
+    url("../public/fonts/ibmplexmono-semibold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
-  font-family: "ibm bold";
-  src: url("/fonts/ibmplexsans-bold-webfont.woff2") format("woff2"),
-    url("/fonts/ibmplexsans-bold-webfont.woff") format("woff");
+  font-family: "ibmplexmono_body_bold";
+  src: url("../public/fonts/ibmplexsans-bold-webfont.woff2") format("woff2"),
+    url("../public/fonts/ibmplexsans-bold-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
-  font-family: "ibm condensed medium";
-  src: url("/fonts/ibmplexsanscond-medium-webfont.woff2") format("woff2"),
-    url("/fonts/ibmplexsanscond-medium-webfont.woff") format("woff");
+  font-family: "ibmplexmono_body_condensed_med";
+  src: url("../public/fonts/ibmplexsanscond-medium-webfont.woff2")
+      format("woff2"),
+    url("../public/fonts/ibmplexsanscond-medium-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
 @font-face {
-  font-family: "micro bold";
-  src: url("/fonts/MicroTechnic/micro-bold-webfont.woff2") format("woff2"),
-    url("/fonts/MicroTechnic/micro-bold-webfont.woff") format("woff");
+  font-family: "PressStart2P";
+  src: url("../public/fonts/PressStart2P-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "MicroTechnic";
+  src: url("../public/fonts/beeper/Micro Technic Extended Bold.ttf")
+    format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DS-Digital";
+  src: url("../public/fonts/beeper/DS-DIGITAL-BOLD.TTF") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DS-Digital";
+  src: url("../public/fonts/beeper/DS-DIGITAL-BOLDITALIC.TTF")
+    format("truetype");
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DS-Digital";
+  src: url("../public/fonts/beeper/DS-DIGITAL-ITALIC.TTF") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Digital7";
+  src: url("../public/fonts/beeper/DIGITAL-7.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Digital7Mono";
+  src: url("../public/fonts/beeper/DIGITAL-7MONO.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Michroma";
+  src: url("../public/fonts/beeper/Michroma-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Micro5";
+  src: url("../public/fonts/beeper/Micro5-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Micro5Charted";
+  src: url("../public/fonts/beeper/Micro5Charted-Regular.ttf")
+    format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }

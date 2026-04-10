@@ -11,13 +11,16 @@ export enum AuthFormType {
 export const SignupSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
   password: Yup.string().min(6, "Too Short").required("Required"),
-  password_confirmation: Yup.string().test(
-    "passwords-match",
-    "Passwords must match",
-    function (value: string | undefined) {
-      return this.parent.password === value;
-    }
-  )
+  passwordConfirm: Yup.string()
+    .min(6, "Too Short")
+    .test(
+      "passwords-match",
+      "Passwords must match",
+      function (value: string | undefined) {
+        return this.parent.password === value;
+      }
+    )
+    .required("Required")
 });
 
 export const LoginSchema = Yup.object().shape({
@@ -43,7 +46,7 @@ export const signupForm = {
   fields: {
     email: "",
     password: "",
-    password_confirmation: ""
+    passwordConfirm: ""
   },
   validate: SignupSchema
 };

@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 // import { setFieldValue } from 'formik';
 import { useField } from "formik";
 
-import { TextField } from "@material-ui/core";
-
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng
@@ -12,6 +10,7 @@ import PlacesAutocomplete, {
 import {
   Error,
   HiddenInput,
+  BasicField,
   SuggestionWrapper,
   SuggestionLoader,
   SuggestionItem
@@ -24,7 +23,6 @@ import {
 //   props: any;
 // }
 
-// Reference: https://github.com/mui-org/material-ui/issues/18331#issuecomment-569981389
 export const FormikAutocomplete = ({
   field,
   fields: { ...fields },
@@ -66,13 +64,13 @@ export const FormikAutocomplete = ({
       >
         {({ suggestions, getInputProps, getSuggestionItemProps, loading }) => (
           <>
-            <TextField
+            <BasicField
               {...getInputProps({
                 label: addressTitle ? addressTitle + "Address" : "Address",
                 className: "location-search-input"
               })}
               type="text"
-              variant="outlined"
+              placeholder={addressTitle ? addressTitle + "Address" : "Address"}
               // selectedTheme="dark"
               // invalid={Boolean(touched[fields.name] && errors[fields.name])}
             />

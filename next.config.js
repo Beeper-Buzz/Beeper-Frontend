@@ -22,7 +22,7 @@ Module.prototype.require = function (modulePath) {
     try {
       modulePath = resolveFrom(node_modules, modulePath);
     } catch (err) {
-      //
+      // ignored
     }
   }
 
@@ -38,10 +38,40 @@ const DEPLOY_ENV_MAPPING = {
 const envFile = path.join(__dirname, `.env.${DEPLOY_ENV_MAPPING[DEPLOY_ENV]}`);
 loadEnvVariables();
 const isLocalDevEnvironment = !process.env.DEPLOY_ENV;
+const SPREE_API_URL =
+  process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080";
 
 module.exports = {
   swcMinify: true,
+  async rewrites() {
+    return [
+      {
+        source: "/api/v1/:path*",
+        destination: `${SPREE_API_URL}/api/v1/:path*`
+      },
+      {
+        source: "/api/v2/:path*",
+        destination: `${SPREE_API_URL}/api/v2/:path*`
+      },
+      {
+        source: "/spree_oauth/:path*",
+        destination: `${SPREE_API_URL}/spree_oauth/:path*`
+      }
+    ];
+  },
   webpack: (config, { webpack }) => {
+    config.resolve.alias["@components"] = path.join(__dirname, "components");
+    config.resolve.alias["@config"] = path.join(__dirname, "config");
+    config.resolve.alias["@contrib"] = path.join(__dirname, "contrib");
+    config.resolve.alias["@data"] = path.join(__dirname, "data");
+    config.resolve.alias["@hooks"] = path.join(__dirname, "hooks");
+    config.resolve.alias["@lib"] = path.join(__dirname, "lib");
+    config.resolve.alias["@models"] = path.join(__dirname, "models");
+    config.resolve.alias["@pages"] = path.join(__dirname, "pages");
+    config.resolve.alias["@public"] = path.join(__dirname, "public");
+    config.resolve.alias["@styles"] = path.join(__dirname, "styles");
+    config.resolve.alias["@typings"] = path.join(__dirname, "typings");
+    config.resolve.alias["@utilities"] = path.join(__dirname, "utilities");
     config.plugins = config.plugins || [];
     config.plugins = [
       ...config.plugins,

@@ -1,84 +1,60 @@
 import React, { Fragment, useState, useCallback } from "react";
-import styled from "@emotion/styled";
-import isPropValid from "@emotion/is-prop-valid";
-import { slide as BurgerMenu } from "react-burger-menu";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import Collapse from "@material-ui/core/Collapse";
-import { SocialLinks } from "../";
-import { menuStyles, darkMenuStyles } from "./menuStyles";
-import { useTheme } from "@emotion/react";
 import { useRouter } from "next/router";
-
-import { MenuToggle, MenuFooter } from "./MainMenu.styles";
-
+import { Menu, ChevronDown, ChevronUp, User, LogOut } from "lucide-react";
+import { cn } from "@lib/utils";
 import {
-  StyledList,
-  StyledListItem,
-  StyledListItemText,
-  StyledListItemIcon
-} from "./MobileMenu.styles";
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetClose,
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+  ScrollArea
+} from "@components/ui";
+import { SocialLinks } from "../SocialLinks";
+import { useAuth } from "../../config/auth";
 import constants from "../../utilities/constants";
-
-export interface MenuItemProps {
-  paddingLeft: string;
-}
-
-const MenuItem = styled(StyledListItem, {
-  shouldForwardProp: (prop) => isPropValid(prop) && prop !== "paddingLeft"
-})<MenuItemProps>`
-  padding: 0 0 0 ${(props) => props.paddingLeft} !important;
-  margin: 5px 0;
-  & div span {
-    font-family: "Bebas Neue";
-  }
-`;
 
 export const MobileMenu = ({
   showMenuHeader,
   onMenuItemClick,
   menusData
 }: any) => {
-  const theme = useTheme();
   const router = useRouter();
+  const { user, logout } = useAuth();
   const currYear = new Date().getFullYear();
   const [open, setOpen] = useState(false);
-  const [keyPath, setKeyPath] = useState("");
+  const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set());
   const menuItems =
     menusData?.menu_location_listing?.length > 0
       ? menusData?.menu_location_listing[0].menu_item_listing
       : [];
 
-  const toggleMenu = () => setOpen((value: any) => !value);
-
-  const handleClick = useCallback(
-    (kp: any, key: any) => {
-      // if (onMenuItemClick) {
-      //   onMenuItemClick(key);
-      // }
-      setKeyPath((pre) => {
-        if (kp == pre) {
-          let str = kp.replace("/" + key, "");
-          return str;
-        } else {
-          return kp;
-        }
-      });
-    },
-    [onMenuItemClick]
-  );
+  const toggleExpanded = useCallback((path: string) => {
+    setExpandedPaths((prev) => {
+      const next = new Set(prev);
+      if (next.has(path)) {
+        next.delete(path);
+      } else {
+        next.add(path);
+      }
+      return next;
+    });
+  }, []);
 
   const handleItemClick = (
     item: any,
     hasChildren: boolean,
-    pathSlug: string,
-    slug: string
+    pathSlug: string
   ) => {
     if (hasChildren) {
-      handleClick(pathSlug, slug);
+      toggleExpanded(pathSlug);
     } else {
-      router.push(item.url); // Navigate to the item's URL.
-      toggleMenu(); // Close the sidebar menu.
+      router.push(item.url);
+      setOpen(false);
     }
   };
 
@@ -87,93 +63,172 @@ export const MobileMenu = ({
     parentKeyPath: string,
     level: number
   ) => {
-    const paddingLeft = level * 20 + "px";
+    if (!menuData.length) return null;
 
-    if (menuData.length) {
-      return (
-        <StyledList disablePadding>
-          {menuData.map((item: any, index: any) => {
-            const hasChildren = item.childrens.length > 0;
-            const subItems = hasChildren ? item.childrens : [];
-            const slug = item.name.toLowerCase();
-            const pathSlug = parentKeyPath + "/" + slug;
+    return (
+      <div className="flex flex-col">
+        {menuData.map((item: any, index: number) => {
+          const hasChildren = item.childrens.length > 0;
+          const subItems = hasChildren ? item.childrens : [];
+          const slug = item.name.toLowerCase();
+          const pathSlug = parentKeyPath + "/" + slug;
+          const isExpanded = expandedPaths.has(pathSlug);
 
-            return (
-              <Fragment key={pathSlug}>
-                <MenuItem
-                  key={`${pathSlug}-1`}
-                  paddingLeft={paddingLeft}
-                  onClick={() =>
-                    handleItemClick(item, hasChildren, pathSlug, slug)
-                  }
-                  button
-                >
-                  {/* <StyledListItemIcon>{item.icon ? item.icon() : null}</StyledListItemIcon> */}
-                  {/* <StyledListItemText primary={item.name.replace("/", "_")} /> */}
-                  <StyledListItemText primary={item.name} />
-                  {hasChildren &&
-                    (keyPath.indexOf(pathSlug) !== -1 ? (
-                      <ExpandLess />
-                    ) : (
-                      <ExpandMore />
-                    ))}
-                </MenuItem>
-                {hasChildren && (
-                  <Collapse
-                    timeout="auto"
-                    unmountOnExit
-                    in={keyPath.indexOf(pathSlug) !== -1}
-                  >
-                    {renderMenuItems(subItems, pathSlug, level + 1)}
-                  </Collapse>
+          return (
+            <Fragment key={`${pathSlug}-${index}`}>
+              <button
+                onClick={() => handleItemClick(item, hasChildren, pathSlug)}
+                className={cn(
+                  "flex w-full items-center justify-between border-none bg-transparent py-2.5 text-left font-title transition-colors hover:text-neon-cyan",
+                  "cursor-pointer outline-none",
+                  level === 0 && "text-base text-white",
+                  level === 1 && "text-sm text-white/70",
+                  level >= 2 && "text-sm text-white/50"
                 )}
-              </Fragment>
-            );
-          })}
-        </StyledList>
-      );
-    }
-    return null;
+                style={{ paddingLeft: `${level * 20}px` }}
+              >
+                <span>{item.name}</span>
+                {hasChildren &&
+                  (isExpanded ? (
+                    <ChevronUp className="h-4 w-4 text-white/50" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-white/50" />
+                  ))}
+              </button>
+              {hasChildren && isExpanded && (
+                <div className="animate-fade-in">
+                  {renderMenuItems(subItems, pathSlug, level + 1)}
+                </div>
+              )}
+            </Fragment>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
-    <BurgerMenu
-      width={"66%"}
-      isOpen={open}
-      onOpen={toggleMenu}
-      onClose={toggleMenu}
-      styles={theme.isDarkMode ? darkMenuStyles : menuStyles}
-      // {...others}
-    >
-      {/* <BurgerMenu width={220} isOpen={open} onOpen={toggleMenu} onClose={toggleMenu} {...others}> */}
-      {showMenuHeader ? (
-        <>
-          <div onClick={toggleMenu}>
-            <i className="btb bt-close" />
-          </div>
-        </>
-      ) : null}
-      {/* {renderMenuItems(menuItemsData && menuItemsData?.response_data.menu_location_listing[0], "", 0)} */}
-      {menuItems && renderMenuItems(menuItems, "", 0)}
-      <MenuItem
-        paddingLeft={"10px"}
-        onClick={() => {
-          toggleMenu();
-          router.push("/login");
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <button
+          className={cn(
+            "fixed left-3 top-[42px] z-[60] flex h-9 w-9 items-center justify-center rounded-md border-none bg-transparent text-white outline-none transition-opacity sm:hidden",
+            open && "pointer-events-none opacity-0"
+          )}
+          aria-label="Open menu"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+      </SheetTrigger>
+      <SheetContent
+        side="left"
+        className="w-[66vw] max-w-[320px] p-0 border-r border-glass-border"
+        style={{
+          background: "rgba(10, 0, 32, 0.95)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)"
         }}
-        button
       >
-        <hr />
-        Login
-      </MenuItem>
-      <SocialLinks />
-      <MenuFooter>
-        <div>
-          <a href="/privacy">Privacy Policy</a> -{" "}
-          <a href="/terms">Terms &amp; Conditions</a> - RETURN POLICY
-        </div>
-        <div>All Materials Copyright © {currYear} POL Clothing</div>
-      </MenuFooter>
-    </BurgerMenu>
+        <SheetHeader className="border-b border-neon-cyan/20 px-6 py-4">
+          <SheetTitle className="font-pressstart text-sm text-neon-cyan">
+            Menu
+          </SheetTitle>
+        </SheetHeader>
+        <ScrollArea className="h-[calc(100vh-60px)]">
+          <div className="flex flex-col px-6 py-4">
+            {menuItems && renderMenuItems(menuItems, "", 0)}
+
+            <hr className="my-4 border-neon-cyan/20" />
+
+            {user ? (
+              <>
+                <div className="flex items-center gap-2 py-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full border border-neon-cyan/50 bg-neon-cyan/10">
+                    <User className="h-3.5 w-3.5 text-neon-cyan" />
+                  </div>
+                  <span className="font-title text-xs text-neon-cyan truncate">
+                    {user.data.attributes.email}
+                  </span>
+                </div>
+                {[
+                  { label: "My Account", href: "/account" },
+                  { label: "My Orders", href: "/account/orders" },
+                  { label: "My Favorites", href: "/account/favorites" }
+                ].map((link) => (
+                  <button
+                    key={link.href}
+                    onClick={() => {
+                      setOpen(false);
+                      router.push(link.href);
+                    }}
+                    className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-sm text-white/80 transition-colors hover:text-neon-cyan outline-none"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    logout();
+                  }}
+                  className="flex w-full cursor-pointer items-center gap-2 border-none bg-transparent py-2.5 text-left font-title text-sm text-white/50 transition-colors hover:text-neon-magenta outline-none"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    router.push("/login");
+                  }}
+                  className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-base text-white transition-colors hover:text-neon-cyan outline-none"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    router.push("/signup");
+                  }}
+                  className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-base text-white transition-colors hover:text-neon-cyan outline-none"
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
+
+            <div className="mt-4">
+              <SocialLinks />
+            </div>
+
+            <div className="mt-8 font-title text-xs text-white/40">
+              <div>
+                <a
+                  href="/privacy"
+                  className="text-white/50 hover:text-neon-cyan transition-colors"
+                >
+                  Privacy Policy
+                </a>
+                {" - "}
+                <a
+                  href="/terms"
+                  className="text-white/50 hover:text-neon-cyan transition-colors"
+                >
+                  Terms &amp; Conditions
+                </a>
+                {" - "}
+                <span>RETURN POLICY</span>
+              </div>
+              <div className="mt-1">
+                All Materials Copyright &copy; {currYear} POL Clothing
+              </div>
+            </div>
+          </div>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 };
