@@ -344,7 +344,9 @@ export const RetailProductDetails = ({
         styles[styles.length - 1]?.url;
       const apiUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
       const trackImgSrc = trackImgUrl
-        ? trackImgUrl.startsWith("http") ? trackImgUrl : `${apiUrl}${trackImgUrl}`
+        ? trackImgUrl.startsWith("http")
+          ? trackImgUrl
+          : `${apiUrl}${trackImgUrl}`
         : "";
       trackView({
         slug: thisProduct.data.attributes.slug,

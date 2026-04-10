@@ -284,9 +284,7 @@ export const DynamicHome = ({
     <Layout background={videoBackground}>
       <div className="relative z-10">
         {/* 0. LogoBlob Hero */}
-        <section
-          className="relative z-0 flex items-center justify-center py-16 md:py-20"
-        >
+        <section className="relative z-0 flex items-center justify-center py-16 md:py-20">
           <LogoBlob hasBlob isAnimated={true} showTagline={true} />
         </section>
 

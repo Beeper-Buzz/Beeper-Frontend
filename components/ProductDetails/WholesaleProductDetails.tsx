@@ -295,7 +295,9 @@ export const WholesaleProductDetails = ({
         slug: thisProduct.data.attributes.slug,
         name: thisProduct.data.attributes.name,
         imgSrc: imgUrl
-          ? imgUrl.startsWith("http") ? imgUrl : `${apiUrl}${imgUrl}`
+          ? imgUrl.startsWith("http")
+            ? imgUrl
+            : `${apiUrl}${imgUrl}`
           : ""
       });
     }

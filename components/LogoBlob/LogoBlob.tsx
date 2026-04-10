@@ -316,7 +316,9 @@ export const LogoBlob = ({
       source.connect(analyser);
       analyser.connect(ctx.destination);
 
-      audio.play().catch((e) => console.warn("[LogoBlob] Audio play failed:", e));
+      audio
+        .play()
+        .catch((e) => console.warn("[LogoBlob] Audio play failed:", e));
 
       // Auto-cleanup when audio ends
       audio.addEventListener("ended", () => {
@@ -337,9 +339,7 @@ export const LogoBlob = ({
     if (isPlaying) return;
 
     // If soundSrc is provided, play the audio file; otherwise synthesize
-    const result = soundSrc
-      ? playAudioFile(soundSrc)
-      : playSonicSignature();
+    const result = soundSrc ? playAudioFile(soundSrc) : playSonicSignature();
     if (!result) return;
 
     audioRef.current = result;

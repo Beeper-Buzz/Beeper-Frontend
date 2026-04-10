@@ -244,15 +244,15 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
           )}
 
           {/* Mobile auth indicator */}
-          {isMobile && (
-            user ? (
+          {isMobile &&
+            (user ? (
               <Link
                 href="/account"
                 className="mr-2 flex items-center justify-center text-white no-underline sm:hidden"
               >
                 <div className="flex h-7 w-7 items-center justify-center rounded-full border border-neon-cyan/50 bg-neon-cyan/10">
                   <span className="font-title text-[10px] text-neon-cyan">
-                    {user.data.attributes.email?.[0]?.toUpperCase() || '?'}
+                    {user.data.attributes.email?.[0]?.toUpperCase() || "?"}
                   </span>
                 </div>
               </Link>
@@ -263,8 +263,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
               >
                 LOGIN
               </Link>
-            )
-          )}
+            ))}
 
           {/* Cart */}
           <div className="mr-2 relative text-white">

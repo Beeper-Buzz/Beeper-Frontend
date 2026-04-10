@@ -153,18 +153,24 @@ export const MobileMenu = ({
                 {[
                   { label: "My Account", href: "/account" },
                   { label: "My Orders", href: "/account/orders" },
-                  { label: "My Favorites", href: "/account/favorites" },
+                  { label: "My Favorites", href: "/account/favorites" }
                 ].map((link) => (
                   <button
                     key={link.href}
-                    onClick={() => { setOpen(false); router.push(link.href); }}
+                    onClick={() => {
+                      setOpen(false);
+                      router.push(link.href);
+                    }}
                     className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-sm text-white/80 transition-colors hover:text-neon-cyan outline-none"
                   >
                     {link.label}
                   </button>
                 ))}
                 <button
-                  onClick={() => { setOpen(false); logout(); }}
+                  onClick={() => {
+                    setOpen(false);
+                    logout();
+                  }}
                   className="flex w-full cursor-pointer items-center gap-2 border-none bg-transparent py-2.5 text-left font-title text-sm text-white/50 transition-colors hover:text-neon-magenta outline-none"
                 >
                   <LogOut className="h-3.5 w-3.5" />
@@ -174,13 +180,19 @@ export const MobileMenu = ({
             ) : (
               <>
                 <button
-                  onClick={() => { setOpen(false); router.push("/login"); }}
+                  onClick={() => {
+                    setOpen(false);
+                    router.push("/login");
+                  }}
                   className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-base text-white transition-colors hover:text-neon-cyan outline-none"
                 >
                   Login
                 </button>
                 <button
-                  onClick={() => { setOpen(false); router.push("/signup"); }}
+                  onClick={() => {
+                    setOpen(false);
+                    router.push("/signup");
+                  }}
                   className="w-full cursor-pointer border-none bg-transparent py-2.5 text-left font-title text-base text-white transition-colors hover:text-neon-cyan outline-none"
                 >
                   Sign Up

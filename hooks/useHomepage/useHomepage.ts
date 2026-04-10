@@ -5,7 +5,9 @@ import constants from "@utilities/constants";
 // Server-side: use internal Spree URL directly. Client-side: use public URL.
 const API_BASE =
   typeof window === "undefined"
-    ? process.env.SPREE_API_URL || process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:3001"
+    ? process.env.SPREE_API_URL ||
+      process.env.NEXT_PUBLIC_SPREE_API_URL ||
+      "http://localhost:3001"
     : process.env.NEXT_PUBLIC_SPREE_API_URL || "";
 
 export interface HomepageSection {

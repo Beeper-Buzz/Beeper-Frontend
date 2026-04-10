@@ -134,7 +134,11 @@ export const Cart = () => {
 
           const imageUrl = getProductImage(product);
           const optionsText = lineItem.attributes?.options_text;
-          const displayPrice = lineItem.attributes?.display_total || `$${(parseFloat(product?.attributes?.price || "0") * quantity).toFixed(2)}`;
+          const displayPrice =
+            lineItem.attributes?.display_total ||
+            `$${(
+              parseFloat(product?.attributes?.price || "0") * quantity
+            ).toFixed(2)}`;
 
           return (
             <div
@@ -174,7 +178,9 @@ export const Cart = () => {
                     {/* Quantity controls */}
                     <div className="flex items-center gap-1">
                       <button
-                        onClick={() => handleUpdateItemQuantity(lineItemId, quantity - 1)}
+                        onClick={() =>
+                          handleUpdateItemQuantity(lineItemId, quantity - 1)
+                        }
                         className="glass-panel flex h-7 w-7 items-center justify-center !rounded-md text-white transition-colors hover:text-neon-cyan"
                       >
                         <Minus className="h-3 w-3" />
@@ -183,7 +189,9 @@ export const Cart = () => {
                         {quantity}
                       </span>
                       <button
-                        onClick={() => handleUpdateItemQuantity(lineItemId, quantity + 1)}
+                        onClick={() =>
+                          handleUpdateItemQuantity(lineItemId, quantity + 1)
+                        }
                         className="glass-panel flex h-7 w-7 items-center justify-center !rounded-md text-white transition-colors hover:text-neon-cyan"
                       >
                         <Plus className="h-3 w-3" />
