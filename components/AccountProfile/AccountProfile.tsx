@@ -11,6 +11,7 @@ import { Alert } from "../Alerts";
 const ProfileSchema = object().shape({
   first_name: string(),
   last_name: string(),
+  email: string().email("Invalid email address").required("Email is required"),
   display_name: string(),
   bio: string().max(280, "Bio must be 280 characters or less")
 });
@@ -45,7 +46,7 @@ export const AccountProfile = () => {
           </div>
         )}
 
-        <h1 className="font-pressstart text-lg text-white mb-8">
+        <h1 className="neon-text-magenta font-pressstart text-2xl sm:text-3xl mb-8">
           Your Profile
         </h1>
 
@@ -53,17 +54,20 @@ export const AccountProfile = () => {
           initialValues={{
             first_name: attrs.first_name || "",
             last_name: attrs.last_name || "",
+            email: attrs.email || "",
             display_name: "",
             bio: "",
             address: "",
             unit: ""
           }}
           validationSchema={ProfileSchema}
+          enableReinitialize
           onSubmit={async (values, { setSubmitting }) => {
             try {
               await updateAccount.mutateAsync({
                 first_name: values.first_name,
-                last_name: values.last_name
+                last_name: values.last_name,
+                email: values.email
               });
               Alert.fire({ icon: "success", title: "Profile updated!" });
             } catch (err: any) {
@@ -98,14 +102,29 @@ export const AccountProfile = () => {
                 </div>
                 <div className="mt-4">
                   <Field
-                    name="display_name"
+                    name="email"
+                    type="email"
                     component={FormikInput}
-                    label="Display Name"
+                    label="Email"
                   />
                 </div>
                 <div className="mt-4">
-                  <Field name="bio" component={FormikInput} label="Bio" />
+                  <Field
+                    name="display_name"
+                    component={FormikInput}
+                    label="Display Name (public)"
+                  />
                 </div>
+                <div className="mt-4">
+                  <Field
+                    name="bio"
+                    component={FormikInput}
+                    label="Bio (public, 280 chars)"
+                  />
+                </div>
+                <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-white/30">
+                  Display name & bio appear on your public profile
+                </p>
               </div>
 
               {/* Shipping (optional) */}

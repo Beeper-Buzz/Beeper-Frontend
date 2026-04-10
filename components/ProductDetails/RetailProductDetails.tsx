@@ -438,9 +438,9 @@ export const RetailProductDetails = ({
               >
                 <div className="glass-panel p-6 md:p-8">
                   {/* Product Name */}
-                  <h2 className="font-pressstart text-lg leading-relaxed text-white md:text-xl">
+                  <h1 className="neon-text-magenta font-pressstart text-lg leading-relaxed md:text-xl">
                     {thisProduct?.data?.attributes?.name}
-                  </h2>
+                  </h1>
 
                   {/* Pre-order badge (if applicable) */}
                   {thisProduct?.data?.attributes?.available_on &&

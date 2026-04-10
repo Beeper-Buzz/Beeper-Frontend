@@ -33,7 +33,7 @@ const Favorites = () => {
     return (
       <Layout>
         <div className="section-container py-10">
-          <h1 className="mb-6 font-title text-3xl font-bold uppercase tracking-wider text-foreground">
+          <h1 className="neon-text-magenta mb-6 font-pressstart text-2xl sm:text-3xl">
             My Favorites
           </h1>
           <div className="flex flex-col items-center justify-center rounded-xl bg-card px-5 py-20 text-center">
@@ -69,7 +69,7 @@ const Favorites = () => {
   return (
     <Layout>
       <div className="section-container py-10">
-        <h1 className="mb-6 font-title text-3xl font-bold uppercase tracking-wider text-foreground">
+        <h1 className="neon-text-magenta mb-6 font-pressstart text-2xl sm:text-3xl">
           My Favorites
           {meta.total_count > 0 && (
             <span className="ml-3 text-lg font-normal text-muted-foreground">

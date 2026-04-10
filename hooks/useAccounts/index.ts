@@ -73,6 +73,73 @@ export const fetchAddresses = async () => {
   }
 };
 
+// Create a new address
+export const createAddress = async (address: any) => {
+  const storage = (await import("../../config/storage")).default;
+  const token = await storage.getToken();
+
+  if (!token?.access_token) {
+    throw new Error("Not authenticated");
+  }
+
+  const response = await spreeClient.account.createAddress(
+    { bearerToken: token.access_token },
+    { address }
+  );
+
+  if (response.isSuccess()) {
+    return response.success();
+  } else {
+    throw new Error(response.fail().message || "Failed to create address");
+  }
+};
+
+// Update an existing address
+export const updateAddressInfo = async (params: {
+  id: string;
+  address: any;
+}) => {
+  const storage = (await import("../../config/storage")).default;
+  const token = await storage.getToken();
+
+  if (!token?.access_token) {
+    throw new Error("Not authenticated");
+  }
+
+  const response = await spreeClient.account.updateAddress(
+    { bearerToken: token.access_token },
+    params.id,
+    { address: params.address }
+  );
+
+  if (response.isSuccess()) {
+    return response.success();
+  } else {
+    throw new Error(response.fail().message || "Failed to update address");
+  }
+};
+
+// Delete an address
+export const deleteAddress = async (id: string) => {
+  const storage = (await import("../../config/storage")).default;
+  const token = await storage.getToken();
+
+  if (!token?.access_token) {
+    throw new Error("Not authenticated");
+  }
+
+  const response = await spreeClient.account.removeAddress(
+    { bearerToken: token.access_token },
+    id
+  );
+
+  if (response.isSuccess()) {
+    return response.success();
+  } else {
+    throw new Error(response.fail().message || "Failed to delete address");
+  }
+};
+
 // Fetch credit cards
 export const fetchCreditCards = async () => {
   const storage = (await import("../../config/storage")).default;
@@ -117,6 +184,36 @@ export const useAddresses = () => {
   return useQuery(QueryKeys.ACCOUNT_ADDRESSES, fetchAddresses, {
     staleTime: 30000,
     retry: 1
+  });
+};
+
+// Hook to create an address
+export const useCreateAddress = () => {
+  const queryClient = useQueryClient();
+  return useMutation(createAddress, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QueryKeys.ACCOUNT_ADDRESSES);
+    }
+  });
+};
+
+// Hook to update an address
+export const useUpdateAddress = () => {
+  const queryClient = useQueryClient();
+  return useMutation(updateAddressInfo, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QueryKeys.ACCOUNT_ADDRESSES);
+    }
+  });
+};
+
+// Hook to delete an address
+export const useDeleteAddress = () => {
+  const queryClient = useQueryClient();
+  return useMutation(deleteAddress, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QueryKeys.ACCOUNT_ADDRESSES);
+    }
   });
 };
 

@@ -238,7 +238,9 @@ const StaticBlobSvg = ({
         fill="#7c3aed"
         d={blobs[0]}
         style={{
-          animation: `blob-opacity ${TOTAL_DURATION * 0.5}s ease-in-out infinite`
+          animation: `blob-opacity ${
+            TOTAL_DURATION * 0.5
+          }s ease-in-out infinite`
         }}
       >
         <animate
