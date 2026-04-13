@@ -5,11 +5,34 @@ import { QueryKeys } from "@hooks/queryKeys";
 const API_BASE =
   process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:3001";
 
+export interface UserProfileSocials {
+  instagram?: string;
+  tiktok?: string;
+  youtube?: string;
+  soundcloud?: string;
+  bandcamp?: string;
+}
+
+export interface UserProfileStream {
+  id: number;
+  title: string;
+  thumbnail_url?: string;
+  ended_at: string;
+}
+
 export interface UserProfileData {
   id: number;
   email: string;
   first_name?: string;
   last_name?: string;
+  display_name: string | null;
+  is_creator: boolean;
+  bio: string | null;
+  avatar_url: string | null;
+  banner_url: string | null;
+  website: string | null;
+  socials: UserProfileSocials;
+  recent_streams: UserProfileStream[];
   followers_count: number;
   following_count: number;
   is_following: boolean;
@@ -137,4 +160,35 @@ export const useUnfollowUser = () => {
       queryClient.invalidateQueries([QueryKeys.USER_PROFILE, userId]);
     }
   });
+};
+
+// Fetch user profile by handle
+export const fetchUserProfileByHandle = async (
+  handle: string
+): Promise<UserProfileData> => {
+  const storage = (await import("../../config/storage")).default;
+  const token = await storage.getToken();
+
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (token?.access_token) {
+    headers["Authorization"] = `Bearer ${token.access_token}`;
+  }
+
+  const response = await fetch(
+    `${API_BASE}/api/v1/users/by_handle/${encodeURIComponent(handle)}/profile`,
+    { headers }
+  );
+
+  if (!response.ok) throw new Error("Failed to fetch user profile");
+  const data: UserProfileResponse = await response.json();
+  return data.response_data;
+};
+
+// Hook to get user profile by handle
+export const useUserProfileByHandle = (handle: string) => {
+  return useQuery(
+    [QueryKeys.USER_PROFILE, "handle", handle],
+    () => fetchUserProfileByHandle(handle),
+    { enabled: !!handle, staleTime: 30000, retry: false }
+  );
 };
