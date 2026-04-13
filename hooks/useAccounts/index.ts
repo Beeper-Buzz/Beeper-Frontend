@@ -33,6 +33,16 @@ export const updateAccountInfo = async (params: {
   last_name?: string;
   password?: string;
   password_confirmation?: string;
+  display_name?: string;
+  bio?: string;
+  avatar_url?: string;
+  banner_url?: string;
+  website?: string;
+  instagram?: string;
+  tiktok?: string;
+  youtube?: string;
+  soundcloud?: string;
+  bandcamp?: string;
 }) => {
   const storage = (await import("../../config/storage")).default;
   const token = await storage.getToken();
