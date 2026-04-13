@@ -4,6 +4,7 @@ import { object, string } from "yup";
 
 import { useAccountInfo, useUpdateAccount } from "@hooks/useAccounts";
 import { FormikInput } from "../FormikWrappers";
+import { CreatorFieldsSection } from "./CreatorFieldsSection";
 import { Layout } from "../Layout";
 import { Loading } from "../Loading";
 import { Alert } from "../Alerts";
@@ -58,7 +59,15 @@ export const AccountProfile = () => {
             display_name: "",
             bio: "",
             address: "",
-            unit: ""
+            unit: "",
+            avatar_url: attrs.avatar_url || "",
+            banner_url: attrs.banner_url || "",
+            website: attrs.website || "",
+            instagram: attrs.instagram || "",
+            tiktok: attrs.tiktok || "",
+            youtube: attrs.youtube || "",
+            soundcloud: attrs.soundcloud || "",
+            bandcamp: attrs.bandcamp || ""
           }}
           validationSchema={ProfileSchema}
           enableReinitialize
@@ -67,7 +76,19 @@ export const AccountProfile = () => {
               await updateAccount.mutateAsync({
                 first_name: values.first_name,
                 last_name: values.last_name,
-                email: values.email
+                email: values.email,
+                display_name: values.display_name,
+                bio: values.bio,
+                ...(attrs.is_creator && {
+                  avatar_url: values.avatar_url,
+                  banner_url: values.banner_url,
+                  website: values.website,
+                  instagram: values.instagram,
+                  tiktok: values.tiktok,
+                  youtube: values.youtube,
+                  soundcloud: values.soundcloud,
+                  bandcamp: values.bandcamp
+                })
               });
               Alert.fire({ icon: "success", title: "Profile updated!" });
             } catch (err: any) {
@@ -145,16 +166,27 @@ export const AccountProfile = () => {
                 </div>
               </div>
 
-              {/* Creator Section (stub — requires Phase 3 backend) */}
-              <div className="glass-panel p-6 opacity-50">
-                <h2 className="font-micro5 text-xs tracking-widest text-white/50 mb-2">
-                  CREATOR PROFILE
-                </h2>
-                <p className="text-xs text-white/40">
-                  Coming soon — sell sample packs, presets, and visualizers on
-                  Beeper.
-                </p>
-              </div>
+              {/* Creator Section */}
+              {attrs.is_creator ? (
+                <CreatorFieldsSection />
+              ) : (
+                <div className="glass-panel p-6 opacity-70">
+                  <h2 className="font-micro5 text-xs tracking-widest text-white/50 mb-2">
+                    CREATOR STATUS
+                  </h2>
+                  <p className="text-xs text-white/40">
+                    Interested in selling on Beeper? Creator status is manually
+                    approved.{" "}
+                    <a
+                      href="mailto:hello@beeper.buzz?subject=Creator%20Application"
+                      className="text-neon-cyan underline"
+                    >
+                      Reach out
+                    </a>{" "}
+                    to apply.
+                  </p>
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex items-center gap-4">
