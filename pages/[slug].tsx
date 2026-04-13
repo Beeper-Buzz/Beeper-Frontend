@@ -17,7 +17,17 @@ const RESERVED_SLUGS = [
   "reset-password",
   "thank-you",
   "update-email",
-  "update-password"
+  "update-password",
+  "api",
+  "admin",
+  "tv",
+  "user",
+  "images",
+  "fonts",
+  "static",
+  "assets",
+  "_next",
+  "creator-application"
 ];
 
 interface SlugPageProps {
@@ -56,21 +66,25 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     // Product lookup failed, try profile
   }
 
-  // 2. Try creator profile lookup by username
-  // Phase 3: update URL to /api/v1/creator_profiles/:username when ready
+  // 2. Try user profile by handle
   try {
     const profileRes = await fetch(
-      `${spreeUrl}/api/v1/users/by_username/${encodeURIComponent(slug)}`,
-      { headers: { "Content-Type": "application/json" } }
+      `${spreeUrl}/api/v1/users/by_handle/${encodeURIComponent(slug.toLowerCase())}/profile`
     );
     if (profileRes.ok) {
-      const profileData = await profileRes.json();
-      return {
-        props: { type: "profile", slug, profileData }
-      };
+      const profileJson = await profileRes.json();
+      if (profileJson.response_data) {
+        return {
+          props: {
+            type: "profile" as const,
+            slug,
+            profileData: profileJson.response_data
+          }
+        };
+      }
     }
   } catch {
-    // Profile lookup failed
+    // fall through to 404
   }
 
   // 3. Neither found — fall back to client-side product detail rendering
