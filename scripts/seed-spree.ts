@@ -310,6 +310,10 @@ async function seedProducts(
         taxon_ids: taxonIdList
       };
 
+      if (def.compareAtPrice) {
+        productPayload.compare_at_price = def.compareAtPrice;
+      }
+
       if (def.shippingWeight) {
         productPayload.weight = parseFloat(def.shippingWeight);
       }

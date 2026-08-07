@@ -2,15 +2,31 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+// Live pricing pulled from Spree at build/revalidate time (see pages/home.tsx).
+export interface HeroData {
+  slug: string;
+  price: string | null; // display_price, e.g. "$199.99" or "$49.00"
+  compareAtPrice: string | null; // display_compare_at_price (MSRP strike), e.g. "$199.99"
+}
+
 export interface HeroProps {
   title?: string;
   content?: string;
   buttonText?: string;
   buttonLink?: string;
   backgroundImage?: string;
+  heroData?: HeroData | null;
 }
 
-const Hero: React.FC<HeroProps> = () => {
+// Only used when Spree is unreachable at build/revalidate time.
+const FALLBACK_PRICE = "$199.99";
+const FALLBACK_SLUG = "beeper-8";
+
+const Hero: React.FC<HeroProps> = ({ heroData }) => {
+  const price = heroData?.price ?? FALLBACK_PRICE;
+  const compareAtPrice = heroData?.compareAtPrice ?? null;
+  const productSlug = heroData?.slug ?? FALLBACK_SLUG;
+
   return (
     <section className="relative overflow-hidden px-6 py-20 sm:px-12 sm:py-28 md:px-24 md:py-32">
       {/* Dark gradient background with radial neon glow */}
@@ -63,7 +79,7 @@ const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.45 }}
           className="mt-8"
         >
-          <Link href="/beeper-8" className="neon-btn inline-block">
+          <Link href={`/${productSlug}`} className="neon-btn inline-block">
             PRE-ORDER NOW
           </Link>
         </motion.div>
@@ -75,7 +91,17 @@ const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.6 }}
           className="mt-6 font-title text-sm text-neon-cyan"
         >
-          Starting at $199.99
+          {compareAtPrice ? (
+            <>
+              Reserve yours for {price}{" "}
+              <span className="text-gray-500 line-through">
+                {compareAtPrice}
+              </span>{" "}
+              MSRP
+            </>
+          ) : (
+            <>Starting at {price}</>
+          )}
         </motion.p>
       </div>
     </section>

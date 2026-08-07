@@ -50,6 +50,7 @@ export interface ProductDef {
   name: string;
   slug: string;
   price: string;
+  compareAtPrice?: string; // MSRP / strike-through price (Spree compare_at_price)
   description: string;
   shippingWeight?: string;
   optionType?: string;
@@ -78,6 +79,25 @@ export const PRODUCTS: ProductDef[] = [
       { optionValue: "black", sku: "BEEPER-D8-BLK" },
       { optionValue: "white", sku: "BEEPER-D8-WHT" }
     ]
+  },
+  {
+    // Pre-order reservation: a $49 fully-refundable deposit that reserves a
+    // Beeper Δ8. compareAtPrice carries the $199.99 MSRP so the storefront
+    // can render "reserve for $49 / $199.99 MSRP" live while the full-price
+    // device stays hidden. Point NEXT_PUBLIC_HERO_PRODUCT_SLUG at this slug to
+    // flip the homepage hero over. Tweak title/copy before going live if wanted.
+    name: "Beeper Δ8 — Pre-Order Reservation",
+    slug: "beeper-8-reservation",
+    price: "49.00",
+    compareAtPrice: "199.99",
+    description:
+      "$49 reserves your Beeper Δ8 — a fully refundable deposit, not the full price. It’s credited toward the $199.99 MSRP, leaving the balance due when your unit is ready to ship. Cancel any time before shipping for a full refund.",
+    taxons: ["Pre-Order"],
+    properties: {
+      shipping_type: "digital",
+      preorder: "true",
+      ships_date: "TBA"
+    }
   },
   {
     name: "Beeper Carrying Case",

@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useEffect } from "react";
 import { useHomepage, HomepageSection } from "@hooks/useHomepage";
 import { Layout } from "../Layout";
 import { Loading } from "../Loading";
-import Hero from "./Hero";
+import Hero, { HeroData } from "./Hero";
 import Products from "./Products";
 import { StreamList } from "../StreamList";
 import { VideoJS } from "../VideoJS";
@@ -194,11 +194,13 @@ const SectionRenderers: Record<
 interface DynamicHomeProps {
   initialProducts?: any;
   initialHomepage?: any;
+  heroData?: HeroData | null;
 }
 
 export const DynamicHome = ({
   initialProducts,
-  initialHomepage
+  initialHomepage,
+  heroData
 }: DynamicHomeProps = {}) => {
   const { data: homepageData, error } = useHomepage(initialHomepage);
   const { data: feedData } = useProductFeed(
@@ -289,7 +291,7 @@ export const DynamicHome = ({
         </section>
 
         {/* 1. Hero Section -- Beeper Delta 8 */}
-        <Hero />
+        <Hero heroData={heroData} />
 
         {/* 2. Featured Products Strip */}
         <Featured products={featuredProducts} />
