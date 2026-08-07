@@ -22,8 +22,7 @@ const STEPS = [
   { id: "welcome", label: "Welcome" },
   { id: "personal-info", label: "Info" },
   { id: "date-of-birth", label: "Birthday" },
-  { id: "home-address", label: "Address" },
-  { id: "yearly-income", label: "Income" },
+  { id: "city", label: "City" },
   { id: "account", label: "Account" }
 ];
 
@@ -45,11 +44,8 @@ const stepSchemas: Record<string, ReturnType<typeof object>> = {
         return age >= 18;
       })
   }),
-  "home-address": object().shape({
-    homeAddress: string().required("Address is required")
-  }),
-  "yearly-income": object().shape({
-    yearlyIncome: string().required("Income is required")
+  city: object().shape({
+    city: string().required("City is required")
   }),
   account: object().shape({
     email: string().email("Invalid email").required("Required"),
@@ -131,7 +127,8 @@ export const SignupWizard = () => {
         user: {
           email: values.email,
           password: values.password,
-          password_confirmation: values.passwordConfirm
+          password_confirmation: values.passwordConfirm,
+          city: values.city
         }
       });
       try {
@@ -163,7 +160,7 @@ export const SignupWizard = () => {
                 }`}
               >
                 <div
-                  className={`flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-bold transition-all duration-300 ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300 ${
                     i < currentStep
                       ? "border-neon-cyan bg-neon-cyan/20 text-neon-cyan"
                       : i === currentStep
@@ -173,7 +170,7 @@ export const SignupWizard = () => {
                 >
                   {i < currentStep ? "\u2713" : i + 1}
                 </div>
-                <span className="mt-1 hidden font-micro5 text-[8px] tracking-wider sm:block">
+                <span className="mt-1.5 hidden font-micro5 text-lg tracking-wider sm:block">
                   {s.label}
                 </span>
               </div>
@@ -194,9 +191,7 @@ export const SignupWizard = () => {
             firstName: "",
             lastName: "",
             dateOfBirth: "",
-            homeAddress: "",
-            unitNumber: "",
-            yearlyIncome: "",
+            city: "",
             email: "",
             password: "",
             passwordConfirm: "",
@@ -225,10 +220,10 @@ export const SignupWizard = () => {
                     transition={{ duration: 0.25, ease: "easeInOut" }}
                   >
                     <div className="glass-panel p-6 sm:p-8">
-                      <h2 className="mb-1 text-center font-pressstart text-sm text-white">
+                      <h2 className="mb-2 text-center font-pressstart text-base text-white sm:text-lg">
                         {step.label}
                       </h2>
-                      <p className="mb-6 text-center font-micro5 text-xs tracking-widest text-white/40">
+                      <p className="mb-6 text-center font-micro5 text-xl tracking-widest text-white/50">
                         Step {currentStep + 1} of {STEPS.length}
                       </p>
 
@@ -242,26 +237,26 @@ export const SignupWizard = () => {
                       {step.id === "welcome" && (
                         <div className="py-4 text-center">
                           <Sparkles className="mx-auto mb-4 h-10 w-10 text-neon-cyan" />
-                          <p className="mx-auto max-w-xs font-body text-sm leading-relaxed text-white/60">
+                          <p className="mx-auto max-w-sm font-body text-base leading-relaxed text-white/70">
                             Create your account to start browsing, saving, and
                             getting deals on the marketplace.
                           </p>
                           <div className="mt-6 grid grid-cols-3 gap-2">
-                            <div className="glass-panel p-3 text-center">
-                              <Gift className="mx-auto mb-1 h-5 w-5 text-neon-pink/70" />
-                              <span className="font-micro5 text-[10px] text-neon-cyan">
+                            <div className="glass-panel p-4 text-center">
+                              <Gift className="mx-auto mb-1.5 h-6 w-6 text-neon-pink/70" />
+                              <span className="font-micro5 text-xl text-neon-cyan">
                                 Free Ship
                               </span>
                             </div>
-                            <div className="glass-panel p-3 text-center">
-                              <ShoppingBag className="mx-auto mb-1 h-5 w-5 text-neon-purple/70" />
-                              <span className="font-micro5 text-[10px] text-neon-cyan">
+                            <div className="glass-panel p-4 text-center">
+                              <ShoppingBag className="mx-auto mb-1.5 h-6 w-6 text-neon-purple/70" />
+                              <span className="font-micro5 text-xl text-neon-cyan">
                                 Rewards
                               </span>
                             </div>
-                            <div className="glass-panel p-3 text-center">
-                              <Radio className="mx-auto mb-1 h-5 w-5 text-neon-cyan/70" />
-                              <span className="font-micro5 text-[10px] text-neon-cyan">
+                            <div className="glass-panel p-4 text-center">
+                              <Radio className="mx-auto mb-1.5 h-6 w-6 text-neon-cyan/70" />
+                              <span className="font-micro5 text-xl text-neon-cyan">
                                 Live Stream
                               </span>
                             </div>
@@ -272,7 +267,7 @@ export const SignupWizard = () => {
                       {/* Personal Info */}
                       {step.id === "personal-info" && (
                         <div className="space-y-4">
-                          <p className="font-body text-sm text-white/50">
+                          <p className="font-body text-base text-white/60">
                             Let&apos;s start with your name.
                           </p>
                           <Field
@@ -291,7 +286,7 @@ export const SignupWizard = () => {
                       {/* Date of Birth */}
                       {step.id === "date-of-birth" && (
                         <div className="space-y-4">
-                          <p className="font-body text-sm text-white/50">
+                          <p className="font-body text-base text-white/60">
                             When is your birthday?
                           </p>
                           <div>
@@ -316,35 +311,16 @@ export const SignupWizard = () => {
                         </div>
                       )}
 
-                      {/* Home Address */}
-                      {step.id === "home-address" && (
+                      {/* City */}
+                      {step.id === "city" && (
                         <div className="space-y-4">
-                          <p className="font-body text-sm text-white/50">
-                            Where do you currently live?
+                          <p className="font-body text-base text-white/60">
+                            Which city do you live in?
                           </p>
                           <Field
-                            name="homeAddress"
+                            name="city"
                             component={FormikInput}
-                            label="Home Address"
-                          />
-                          <Field
-                            name="unitNumber"
-                            component={FormikInput}
-                            label="Apt / Unit (optional)"
-                          />
-                        </div>
-                      )}
-
-                      {/* Yearly Income */}
-                      {step.id === "yearly-income" && (
-                        <div className="space-y-4">
-                          <p className="font-body text-sm text-white/50">
-                            How much do you make each year?
-                          </p>
-                          <Field
-                            name="yearlyIncome"
-                            component={FormikInput}
-                            label="Yearly Income (e.g. $50,000)"
+                            label="City"
                           />
                         </div>
                       )}
@@ -374,10 +350,12 @@ export const SignupWizard = () => {
                                 name="acceptTerms"
                                 className="mt-1 accent-cyan-400"
                               />
-                              <span className="text-xs text-white/60">
+                              <span className="text-sm text-white/60">
                                 I agree to the{" "}
                                 <Link
                                   href="/terms"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
                                   className="text-neon-cyan hover:underline"
                                 >
                                   Terms &amp; Conditions
@@ -385,6 +363,8 @@ export const SignupWizard = () => {
                                 and{" "}
                                 <Link
                                   href="/privacy"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
                                   className="text-neon-cyan hover:underline"
                                 >
                                   Privacy Policy

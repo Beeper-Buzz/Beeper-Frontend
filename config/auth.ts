@@ -13,6 +13,10 @@ interface SpreeUser {
     email: string;
     password: string;
     password_confirmation: string;
+    // Custom attribute collected during signup. The backend must expose it via
+    // Spree::PermittedAttributes.user_attributes or Rails strong params will
+    // silently drop it.
+    city?: string;
   };
 }
 
