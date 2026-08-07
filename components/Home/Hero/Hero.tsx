@@ -69,7 +69,7 @@ const Hero: React.FC<HeroProps> = ({
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="neon-text-magenta font-pressstart text-xl leading-relaxed sm:text-2xl md:text-3xl lg:text-4xl"
         >
-          {title || <>BEEPER {"\u0394"}8</>}
+          {title || <>Introducing {"\u0394"}8</>}
         </motion.h1>
 
         {/* Subtitle */}
