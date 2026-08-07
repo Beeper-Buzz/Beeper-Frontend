@@ -405,12 +405,24 @@ export const RetailProductDetails = ({
                 {productImgs && productImgs.length > 0 ? (
                   <ProductGallery
                     images={productImgs.map((image: any, index: number) => {
-                      // Prefer transformed_url (aspect-ratio-preserving), fall back to 600px style
+                      // Prefer transformed_url (Active Storage on-the-fly resize),
+                      // then largest available Paperclip style by width, then original_url
                       const transformedUrl = image.attributes?.transformed_url;
-                      const styleUrl = image.attributes.styles?.filter(
-                        (e: any) => e["width"] == "600"
-                      )[0]?.url;
-                      const rawUrl = transformedUrl || styleUrl;
+                      const styles: Array<{ url: string; width: string }> =
+                        image.attributes?.styles || [];
+                      const largestStyle = styles.reduce(
+                        (best: any, s: any) =>
+                          !best ||
+                          parseInt(s.width || "0", 10) >
+                            parseInt(best.width || "0", 10)
+                            ? s
+                            : best,
+                        null
+                      );
+                      const rawUrl =
+                        transformedUrl ||
+                        largestStyle?.url ||
+                        image.attributes?.original_url;
                       const src = rawUrl?.startsWith("http")
                         ? rawUrl
                         : `${process.env.NEXT_PUBLIC_SPREE_API_URL}${rawUrl}`;
