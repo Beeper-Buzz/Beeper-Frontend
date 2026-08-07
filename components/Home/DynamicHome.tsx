@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useEffect } from "react";
 import { useHomepage, HomepageSection } from "@hooks/useHomepage";
 import { Layout } from "../Layout";
 import { Loading } from "../Loading";
-import Hero, { HeroData } from "./Hero";
+import Hero, { type HeroData } from "./Hero";
 import Products from "./Products";
 import { StreamList } from "../StreamList";
 import { VideoJS } from "../VideoJS";
