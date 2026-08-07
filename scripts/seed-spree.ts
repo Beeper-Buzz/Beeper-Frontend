@@ -293,7 +293,11 @@ async function seedProducts(
     let product = existing.find((p) => p.slug === def.slug);
 
     if (product) {
-      console.log(`  [skip] Product "${def.name}" (id=${product.id})`);
+      // Already exists — converge the mutable fields a re-run must enforce
+      // (copy / MSRP / SKU + unlimited stock). This is what repairs a product
+      // seeded before these fields existed, e.g. an early reservation.
+      console.log(`  [exists] Product "${def.name}" (id=${product.id})`);
+      await reconcileProduct(product.id, def);
     } else {
       // Resolve taxon IDs
       const taxonIdList = def.taxons
@@ -312,6 +316,10 @@ async function seedProducts(
 
       if (def.compareAtPrice) {
         productPayload.compare_at_price = def.compareAtPrice;
+      }
+
+      if (def.sku) {
+        productPayload.master_attributes = { sku: def.sku };
       }
 
       if (def.shippingWeight) {
@@ -384,8 +392,13 @@ async function seedProducts(
         }
       }
 
-      // Set stock for master variant
-      await setMasterStock(product.id);
+      // Set stock for master variant — unlimited (backorderable) for
+      // reservation/pre-order products so they never sell out.
+      if (def.unlimitedStock) {
+        await ensureUnlimitedMasterStock(product.id);
+      } else {
+        await setMasterStock(product.id);
+      }
     }
   }
 }
@@ -422,6 +435,55 @@ async function setMasterStock(productId: number): Promise<void> {
     if (master) {
       await setStock(master.id);
     }
+  } catch {
+    // Best-effort
+  }
+}
+
+// Converge an already-created product to the seed definition. Only the fields
+// a re-run must enforce — description, MSRP, master SKU, unlimited stock — so
+// hand edits elsewhere in admin survive. Best-effort: a failed patch logs and
+// continues rather than aborting the whole seed.
+async function reconcileProduct(
+  productId: number,
+  def: ProductDef
+): Promise<void> {
+  const patch: Record<string, unknown> = { description: def.description };
+  if (def.compareAtPrice) patch.compare_at_price = def.compareAtPrice;
+  if (def.sku) patch.master_attributes = { sku: def.sku };
+
+  try {
+    await put(`/products/${productId}`, { product: patch });
+    console.log(`    [update] ${Object.keys(patch).join(", ")}`);
+  } catch (err) {
+    console.warn(`    [warn] Could not update product ${productId}: ${err}`);
+  }
+
+  if (def.unlimitedStock) {
+    await ensureUnlimitedMasterStock(productId);
+  }
+}
+
+// Make the master variant always purchasable — high count + backorderable — so
+// a pre-order reservation never runs out of stock ("reach for the sun").
+async function ensureUnlimitedMasterStock(productId: number): Promise<void> {
+  try {
+    const { variants } = await get<{
+      variants: Array<{ id: number; is_master: boolean }>;
+    }>(`/products/${productId}/variants?per_page=100`);
+    const master = variants.find((v) => v.is_master);
+    if (!master) return;
+
+    const { stock_items } = await get<{
+      stock_items: Array<{ id: number; variant_id: number }>;
+    }>("/stock_locations/1/stock_items?per_page=200");
+    const stockItem = stock_items.find((si) => si.variant_id === master.id);
+    if (!stockItem) return;
+
+    await put(`/stock_locations/1/stock_items/${stockItem.id}`, {
+      stock_item: { count_on_hand: 99999, backorderable: true, force: true }
+    });
+    console.log(`    [stock] master variant set unlimited (backorderable)`);
   } catch {
     // Best-effort
   }

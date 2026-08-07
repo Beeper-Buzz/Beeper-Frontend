@@ -3,11 +3,12 @@ import type { HeroData } from "@components/Home/Hero";
 import { FEED_CONFIGS, fetchProductFeed } from "@hooks/useProductFeed";
 import { fetchHomepage, HomepageData } from "@hooks/useHomepage";
 
-// Which Spree product drives the hero price + CTA. Defaults to the device
-// product; point NEXT_PUBLIC_HERO_PRODUCT_SLUG at the pre-order reservation
-// product to flip the hero to "reserve for $X" with no code redeploy.
+// Which Spree product drives the hero price + CTA. Defaults to the pre-order
+// reservation product, so the hero renders "reserve for $49 / $199.99 MSRP"
+// and its CTA points at the buyable reservation. Override with
+// NEXT_PUBLIC_HERO_PRODUCT_SLUG (e.g. back to "beeper-8") with no redeploy.
 const HERO_PRODUCT_SLUG =
-  process.env.NEXT_PUBLIC_HERO_PRODUCT_SLUG || "beeper-8";
+  process.env.NEXT_PUBLIC_HERO_PRODUCT_SLUG || "beeper-8-reservation";
 
 // Server-safe price pull: plain fetch against the v2 storefront API. We do NOT
 // reuse fetchProduct/fetchProductFeed here because they call storage.getToken(),
