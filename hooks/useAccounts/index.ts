@@ -31,6 +31,7 @@ export const updateAccountInfo = async (params: {
   email?: string;
   first_name?: string;
   last_name?: string;
+  city?: string;
   password?: string;
   password_confirmation?: string;
   display_name?: string;

@@ -127,7 +127,8 @@ export const SignupWizard = () => {
         user: {
           email: values.email,
           password: values.password,
-          password_confirmation: values.passwordConfirm
+          password_confirmation: values.passwordConfirm,
+          city: values.city
         }
       });
       try {
