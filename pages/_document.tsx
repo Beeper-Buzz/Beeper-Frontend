@@ -217,27 +217,44 @@ class MyDocument extends Document {
                 pointer-events: none;
               }
               #splash-blob {
-                width: 120px;
-                height: 120px;
-                filter: blur(12px);
-                animation: splash-blob-breathe 4s ease-in-out infinite;
+                width: 112px;
+                height: 112px;
+                border-radius: 50%;
+                background: radial-gradient(
+                  circle at 36% 30%,
+                  #efdcff 0%,
+                  #b57bff 34%,
+                  #d21f8f 72%,
+                  #7c3aed 100%
+                );
+                filter: blur(11px);
+                animation: splash-blob-morph 8s ease-in-out infinite,
+                  splash-blob-hue 7s ease-in-out infinite;
+                will-change: transform, border-radius, filter;
               }
               #splash .splash-label {
                 font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
                 font-size: 10px;
                 font-weight: 500;
-                letter-spacing: 0.4em;
-                text-indent: 0.4em;
-                color: rgba(255,255,255,0.55);
-                animation: splash-label-pulse 1.6s ease-in-out infinite;
+                letter-spacing: 0.42em;
+                text-indent: 0.42em;
+                color: rgba(255, 255, 255, 0.55);
+                animation: splash-label-pulse 1.8s ease-in-out infinite;
               }
-              @keyframes splash-blob-breathe {
-                0%, 100% { transform: scale(1); }
-                50%      { transform: scale(1.08); }
+              @keyframes splash-blob-morph {
+                0%   { border-radius: 46% 54% 60% 40% / 57% 44% 56% 43%; transform: scale(0.96) rotate(0deg); }
+                25%  { border-radius: 63% 37% 42% 58% / 47% 63% 37% 53%; transform: scale(1.07) rotate(5deg); }
+                50%  { border-radius: 39% 61% 56% 44% / 60% 41% 59% 40%; transform: scale(1)    rotate(-4deg); }
+                75%  { border-radius: 56% 44% 36% 64% / 45% 59% 41% 55%; transform: scale(1.08) rotate(4deg); }
+                100% { border-radius: 46% 54% 60% 40% / 57% 44% 56% 43%; transform: scale(0.96) rotate(0deg); }
+              }
+              @keyframes splash-blob-hue {
+                0%, 100% { filter: blur(11px) hue-rotate(-6deg); }
+                50%      { filter: blur(11px) hue-rotate(20deg); }
               }
               @keyframes splash-label-pulse {
-                0%, 100% { opacity: 0.45; }
-                50%      { opacity: 1; }
+                0%, 100% { opacity: 0.4; }
+                50%      { opacity: 0.92; }
               }
               @media (prefers-reduced-motion: reduce) {
                 #splash-blob, #splash .splash-label { animation: none; }
@@ -245,22 +262,11 @@ class MyDocument extends Document {
             `
             }}
           />
-          {/* Splash screen — small morphing blob via SMIL, no JS needed */}
-          <div
-            id="splash"
-            dangerouslySetInnerHTML={{
-              __html: `
-            <svg id="splash-blob" viewBox="-100 -100 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path fill="#7c3aed" stroke="#ff008a" stroke-width="10" d="M43.3,-69.7C51.1,-62.3,49,-41.9,53.7,-26.1C58.4,-10.4,69.9,0.6,68.8,10.1C67.8,19.6,54.4,27.5,43.4,34.4C32.4,41.2,24,46.9,14.5,50.1C5,53.4,-5.6,54,-19.9,55.4C-34.2,56.8,-52.3,58.9,-58.2,51C-64.1,43.1,-57.9,25.3,-58.1,9.7C-58.3,-6,-65,-19.4,-65,-34C-65,-48.6,-58.4,-64.5,-46.4,-70C-34.4,-75.6,-17.2,-70.8,0.3,-71.2C17.7,-71.6,35.5,-77.2,43.3,-69.7Z">
-                <animate attributeName="d" dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1" values="M43.3,-69.7C51.1,-62.3,49,-41.9,53.7,-26.1C58.4,-10.4,69.9,0.6,68.8,10.1C67.8,19.6,54.4,27.5,43.4,34.4C32.4,41.2,24,46.9,14.5,50.1C5,53.4,-5.6,54,-19.9,55.4C-34.2,56.8,-52.3,58.9,-58.2,51C-64.1,43.1,-57.9,25.3,-58.1,9.7C-58.3,-6,-65,-19.4,-65,-34C-65,-48.6,-58.4,-64.5,-46.4,-70C-34.4,-75.6,-17.2,-70.8,0.3,-71.2C17.7,-71.6,35.5,-77.2,43.3,-69.7Z;M36.4,-58.3C45.7,-50.6,51,-38.1,58.4,-25.6C65.9,-13,75.5,-0.4,76.7,13.1C77.9,26.5,70.8,40.9,59.4,48.4C48.1,55.9,32.5,56.7,18.3,59.4C4.2,62.2,-8.5,67.1,-21.3,66.2C-34.1,65.3,-47.1,58.7,-58.1,48.8C-69.1,38.9,-78,25.7,-82.2,10.5C-86.5,-4.7,-85.9,-21.8,-77.9,-34C-69.8,-46.1,-54.3,-53.2,-40.1,-58.7C-25.8,-64.3,-12.9,-68.3,0.3,-68.7C13.5,-69.2,27,-66.1,36.4,-58.3Z;M29.3,-48.1C38.6,-39.7,47.3,-33.3,55.5,-23.9C63.8,-14.5,71.7,-2.2,71.7,10.7C71.6,23.5,63.5,36.9,52.2,44.7C41,52.5,26.6,54.8,12.4,59.1C-1.8,63.4,-15.8,69.7,-28.5,67.2C-41.3,64.6,-52.8,53.2,-62.2,40.1C-71.7,27,-79,12.2,-78.1,-1.8C-77.3,-15.8,-68.2,-29.1,-56.9,-38.1C-45.7,-47,-32.2,-51.6,-20.1,-58.2C-8,-64.7,2.6,-73.3,13.1,-72.5C23.5,-71.7,33.7,-61.5,29.3,-48.1Z;M38.9,-66C49.2,-56.4,55.7,-43.8,62.9,-30.9C70.1,-18,77.8,-4.9,77.2,7.8C76.6,20.5,67.5,32.9,56.8,42.2C46.1,51.5,33.7,57.8,20.5,62.4C7.4,67.1,-6.5,70.2,-20.4,68.9C-34.3,67.6,-48.3,61.8,-56.4,51.1C-64.5,40.3,-66.7,24.7,-69.9,8.8C-73.2,-7.1,-77.5,-23.3,-72.3,-36C-67.1,-48.8,-52.4,-58.1,-38,-65.8C-23.6,-73.5,-9.4,-79.5,3.1,-84.5C15.5,-89.4,28.6,-75.6,38.9,-66Z;M43.3,-69.7C51.1,-62.3,49,-41.9,53.7,-26.1C58.4,-10.4,69.9,0.6,68.8,10.1C67.8,19.6,54.4,27.5,43.4,34.4C32.4,41.2,24,46.9,14.5,50.1C5,53.4,-5.6,54,-19.9,55.4C-34.2,56.8,-52.3,58.9,-58.2,51C-64.1,43.1,-57.9,25.3,-58.1,9.7C-58.3,-6,-65,-19.4,-65,-34C-65,-48.6,-58.4,-64.5,-46.4,-70C-34.4,-75.6,-17.2,-70.8,0.3,-71.2C17.7,-71.6,35.5,-77.2,43.3,-69.7Z"/>
-                <animate attributeName="fill" dur="8s" repeatCount="indefinite" values="#7c3aed;#ff008a;#7c3aed"/>
-                <animate attributeName="stroke" dur="8s" repeatCount="indefinite" values="#ff008a;#7c3aed;#ff008a"/>
-              </path>
-            </svg>
-            <div class="splash-label">LOADING</div>
-          `
-            }}
-          />
+          {/* Splash screen — small blurry gradient orb + label, pure CSS, no JS needed */}
+          <div id="splash">
+            <div id="splash-blob" aria-hidden="true" />
+            <div className="splash-label">LOADING</div>
+          </div>
           <script
             dangerouslySetInnerHTML={{
               __html: `
