@@ -20,7 +20,7 @@ export interface HeroProps {
 
 // Only used when Spree is unreachable at build/revalidate time.
 const FALLBACK_PRICE = "$199.99";
-const FALLBACK_SLUG = "beeper-8";
+const FALLBACK_SLUG = process.env.NEXT_PUBLIC_HERO_PRODUCT_SLUG || "beeper-8";
 
 const Hero: React.FC<HeroProps> = ({ heroData }) => {
   const price = heroData?.price ?? FALLBACK_PRICE;
