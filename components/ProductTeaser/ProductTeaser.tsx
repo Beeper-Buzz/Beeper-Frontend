@@ -21,13 +21,26 @@ export const ProductTeaser: React.FC<ProductTeaserProps> = (props: any) => {
           const foundImg = allImages
             ? allImages.filter((e: any) => e["id"] == productImg)
             : undefined;
-          const imgUrl =
-            foundImg !== undefined
-              ? foundImg[0]?.attributes?.styles[4]?.url
-              : "";
-          const imgSrc = productImg
-            ? `${process.env.NEXT_PUBLIC_SPREE_API_URL}${imgUrl}`
-            : defaultImg;
+          const styles: Array<{ url: string; width: string }> =
+            foundImg?.[0]?.attributes?.styles || [];
+          const largestStyle = styles.reduce(
+            (best: any, s: any) =>
+              !best ||
+              parseInt(s.width || "0", 10) > parseInt(best.width || "0", 10)
+                ? s
+                : best,
+            null
+          );
+          const rawImgUrl =
+            foundImg?.[0]?.attributes?.transformed_url ||
+            largestStyle?.url ||
+            foundImg?.[0]?.attributes?.original_url;
+          const imgSrc =
+            productImg && rawImgUrl
+              ? rawImgUrl.startsWith("http")
+                ? rawImgUrl
+                : `${process.env.NEXT_PUBLIC_SPREE_API_URL}${rawImgUrl}`
+              : defaultImg;
           return (
             <div key={product.id}>
               <div className="flex flex-col items-center justify-center">
