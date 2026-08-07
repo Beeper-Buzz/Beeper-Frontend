@@ -1,5 +1,5 @@
 import { DynamicHome } from "../components/Home";
-import { HeroData } from "@components/Home/Hero/Hero";
+import type { HeroData } from "@components/Home/Hero";
 import { FEED_CONFIGS, fetchProductFeed } from "@hooks/useProductFeed";
 import { fetchHomepage, HomepageData } from "@hooks/useHomepage";
 
