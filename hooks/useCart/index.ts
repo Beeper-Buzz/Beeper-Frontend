@@ -128,6 +128,25 @@ export const addItemToCart = async (item: AddItem) => {
   if (token?.access_token) {
     constants.IS_DEBUG && console.log("Adding item to authenticated user cart");
 
+    // Spree's add_item returns 404 when the signed-in user has no active order
+    // yet. Guests get a cart created up-front (below), so authenticated users
+    // need the same guarantee — otherwise the very first add-to-cart fails.
+    const existingCart = await spreeClient.cart.show({
+      bearerToken: token.access_token
+    });
+    if (!existingCart.isSuccess()) {
+      constants.IS_DEBUG &&
+        console.log("No active user cart, creating one before add");
+      const createdCart = await spreeClient.cart.create({
+        bearerToken: token.access_token
+      });
+      if (!createdCart.isSuccess()) {
+        throw new Error(
+          "Failed to create user cart: " + createdCart.fail().message
+        );
+      }
+    }
+
     const response = await spreeClient.cart.addItem(
       { bearerToken: token.access_token },
       {
