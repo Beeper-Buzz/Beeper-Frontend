@@ -50,6 +50,9 @@ export interface ProductDef {
   name: string;
   slug: string;
   price: string;
+  compareAtPrice?: string; // MSRP / strike-through price (Spree compare_at_price)
+  sku?: string; // master SKU for products without option variants
+  unlimitedStock?: boolean; // pre-order/reservation: backorderable, never sells out
   description: string;
   shippingWeight?: string;
   optionType?: string;
@@ -64,20 +67,41 @@ export const PRODUCTS: ProductDef[] = [
     slug: "beeper-8",
     price: "199.99",
     description:
-      "BLE MIDI controller with 8x FSR trigger pads, 2x capacitive-touch sliders, and an AMOLED heads-up display. PRE-ORDER NOW \u2014 SHIPS FALL 2026.",
+      "BLE MIDI controller with 8x FSR trigger pads, 2x capacitive-touch sliders, and an AMOLED heads-up display. PRE-ORDER NOW \u2014 SHIPS FALL 2027.",
     shippingWeight: "0.5",
     optionType: "color",
     taxons: ["Devices", "Featured", "Pre-Order"],
     properties: {
       shipping_type: "physical",
       preorder: "true",
-      ships_date: "Fall 2026",
+      ships_date: "Fall 2027",
       connectivity: "BLE MIDI"
     },
     variants: [
       { optionValue: "black", sku: "BEEPER-D8-BLK" },
       { optionValue: "white", sku: "BEEPER-D8-WHT" }
     ]
+  },
+  {
+    // Pre-order reservation: a $49 fully-refundable deposit that reserves a
+    // Beeper Δ8. compareAtPrice carries the $199.99 MSRP so the storefront
+    // can render "reserve for $49 / $199.99 MSRP" live while the full-price
+    // device stays hidden. Point NEXT_PUBLIC_HERO_PRODUCT_SLUG at this slug to
+    // flip the homepage hero over. Tweak title/copy before going live if wanted.
+    name: "Beeper Δ8 — Pre-Order Reservation",
+    slug: "beeper-8-reservation",
+    price: "49.00",
+    compareAtPrice: "199.99",
+    sku: "BEEPER-D8-RES",
+    unlimitedStock: true,
+    description:
+      "$49 reserves your Beeper Δ8 — a fully refundable deposit, not the full price. It’s credited toward the $199.99 MSRP, leaving a $150.99 balance due when your unit is ready to ship (estimated Fall 2027). We’ll email you before charging the balance, and you can cancel any time before shipping for a full refund.",
+    taxons: ["Pre-Order"],
+    properties: {
+      shipping_type: "digital",
+      preorder: "true",
+      ships_date: "Fall 2027"
+    }
   },
   {
     name: "Beeper Carrying Case",
@@ -255,7 +279,7 @@ export const MENU_LOCATIONS: MenuLocationDef[] = [
           }
         ]
       },
-      { name: "Pre-Order", url: "/beeper-8" }
+      { name: "Pre-Order", url: "/beeper-8-reservation" }
     ]
   },
   {

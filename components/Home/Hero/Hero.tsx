@@ -2,17 +2,55 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+// Live pricing pulled from Spree at build/revalidate time (see pages/home.tsx).
+export interface HeroData {
+  slug: string;
+  price: string | null; // display_price, e.g. "$199.99" or "$49.00"
+  compareAtPrice: string | null; // display_compare_at_price (MSRP strike), e.g. "$199.99"
+}
+
 export interface HeroProps {
   title?: string;
   content?: string;
   buttonText?: string;
   buttonLink?: string;
   backgroundImage?: string;
+  heroData?: HeroData | null;
 }
 
-const Hero: React.FC<HeroProps> = () => {
+// Only used when Spree is unreachable at build/revalidate time.
+const FALLBACK_PRICE = "$199.99";
+const FALLBACK_SLUG = process.env.NEXT_PUBLIC_HERO_PRODUCT_SLUG || "beeper-8";
+
+const DEFAULT_BUTTON_TEXT = "PRE-ORDER NOW";
+
+const Hero: React.FC<HeroProps> = ({
+  title,
+  content,
+  buttonText,
+  buttonLink,
+  backgroundImage,
+  heroData
+}) => {
+  const price = heroData?.price ?? FALLBACK_PRICE;
+  const compareAtPrice = heroData?.compareAtPrice ?? null;
+  const productSlug = heroData?.slug ?? FALLBACK_SLUG;
+
+  // CMS settings win when present; otherwise fall back to the slug-driven CTA.
+  const ctaText = buttonText || DEFAULT_BUTTON_TEXT;
+  const ctaHref = buttonLink || `/${productSlug}`;
+  const isExternalCta = /^https?:\/\//.test(ctaHref);
+
   return (
     <section className="relative overflow-hidden px-6 py-20 sm:px-12 sm:py-28 md:px-24 md:py-32">
+      {/* Optional CMS background image, behind the neon glow */}
+      {backgroundImage && (
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        />
+      )}
+
       {/* Dark gradient background with radial neon glow */}
       <div
         className="absolute inset-0"
@@ -31,7 +69,7 @@ const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="neon-text-magenta font-pressstart text-xl leading-relaxed sm:text-2xl md:text-3xl lg:text-4xl"
         >
-          BEEPER {"\u0394"}8
+          {title || <>BEEPER {"\u0394"}8</>}
         </motion.h1>
 
         {/* Subtitle */}
@@ -41,20 +79,26 @@ const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
           className="mt-6 font-title text-sm tracking-wide text-white sm:text-base"
         >
-          PRE-ORDER NOW &mdash; SHIPS FALL &apos;26
+          PRE-ORDER NOW &mdash; SHIPS FALL &apos;27
         </motion.p>
 
         {/* Description */}
-        <motion.p
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
           className="mt-4 max-w-xl font-title text-sm leading-relaxed text-gray-400"
         >
-          An expressive, pocket-sized instrument with 8 force-sensing pads, dual
-          capacitive sliders, an AMOLED display, and BLE MIDI &mdash; designed
-          to make music anywhere.
-        </motion.p>
+          {content ? (
+            <div dangerouslySetInnerHTML={{ __html: content }} />
+          ) : (
+            <p>
+              An expressive, pocket-sized instrument with 8 force-sensing pads,
+              dual capacitive sliders, an AMOLED display, and BLE MIDI &mdash;
+              designed to make music anywhere.
+            </p>
+          )}
+        </motion.div>
 
         {/* CTA Button */}
         <motion.div
@@ -63,9 +107,20 @@ const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.45 }}
           className="mt-8"
         >
-          <Link href="/beeper-8" className="neon-btn inline-block">
-            PRE-ORDER NOW
-          </Link>
+          {isExternalCta ? (
+            <a
+              href={ctaHref}
+              className="neon-btn inline-block"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {ctaText}
+            </a>
+          ) : (
+            <Link href={ctaHref} className="neon-btn inline-block">
+              {ctaText}
+            </Link>
+          )}
         </motion.div>
 
         {/* Price */}
@@ -75,7 +130,17 @@ const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.6 }}
           className="mt-6 font-title text-sm text-neon-cyan"
         >
-          Starting at $199.99
+          {compareAtPrice ? (
+            <>
+              Reserve yours for {price}{" "}
+              <span className="text-gray-500 line-through">
+                {compareAtPrice}
+              </span>{" "}
+              MSRP
+            </>
+          ) : (
+            <>Starting at {price}</>
+          )}
         </motion.p>
       </div>
     </section>
