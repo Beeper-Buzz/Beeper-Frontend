@@ -57,7 +57,7 @@ const Hero: React.FC<HeroProps> = ({ heroData }) => {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
           className="mt-6 font-title text-sm tracking-wide text-white sm:text-base"
         >
-          PRE-ORDER NOW &mdash; SHIPS FALL &apos;26
+          PRE-ORDER NOW &mdash; SHIPS FALL &apos;27
         </motion.p>
 
         {/* Description */}
