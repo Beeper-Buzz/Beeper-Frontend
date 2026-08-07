@@ -188,19 +188,47 @@ const authConfig = {
     }
   },
   registerFn: async (data: unknown) => {
-    const response = await spreeClient.account.create(data as SpreeUser);
-    if (response.isSuccess()) {
-      constants.IS_DEBUG &&
-        console.warn("REGISTER SUCCESS: ", response.success());
-      // register does not receive a token
-      // so we can decide to either run the login automatically or ask the user to login
-      // also this is where there should be some notification about confirming their email
+    // This backend's real registration is the custom v1 users API
+    // (POST /api/v1/users/sign_up). The Spree v2 storefront `account`
+    // resource is show-only on the 4.2.5 fork, so `account.create` 404s.
+    // Same-origin path so Next.js rewrites proxy it to SPREE_API_URL, and
+    // form-encoded to match the endpoint's documented `user[...]` params.
+    const { user } = data as SpreeUser;
+    const form = new URLSearchParams();
+    form.set("user[email]", user.email);
+    form.set("user[password]", user.password);
+    form.set("user[password_confirmation]", user.password_confirmation);
+    form.set("user[city]", user.city ?? "");
 
-      return response.success();
-    } else {
-      constants.IS_DEBUG && console.warn(response.fail());
-      return null;
+    const res = await fetch("/api/v1/users/sign_up.json", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json"
+      },
+      body: form.toString()
+    });
+
+    if (!res.ok) {
+      throw new Error("Registration failed. Please try again.");
     }
+
+    // v1 wraps everything in { response_code, response_message, response_data }
+    // and returns errors as HTTP 200 with no response_data — so success is
+    // detected by the presence of the created record, not the HTTP status.
+    const payload = await res.json();
+    const created = payload?.response_data;
+    if (!created || (!created.id && !created.spree_api_key)) {
+      constants.IS_DEBUG && console.warn("REGISTER FAILED: ", payload);
+      throw new Error(
+        payload?.response_message || "Registration failed. Please try again."
+      );
+    }
+
+    constants.IS_DEBUG && console.warn("REGISTER SUCCESS: ", created);
+    // No token is issued here; the wizard calls login() next for the OAuth
+    // bearer. Return null so no partial user is set before that runs.
+    return null;
   },
   logoutFn: async () => {
     const storage = (await import("./storage")).default;
