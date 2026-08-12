@@ -17,6 +17,7 @@ import {
 import { SocialLinks } from "../SocialLinks";
 import { useAuth } from "../../config/auth";
 import constants from "../../utilities/constants";
+import { COMPANY_NAME } from "@utilities/branding";
 
 export const MobileMenu = ({
   showMenuHeader,
@@ -223,7 +224,7 @@ export const MobileMenu = ({
                 <span>RETURN POLICY</span>
               </div>
               <div className="mt-1">
-                All Materials Copyright &copy; {currYear} POL Clothing
+                All Materials Copyright &copy; {currYear} {COMPANY_NAME}
               </div>
             </div>
           </div>

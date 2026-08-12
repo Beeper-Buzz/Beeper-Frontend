@@ -1,6 +1,5 @@
 import React, { ReactNode, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { cn } from "@lib/utils";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
@@ -11,8 +10,8 @@ import {
   useMenuItems
 } from "../../hooks";
 import { SocialLinks } from "../SocialLinks";
-import { Logo } from "@components/shared/Logo";
 import { AnimatedLogo } from "../Logo/AnimatedLogo";
+import { SHORT_TITLE } from "@utilities/branding";
 import hardcodedColumns from "./footer.json";
 
 export type CLASSESTYPE = {
@@ -78,10 +77,6 @@ export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
   }, [menuItemsIsSuccess, menuItemsData]);
 
   const columns = apiColumns || footerData.columns || hardcodedColumns;
-  const logoPath =
-    process.env.NEXT_PUBLIC_LOGO_PATH || "images/open-graph-instinct-dna.jpg";
-  const FooterLogo = footerData.logo as ReactNode;
-  const siteTitle = process.env.NEXT_PUBLIC_SHORT_TITLE || "DNA";
 
   return (
     <footer
@@ -185,7 +180,7 @@ export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
 
       {/* Copyright */}
       <p className="mt-6 text-center font-mono-extralight text-xs text-white/40">
-        &copy; {new Date().getFullYear()} {siteTitle}. All rights reserved.
+        &copy; {new Date().getFullYear()} {SHORT_TITLE}. All rights reserved.
       </p>
     </footer>
   );

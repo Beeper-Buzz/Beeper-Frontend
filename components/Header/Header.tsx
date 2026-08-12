@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator
 } from "@components/ui";
 import { HeaderProps } from "./types";
+import { SHORT_TITLE } from "@utilities/branding";
 import { useAuth } from "../../config/auth";
 import { useCart } from "../../hooks/useCart";
 import { useFavorites } from "../../hooks/useFavorites";
@@ -30,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
   const toggleCart = () => setCartVisible((isVisible) => !isVisible);
   const [isLoading, setIsLoading] = useState(false);
   const isMaint = process.env.NEXT_PUBLIC_IS_MAINT_MODE || "false";
-  const siteTitle = process.env.NEXT_PUBLIC_SHORT_TITLE || "DNA";
+  const siteTitle = SHORT_TITLE;
   const isHomepage = pathname === "/" || pathname === "/home";
 
   useEffect(() => {
