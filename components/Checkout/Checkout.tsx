@@ -193,20 +193,34 @@ const CheckoutForm = () => {
         );
         if (variant) return product;
       }
+      // Spree omits the master variant from `variants`, so products with no
+      // option variants (e.g. the pre-order reservation) are added via their
+      // master/default variant — match it too or the lookup misses.
+      const defaultVariant = product.relationships?.default_variant?.data;
+      const defaultVariantId = Array.isArray(defaultVariant)
+        ? defaultVariant[0]?.id
+        : defaultVariant?.id;
+      if (defaultVariantId && defaultVariantId === productId) {
+        return product;
+      }
     }
     return null;
   };
 
   const renderCartItems = () => {
-    if (!Array.isArray(cartData?.included) || !productsData) return null;
+    // The line item carries its own name; `productsData` only enriches the
+    // thumbnail. Don't gate on it, or master-variant items (the pre-order
+    // reservation) render nameless in the order summary.
+    if (!Array.isArray(cartData?.included)) return null;
 
     return cartData?.included
       .filter((item) => item.type === "line_item")
       .map((lineItem: any) => {
-        const product = foundProduct(
-          lineItem.relationships.variant.data.id,
-          productsData
-        );
+        const product = productsData
+          ? foundProduct(lineItem.relationships.variant.data.id, productsData)
+          : null;
+        const name =
+          lineItem.attributes?.name || product?.attributes?.name || "";
 
         const variant = cartData?.included?.find(
           (item: any) =>
@@ -229,13 +243,13 @@ const CheckoutForm = () => {
             {imageUrl && (
               <img
                 src={imageUrl}
-                alt={product?.attributes?.name}
+                alt={name}
                 className="h-14 w-14 rounded-md bg-surface-deep object-cover"
               />
             )}
             <div className="min-w-0 flex-1">
               <p className="truncate font-title text-sm font-medium text-white">
-                {product?.attributes?.name}
+                {name}
               </p>
               <p className="font-micro5 text-xs text-white/40">
                 Qty: {lineItem.attributes.quantity}
