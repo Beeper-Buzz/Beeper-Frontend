@@ -69,7 +69,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   // 2. Try user profile by handle
   try {
     const profileRes = await fetch(
-      `${spreeUrl}/api/v1/users/by_handle/${encodeURIComponent(slug.toLowerCase())}/profile`
+      `${spreeUrl}/api/v1/users/by_handle/${encodeURIComponent(
+        slug.toLowerCase()
+      )}/profile`
     );
     if (profileRes.ok) {
       const profileJson = await profileRes.json();

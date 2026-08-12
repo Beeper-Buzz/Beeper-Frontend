@@ -34,6 +34,7 @@ Each task is marked `[BA]` for Beeper-Admin, `[BF]` for Beeper-Frontend.
 ### Task 1: [BA] Migration — add creator fields to spree_users
 
 **Files:**
+
 - Create: `db/migrate/YYYYMMDDHHMMSS_add_creator_fields_to_spree_users.rb`
 
 - [ ] **Step 1: Generate migration**
@@ -73,6 +74,7 @@ end
 ```bash
 bin/rails db:migrate
 ```
+
 Expected: migration runs cleanly, no errors.
 
 - [ ] **Step 4: Verify rollback works**
@@ -81,6 +83,7 @@ Expected: migration runs cleanly, no errors.
 bin/rails db:rollback
 bin/rails db:migrate
 ```
+
 Expected: both commands succeed. The down path drops all columns cleanly.
 
 - [ ] **Step 5: Commit**
@@ -95,6 +98,7 @@ git commit -m "add creator profile fields to spree_users"
 ### Task 2: [BA] User model decorator — validations + normalizers
 
 **Files:**
+
 - Create or modify: `app/models/spree/user_decorator.rb`
 - Create: `spec/models/spree/user_decorator_spec.rb`
 
@@ -193,6 +197,7 @@ end
 ```bash
 bin/rspec spec/models/spree/user_decorator_spec.rb
 ```
+
 Expected: all tests fail (module doesn't exist yet or validations missing).
 
 - [ ] **Step 3: Write the decorator**
@@ -259,6 +264,7 @@ Spree::User.prepend(Spree::UserDecorator) unless Spree::User.include?(Spree::Use
 ```bash
 bin/rspec spec/models/spree/user_decorator_spec.rb
 ```
+
 Expected: all 12 tests pass.
 
 - [ ] **Step 5: Commit**
@@ -273,6 +279,7 @@ git commit -m "add creator field validations and normalizers to user model"
 ### Task 3: [BA] Admin users_controller decorator — strong params
 
 **Files:**
+
 - Create or modify: `app/controllers/spree/admin/users_controller_decorator.rb`
 - Create: `spec/controllers/spree/admin/users_controller_decorator_spec.rb`
 
@@ -313,6 +320,7 @@ end
 ```bash
 bin/rspec spec/controllers/spree/admin/users_controller_decorator_spec.rb
 ```
+
 Expected: fails because the new params are filtered out.
 
 - [ ] **Step 3: Write the decorator**
@@ -357,6 +365,7 @@ git commit -m "permit creator fields in admin user update"
 ### Task 4: [BA] Deface override — creator fields in admin user edit form
 
 **Files:**
+
 - Create: `app/overrides/admin_user_creator_fields.html.erb.deface`
 
 - [ ] **Step 1: Create the Deface override**
@@ -463,6 +472,7 @@ git commit -m "permit creator fields in admin user update"
 ```bash
 bin/rails runner "puts Deface::Override.all.map(&:name)" | grep creator
 ```
+
 Expected: the override name appears in the list.
 
 - [ ] **Step 3: Manual browser test**
@@ -485,6 +495,7 @@ git commit -m "add creator profile fields to admin user edit form"
 ### Task 5: [BA] Storefront account controller decorator — permit creator fields (NOT is_creator)
 
 **Files:**
+
 - Create: `app/controllers/spree/api/v2/storefront/account_controller_decorator.rb`
 - Create: `spec/controllers/spree/api/v2/storefront/account_controller_decorator_spec.rb`
 
@@ -529,6 +540,7 @@ end
 ```bash
 bin/rspec spec/controllers/spree/api/v2/storefront/account_controller_decorator_spec.rb
 ```
+
 Expected: first test fails (fields not permitted). Second test may pass by coincidence — we still need the decorator to make the security boundary explicit.
 
 - [ ] **Step 3: Write the decorator**
@@ -571,6 +583,7 @@ Spree::Api::V2::Storefront::AccountController.prepend(
 ```bash
 bin/rspec spec/controllers/spree/api/v2/storefront/account_controller_decorator_spec.rb
 ```
+
 Expected: both tests pass.
 
 - [ ] **Step 5: Commit**
@@ -585,6 +598,7 @@ git commit -m "storefront account API: permit creator fields, lock is_creator"
 ### Task 6: [BA] Extend users#profile action — creator fields + gated recent_streams
 
 **Files:**
+
 - Modify: `app/controllers/spree/api/v1/users_controller.rb:252-285`
 - Modify or create: `spec/controllers/spree/api/v1/users_controller_spec.rb`
 
@@ -646,6 +660,7 @@ end
 ```bash
 bin/rspec spec/controllers/spree/api/v1/users_controller_spec.rb
 ```
+
 Expected: fails because new fields missing.
 
 - [ ] **Step 3: Replace the profile action**
@@ -733,6 +748,7 @@ git commit -m "extend users#profile with creator fields, gated recent_streams"
 ### Task 7: [BA] New profile_by_handle action + route
 
 **Files:**
+
 - Modify: `app/controllers/spree/api/v1/users_controller.rb` (add new action)
 - Modify: `config/routes.rb` (add route)
 - Modify: `spec/controllers/spree/api/v1/users_controller_spec.rb` (add tests)
@@ -772,6 +788,7 @@ end
 ```bash
 bin/rspec spec/controllers/spree/api/v1/users_controller_spec.rb
 ```
+
 Expected: 3 new failures (route not found).
 
 - [ ] **Step 3: Add the action**
@@ -820,6 +837,7 @@ git commit -m "add /users/by_handle/:handle/profile endpoint for vanity URL look
 ### Task 8: [BA] Integration test — is_creator requires display_name
 
 **Files:**
+
 - Modify: `spec/controllers/spree/admin/users_controller_decorator_spec.rb`
 
 - [ ] **Step 1: Add the test**
@@ -839,6 +857,7 @@ end
 ```bash
 bin/rspec spec/controllers/spree/admin/users_controller_decorator_spec.rb
 ```
+
 Expected: pass (validation from Task 2 should already enforce this).
 
 - [ ] **Step 3: Commit**
@@ -857,6 +876,7 @@ git commit -m "test: verify is_creator requires display_name"
 ```bash
 git log origin/main..HEAD --oneline
 ```
+
 Expected: 8 commits (Tasks 1-8).
 
 - [ ] **Step 2: Push to origin**
@@ -878,6 +898,7 @@ Watch build output for migration errors.
 ```bash
 heroku run bin/rails db:migrate -a beeper-admin-prod
 ```
+
 Expected: migration runs cleanly.
 
 - [ ] **Step 5: Toggle self as creator via admin**
@@ -890,6 +911,7 @@ Visit `https://admin.beeper.buzz/admin/users/<my-user-id>/edit`, fill in `displa
 curl -s https://admin.beeper.buzz/api/v1/users/<id>/profile | jq '.response_data | {is_creator, display_name, bio, socials}'
 curl -s https://admin.beeper.buzz/api/v1/users/by_handle/aaron/profile | jq '.response_data | {is_creator, display_name}'
 ```
+
 Expected: both return the creator record.
 
 - [ ] **Step 7: Mark Phase A complete**
@@ -903,6 +925,7 @@ No code commit — just a checkpoint note in the plan.
 ### Task 10: [BF] Update useUserProfile types
 
 **Files:**
+
 - Modify: `hooks/useUserProfile/index.ts`
 
 - [ ] **Step 1: Extend UserProfileData interface**
@@ -992,6 +1015,7 @@ export const useUserProfileByHandle = (handle: string) => {
 ```bash
 yarn tsc --noEmit
 ```
+
 Expected: clean.
 
 - [ ] **Step 4: Commit**
@@ -1006,6 +1030,7 @@ git commit -m "extend UserProfileData with creator fields + handle lookup"
 ### Task 11: [BF] Update useAccounts types for extended profile save
 
 **Files:**
+
 - Modify: `hooks/useAccounts/index.ts`
 
 - [ ] **Step 1: Update updateAccountInfo signature**
@@ -1052,6 +1077,7 @@ git commit -m "extend updateAccountInfo params with creator fields"
 ### Task 12: [BF] AccountProfile — extract CreatorFieldsSection
 
 **Files:**
+
 - Create: `components/AccountProfile/CreatorFieldsSection.tsx`
 
 - [ ] **Step 1: Create the sub-component**
@@ -1068,15 +1094,28 @@ export const CreatorFieldsSection = () => (
       CREATOR PROFILE
     </h2>
     <p className="text-xs text-white/40 mb-4">
-      These fields only appear on your public profile. Handles should be bare (no @ or URL).
+      These fields only appear on your public profile. Handles should be bare
+      (no @ or URL).
     </p>
 
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <Field name="avatar_url" component={FormikInput} label="Avatar URL (https://)" />
-      <Field name="banner_url" component={FormikInput} label="Banner URL (https://)" />
+      <Field
+        name="avatar_url"
+        component={FormikInput}
+        label="Avatar URL (https://)"
+      />
+      <Field
+        name="banner_url"
+        component={FormikInput}
+        label="Banner URL (https://)"
+      />
     </div>
     <div className="mt-4">
-      <Field name="website" component={FormikInput} label="Website (https://)" />
+      <Field
+        name="website"
+        component={FormikInput}
+        label="Website (https://)"
+      />
     </div>
 
     <h3 className="font-micro5 text-xs tracking-widest text-white/50 mt-6 mb-3">
@@ -1111,6 +1150,7 @@ git commit -m "add CreatorFieldsSection for profile editor"
 ### Task 13: [BF] AccountProfile — wire up conditional rendering
 
 **Files:**
+
 - Modify: `components/AccountProfile/AccountProfile.tsx`
 
 - [ ] **Step 1: Import CreatorFieldsSection and extend initial values**
@@ -1180,22 +1220,27 @@ onSubmit={async (values, { setSubmitting }) => {
 Find the existing `CREATOR PROFILE` stub (around line 130) that says "Coming soon" and replace the entire block with:
 
 ```tsx
-{attrs.is_creator ? (
-  <CreatorFieldsSection />
-) : (
-  <div className="glass-panel p-6 opacity-70">
-    <h2 className="font-micro5 text-xs tracking-widest text-white/50 mb-2">
-      CREATOR STATUS
-    </h2>
-    <p className="text-xs text-white/40">
-      Interested in selling on Beeper? Creator status is manually approved.{" "}
-      <a href="mailto:hello@beeper.buzz?subject=Creator%20Application" className="text-neon-cyan underline">
-        Reach out
-      </a>{" "}
-      to apply.
-    </p>
-  </div>
-)}
+{
+  attrs.is_creator ? (
+    <CreatorFieldsSection />
+  ) : (
+    <div className="glass-panel p-6 opacity-70">
+      <h2 className="font-micro5 text-xs tracking-widest text-white/50 mb-2">
+        CREATOR STATUS
+      </h2>
+      <p className="text-xs text-white/40">
+        Interested in selling on Beeper? Creator status is manually approved.{" "}
+        <a
+          href="mailto:hello@beeper.buzz?subject=Creator%20Application"
+          className="text-neon-cyan underline"
+        >
+          Reach out
+        </a>{" "}
+        to apply.
+      </p>
+    </div>
+  );
+}
 ```
 
 - [ ] **Step 4: Verify compile**
@@ -1225,6 +1270,7 @@ git commit -m "conditional creator section in profile editor"
 ### Task 14: [BF] Feature flag env var
 
 **Files:**
+
 - Modify: `.env.local.example` (if exists) or document in README
 - Modify: `next.config.js`
 
@@ -1258,6 +1304,7 @@ git commit -m "add NEXT_PUBLIC_CREATOR_PROFILE_ENABLED feature flag env var"
 ### Task 15: [BF] Move current UserProfile to legacy
 
 **Files:**
+
 - Move: `components/UserProfile/UserProfile.tsx` → `components/UserProfile/legacy/UserProfile.tsx`
 - Modify: `components/UserProfile/index.ts` (if exists) to keep exporting from legacy for now
 
@@ -1290,6 +1337,7 @@ git commit -m "move UserProfile to /legacy for side-by-side rollout"
 ### Task 16: [BF] Create SocialChip component
 
 **Files:**
+
 - Create: `components/UserProfile/SocialChip.tsx`
 
 - [ ] **Step 1: Write the component**
@@ -1302,43 +1350,61 @@ import { Instagram, Youtube, Globe } from "lucide-react";
 // Custom SVGs for platforms not in lucide
 const TikTokIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/>
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z" />
   </svg>
 );
 
 const SoundCloudIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M7 17.939h-1V9.061c.316-.083.65-.124 1-.124.34 0 .67.041 1 .124v8.878A3.93 3.93 0 0 1 7 17.939zM4 17.939H3v-7c.32-.081.653-.124 1-.124s.68.043 1 .124v7zm15.354-9.82a5.942 5.942 0 0 0-1.7.247 6 6 0 0 0-5.6-3.896c-1.42 0-2.76.493-3.814 1.35v11.938h11.114c2.043 0 3.7-1.657 3.7-3.7s-1.657-3.7-3.7-3.7v-.239z"/>
+    <path d="M7 17.939h-1V9.061c.316-.083.65-.124 1-.124.34 0 .67.041 1 .124v8.878A3.93 3.93 0 0 1 7 17.939zM4 17.939H3v-7c.32-.081.653-.124 1-.124s.68.043 1 .124v7zm15.354-9.82a5.942 5.942 0 0 0-1.7.247 6 6 0 0 0-5.6-3.896c-1.42 0-2.76.493-3.814 1.35v11.938h11.114c2.043 0 3.7-1.657 3.7-3.7s-1.657-3.7-3.7-3.7v-.239z" />
   </svg>
 );
 
 const BandcampIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M0 18.75l7.437-13.5H24l-7.438 13.5H0z"/>
+    <path d="M0 18.75l7.437-13.5H24l-7.438 13.5H0z" />
   </svg>
 );
 
-type Platform = "instagram" | "tiktok" | "youtube" | "soundcloud" | "bandcamp" | "website";
+type Platform =
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "soundcloud"
+  | "bandcamp"
+  | "website";
 
 const buildUrl = (platform: Platform, handle: string): string => {
   switch (platform) {
-    case "instagram": return `https://instagram.com/${handle}`;
-    case "tiktok":    return `https://tiktok.com/@${handle}`;
-    case "youtube":   return `https://youtube.com/@${handle}`;
-    case "soundcloud": return `https://soundcloud.com/${handle}`;
-    case "bandcamp":  return `https://${handle}.bandcamp.com`;
-    case "website":   return handle.startsWith("http") ? handle : `https://${handle}`;
+    case "instagram":
+      return `https://instagram.com/${handle}`;
+    case "tiktok":
+      return `https://tiktok.com/@${handle}`;
+    case "youtube":
+      return `https://youtube.com/@${handle}`;
+    case "soundcloud":
+      return `https://soundcloud.com/${handle}`;
+    case "bandcamp":
+      return `https://${handle}.bandcamp.com`;
+    case "website":
+      return handle.startsWith("http") ? handle : `https://${handle}`;
   }
 };
 
 const getIcon = (platform: Platform) => {
   switch (platform) {
-    case "instagram": return <Instagram className="h-4 w-4" />;
-    case "tiktok": return <TikTokIcon />;
-    case "youtube": return <Youtube className="h-4 w-4" />;
-    case "soundcloud": return <SoundCloudIcon />;
-    case "bandcamp": return <BandcampIcon />;
-    case "website": return <Globe className="h-4 w-4" />;
+    case "instagram":
+      return <Instagram className="h-4 w-4" />;
+    case "tiktok":
+      return <TikTokIcon />;
+    case "youtube":
+      return <Youtube className="h-4 w-4" />;
+    case "soundcloud":
+      return <SoundCloudIcon />;
+    case "bandcamp":
+      return <BandcampIcon />;
+    case "website":
+      return <Globe className="h-4 w-4" />;
   }
 };
 
@@ -1385,6 +1451,7 @@ git commit -m "add SocialChip component for creator socials"
 ### Task 17: [BF] Create CreatorBadge component
 
 **Files:**
+
 - Create: `components/UserProfile/CreatorBadge.tsx`
 
 - [ ] **Step 1: Write the component**
@@ -1423,6 +1490,7 @@ git commit -m "add CreatorBadge component"
 ### Task 18: [BF] Create ProfileBanner component
 
 **Files:**
+
 - Create: `components/UserProfile/ProfileBanner.tsx`
 
 - [ ] **Step 1: Write the component**
@@ -1456,12 +1524,23 @@ const getInitials = (name: string): string =>
     .toUpperCase()
     .substring(0, 2);
 
-export const ProfileBanner = ({ user, onFollowToggle, onShare }: ProfileBannerProps) => {
+export const ProfileBanner = ({
+  user,
+  onFollowToggle,
+  onShare
+}: ProfileBannerProps) => {
   const displayName = getDisplayName(user);
   const showBanner = user.is_creator;
   const bannerStyle = user.banner_url
-    ? { backgroundImage: `url(${user.banner_url})`, backgroundSize: "cover", backgroundPosition: "center" }
-    : { background: "linear-gradient(135deg, #7c3aed 0%, #ff008a 50%, #00ffff 100%)" };
+    ? {
+        backgroundImage: `url(${user.banner_url})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center"
+      }
+    : {
+        background:
+          "linear-gradient(135deg, #7c3aed 0%, #ff008a 50%, #00ffff 100%)"
+      };
 
   return (
     <div className="relative">
@@ -1473,7 +1552,11 @@ export const ProfileBanner = ({ user, onFollowToggle, onShare }: ProfileBannerPr
         />
       )}
 
-      <div className={`flex items-start gap-6 rounded-xl border border-glass-border glass-panel p-6 ${showBanner ? "-mt-12 relative mx-4 md:mx-8" : ""}`}>
+      <div
+        className={`flex items-start gap-6 rounded-xl border border-glass-border glass-panel p-6 ${
+          showBanner ? "-mt-12 relative mx-4 md:mx-8" : ""
+        }`}
+      >
         {/* Avatar */}
         {user.avatar_url ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -1496,11 +1579,15 @@ export const ProfileBanner = ({ user, onFollowToggle, onShare }: ProfileBannerPr
             {user.is_creator && <CreatorBadge />}
           </div>
           {user.display_name && (
-            <p className="mt-0.5 font-mono text-xs text-white/40">@{user.display_name}</p>
+            <p className="mt-0.5 font-mono text-xs text-white/40">
+              @{user.display_name}
+            </p>
           )}
 
           {user.bio && (
-            <p className="mt-3 font-body text-sm text-white/70 max-w-prose">{user.bio}</p>
+            <p className="mt-3 font-body text-sm text-white/70 max-w-prose">
+              {user.bio}
+            </p>
           )}
 
           <div className="mt-4 flex items-center gap-6">
@@ -1523,7 +1610,15 @@ export const ProfileBanner = ({ user, onFollowToggle, onShare }: ProfileBannerPr
               onClick={onFollowToggle}
               className="flex items-center gap-1.5 rounded-lg border border-neon-cyan/40 bg-neon-cyan/10 px-3 py-1.5 font-body text-xs text-neon-cyan transition-colors hover:bg-neon-cyan/20"
             >
-              {user.is_following ? <><UserMinus className="h-3 w-3" /> Unfollow</> : <><UserPlus className="h-3 w-3" /> Follow</>}
+              {user.is_following ? (
+                <>
+                  <UserMinus className="h-3 w-3" /> Unfollow
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-3 w-3" /> Follow
+                </>
+              )}
             </button>
             <button
               onClick={onShare}
@@ -1535,12 +1630,33 @@ export const ProfileBanner = ({ user, onFollowToggle, onShare }: ProfileBannerPr
 
           {user.is_creator && (
             <div className="mt-4 flex flex-wrap gap-2">
-              {user.socials.instagram && <SocialChip platform="instagram" handle={user.socials.instagram} />}
-              {user.socials.tiktok && <SocialChip platform="tiktok" handle={user.socials.tiktok} />}
-              {user.socials.youtube && <SocialChip platform="youtube" handle={user.socials.youtube} />}
-              {user.socials.soundcloud && <SocialChip platform="soundcloud" handle={user.socials.soundcloud} />}
-              {user.socials.bandcamp && <SocialChip platform="bandcamp" handle={user.socials.bandcamp} />}
-              {user.website && <SocialChip platform="website" handle={user.website} />}
+              {user.socials.instagram && (
+                <SocialChip
+                  platform="instagram"
+                  handle={user.socials.instagram}
+                />
+              )}
+              {user.socials.tiktok && (
+                <SocialChip platform="tiktok" handle={user.socials.tiktok} />
+              )}
+              {user.socials.youtube && (
+                <SocialChip platform="youtube" handle={user.socials.youtube} />
+              )}
+              {user.socials.soundcloud && (
+                <SocialChip
+                  platform="soundcloud"
+                  handle={user.socials.soundcloud}
+                />
+              )}
+              {user.socials.bandcamp && (
+                <SocialChip
+                  platform="bandcamp"
+                  handle={user.socials.bandcamp}
+                />
+              )}
+              {user.website && (
+                <SocialChip platform="website" handle={user.website} />
+              )}
             </div>
           )}
         </div>
@@ -1568,6 +1684,7 @@ git commit -m "add ProfileBanner component with adaptive creator layout"
 ### Task 19: [BF] Create ProfileTabs, ProfileFavorites, ProfileStreams, ProfileShopPlaceholder
 
 **Files:**
+
 - Create: `components/UserProfile/ProfileTabs.tsx`
 - Create: `components/UserProfile/ProfileFavorites.tsx`
 - Create: `components/UserProfile/ProfileStreams.tsx`
@@ -1589,21 +1706,33 @@ interface ProfileTabsProps {
   showShop: boolean;
 }
 
-export const ProfileTabs = ({ active, onChange, showStreams, showShop }: ProfileTabsProps) => {
-  const tabClass = (tab: ProfileTab) => cn(
-    "px-4 py-2 font-pressstart text-xs uppercase tracking-wider transition-colors border-b-2",
-    active === tab
-      ? "text-neon-cyan border-neon-cyan"
-      : "text-white/50 border-transparent hover:text-white"
-  );
+export const ProfileTabs = ({
+  active,
+  onChange,
+  showStreams,
+  showShop
+}: ProfileTabsProps) => {
+  const tabClass = (tab: ProfileTab) =>
+    cn(
+      "px-4 py-2 font-pressstart text-xs uppercase tracking-wider transition-colors border-b-2",
+      active === tab
+        ? "text-neon-cyan border-neon-cyan"
+        : "text-white/50 border-transparent hover:text-white"
+    );
 
   return (
     <div className="mb-6 mt-8 flex gap-2 border-b border-glass-border overflow-x-auto">
-      <button className={tabClass("favorites")} onClick={() => onChange("favorites")}>
+      <button
+        className={tabClass("favorites")}
+        onClick={() => onChange("favorites")}
+      >
         Favorites
       </button>
       {showStreams && (
-        <button className={tabClass("streams")} onClick={() => onChange("streams")}>
+        <button
+          className={tabClass("streams")}
+          onClick={() => onChange("streams")}
+        >
           Streams
         </button>
       )}
@@ -1650,8 +1779,12 @@ export const ProfileFavorites = ({ favorites }: ProfileFavoritesProps) => {
         >
           <div className="aspect-square bg-muted" />
           <div className="p-4">
-            <h3 className="font-title text-sm font-semibold text-white">{favorite.name}</h3>
-            <p className="mt-1 font-body text-sm text-white/50">${favorite.price}</p>
+            <h3 className="font-title text-sm font-semibold text-white">
+              {favorite.name}
+            </h3>
+            <p className="mt-1 font-body text-sm text-white/50">
+              ${favorite.price}
+            </p>
           </div>
         </div>
       ))}
@@ -1675,7 +1808,11 @@ interface ProfileStreamsProps {
 
 const formatEndedAt = (iso: string) => {
   const d = new Date(iso);
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  return d.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
 };
 
 export const ProfileStreams = ({ streams }: ProfileStreamsProps) => {
@@ -1700,7 +1837,11 @@ export const ProfileStreams = ({ streams }: ProfileStreamsProps) => {
           <div className="relative aspect-video bg-surface-deep">
             {stream.thumbnail_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={stream.thumbnail_url} alt={stream.title} className="h-full w-full object-cover" />
+              <img
+                src={stream.thumbnail_url}
+                alt={stream.title}
+                className="h-full w-full object-cover"
+              />
             ) : (
               <div className="h-full w-full bg-gradient-to-br from-neon-magenta/20 to-neon-cyan/20" />
             )}
@@ -1709,8 +1850,12 @@ export const ProfileStreams = ({ streams }: ProfileStreamsProps) => {
             </div>
           </div>
           <div className="p-4">
-            <h3 className="font-title text-sm font-semibold text-white truncate">{stream.title}</h3>
-            <p className="mt-1 font-mono text-xs text-white/40">Ended {formatEndedAt(stream.ended_at)}</p>
+            <h3 className="font-title text-sm font-semibold text-white truncate">
+              {stream.title}
+            </h3>
+            <p className="mt-1 font-mono text-xs text-white/40">
+              Ended {formatEndedAt(stream.ended_at)}
+            </p>
           </div>
         </button>
       ))}
@@ -1726,10 +1871,16 @@ export const ProfileStreams = ({ streams }: ProfileStreamsProps) => {
 import React from "react";
 import { ShoppingBag } from "lucide-react";
 
-export const ProfileShopPlaceholder = ({ displayName }: { displayName: string }) => (
+export const ProfileShopPlaceholder = ({
+  displayName
+}: {
+  displayName: string;
+}) => (
   <div className="flex flex-col items-center justify-center rounded-xl glass-panel px-5 py-20 text-center">
     <ShoppingBag className="mb-4 h-12 w-12 text-white/30" />
-    <h2 className="mb-2 font-title text-lg text-white">Creator shop coming soon</h2>
+    <h2 className="mb-2 font-title text-lg text-white">
+      Creator shop coming soon
+    </h2>
     <p className="font-body text-sm text-white/50">
       {displayName} will be selling their own products on Beeper.
     </p>
@@ -1755,6 +1906,7 @@ git commit -m "add ProfileTabs, Favorites, Streams, ShopPlaceholder sub-componen
 ### Task 20: [BF] Rewrite UserProfile.tsx as composition + feature flag toggle
 
 **Files:**
+
 - Create: `components/UserProfile/UserProfile.tsx` (the new composition, replacing the moved-to-legacy one)
 
 - [ ] **Step 1: Write the new composition**
@@ -1763,7 +1915,12 @@ git commit -m "add ProfileTabs, Favorites, Streams, ShopPlaceholder sub-componen
 // components/UserProfile/UserProfile.tsx
 import React, { useState } from "react";
 import Head from "next/head";
-import { useUserProfile, useUserProfileByHandle, useFollowUser, useUnfollowUser } from "@hooks/useUserProfile";
+import {
+  useUserProfile,
+  useUserProfileByHandle,
+  useFollowUser,
+  useUnfollowUser
+} from "@hooks/useUserProfile";
 import { Loading } from "@components/Loading";
 import { ProfileBanner } from "./ProfileBanner";
 import { ProfileTabs, ProfileTab } from "./ProfileTabs";
@@ -1807,7 +1964,10 @@ const UserProfileInner: React.FC<UserProfileProps> = ({ username }) => {
     const url = `https://beeper.buzz/${user.display_name || user.id}`;
     if (navigator.share) {
       try {
-        await navigator.share({ title: user.display_name || "Beeper Profile", url });
+        await navigator.share({
+          title: user.display_name || "Beeper Profile",
+          url
+        });
         return;
       } catch {
         // User cancelled; fall through to clipboard
@@ -1835,23 +1995,37 @@ const UserProfileInner: React.FC<UserProfileProps> = ({ username }) => {
     );
   }
 
-  const displayName = user.display_name || `${user.first_name || ""} ${user.last_name || ""}`.trim() || "Beeper User";
-  const ogImage = user.banner_url || user.avatar_url || "/images/beeper-og-image.png";
+  const displayName =
+    user.display_name ||
+    `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+    "Beeper User";
+  const ogImage =
+    user.banner_url || user.avatar_url || "/images/beeper-og-image.png";
 
   return (
     <>
       <Head>
         <title>{displayName} · Beeper</title>
-        <meta name="description" content={user.bio || `${displayName} on Beeper`} />
+        <meta
+          name="description"
+          content={user.bio || `${displayName} on Beeper`}
+        />
         <meta property="og:title" content={`${displayName} · Beeper`} />
         <meta property="og:description" content={user.bio || ""} />
         <meta property="og:image" content={ogImage} />
-        <meta property="og:url" content={`https://beeper.buzz/${user.display_name || user.id}`} />
+        <meta
+          property="og:url"
+          content={`https://beeper.buzz/${user.display_name || user.id}`}
+        />
         <meta property="og:type" content="profile" />
       </Head>
 
       <div className="section-container py-10">
-        <ProfileBanner user={user} onFollowToggle={handleFollowToggle} onShare={handleShare} />
+        <ProfileBanner
+          user={user}
+          onFollowToggle={handleFollowToggle}
+          onShare={handleShare}
+        />
 
         <ProfileTabs
           active={activeTab}
@@ -1860,9 +2034,15 @@ const UserProfileInner: React.FC<UserProfileProps> = ({ username }) => {
           showShop={user.is_creator}
         />
 
-        {activeTab === "favorites" && <ProfileFavorites favorites={user.public_favorites} />}
-        {activeTab === "streams" && <ProfileStreams streams={user.recent_streams} />}
-        {activeTab === "shop" && <ProfileShopPlaceholder displayName={displayName} />}
+        {activeTab === "favorites" && (
+          <ProfileFavorites favorites={user.public_favorites} />
+        )}
+        {activeTab === "streams" && (
+          <ProfileStreams streams={user.recent_streams} />
+        )}
+        {activeTab === "shop" && (
+          <ProfileShopPlaceholder displayName={displayName} />
+        )}
       </div>
     </>
   );
@@ -1888,6 +2068,7 @@ git commit -m "rewrite UserProfile as composition with feature flag fallback"
 ### Task 21: [BF] Update pages/[slug].tsx — reserved slug list + handle lookup
 
 **Files:**
+
 - Modify: `pages/[slug].tsx`
 
 - [ ] **Step 1: Update RESERVED_SLUGS list**
@@ -1896,10 +2077,30 @@ Extend `RESERVED_SLUGS` to match the Rails model's `RESERVED_SLUGS`:
 
 ```tsx
 const RESERVED_SLUGS = [
-  "cart", "checkout", "login", "signup", "account", "browse",
-  "about", "terms", "privacy", "home", "reset-password", "thank-you",
-  "update-email", "update-password", "api", "admin", "tv", "user",
-  "images", "fonts", "static", "assets", "_next", "creator-application"
+  "cart",
+  "checkout",
+  "login",
+  "signup",
+  "account",
+  "browse",
+  "about",
+  "terms",
+  "privacy",
+  "home",
+  "reset-password",
+  "thank-you",
+  "update-email",
+  "update-password",
+  "api",
+  "admin",
+  "tv",
+  "user",
+  "images",
+  "fonts",
+  "static",
+  "assets",
+  "_next",
+  "creator-application"
 ];
 ```
 
@@ -1910,9 +2111,12 @@ Find the existing server-side profile lookup (around line 60) and replace it wit
 ```tsx
 // 2. Try user profile by handle
 try {
-  const adminUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:3001";
+  const adminUrl =
+    process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:3001";
   const profileRes = await fetch(
-    `${adminUrl}/api/v1/users/by_handle/${encodeURIComponent(slug.toLowerCase())}/profile`
+    `${adminUrl}/api/v1/users/by_handle/${encodeURIComponent(
+      slug.toLowerCase()
+    )}/profile`
   );
   if (profileRes.ok) {
     const profileJson = await profileRes.json();
@@ -1977,6 +2181,7 @@ git push origin main
 ```bash
 heroku config:get NEXT_PUBLIC_CREATOR_PROFILE_ENABLED -a beeper-frontend-prod
 ```
+
 Expected: empty or `"false"`.
 
 - [ ] **Step 4: Trigger auto-deploy (or push to heroku manually)**
@@ -2030,6 +2235,7 @@ Verify the legacy layout comes back. Then flip it on again once the bug is ident
 ### Task 24: [BF] Smoke test manual QA checklist
 
 - [ ] **Step 1: Creator profile visual check**
+
   - Banner renders (or gradient fallback)
   - Avatar image or initials fallback
   - Pink glow title
@@ -2043,6 +2249,7 @@ Verify the legacy layout comes back. Then flip it on again once the bug is ident
   - Shop tab shows "coming soon" placeholder
 
 - [ ] **Step 2: Non-creator profile visual check**
+
   - No banner
   - Initials avatar
   - Pink glow title (same style)
@@ -2052,12 +2259,14 @@ Verify the legacy layout comes back. Then flip it on again once the bug is ident
   - Only Favorites tab visible
 
 - [ ] **Step 3: Mobile responsive check**
+
   - Banner shrinks to `h-40` on mobile
   - Tabs horizontally scroll if needed
   - Social chips wrap to multiple rows
   - Banner + avatar stack gracefully on narrow screens
 
 - [ ] **Step 4: Edge cases**
+
   - User with no display_name (use non-creator test user) — falls back to first+last or email
   - Creator with zero social handles — no chips render, no empty row
   - Creator with `banner_url = null` — gradient fallback shows
@@ -2078,6 +2287,7 @@ Verify the legacy layout comes back. Then flip it on again once the bug is ident
 ### Task 25: [BF] Remove legacy UserProfile + feature flag
 
 **Files:**
+
 - Delete: `components/UserProfile/legacy/UserProfile.tsx`
 - Modify: `components/UserProfile/UserProfile.tsx` (remove feature flag guard)
 
@@ -2120,12 +2330,14 @@ git push heroku main
 Total tasks: 25. Roughly 10 backend, 14 frontend, 1 cleanup.
 
 Critical path:
+
 1. Tasks 1-9 (backend) must ship first and be deployed + migrated before frontend.
 2. Tasks 10-21 can land incrementally on `main` as long as the feature flag stays `false`.
 3. Task 22 deploys with flag off, 23 flips it on, 24 is manual QA.
 4. Task 25 is a follow-up a week later.
 
 **Rollback paths:**
+
 - Frontend regression → `heroku config:set NEXT_PUBLIC_CREATOR_PROFILE_ENABLED=false` (instant)
 - Backend regression → revert individual decorator or migration with `rails db:rollback`
 - Worst case → `git revert` the merge commit and redeploy

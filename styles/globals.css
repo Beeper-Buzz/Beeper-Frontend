@@ -211,6 +211,34 @@
   .body-sm {
     @apply font-body text-body-sm text-muted-foreground;
   }
+
+  /* Admin-authored HTML (Spree pages). Tailwind's preflight strips list markers
+     and heading sizes, so restore just enough for CMS copy to read correctly. */
+  .cms-body h1,
+  .cms-body h2,
+  .cms-body h3 {
+    @apply mb-4 mt-8 font-pressstart text-sm leading-relaxed text-neon-cyan;
+  }
+
+  .cms-body p {
+    @apply mb-4;
+  }
+
+  .cms-body ul {
+    @apply mb-4 list-disc pl-6;
+  }
+
+  .cms-body ol {
+    @apply mb-4 list-decimal pl-6;
+  }
+
+  .cms-body a {
+    @apply text-neon-cyan underline;
+  }
+
+  .cms-body img {
+    @apply my-6 h-auto max-w-full;
+  }
 }
 
 @layer utilities {

@@ -37,6 +37,7 @@ Beeper currently has a basic public profile page at `/:username` showing avatar 
 6. Announce internally or ship quietly.
 
 **Rollback paths:**
+
 - Frontend: flip `NEXT_PUBLIC_CREATOR_PROFILE_ENABLED` to `"false"` → rebuild on Heroku → instant revert to legacy layout
 - Backend: `is_creator` toggle can be flipped back via admin at any time; no data is lost because all new fields are additive
 - Migration rollback: `rails db:rollback` removes all new columns and indexes cleanly; would only be used if the migration itself broke something, not for feature rollback
@@ -116,6 +117,7 @@ end
 ```
 
 This means:
+
 - **Case-insensitive** lookups: `display_name` is always stored lowercased, so `/Aaron` and `/aaron` both hit the same row
 - **Safe character set**: `a-z0-9_`, 3-30 chars — no whitespace, no unicode, no numeric-only ambiguity with IDs is still possible but that's handled in the API by using a dedicated handle endpoint (see below)
 - **Reserved slugs**: can't shadow any Next.js top-level route or known product slug namespace. List should be kept in sync with `pages/[slug].tsx`'s `RESERVED_SLUGS`.
@@ -319,6 +321,7 @@ The profile page lives at `/:slug` via `pages/[slug].tsx`, which already resolve
 4. Otherwise `notFound: true`
 
 **Collision handling:** Because the model validation excludes reserved slugs from valid `display_name` values, and product creation in Beeper-Admin already prevents products from using slugs that collide with Next.js routes, the only remaining collision is a `display_name` that matches an existing product slug. We resolve this in favor of the **product** (step 2 wins) because:
+
 - Products are revenue-generating; losing product page traffic costs money
 - Creator handles can be changed by admin; product slugs are baked into SEO/links
 - Beeper-Admin can add a future validation preventing new products from using a slug that matches an existing `display_name` (out of scope for v1)
@@ -416,7 +419,10 @@ Each profile page sets page-specific `next/head` tags in `getServerSideProps` pr
   <meta name="description" content={bio || `${displayName} on Beeper`} />
   <meta property="og:title" content={`${displayName} · Beeper`} />
   <meta property="og:description" content={bio || ""} />
-  <meta property="og:image" content={bannerUrl || avatarUrl || "/images/beeper-og-image.png"} />
+  <meta
+    property="og:image"
+    content={bannerUrl || avatarUrl || "/images/beeper-og-image.png"}
+  />
   <meta property="og:url" content={`https://beeper.buzz/${displayName}`} />
   <meta property="og:type" content="profile" />
 </Head>

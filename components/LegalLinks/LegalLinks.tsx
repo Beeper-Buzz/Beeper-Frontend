@@ -1,10 +1,11 @@
 import React from "react";
+import { COMPANY_NAME } from "@utilities/branding";
 
 export const LegalLinks = ({ darkMode, hasBackground }: any) => {
   const currentYear = new Date().getFullYear();
   const privacySlug = process.env.NEXT_PUBLIC_PRIVACY_SLUG || "/privacy";
   const termsSlug = process.env.NEXT_PUBLIC_TERMS_SLUG || "/terms";
-  const siteName = process.env.NEXT_PUBLIC_SITE_TITLE || "Material Instinct";
+  const siteName = COMPANY_NAME;
 
   return (
     <div className="py-4 text-center font-body text-xs text-white/50">

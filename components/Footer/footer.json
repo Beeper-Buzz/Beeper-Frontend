@@ -1,53 +1,27 @@
 [
   {
     "title": "Contact Info",
-    "descriptions": [
-      "4920 S. Soto  St.\n + Vernon, CA, 90058",
-      "+1 (310) 715-1370",
-      "ecom@polclothing.com"
-    ]
+    "descriptions": ["hey@beeper.buzz", "+1 (917) 300-8103"]
   },
   {
     "title": "Information",
     "links": [
-      {
-        "text": "Privacy",
-        "url": ""
-      },
-      {
-        "text": "CA Privacy Right",
-        "url": ""
-      },
-      {
-        "text": "Prop 65",
-        "url": ""
-      },
-      {
-        "text": "Rewards",
-        "url": ""
-      },
-      { "text": "Returns & Exchanges", "url": "/privacy" },
-      { "text": "Terms of Use & Privacy Policy", "url": "/terms" },
-      { "text": "contact us", "url": "/contact" }
+      { "text": "About", "url": "/about" },
+      { "text": "Privacy Policy", "url": "/privacy" },
+      { "text": "Terms of Use", "url": "/terms" }
     ]
   },
   {
     "title": "My Account",
     "links": [
-      {
-        "text": "Customer Info",
-        "url": ""
-      },
-      { "text": "Addresses", "url": "" },
-      { "text": "Orders", "url": "" },
-      { "text": "My Cart", "url": "" },
-      { "text": "WishList", "url": "" }
+      { "text": "Customer Info", "url": "/account" },
+      { "text": "My Cart", "url": "/cart" }
     ]
   },
   {
     "title": "About Us",
     "descriptions": [
-      "POL Clothing is a wholesale supplier to boutiques all over the world. POL focuses on coming together at the crossroads of fashion and business and creating styles inspired by the world around us."
+      "Beeper is built by Material Instinct — a slim, wireless BLE MIDI instrument with 8 force-sensing pads, dual capacitive sliders, an AMOLED display and a MEMS mic. Play with music, anywhere."
     ]
   }
 ]
