@@ -17,8 +17,7 @@ interface UserProfileProps {
   username: string;
 }
 
-const FLAG_ENABLED =
-  process.env.NEXT_PUBLIC_CREATOR_PROFILE_ENABLED === "true";
+const FLAG_ENABLED = process.env.NEXT_PUBLIC_CREATOR_PROFILE_ENABLED === "true";
 
 export const UserProfile: React.FC<UserProfileProps> = ({ username }) => {
   if (!FLAG_ENABLED) {

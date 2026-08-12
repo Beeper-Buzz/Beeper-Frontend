@@ -18,8 +18,7 @@ export const COMPANY_NAME =
 
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_EMAIL || "hey@beeper.buzz";
 
-export const CONTACT_PHONE =
-  process.env.NEXT_PUBLIC_PHONE || "+1-917-300-8103";
+export const CONTACT_PHONE = process.env.NEXT_PUBLIC_PHONE || "+1-917-300-8103";
 
 export const LOGO_PATH =
   process.env.NEXT_PUBLIC_LOGO_PATH || "images/beeper-logo-v2.png";

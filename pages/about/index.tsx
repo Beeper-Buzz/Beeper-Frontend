@@ -2,14 +2,12 @@ import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { Layout } from "../../components/Layout";
+import { SITE_TITLE, CONTACT_EMAIL } from "@utilities/branding";
 
 // Slug of the Spree page (spree_static_content) that backs this route. When an
 // editor publishes a page with this slug in the admin, its title/body replace
 // the static copy below — no redeploy. Override with NEXT_PUBLIC_ABOUT_PAGE_SLUG.
 const ABOUT_PAGE_SLUG = process.env.NEXT_PUBLIC_ABOUT_PAGE_SLUG || "about";
-
-const COMPANY_NAME = process.env.NEXT_PUBLIC_SITE_TITLE || "Beeper";
-const CONTACT_EMAIL = process.env.NEXT_PUBLIC_EMAIL || "hey@beeper.buzz";
 
 interface CmsPage {
   title: string;
@@ -84,7 +82,7 @@ const Values = [
 ];
 
 const About: React.FC<AboutProps> = ({ page }) => {
-  const pageTitle = page?.metaTitle || `About ${COMPANY_NAME}`;
+  const pageTitle = page?.metaTitle || `About ${SITE_TITLE}`;
 
   return (
     <Layout>
@@ -112,7 +110,7 @@ const About: React.FC<AboutProps> = ({ page }) => {
         ) : (
           <div className="w-full max-w-3xl">
             <h1 className="neon-text-magenta mb-12 text-center font-pressstart text-lg leading-relaxed sm:text-xl">
-              ABOUT {COMPANY_NAME.toUpperCase()}
+              ABOUT {SITE_TITLE.toUpperCase()}
             </h1>
 
             <section className="mb-14">
@@ -140,10 +138,7 @@ const About: React.FC<AboutProps> = ({ page }) => {
               <SectionHeading>OUR VALUES</SectionHeading>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                 {Values.map((value) => (
-                  <div
-                    key={value.title}
-                    className="glass-panel rounded-lg p-5"
-                  >
+                  <div key={value.title} className="glass-panel rounded-lg p-5">
                     <div className="mb-3 font-pressstart text-[10px] leading-4 text-neon-cyan">
                       {value.title}
                     </div>

@@ -54,7 +54,9 @@ export const ProfileBanner = ({
       )}
 
       <div
-        className={`flex items-start gap-6 rounded-xl border border-glass-border glass-panel p-6 ${showBanner ? "-mt-12 relative mx-4 md:mx-8" : ""}`}
+        className={`flex items-start gap-6 rounded-xl border border-glass-border glass-panel p-6 ${
+          showBanner ? "-mt-12 relative mx-4 md:mx-8" : ""
+        }`}
       >
         {user.avatar_url ? (
           // eslint-disable-next-line @next/next/no-img-element
