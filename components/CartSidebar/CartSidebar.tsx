@@ -105,6 +105,16 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
         );
         if (variant) return product;
       }
+      // Spree omits the master variant from `variants`, so products with no
+      // option variants (e.g. the pre-order reservation) are added via their
+      // master/default variant — match it too or the lookup misses.
+      const defaultVariant = product.relationships?.default_variant?.data;
+      const defaultVariantId = Array.isArray(defaultVariant)
+        ? defaultVariant[0]?.id
+        : defaultVariant?.id;
+      if (defaultVariantId && defaultVariantId === productId) {
+        return product;
+      }
     }
     return null;
   };
@@ -129,18 +139,26 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
   };
 
   const renderCartItems = () => {
-    if (!Array.isArray(cartData?.included) || !productsData) return null;
+    // Render from the cart payload itself — the line item carries its own
+    // name and total. `productsData` is best-effort enrichment only, so don't
+    // gate the whole cart on it: master-variant items (the pre-order
+    // reservation) never resolve a product and used to render nameless.
+    if (!Array.isArray(cartData?.included)) return null;
 
     return cartData?.included
       .filter((item) => item.type === "line_item")
       .map((lineItem) => {
-        const product = foundProduct(
-          lineItem.relationships.variant.data.id,
-          productsData
-        );
+        const product = productsData
+          ? foundProduct(lineItem.relationships.variant.data.id, productsData)
+          : null;
 
         const lineItemId = lineItem.id;
         const quantity = quantities[lineItemId] || lineItem.attributes.quantity;
+        const name =
+          lineItem.attributes?.name || product?.attributes?.name || "";
+        const displayPrice =
+          lineItem.attributes?.display_total ||
+          (product?.attributes?.price ? `$${product.attributes.price}` : "");
 
         return (
           <div
@@ -149,10 +167,10 @@ export const CartSidebar = ({ isVisible, toggle }: Props) => {
           >
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="truncate font-title text-xs text-white">
-                {product?.attributes?.name}
+                {name}
               </span>
               <span className="font-ds-digital text-sm tracking-wider text-neon-cyan">
-                ${product?.attributes?.price}
+                {displayPrice}
               </span>
             </div>
             <div className="flex items-center gap-1">

@@ -80,6 +80,17 @@ export const Cart = () => {
         );
         if (variant) return product;
       }
+      // Spree omits the master variant from `variants`, so products with no
+      // option variants (e.g. the pre-order reservation) are added via their
+      // master/default variant — match it too or the lookup misses and the
+      // cart row renders with no image.
+      const defaultVariant = product.relationships?.default_variant?.data;
+      const defaultVariantId = Array.isArray(defaultVariant)
+        ? defaultVariant[0]?.id
+        : defaultVariant?.id;
+      if (defaultVariantId && defaultVariantId === variantId) {
+        return product;
+      }
     }
     return null;
   };
@@ -119,14 +130,18 @@ export const Cart = () => {
   };
 
   const renderCartItems = () => {
-    if (Array.isArray(cartData?.included) && productsData) {
+    // Render straight from the cart payload — the line item carries its own
+    // name/price/options. `productsData` is only a best-effort source for the
+    // thumbnail, so don't gate the whole cart on it (a slow/failed products
+    // fetch used to blank every row, and master-variant items — the pre-order
+    // reservation — never resolved a product at all, rendering nameless).
+    if (Array.isArray(cartData?.included)) {
       return cartData?.included
         .filter((includedItem) => includedItem.type === "line_item")
         .map((lineItem) => {
-          const product = foundProduct(
-            lineItem.relationships.variant.data.id,
-            productsData
-          );
+          const product = productsData
+            ? foundProduct(lineItem.relationships.variant.data.id, productsData)
+            : null;
 
           const lineItemId = lineItem.id;
           const quantity =
@@ -134,6 +149,8 @@ export const Cart = () => {
 
           const imageUrl = getProductImage(product);
           const optionsText = lineItem.attributes?.options_text;
+          const name =
+            lineItem.attributes?.name || product?.attributes?.name || "";
           const displayPrice =
             lineItem.attributes?.display_total ||
             `$${(
@@ -151,7 +168,7 @@ export const Cart = () => {
                   {imageUrl ? (
                     <img
                       src={imageUrl}
-                      alt={product?.attributes?.name || "Product"}
+                      alt={name || "Product"}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -165,7 +182,7 @@ export const Cart = () => {
                 <div className="flex min-w-0 flex-1 flex-col justify-between">
                   <div>
                     <h3 className="font-title text-sm leading-tight text-white">
-                      {product?.attributes?.name}
+                      {name}
                     </h3>
                     {optionsText && (
                       <p className="mt-0.5 font-title text-xs text-white/50">
