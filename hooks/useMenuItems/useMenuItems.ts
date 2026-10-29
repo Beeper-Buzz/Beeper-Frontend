@@ -2,14 +2,16 @@ import { useQuery } from "react-query";
 import { QueryKeys } from "../queryKeys";
 
 const fetchMenuItems = async (id: number = 1) => {
-  const token = process.env.NEXT_PUBLIC_SPREE_ACCESS_TOKEN;
+  // The storefront key is added server-side by pages/api/public/[...path].ts.
   const requestHeaders: HeadersInit = new Headers();
   requestHeaders.set("Content-Type", "application/json;charset=UTF-8");
-  requestHeaders.set("X-Spree-Token", `${token}`);
-  const response = await fetch(`/api/v1/menu_items?menu_location_id=${id}`, {
-    method: "GET",
-    headers: requestHeaders
-  })
+  const response = await fetch(
+    `/api/public/menu_items?menu_location_id=${id}`,
+    {
+      method: "GET",
+      headers: requestHeaders
+    }
+  )
     .then((response) => {
       if (!response.ok) throw new Error("Menu Items request failed");
       else return response.json();
