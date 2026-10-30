@@ -4,16 +4,20 @@ import fetch, { FormData } from "node-fetch";
 
 const isDebug = process.env.NEXT_PUBLIC_IS_DEBUG_MODE === "true";
 
+// Server-only credentials. Read the non-public names first; the NEXT_PUBLIC_
+// fallbacks only bridge the Heroku config rename and should be removed once the
+// old keys are unset. Never reference these from client code (dotenv-webpack
+// inlines any referenced process.env value into the browser bundle).
 const mailchimpAudienceId =
-  process.env.NEXT_PUBLIC_MAILCHIMP_AUDIENCE_ID ||
   process.env.MAILCHIMP_AUDIENCE_ID ||
+  process.env.NEXT_PUBLIC_MAILCHIMP_AUDIENCE_ID ||
   "";
 const mailchimpApiKey =
-  process.env.NEXT_PUBLIC_MAILCHIMP_API_KEY ||
   process.env.MAILCHIMP_API_KEY ||
+  process.env.NEXT_PUBLIC_MAILCHIMP_API_KEY ||
   "";
 const mailchimpUser =
-  process.env.NEXT_PUBLIC_MAILCHIMP_USER || process.env.MAILCHIMP_USER || "";
+  process.env.MAILCHIMP_USER || process.env.NEXT_PUBLIC_MAILCHIMP_USER || "";
 
 mailchimp.setConfig({
   apiKey: mailchimpApiKey,
@@ -21,11 +25,21 @@ mailchimp.setConfig({
 });
 
 const ghlApiUrl =
+  process.env.GOHIGHLEVEL_API_URL ||
   process.env.NEXT_PUBLIC_GOHIGHLEVEL_API_URL ||
   "https://rest.gohighlevel.com/v1";
-const ghlApiKey = process.env.NEXT_PUBLIC_GOHIGHLEVEL_API_KEY || "";
-const ghlLocation = process.env.NEXT_PUBLIC_GOHIGHLEVEL_LOCATION_ID || "";
-const ghlForm = process.env.NEXT_PUBLIC_GOHIGHLEVEL_FORM_ID || "";
+const ghlApiKey =
+  process.env.GOHIGHLEVEL_API_KEY ||
+  process.env.NEXT_PUBLIC_GOHIGHLEVEL_API_KEY ||
+  "";
+const ghlLocation =
+  process.env.GOHIGHLEVEL_LOCATION_ID ||
+  process.env.NEXT_PUBLIC_GOHIGHLEVEL_LOCATION_ID ||
+  "";
+const ghlForm =
+  process.env.GOHIGHLEVEL_FORM_ID ||
+  process.env.NEXT_PUBLIC_GOHIGHLEVEL_FORM_ID ||
+  "";
 
 const mailerService = process.env.NEXT_PUBLIC_MAILER;
 
