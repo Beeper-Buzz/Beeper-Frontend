@@ -3,7 +3,8 @@ import Head from "next/head";
 import {
   useUserProfileByHandle,
   useFollowUser,
-  useUnfollowUser
+  useUnfollowUser,
+  profileDisplayName
 } from "@hooks/useUserProfile";
 import { Loading } from "@components/Loading";
 import { ProfileBanner } from "./ProfileBanner";
@@ -77,10 +78,7 @@ const UserProfileInner: React.FC<UserProfileProps> = ({ username }) => {
     );
   }
 
-  const displayName =
-    user.display_name ||
-    `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-    "Beeper User";
+  const displayName = profileDisplayName(user, username);
   const ogImage =
     user.banner_url || user.avatar_url || "/images/beeper-og-image.png";
 

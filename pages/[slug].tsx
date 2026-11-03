@@ -80,7 +80,11 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
           props: {
             type: "profile" as const,
             slug,
-            profileData: profileJson.response_data
+            // Only what the page needs; the client fetches the profile itself.
+            profileData: {
+              id: profileJson.response_data.id ?? null,
+              display_name: profileJson.response_data.display_name ?? null
+            }
           }
         };
       }
