@@ -1,6 +1,6 @@
 import React from "react";
 import { Share2, UserPlus, UserMinus } from "lucide-react";
-import { UserProfileData } from "@hooks/useUserProfile";
+import { UserProfileData, profileDisplayName } from "@hooks/useUserProfile";
 import { CreatorBadge } from "./CreatorBadge";
 import { SocialChip } from "./SocialChip";
 
@@ -9,13 +9,6 @@ interface ProfileBannerProps {
   onFollowToggle: () => void;
   onShare: () => void;
 }
-
-const getDisplayName = (user: UserProfileData): string => {
-  if (user.display_name) return user.display_name;
-  const full = [user.first_name, user.last_name].filter(Boolean).join(" ");
-  if (full) return full;
-  return user.email.split("@")[0] || "User";
-};
 
 const getInitials = (name: string): string =>
   name
@@ -30,7 +23,7 @@ export const ProfileBanner = ({
   onFollowToggle,
   onShare
 }: ProfileBannerProps) => {
-  const displayName = getDisplayName(user);
+  const displayName = profileDisplayName(user);
   const showBanner = user.is_creator;
   const bannerStyle = user.banner_url
     ? {

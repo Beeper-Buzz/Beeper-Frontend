@@ -20,11 +20,10 @@ export interface UserProfileStream {
   ended_at: string;
 }
 
+// Public profile. The API never sends email or real names here (it may still send
+// those keys, empty, for older clients); don't add them back.
 export interface UserProfileData {
   id: number;
-  email: string;
-  first_name?: string;
-  last_name?: string;
   display_name: string | null;
   is_creator: boolean;
   bio: string | null;
@@ -45,6 +44,13 @@ export interface UserProfileData {
     price: string;
   }>;
 }
+
+// Name to show for a public profile: the handle (display_name), else the
+// fallback (e.g. the handle from the URL), else a generic label. Never email.
+export const profileDisplayName = (
+  user: Pick<UserProfileData, "display_name">,
+  fallback?: string
+): string => user.display_name || fallback || "Beeper User";
 
 export interface UserProfileResponse {
   response_code: number;

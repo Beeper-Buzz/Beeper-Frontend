@@ -3,7 +3,8 @@ import { useRouter } from "next/router";
 import {
   useUserProfile,
   useFollowUser,
-  useUnfollowUser
+  useUnfollowUser,
+  profileDisplayName
 } from "@hooks/useUserProfile";
 import { Loading } from "@components/Loading";
 import { UserProfileProps } from "../types";
@@ -42,10 +43,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ username }) => {
     );
   }
 
-  const displayName =
-    userData.first_name && userData.last_name
-      ? `${userData.first_name} ${userData.last_name}`
-      : userData.email;
+  const displayName = profileDisplayName(userData, username);
 
   const getInitials = (name: string) => {
     return name
@@ -67,9 +65,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ username }) => {
           <h1 className="font-title text-xl font-bold text-white">
             {displayName}
           </h1>
-          <p className="mt-0.5 font-body text-sm text-white/50">
-            {userData.email}
-          </p>
+          {userData.display_name && (
+            <p className="mt-0.5 font-body text-sm text-white/50">
+              @{userData.display_name}
+            </p>
+          )}
           <div className="mt-3 flex items-center gap-6">
             <div className="text-center">
               <span className="block font-title text-lg font-bold text-white">
