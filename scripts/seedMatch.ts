@@ -86,6 +86,17 @@ export function findExistingProduct<P extends ExistingProduct>(
   return null;
 }
 
+/**
+ * v1 list path for the products the seed matches against. The admin product
+ * scope drops discontinued products unless `show_discontinued` is set, and a
+ * discontinued product still holds its slug: without it, discontinuing a
+ * seeded product (say the reservation, once pre-orders close) would make the
+ * next run create a second one under a UUID slug. Soft-deleted products stay
+ * out: Spree frees their slug on delete.
+ */
+export const existingProductsPath = (page: number, perPage: number): string =>
+  `/products?page=${page}&per_page=${perPage}&show_discontinued=true`;
+
 export interface V1Page<T> {
   products: T[];
   pages?: number;

@@ -5,6 +5,7 @@ import { PRODUCTS } from "../seed-spree-data";
 import {
   collectAllPages,
   ExistingProduct,
+  existingProductsPath,
   findExistingProduct,
   mergeTaxonIds,
   normalizeName
@@ -122,6 +123,27 @@ describe("findExistingProduct", () => {
       "beeper δ8 pre order reservation"
     );
     assert.equal(normalizeName(undefined), "");
+  });
+});
+
+describe("existingProductsPath", () => {
+  test("includes discontinued products, which still own their slugs", () => {
+    const path = existingProductsPath(2, 100);
+    assert.match(path, /^\/products\?/);
+    assert.match(path, /[?&]page=2(&|$)/);
+    assert.match(path, /[?&]per_page=100(&|$)/);
+    assert.match(path, /[?&]show_discontinued=true(&|$)/);
+    assert.doesNotMatch(path, /show_deleted/);
+  });
+
+  test("a discontinued reservation is matched by slug, not re-created", () => {
+    // With show_discontinued the list holds 34 even after it is discontinued.
+    const match = findExistingProduct(reservationDef, [
+      p(34, reservationDef.name, "beeper-8-reservation"),
+      p(67, reservationDef.name, "beeper-8-pre-order-reservation-512eb3fe")
+    ]);
+    assert.equal(match?.product.id, 34);
+    assert.equal(match?.by, "slug");
   });
 });
 

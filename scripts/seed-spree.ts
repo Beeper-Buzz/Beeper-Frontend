@@ -27,6 +27,7 @@ import {
 import {
   collectAllPages,
   ExistingProduct,
+  existingProductsPath,
   findExistingProduct,
   mergeTaxonIds,
   V1Page
@@ -291,9 +292,10 @@ async function seedProducts(
 ): Promise<void> {
   console.log("\n--- Seeding Products ---");
 
-  // Fetch every existing product, page by page (no per_page=100 ceiling).
+  // Fetch every existing product, page by page (no per_page=100 ceiling),
+  // discontinued ones included (they still own their slugs).
   const existing = await collectAllPages<ExistingProduct>((page, perPage) =>
-    get<V1Page<ExistingProduct>>(`/products?page=${page}&per_page=${perPage}`)
+    get<V1Page<ExistingProduct>>(existingProductsPath(page, perPage))
   );
   console.log(`  [info] ${existing.length} existing product(s)`);
 
