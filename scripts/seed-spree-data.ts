@@ -86,8 +86,10 @@ export const PRODUCTS: ProductDef[] = [
     // Pre-order reservation: a $49 fully-refundable deposit that reserves a
     // Beeper Δ8. compareAtPrice carries the $199.99 MSRP so the storefront
     // can render "reserve for $49 / $199.99 MSRP" live while the full-price
-    // device stays hidden. Point NEXT_PUBLIC_HERO_PRODUCT_SLUG at this slug to
-    // flip the homepage hero over. Tweak title/copy before going live if wanted.
+    // device stays hidden. Featured: the first product in Collections ->
+    // Featured drives the homepage hero and the shop's featured shelf (order
+    // it in the admin under Products -> Taxons). Tweak title/copy before going
+    // live if wanted.
     name: "Beeper Δ8 — Pre-Order Reservation",
     slug: "beeper-8-reservation",
     price: "49.00",
@@ -96,7 +98,7 @@ export const PRODUCTS: ProductDef[] = [
     unlimitedStock: true,
     description:
       "$49 reserves your Beeper Δ8 — a fully refundable deposit, not the full price. It’s credited toward the $199.99 MSRP, leaving a $150.99 balance due when your unit is ready to ship (estimated Fall 2027). We’ll email you before charging the balance, and you can cancel any time before shipping for a full refund.",
-    taxons: ["Pre-Order"],
+    taxons: ["Featured", "Pre-Order"],
     properties: {
       shipping_type: "digital",
       preorder: "true",
