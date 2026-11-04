@@ -197,6 +197,24 @@ export function videoToMedia(
   };
 }
 
+/** Wrap a plain image URL (legacy callers, placeholders) as static media. */
+export function staticMedia(
+  src: string | null | undefined,
+  alt: string
+): MediaItem | null {
+  if (!src) return null;
+  return {
+    key: `static-${src}`,
+    kind: "image",
+    sourceId: src,
+    alt,
+    poster: src,
+    thumb: src,
+    src,
+    contentType: null
+  };
+}
+
 // ── Lookups ──────────────────────────────────────────────────────────
 
 const refs = (

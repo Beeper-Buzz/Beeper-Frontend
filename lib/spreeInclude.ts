@@ -37,6 +37,25 @@ export function resetVideosSupport(): void {
   videosSupported = true;
 }
 
+/** (status, message) from a Spree SDK error or an Error carrying `status`. */
+export function describeRequestError(err: unknown): {
+  status?: number;
+  message?: string;
+} {
+  const e = (err || {}) as {
+    status?: number;
+    message?: string;
+    summary?: string;
+    serverResponse?: { status?: number; data?: { error?: string } };
+  };
+  return {
+    status: e.serverResponse?.status ?? e.status,
+    message: [e.summary, e.serverResponse?.data?.error, e.message]
+      .filter(Boolean)
+      .join(" ")
+  };
+}
+
 /**
  * Run a request with `videos` in the include; if it fails with the
  * unsupported-relationship 400, mark it and run once more without.

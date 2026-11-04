@@ -4,7 +4,10 @@
 // the browser. Any failure means "no featured": callers render nothing.
 
 import { JsonApiResource } from "./productMedia";
-import { requestWithVideosFallback } from "./spreeInclude";
+import {
+  describeRequestError,
+  requestWithVideosFallback
+} from "./spreeInclude";
 
 export const DEFAULT_FEATURED_TAXON = "collections/featured";
 
@@ -82,7 +85,7 @@ export async function fetchFeaturedProducts({
         }
         return res.json();
       },
-      (err: any) => ({ status: err?.status, message: err?.message })
+      describeRequestError
     );
 
     if (!doc || !Array.isArray(doc.data) || doc.data.length === 0) return null;

@@ -9,7 +9,8 @@ import {
   JsonApiResource,
   pickGridMedia,
   pickStyle,
-  playbackDecision
+  playbackDecision,
+  staticMedia
 } from "../productMedia";
 
 const BASE = "https://admin.example.test";
@@ -376,6 +377,14 @@ describe("playbackDecision (spec 4)", () => {
       playbackDecision({ ...base, kind: "image", surface: "pdp" }),
       { animate: false, showControls: false }
     );
+  });
+});
+
+describe("staticMedia", () => {
+  test("wraps a URL, null for none", () => {
+    assert.equal(staticMedia("/a.png", "A")?.kind, "image");
+    assert.equal(staticMedia("/a.png", "A")?.poster, "/a.png");
+    assert.equal(staticMedia(null, "A"), null);
   });
 });
 

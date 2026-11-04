@@ -3,6 +3,7 @@ import { beforeEach, describe, test } from "node:test";
 
 import { DEFAULT_FEATURED_TAXON, fetchFeaturedProducts } from "../featured";
 import {
+  describeRequestError,
   isVideosIncludeError,
   resetVideosSupport,
   withoutVideos,
@@ -174,6 +175,22 @@ describe("spreeInclude", () => {
     assert.equal(withVideos("images,variants"), "images,variants,videos");
     assert.equal(withVideos("images,videos"), "images,videos");
     assert.equal(withoutVideos("images,videos,variants"), "images,variants");
+  });
+
+  test("describeRequestError reads SDK and fetch errors", () => {
+    const sdk = {
+      summary: "videos is not specified as a relationship",
+      serverResponse: { status: 400, data: { error: "videos ..." } }
+    };
+    const d = describeRequestError(sdk);
+    assert.equal(d.status, 400);
+    assert.equal(isVideosIncludeError(d.status, d.message), true);
+    const plain = Object.assign(new Error("videos nope"), { status: 400 });
+    assert.equal(describeRequestError(plain).status, 400);
+    assert.deepEqual(describeRequestError(undefined), {
+      status: undefined,
+      message: ""
+    });
   });
 
   test("isVideosIncludeError only for the 400 about videos", () => {
