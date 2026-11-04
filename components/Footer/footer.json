@@ -8,6 +8,7 @@
     "links": [
       { "text": "About", "url": "/about" },
       { "text": "Privacy Policy", "url": "/privacy" },
+      { "text": "Community Guidelines", "url": "/community-guidelines" },
       { "text": "Terms of Use", "url": "/terms" }
     ]
   },
