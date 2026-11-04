@@ -2,21 +2,43 @@ import { DynamicHome } from "../components/Home";
 import type { HeroData } from "@components/Home/Hero";
 import { FEED_CONFIGS, fetchProductFeed } from "@hooks/useProductFeed";
 import { fetchHomepage, HomepageData } from "@hooks/useHomepage";
+import { fetchFeaturedProducts } from "@lib/featured";
+import { hasMsrp } from "@lib/productMedia";
 
-// Which Spree product drives the hero price + CTA. Defaults to the pre-order
-// reservation product, so the hero renders "reserve for $49 / $199.99 MSRP"
-// and its CTA points at the buyable reservation. Override with
-// NEXT_PUBLIC_HERO_PRODUCT_SLUG (e.g. back to "beeper-8") with no redeploy.
-const HERO_PRODUCT_SLUG =
-  process.env.NEXT_PUBLIC_HERO_PRODUCT_SLUG || "beeper-8-reservation";
+// Which Spree product drives the hero price + CTA:
+// 1. NEXT_PUBLIC_HERO_PRODUCT_SLUG, if set;
+// 2. else the first product of the Featured taxon (order it in the admin
+//    under Products -> Taxons -> Collections -> Featured);
+// 3. else null, and Hero falls back to its static copy.
+const HERO_PRODUCT_SLUG = (
+  process.env.NEXT_PUBLIC_HERO_PRODUCT_SLUG || ""
+).trim();
+
+const SPREE_URL =
+  process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080";
+
+const heroFromAttributes = (slug: string, attrs: any): HeroData => ({
+  slug,
+  price: attrs.display_price ?? null,
+  // Only a real MSRP: compare_at_price is 0.00 on some products.
+  compareAtPrice: hasMsrp(attrs.price, attrs.compare_at_price)
+    ? attrs.display_compare_at_price ?? null
+    : null
+});
+
+async function fetchFeaturedHeroData(): Promise<HeroData | null> {
+  const featured = await fetchFeaturedProducts({ baseUrl: SPREE_URL });
+  const attrs = featured?.data?.[0]?.attributes;
+  if (!attrs?.slug) return null;
+  return heroFromAttributes(attrs.slug, attrs);
+}
 
 // Server-safe price pull: plain fetch against the v2 storefront API. We do NOT
 // reuse fetchProduct/fetchProductFeed here because they call storage.getToken(),
 // which touches window.localStorage and throws in getStaticProps (which is why
 // the feed fetches below are wrapped in .catch). Mirrors pages/[slug].tsx.
 async function fetchHeroData(slug: string): Promise<HeroData | null> {
-  const spreeUrl =
-    process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080";
+  const spreeUrl = SPREE_URL;
   try {
     const res = await fetch(
       `${spreeUrl}/api/v2/storefront/products?filter[slug]=${encodeURIComponent(
@@ -28,11 +50,7 @@ async function fetchHeroData(slug: string): Promise<HeroData | null> {
     const json = await res.json();
     const attrs = json?.data?.[0]?.attributes;
     if (!attrs) return null;
-    return {
-      slug,
-      price: attrs.display_price ?? null,
-      compareAtPrice: attrs.display_compare_at_price ?? null
-    };
+    return heroFromAttributes(slug, attrs);
   } catch {
     return null;
   }
@@ -45,7 +63,9 @@ export async function getStaticProps() {
         () => null
       ),
       fetchHomepage().catch(() => null),
-      fetchHeroData(HERO_PRODUCT_SLUG)
+      HERO_PRODUCT_SLUG
+        ? fetchHeroData(HERO_PRODUCT_SLUG)
+        : fetchFeaturedHeroData()
     ]);
     return {
       props: {
