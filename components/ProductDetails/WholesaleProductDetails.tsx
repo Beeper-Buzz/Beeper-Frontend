@@ -31,13 +31,8 @@ import homeData from "../Home/home.json";
 import { useProductFeed } from "../../hooks/useProductFeed";
 import { useRecentlyViewed } from "../../hooks/useRecentlyViewed";
 import { RecentlyViewed } from "../RecentlyViewed";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext
-} from "@components/ui";
+import { ProductGallery } from "./ProductGallery";
+import { buildGallery } from "../../lib/productMedia";
 import constants from "../../utilities/constants";
 
 interface WholesaleProductDetailsProps {
@@ -68,6 +63,12 @@ export const WholesaleProductDetails = ({
   const { data: favoriteCheck } = useCheckFavorite(defaultVariantId, !!user);
   const toggleFavorite = useToggleFavorite();
 
+  // Gallery (spec 3.3): product videos first, then images.
+  const galleryItems = thisProduct?.data
+    ? buildGallery(thisProduct.data as any, thisProduct.included as any, {
+        baseUrl: process.env.NEXT_PUBLIC_SPREE_API_URL || ""
+      })
+    : [];
   const productImgs =
     thisProduct &&
     thisProduct?.included?.filter((e: any) => e["type"] === "image");
@@ -355,43 +356,16 @@ export const WholesaleProductDetails = ({
                       "radial-gradient(circle at center, rgba(0, 255, 255, 0.1) 0%, transparent 70%)"
                   }}
                 >
-                  <Carousel className="w-full">
-                    <CarouselContent>
-                      {productImgs && productImgs.length > 0 ? (
-                        productImgs.map((image: any, index: number) => {
-                          const imgUrl = image.attributes.styles?.filter(
-                            (e: any) => e["width"] == "600"
-                          )[0]?.url;
-                          const imgSrc = `${process.env.NEXT_PUBLIC_SPREE_API_URL}${imgUrl}`;
-                          return (
-                            <CarouselItem key={`image-${index}`}>
-                              <div className="aspect-square overflow-hidden rounded-xl bg-surface-deep">
-                                <img
-                                  src={imgSrc}
-                                  alt={`${
-                                    thisProduct?.data?.attributes?.name
-                                  } - Image ${index + 1}`}
-                                  className="h-full w-full object-cover"
-                                />
-                              </div>
-                            </CarouselItem>
-                          );
-                        })
-                      ) : (
-                        <CarouselItem>
-                          <div className="flex aspect-square items-center justify-center rounded-xl bg-surface-deep">
-                            <Loading />
-                          </div>
-                        </CarouselItem>
-                      )}
-                    </CarouselContent>
-                    {productImgs && productImgs.length > 1 && (
-                      <>
-                        <CarouselPrevious className="left-3" />
-                        <CarouselNext className="right-3" />
-                      </>
-                    )}
-                  </Carousel>
+                  {galleryItems.length > 0 ? (
+                    <ProductGallery items={galleryItems} />
+                  ) : (
+                    <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-surface-deep">
+                      <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/5 via-surface-deep to-neon-magenta/5" />
+                      <span className="relative font-micro5-charted text-5xl text-white/10">
+                        {"Δ"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </motion.div>
 

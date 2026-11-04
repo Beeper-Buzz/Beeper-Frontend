@@ -33,6 +33,7 @@ import { useRecentlyViewed } from "../../hooks/useRecentlyViewed";
 import { RecentlyViewed } from "../RecentlyViewed";
 import constants from "../../utilities/constants";
 import { ProductGallery } from "./ProductGallery";
+import { buildGallery } from "../../lib/productMedia";
 
 interface RetailProductDetailsProps {
   wholesale?: boolean;
@@ -172,14 +173,18 @@ export const RetailProductDetails = ({
       )
     : null;
 
-  // Filter images: if a color variant is selected and has its own images, show those; otherwise show all
-  const variantImageIds = selectedVariant?.relationships?.images?.data?.map(
-    (img: any) => img.id
-  );
-  const productImgs =
-    variantImageIds && variantImageIds.length > 0
-      ? allProductImgs?.filter((img: any) => variantImageIds.includes(img.id))
-      : allProductImgs;
+  // Gallery (spec 3.3): product videos first, then images. If a color
+  // variant is selected and has its own images, only those images show
+  // (product-level videos stay); otherwise all images.
+  const variantImageIds: string[] =
+    selectedVariant?.relationships?.images?.data?.map((img: any) => img.id) ||
+    [];
+  const galleryItems = thisProduct?.data
+    ? buildGallery(thisProduct.data as any, thisProduct.included as any, {
+        baseUrl: process.env.NEXT_PUBLIC_SPREE_API_URL || "",
+        variantImageIds
+      })
+    : [];
 
   const renderSimilarProducts = () => {
     if (similarLoading) return <Loading />;
@@ -402,41 +407,15 @@ export const RetailProductDetails = ({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
               >
-                {productImgs && productImgs.length > 0 ? (
-                  <ProductGallery
-                    images={productImgs.map((image: any, index: number) => {
-                      // Prefer transformed_url (Active Storage on-the-fly resize),
-                      // then largest available Paperclip style by width, then original_url
-                      const transformedUrl = image.attributes?.transformed_url;
-                      const styles: Array<{ url: string; width: string }> =
-                        image.attributes?.styles || [];
-                      const largestStyle = styles.reduce(
-                        (best: any, s: any) =>
-                          !best ||
-                          parseInt(s.width || "0", 10) >
-                            parseInt(best.width || "0", 10)
-                            ? s
-                            : best,
-                        null
-                      );
-                      const rawUrl =
-                        transformedUrl ||
-                        largestStyle?.url ||
-                        image.attributes?.original_url;
-                      const src = rawUrl?.startsWith("http")
-                        ? rawUrl
-                        : `${process.env.NEXT_PUBLIC_SPREE_API_URL}${rawUrl}`;
-                      return {
-                        src,
-                        alt: `${thisProduct?.data?.attributes?.name} - Image ${
-                          index + 1
-                        }`
-                      };
-                    })}
-                  />
+                {galleryItems.length > 0 ? (
+                  <ProductGallery items={galleryItems} />
                 ) : (
-                  <div className="flex aspect-square items-center justify-center rounded-xl bg-surface-deep">
-                    <Loading />
+                  // No media: a static panel (it used to spin forever).
+                  <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-surface-deep">
+                    <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/5 via-surface-deep to-neon-magenta/5" />
+                    <span className="relative font-micro5-charted text-5xl text-white/10">
+                      {"Δ"}
+                    </span>
                   </div>
                 )}
               </motion.div>
