@@ -90,10 +90,12 @@ export const FeaturedShelf: React.FC<FeaturedShelfProps> = ({ featured }) => {
               media={heroMedia}
               surface="grid"
               priority
+              decorative
               className={cn(
                 "scanlines relative z-[1] w-full overflow-hidden md:absolute md:inset-0 md:aspect-auto md:h-full",
-                // No media yet: a shorter frame, not a big empty square.
-                heroMedia ? "aspect-square sm:aspect-[16/10]" : "aspect-[16/9]"
+                // 4:3 on phones keeps the price and CTA near the first
+                // screen; no media: a shorter frame, not a big empty box.
+                heroMedia ? "aspect-[4/3] sm:aspect-[16/10]" : "aspect-[16/9]"
               )}
               mediaClassName="h-full w-full object-cover transition-transform duration-700 ease-expo-out group-hover:scale-[1.03]"
               placeholder={<CardMediaPlaceholder />}
@@ -156,6 +158,7 @@ export const FeaturedShelf: React.FC<FeaturedShelfProps> = ({ featured }) => {
                   <ProductMedia
                     media={media}
                     surface="grid"
+                    decorative
                     className="aspect-square w-full overflow-hidden"
                     mediaClassName="h-full w-full object-cover transition-transform duration-500 ease-expo-out group-hover:scale-105"
                     placeholder={<CardMediaPlaceholder />}

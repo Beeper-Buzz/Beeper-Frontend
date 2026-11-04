@@ -375,9 +375,11 @@ export interface PlaybackDecision {
 
 /**
  * Spec section 4. Static images never animate. Motion needs: visible, active
- * (PDP selected slide), no reduced-motion preference, no save-data. On the PDP
- * a video that may not autoplay still offers controls on the selected slide;
- * a GIF just stays on its poster.
+ * (PDP selected slide), no reduced-motion preference, no save-data. The PDP's
+ * selected video always has native controls: with motion off they are the way
+ * in, and with motion on they are the way to pause it (WCAG 2.2.2) and the way
+ * in when the browser refuses autoplay (iOS Low Power Mode). A GIF just stays
+ * on its poster.
  */
 export function playbackDecision(input: PlaybackInput): PlaybackDecision {
   const active = input.surface === "grid" ? true : !!input.active;
@@ -385,10 +387,7 @@ export function playbackDecision(input: PlaybackInput): PlaybackDecision {
   const motionAllowed = !input.reducedMotion && !input.saveData;
   const animate = input.visible && active && motionAllowed;
   const showControls =
-    input.kind === "video" &&
-    input.surface === "pdp" &&
-    active &&
-    !motionAllowed;
+    input.kind === "video" && input.surface === "pdp" && active;
   return { animate, showControls };
 }
 

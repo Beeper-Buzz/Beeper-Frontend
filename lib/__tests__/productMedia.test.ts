@@ -329,9 +329,14 @@ describe("playbackDecision (spec 4)", () => {
   });
 
   test("pdp: only the selected slide plays", () => {
-    assert.equal(
-      playbackDecision({ ...base, kind: "video", surface: "pdp" }).animate,
-      true
+    // Autoplays, with controls to pause it (or start it if autoplay is refused).
+    assert.deepEqual(
+      playbackDecision({ ...base, kind: "video", surface: "pdp" }),
+      { animate: true, showControls: true }
+    );
+    assert.deepEqual(
+      playbackDecision({ ...base, kind: "gif", surface: "pdp" }),
+      { animate: true, showControls: false }
     );
     assert.deepEqual(
       playbackDecision({

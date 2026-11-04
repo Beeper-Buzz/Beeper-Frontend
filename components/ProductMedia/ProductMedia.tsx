@@ -26,6 +26,11 @@ export interface ProductMediaProps {
   /** How far outside the viewport motion may start. */
   rootMargin?: string;
   draggable?: boolean;
+  /**
+   * The media sits inside a link or button that already names the product:
+   * empty alt so screen readers do not read the name twice.
+   */
+  decorative?: boolean;
 }
 
 /**
@@ -39,8 +44,9 @@ export interface ProductMediaProps {
  *   until then), plays muted/looped/inline while visible, pauses off screen,
  *   and fades in only once actually playing. Any load error drops it and the
  *   poster stays.
- * - Reduced motion and save-data: poster only; on the PDP a video gets native
- *   controls so the user can opt in.
+ * - Reduced motion and save-data: poster only. On the PDP the selected video
+ *   always has native controls: to opt in, to pause, or to start it when the
+ *   browser refuses autoplay.
  */
 export const ProductMedia: React.FC<ProductMediaProps> = ({
   media,
@@ -52,7 +58,8 @@ export const ProductMedia: React.FC<ProductMediaProps> = ({
   placeholder = null,
   priority = false,
   rootMargin,
-  draggable
+  draggable,
+  decorative = false
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -108,7 +115,9 @@ export const ProductMedia: React.FC<ProductMediaProps> = ({
     } else if (!(showControls && visible)) {
       el.pause();
     }
-  }, [animate, showControls, visible, videoArmed]);
+    // mediaKey: a new src on the same element resets it to paused, so ask
+    // again even when nothing else changed.
+  }, [animate, showControls, visible, videoArmed, mediaKey]);
 
   // Never leave a GIF's loaded flag set across hide/show.
   useEffect(() => {
@@ -137,7 +146,7 @@ export const ProductMedia: React.FC<ProductMediaProps> = ({
       {media.poster ? (
         <img
           src={media.poster}
-          alt={media.alt}
+          alt={decorative ? "" : media.alt}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
           className={mediaClassName}
@@ -177,7 +186,8 @@ export const ProductMedia: React.FC<ProductMediaProps> = ({
           playsInline
           preload="none"
           controls={showControls}
-          aria-label={media.alt}
+          aria-label={decorative ? undefined : media.alt}
+          aria-hidden={decorative || undefined}
           className={cn(
             layer,
             "transition-opacity duration-300",
