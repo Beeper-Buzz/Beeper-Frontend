@@ -181,6 +181,9 @@ export const ProductMedia: React.FC<ProductMediaProps> = ({
           className={cn(
             layer,
             "transition-opacity duration-300",
+            // Opaque, so a letterboxed (object-contain) video never shows
+            // a differently-sized poster around it.
+            "bg-surface-deep",
             videoVisible ? "opacity-100" : "pointer-events-none opacity-0"
           )}
           style={mediaStyle}

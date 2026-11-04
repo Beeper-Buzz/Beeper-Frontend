@@ -78,7 +78,7 @@ export const FeaturedShelf: React.FC<FeaturedShelfProps> = ({ featured }) => {
       >
         <div className="grid grid-cols-1 md:grid-cols-12">
           {/* Media */}
-          <div className="relative md:col-span-7">
+          <div className="relative md:col-span-7 md:min-h-[440px]">
             <div
               className="pointer-events-none absolute inset-0 z-0"
               style={{
@@ -90,7 +90,11 @@ export const FeaturedShelf: React.FC<FeaturedShelfProps> = ({ featured }) => {
               media={heroMedia}
               surface="grid"
               priority
-              className="scanlines relative z-[1] aspect-square w-full overflow-hidden sm:aspect-[4/3]"
+              className={cn(
+                "scanlines relative z-[1] w-full overflow-hidden md:absolute md:inset-0 md:aspect-auto md:h-full",
+                // No media yet: a shorter frame, not a big empty square.
+                heroMedia ? "aspect-square sm:aspect-[16/10]" : "aspect-[16/9]"
+              )}
               mediaClassName="h-full w-full object-cover transition-transform duration-700 ease-expo-out group-hover:scale-[1.03]"
               placeholder={<CardMediaPlaceholder />}
             />
@@ -134,7 +138,7 @@ export const FeaturedShelf: React.FC<FeaturedShelfProps> = ({ featured }) => {
 
       {/* The rest */}
       {rest.length > 0 && (
-        <div className="-mx-5 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 scrollbar-hide sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+        <div className="-mx-5 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 scrollbar-hide sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
           {rest.map((p) => {
             const media = pickGridMedia(p, featured.included, { baseUrl });
             const pr = priceOf(p);
