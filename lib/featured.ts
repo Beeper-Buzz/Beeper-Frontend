@@ -25,7 +25,7 @@ export const featuredTaxonPermalink = (): string =>
 
 type FetchLike = (
   url: string,
-  init?: { headers?: Record<string, string> }
+  init?: { headers?: Record<string, string>; signal?: AbortSignal }
 ) => Promise<{
   ok: boolean;
   status: number;
@@ -39,6 +39,11 @@ export interface FetchFeaturedOptions {
   permalink?: string;
   perPage?: number;
   fetchImpl?: FetchLike;
+  /**
+   * Give up (no featured) after this long. getStaticProps awaits this, so a
+   * hung Spree must not hang the build or an ISR revalidate.
+   */
+  timeoutMs?: number;
 }
 
 const HEADERS = { "Content-Type": "application/vnd.api+json" };
@@ -47,7 +52,8 @@ export async function fetchFeaturedProducts({
   baseUrl,
   permalink = featuredTaxonPermalink(),
   perPage = 12,
-  fetchImpl
+  fetchImpl,
+  timeoutMs = 8000
 }: FetchFeaturedOptions): Promise<ProductsDoc | null> {
   const doFetch: FetchLike | undefined =
     fetchImpl ||
@@ -61,10 +67,23 @@ export async function fetchFeaturedProducts({
     .join("/");
   if (!path) return null;
 
-  try {
-    const taxonRes = await doFetch(`${base}/api/v2/storefront/taxons/${path}`, {
-      headers: HEADERS
-    });
+  // One deadline for the whole lookup (taxon, products, a videos retry).
+  const controller =
+    typeof AbortController === "function" ? new AbortController() : null;
+  const init = { headers: HEADERS, signal: controller?.signal };
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<null>((resolve) => {
+    timer = setTimeout(() => {
+      controller?.abort();
+      resolve(null);
+    }, timeoutMs);
+  });
+
+  const lookup = async (): Promise<ProductsDoc | null> => {
+    const taxonRes = await doFetch(
+      `${base}/api/v2/storefront/taxons/${path}`,
+      init
+    );
     if (!taxonRes.ok) return null;
     const taxonId = (await taxonRes.json())?.data?.id;
     // Never query without a real id: filter[taxons] with an unknown id
@@ -78,7 +97,7 @@ export async function fetchFeaturedProducts({
           `${base}/api/v2/storefront/products?filter[taxons]=${encodeURIComponent(
             String(taxonId)
           )}` + `&sort_by=default&per_page=${perPage}&include=${include}`;
-        const res = await doFetch(url, { headers: HEADERS });
+        const res = await doFetch(url, init);
         if (!res.ok) {
           const body = res.text ? await res.text().catch(() => "") : "";
           throw Object.assign(new Error(body), { status: res.status });
@@ -90,7 +109,11 @@ export async function fetchFeaturedProducts({
 
     if (!doc || !Array.isArray(doc.data) || doc.data.length === 0) return null;
     return { data: doc.data, included: doc.included || [] };
-  } catch {
-    return null;
+  };
+
+  try {
+    return await Promise.race([lookup().catch(() => null), deadline]);
+  } finally {
+    clearTimeout(timer);
   }
 }

@@ -2,13 +2,17 @@
 // answer 400 ("videos is not specified as a relationship ..."), which would
 // blank every product list. The backend is meant to deploy first, but if the
 // web goes out early (or a dev points at an older admin) we retry once without
-// videos and stop asking for the rest of the session.
+// videos and stop asking for a while. "A while", not "for good": on the server
+// this module lives as long as the Node process, so a permanent flag would keep
+// getStaticProps/ISR from ever asking again after the backend deploys.
 
-let videosSupported = true;
+export const VIDEOS_RETRY_AFTER_MS = 10 * 60 * 1000;
 
-/** Append `videos` to a JSON:API include list unless the backend rejected it. */
-export function withVideos(include: string): string {
-  if (!videosSupported) return include;
+let unsupportedUntil = 0;
+
+/** Append `videos` to a JSON:API include list unless the backend rejected it recently. */
+export function withVideos(include: string, now: number = Date.now()): string {
+  if (now < unsupportedUntil) return include;
   const parts = include.split(",").filter(Boolean);
   return parts.includes("videos") ? include : [...parts, "videos"].join(",");
 }
@@ -28,13 +32,13 @@ export function isVideosIncludeError(
   return status === 400 && /videos/i.test(String(message || ""));
 }
 
-export function markVideosUnsupported(): void {
-  videosSupported = false;
+export function markVideosUnsupported(now: number = Date.now()): void {
+  unsupportedUntil = now + VIDEOS_RETRY_AFTER_MS;
 }
 
 /** Test hook. */
 export function resetVideosSupport(): void {
-  videosSupported = true;
+  unsupportedUntil = 0;
 }
 
 /** (status, message) from a Spree SDK error or an Error carrying `status`. */

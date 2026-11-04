@@ -27,7 +27,11 @@ const heroFromAttributes = (slug: string, attrs: any): HeroData => ({
 });
 
 async function fetchFeaturedHeroData(): Promise<HeroData | null> {
-  const featured = await fetchFeaturedProducts({ baseUrl: SPREE_URL });
+  // Only the first product's slug and prices are used.
+  const featured = await fetchFeaturedProducts({
+    baseUrl: SPREE_URL,
+    perPage: 1
+  });
   const attrs = featured?.data?.[0]?.attributes;
   if (!attrs?.slug) return null;
   return heroFromAttributes(attrs.slug, attrs);

@@ -5,7 +5,9 @@ import { DEFAULT_FEATURED_TAXON, fetchFeaturedProducts } from "../featured";
 import {
   describeRequestError,
   isVideosIncludeError,
+  markVideosUnsupported,
   resetVideosSupport,
+  VIDEOS_RETRY_AFTER_MS,
   withoutVideos,
   withVideos
 } from "../spreeInclude";
@@ -165,6 +167,25 @@ describe("fetchFeaturedProducts", () => {
     assert.doesNotMatch(again[1], /videos/);
   });
 
+  test("a hung Spree: null after the timeout, and the request is aborted", async () => {
+    let aborted = false;
+    const started = Date.now();
+    const doc = await fetchFeaturedProducts({
+      baseUrl: "",
+      timeoutMs: 30,
+      fetchImpl: (_url, init) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () => {
+            aborted = true;
+            reject(new Error("aborted"));
+          });
+        })
+    });
+    assert.equal(doc, null);
+    assert.equal(aborted, true);
+    assert.ok(Date.now() - started < 2000);
+  });
+
   test("default permalink", () => {
     assert.equal(DEFAULT_FEATURED_TAXON, "collections/featured");
   });
@@ -175,6 +196,20 @@ describe("spreeInclude", () => {
     assert.equal(withVideos("images,variants"), "images,variants,videos");
     assert.equal(withVideos("images,videos"), "images,videos");
     assert.equal(withoutVideos("images,videos,variants"), "images,variants");
+  });
+
+  test("a rejected include is retried after a while, not never (long-lived server)", () => {
+    const t0 = 1_000_000;
+    markVideosUnsupported(t0);
+    assert.equal(withVideos("images", t0 + 1), "images");
+    assert.equal(
+      withVideos("images", t0 + VIDEOS_RETRY_AFTER_MS - 1),
+      "images"
+    );
+    assert.equal(
+      withVideos("images", t0 + VIDEOS_RETRY_AFTER_MS),
+      "images,videos"
+    );
   });
 
   test("describeRequestError reads SDK and fetch errors", () => {
