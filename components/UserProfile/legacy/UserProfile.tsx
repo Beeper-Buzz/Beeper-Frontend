@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 import {
-  useUserProfile,
+  useUserProfileByHandle,
   useFollowUser,
   useUnfollowUser,
   profileDisplayName
@@ -11,7 +11,8 @@ import { UserProfileProps } from "../types";
 
 export const UserProfile: React.FC<UserProfileProps> = ({ username }) => {
   const router = useRouter();
-  const { data: userData, isLoading, error } = useUserProfile(username);
+  // `username` is a handle from the URL, not a user id.
+  const { data: userData, isLoading, error } = useUserProfileByHandle(username);
   const followMutation = useFollowUser();
   const unfollowMutation = useUnfollowUser();
 
@@ -19,9 +20,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ username }) => {
     if (!userData) return;
 
     if (userData.is_following) {
-      unfollowMutation.mutate(username);
+      unfollowMutation.mutate(String(userData.id));
     } else {
-      followMutation.mutate(username);
+      followMutation.mutate(String(userData.id));
     }
   };
 

@@ -4,9 +4,10 @@ import { FEED_CONFIGS, fetchProductFeed } from "@hooks/useProductFeed";
 import { fetchHomepage, HomepageData } from "@hooks/useHomepage";
 import { fetchFeaturedProducts } from "@lib/featured";
 import { hasMsrp } from "@lib/productMedia";
+import { lookupProduct } from "@lib/slugRoute";
 
 // Which Spree product drives the hero price + CTA:
-// 1. NEXT_PUBLIC_HERO_PRODUCT_SLUG, if set;
+// 1. NEXT_PUBLIC_HERO_PRODUCT_SLUG, if set and the product is visible;
 // 2. else the first product of the Featured taxon (order it in the admin
 //    under Products -> Taxons -> Collections -> Featured);
 // 3. else null, and Hero falls back to its static copy.
@@ -42,22 +43,17 @@ async function fetchFeaturedHeroData(): Promise<HeroData | null> {
 // which touches window.localStorage and throws in getStaticProps (which is why
 // the feed fetches below are wrapped in .catch). Mirrors pages/[slug].tsx.
 async function fetchHeroData(slug: string): Promise<HeroData | null> {
-  const spreeUrl = SPREE_URL;
-  try {
-    const res = await fetch(
-      `${spreeUrl}/api/v2/storefront/products?filter[slug]=${encodeURIComponent(
-        slug
-      )}`,
-      { headers: { "Content-Type": "application/vnd.api+json" } }
-    );
-    if (!res.ok) return null;
-    const json = await res.json();
-    const attrs = json?.data?.[0]?.attributes;
-    if (!attrs) return null;
-    return heroFromAttributes(slug, attrs);
-  } catch {
-    return null;
-  }
+  const found = await lookupProduct(slug, { baseUrl: SPREE_URL });
+  return found.status === "visible"
+    ? heroFromAttributes(slug, found.attributes)
+    : null;
+}
+
+async function resolveHeroData(): Promise<HeroData | null> {
+  const fromEnv = HERO_PRODUCT_SLUG
+    ? await fetchHeroData(HERO_PRODUCT_SLUG)
+    : null;
+  return fromEnv || fetchFeaturedHeroData();
 }
 
 export async function getStaticProps() {
@@ -67,9 +63,7 @@ export async function getStaticProps() {
         () => null
       ),
       fetchHomepage().catch(() => null),
-      HERO_PRODUCT_SLUG
-        ? fetchHeroData(HERO_PRODUCT_SLUG)
-        : fetchFeaturedHeroData()
+      resolveHeroData()
     ]);
     return {
       props: {

@@ -6,6 +6,12 @@ import {
   describeRequestError,
   requestWithVideosFallback
 } from "../../lib/spreeInclude";
+import {
+  ProductNotFoundError,
+  assertProductVisible,
+  isProductNotFoundError,
+  shouldRetryProductFetch
+} from "../../lib/productVisibility";
 
 // `videos` is appended (and dropped again if the backend lacks it).
 const PRODUCT_INCLUDE =
@@ -40,16 +46,19 @@ const fetchProduct = async (slug: string): Promise<IProduct> => {
       );
     },
     describeRequestError
-  ).catch((err) => {
-    throw new Error(`Product request failed: ${err?.message}`);
-  });
+  )
+    .then((doc) => assertProductVisible(doc, slug))
+    .catch((err) => {
+      if (isProductNotFoundError(err)) throw new ProductNotFoundError(slug);
+      throw new Error(`Product request failed: ${err?.message}`);
+    });
 };
 
 const useProduct = (id: string) => {
   return useQuery<IProduct, false>(
     [QueryKeys.PRODUCT, id],
     () => fetchProduct(id),
-    { enabled: !!id }
+    { enabled: !!id, retry: shouldRetryProductFetch }
   );
 };
 

@@ -26,6 +26,8 @@ import * as tracking from "../../config/tracking";
 import Featured from "../Home/Featured";
 import { ProductList } from "../ProductList";
 import { FourOhFour } from "../404/FourOhFour";
+import { ServiceUnavailable } from "../404/ServiceUnavailable";
+import { isProductNotFoundError } from "../../lib/productVisibility";
 import { useMediaQuery } from "react-responsive";
 import homeData from "../Home/home.json";
 import { useProductFeed } from "../../hooks/useProductFeed";
@@ -314,6 +316,12 @@ export const WholesaleProductDetails = ({
         <Loading />
       </Layout>
     );
+  }
+
+  // Checked before the data: a refetch that fails keeps the old product in
+  // `thisProduct`, and a product hidden since then must not stay on screen.
+  if (isError && !isProductNotFoundError(productError)) {
+    return <ServiceUnavailable />;
   }
 
   if (isError || !thisProduct) {
