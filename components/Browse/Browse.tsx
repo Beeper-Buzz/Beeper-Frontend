@@ -32,14 +32,6 @@ export interface ShopProduct {
 
 const SHOP_PRODUCTS: ShopProduct[] = [
   {
-    name: "Beeper \u03948",
-    slug: "beeper-8",
-    price: "$199.99",
-    category: "Devices",
-    preorder: true,
-    colors: ["#000", "#fff"]
-  },
-  {
     name: "Carrying Case",
     slug: "beeper-carrying-case",
     price: "$29.99",

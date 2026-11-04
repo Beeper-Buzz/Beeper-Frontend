@@ -19,12 +19,10 @@ export interface HeroProps {
 }
 
 // Only used when no hero product resolved at build/revalidate time (Spree
-// unreachable, or no slug env and an empty Featured taxon): the CTA then goes
-// to the shop rather than to a product slug that may not exist.
+// unreachable, or a hidden slug env and an empty Featured taxon): the CTA then
+// goes to the shop rather than to a product slug that may not exist.
 const FALLBACK_PRICE = "$199.99";
-const FALLBACK_HREF = process.env.NEXT_PUBLIC_HERO_PRODUCT_SLUG
-  ? `/${process.env.NEXT_PUBLIC_HERO_PRODUCT_SLUG}`
-  : "/browse";
+const FALLBACK_HREF = "/browse";
 
 const DEFAULT_BUTTON_TEXT = "PRE-ORDER NOW";
 

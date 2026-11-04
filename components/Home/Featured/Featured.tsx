@@ -22,11 +22,6 @@ export interface FeaturedProps {
 /** Static placeholder products matching seed data */
 const PLACEHOLDER_PRODUCTS: FeaturedProduct[] = [
   {
-    name: "Beeper \u03948",
-    price: "$199.99",
-    href: "/beeper-8"
-  },
-  {
     name: "Carrying Case",
     price: "$29.99",
     href: "/beeper-carrying-case"
