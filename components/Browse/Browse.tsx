@@ -14,6 +14,8 @@ import { fetchProducts } from "@hooks/useProducts";
 import { QueryKeys } from "@hooks/queryKeys";
 import { ModeToggle, BrowseMode } from "./ModeToggle";
 import { MarketplaceProduct } from "./MarketplaceCard";
+import { FeaturedShelf } from "./FeaturedShelf";
+import { useFeaturedProducts } from "@hooks/useFeaturedProducts";
 
 // ──────────────────────────────────────────────
 // Placeholder product data (fallback when Spree is not seeded)
@@ -125,6 +127,9 @@ export const Browse: React.FC = () => {
 
   // Spree API products (may be empty if not seeded)
   const { data: productsData, isLoading } = useProducts(1);
+
+  // Featured taxon (null when missing, empty or failing: no shelf)
+  const { data: featuredData } = useFeaturedProducts();
 
   // Reset filter chips when mode changes
   useEffect(() => {
@@ -344,6 +349,28 @@ export const Browse: React.FC = () => {
       activeChips.length > 0
   );
 
+  // Featured shelf: shop mode, nothing filtered/searched/chipped. While it
+  // shows, its products are left out of the grid so nothing appears twice.
+  const showFeatured =
+    mode === "shop" && !hasActiveFilters && !!featuredData?.data?.length;
+  const featuredIds = useMemo(
+    () => new Set((featuredData?.data || []).map((p: any) => String(p.id))),
+    [featuredData]
+  );
+  const featuredSlugs = useMemo(
+    () =>
+      new Set(
+        (featuredData?.data || []).map((p: any) => String(p.attributes?.slug))
+      ),
+    [featuredData]
+  );
+  const gridSpreeProducts = showFeatured
+    ? filteredSpreeProducts.filter((p: any) => !featuredIds.has(String(p.id)))
+    : filteredSpreeProducts;
+  const gridShopPlaceholders = showFeatured
+    ? filteredShopPlaceholders.filter((p) => !featuredSlugs.has(p.slug))
+    : filteredShopPlaceholders;
+
   // ── Sidebar filters (Spree-powered, for Shop mode with Spree data) ──
 
   const FilterContent = () => (
@@ -511,6 +538,11 @@ export const Browse: React.FC = () => {
             </div>
           </motion.div>
 
+          {/* Featured shelf (above the shop grid) */}
+          {showFeatured && featuredData && (
+            <FeaturedShelf featured={featuredData} />
+          )}
+
           {/* Main content area */}
           <div
             className={cn(
@@ -612,29 +644,29 @@ export const Browse: React.FC = () => {
                   {mode === "shop" ? (
                     // ── Shop mode ──
                     hasSpreeData ? (
-                      filteredSpreeProducts.length > 0 ? (
+                      gridSpreeProducts.length > 0 ? (
                         <ProductList
                           products={{
-                            data: filteredSpreeProducts,
+                            data: gridSpreeProducts,
                             included: productsData?.included
                           }}
                           title=""
                           mode="shop"
                         />
-                      ) : (
+                      ) : showFeatured ? null : (
                         <EmptyState
                           hasActiveFilters={hasActiveFilters}
                           onClear={handleClearFilters}
                         />
                       )
                     ) : !isLoading ? (
-                      filteredShopPlaceholders.length > 0 ? (
+                      gridShopPlaceholders.length > 0 ? (
                         <ProductList
-                          placeholderProducts={filteredShopPlaceholders}
+                          placeholderProducts={gridShopPlaceholders}
                           title=""
                           mode="shop"
                         />
-                      ) : (
+                      ) : showFeatured ? null : (
                         <EmptyState
                           hasActiveFilters={hasActiveFilters}
                           onClear={handleClearFilters}
@@ -645,6 +677,7 @@ export const Browse: React.FC = () => {
                   filteredMarketplacePlaceholders.length > 0 ? (
                     <ProductList
                       marketplaceProducts={filteredMarketplacePlaceholders}
+                      mediaSource={productsData}
                       title=""
                       mode="marketplace"
                     />
