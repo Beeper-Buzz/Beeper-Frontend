@@ -116,12 +116,10 @@ describe("resolveSlug: products", () => {
 });
 
 describe("resolveSlug: profiles", () => {
-  it("a handle with no product is a profile, exposing only id and name", async () => {
+  it("a handle with no product is a profile, and carries none of its data", async () => {
     const { result, urls } = await resolve("beeper", missing, aProfile);
-    assert.deepEqual(result, {
-      kind: "profile",
-      profile: { id: 7, display_name: "Beep" }
-    });
+    // The page's props go into __NEXT_DATA__; the client fetches the profile itself.
+    assert.deepEqual(result, { kind: "profile" });
     assert.ok(urls[1].endsWith("/api/v1/users/by_handle/beeper/profile"));
   });
 

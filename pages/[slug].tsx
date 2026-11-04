@@ -3,17 +3,16 @@ import { ProductDetails } from "../components/ProductDetails";
 import { UserProfile } from "../components/UserProfile";
 import { ServiceUnavailable } from "../components/404/ServiceUnavailable";
 import { Layout } from "@components/Layout";
-import { PublicProfile, resolveSlug } from "../lib/slugRoute";
+import { resolveSlug } from "../lib/slugRoute";
 
 interface SlugPageProps {
   type: "product" | "profile" | "unavailable";
   slug: string;
-  profileData?: PublicProfile;
 }
 
 // Server-rendered per request, so nothing here is cached: a product published
 // or hidden in the admin is right on the next request. The props never carry
-// product data; the page fetches a confirmed-visible product on the client.
+// product or profile data; the page fetches what was confirmed on the client.
 export const getServerSideProps: GetServerSideProps<SlugPageProps> = async ({
   params,
   res
@@ -27,9 +26,8 @@ export const getServerSideProps: GetServerSideProps<SlugPageProps> = async ({
     case "product":
       return { props: { type: "product", slug } };
     case "profile":
-      return {
-        props: { type: "profile", slug, profileData: resolved.profile }
-      };
+      res.setHeader("X-Robots-Tag", "noindex");
+      return { props: { type: "profile", slug } };
     case "unavailable":
       // The API failed, so this may well exist. A 503 tells crawlers and caches
       // to come back, where a 404 could get a real page dropped.
@@ -44,7 +42,7 @@ export const getServerSideProps: GetServerSideProps<SlugPageProps> = async ({
   }
 };
 
-export default function SlugPage({ type, slug, profileData }: SlugPageProps) {
+export default function SlugPage({ type, slug }: SlugPageProps) {
   if (type === "unavailable") {
     return (
       <Layout>
@@ -53,7 +51,7 @@ export default function SlugPage({ type, slug, profileData }: SlugPageProps) {
     );
   }
 
-  if (type === "profile" && profileData) {
+  if (type === "profile") {
     return (
       <Layout>
         <UserProfile username={slug} />

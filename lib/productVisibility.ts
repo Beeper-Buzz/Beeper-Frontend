@@ -34,13 +34,18 @@ export function assertProductVisible<T>(doc: T, slug: string): T {
 /**
  * The robots meta in the served HTML. It belongs in _document because the app
  * server-renders a loading state, so next/head tags from a page only appear
- * after hydration. Noindex is only for pages with nothing to index.
+ * after hydration. Noindex is for pages with nothing to index, and for profiles:
+ * the server can't tell a private one from a public one, and they've never been
+ * in search results.
  */
 export const robotsContent = (
   page: string,
   pageProps?: { type?: string } | null
 ): string =>
-  page === "/404" || page === "/_error" || pageProps?.type === "unavailable"
+  page === "/404" ||
+  page === "/_error" ||
+  pageProps?.type === "unavailable" ||
+  pageProps?.type === "profile"
     ? "noindex"
     : "noodp";
 

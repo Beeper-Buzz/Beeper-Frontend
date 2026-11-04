@@ -68,9 +68,12 @@ describe("robotsContent", () => {
     assert.equal(robotsContent("/[slug]", { type: "unavailable" }), "noindex");
   });
 
+  it("noindexes profiles: a private one looks the same to the server", () => {
+    assert.equal(robotsContent("/[slug]", { type: "profile" }), "noindex");
+  });
+
   it("leaves real pages indexable", () => {
     assert.equal(robotsContent("/[slug]", { type: "product" }), "noodp");
-    assert.equal(robotsContent("/[slug]", { type: "profile" }), "noodp");
     for (const page of ["/", "/browse", "/about", "/terms", "/privacy"]) {
       assert.equal(robotsContent(page, {}), "noodp");
     }

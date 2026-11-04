@@ -114,14 +114,9 @@ export async function lookupProduct(
 }
 
 type ProfileLookup =
-  | { status: "found"; profile: PublicProfile }
+  | { status: "found" }
   | { status: "missing" }
   | { status: "error" };
-
-export interface PublicProfile {
-  id: number | string | null;
-  display_name: string | null;
-}
 
 async function lookupProfile(
   slug: string,
@@ -137,14 +132,9 @@ async function lookupProfile(
   if (result.outcome === "error") return { status: "error" };
   if (result.outcome === "missing") return { status: "missing" };
 
-  const data = result.body?.response_data;
-  if (data) {
-    return {
-      status: "found",
-      // Only what the page needs; the client fetches the profile itself.
-      profile: { id: data.id ?? null, display_name: data.display_name ?? null }
-    };
-  }
+  // Only whether it exists: the client fetches the profile itself, so none of it
+  // goes into the page's props.
+  if (result.body?.response_data) return { status: "found" };
   // This API reports errors in the body with HTTP 200: "no such user" is
   // response_code 404.
   const code = Number(result.body?.response_code);
@@ -155,7 +145,7 @@ async function lookupProfile(
 
 export type SlugResolution =
   | { kind: "product" }
-  | { kind: "profile"; profile: PublicProfile }
+  | { kind: "profile" }
   | { kind: "not-found" }
   /** The API failed, so we can't say it doesn't exist. Never carries data. */
   | { kind: "unavailable" };
@@ -170,9 +160,7 @@ export async function resolveSlug(
   if (product.status === "visible") return { kind: "product" };
 
   const profile = await lookupProfile(slug, options);
-  if (profile.status === "found") {
-    return { kind: "profile", profile: profile.profile };
-  }
+  if (profile.status === "found") return { kind: "profile" };
 
   return product.status === "error" || profile.status === "error"
     ? { kind: "unavailable" }
