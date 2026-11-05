@@ -24,6 +24,14 @@ import {
   PROMOTIONS,
   ProductDef
 } from "./seed-spree-data";
+import {
+  collectAllPages,
+  ExistingProduct,
+  existingProductsPath,
+  findExistingProduct,
+  mergeTaxonIds,
+  V1Page
+} from "./seedMatch";
 
 // ---------------------------------------------------------------------------
 // Config
@@ -284,29 +292,42 @@ async function seedProducts(
 ): Promise<void> {
   console.log("\n--- Seeding Products ---");
 
-  // Fetch existing products (paginated)
-  const { products: existing } = await get<{
-    products: Array<{ id: number; slug: string; name: string }>;
-  }>("/products?per_page=100");
+  // Fetch every existing product, page by page (no per_page=100 ceiling),
+  // discontinued ones included (they still own their slugs).
+  const existing = await collectAllPages<ExistingProduct>((page, perPage) =>
+    get<V1Page<ExistingProduct>>(existingProductsPath(page, perPage))
+  );
+  console.log(`  [info] ${existing.length} existing product(s)`);
 
   for (const def of PRODUCTS) {
-    let product = existing.find((p) => p.slug === def.slug);
+    // Resolve taxon IDs
+    const taxonIdList = def.taxons
+      .map((t) => taxonIds.get(t))
+      .filter((id): id is number => id !== undefined);
 
-    if (product) {
+    // Slug, then master SKU, then normalized name. Anything but a slug match
+    // is logged loudly and updated in place: never create a second product.
+    const match = findExistingProduct(def, existing);
+    let product: { id: number; slug: string; name: string } | undefined =
+      match?.product;
+
+    if (match) {
+      if (match.warning) {
+        console.warn(`  [WARN] ${match.warning}`);
+      }
       // Already exists — converge the mutable fields a re-run must enforce
-      // (copy / MSRP / SKU + unlimited stock). This is what repairs a product
-      // seeded before these fields existed, e.g. an early reservation.
-      console.log(`  [exists] Product "${def.name}" (id=${product.id})`);
-      await reconcileProduct(product.id, def);
+      // (copy / MSRP / SKU / seeded taxons + unlimited stock). This is what
+      // repairs a product seeded before these fields existed.
+      console.log(
+        `  [exists] Product "${def.name}" (id=${match.product.id}, by ${match.by})`
+      );
+      await reconcileProduct(match.product, def, taxonIdList);
     } else {
-      // Resolve taxon IDs
-      const taxonIdList = def.taxons
-        .map((t) => taxonIds.get(t))
-        .filter((id): id is number => id !== undefined);
-
+      // No `slug` and no `master_attributes`: the v1 API drops both on
+      // create (neither is a permitted product attribute), so FriendlyId
+      // derives the slug from the name. `sku` is permitted at the top level.
       const productPayload: Record<string, unknown> = {
         name: def.name,
-        slug: def.slug,
         price: def.price,
         description: def.description,
         available_on: new Date().toISOString(),
@@ -319,7 +340,7 @@ async function seedProducts(
       }
 
       if (def.sku) {
-        productPayload.master_attributes = { sku: def.sku };
+        productPayload.sku = def.sku;
       }
 
       if (def.shippingWeight) {
@@ -340,6 +361,17 @@ async function seedProducts(
         }
       );
       console.log(`  [create] Product "${def.name}" (id=${product.id})`);
+      // Later definitions must see it, or a repeated name would create again.
+      existing.push(product as ExistingProduct);
+      if (product.slug !== def.slug) {
+        console.warn(
+          `\n  [WARN] ************************************************************\n` +
+            `  [WARN] Product ${product.id} got slug "${product.slug}", not "${def.slug}".\n` +
+            `  [WARN] Links to /${def.slug} will 404 until the slug is set in the admin\n` +
+            `  [WARN] (Products -> ${def.name} -> Details -> Slug).\n` +
+            `  [WARN] ************************************************************\n`
+        );
+      }
 
       // Set product properties
       for (const [propName, propValue] of Object.entries(def.properties)) {
@@ -441,16 +473,29 @@ async function setMasterStock(productId: number): Promise<void> {
 }
 
 // Converge an already-created product to the seed definition. Only the fields
-// a re-run must enforce — description, MSRP, master SKU, unlimited stock — so
-// hand edits elsewhere in admin survive. Best-effort: a failed patch logs and
-// continues rather than aborting the whole seed.
+// a re-run must enforce — description, MSRP, master SKU, seeded taxons (added,
+// never removed), unlimited stock — so hand edits elsewhere in admin survive.
+// Best-effort: a failed patch logs and continues rather than aborting the seed.
 async function reconcileProduct(
-  productId: number,
-  def: ProductDef
+  existing: ExistingProduct,
+  def: ProductDef,
+  taxonIdList: number[]
 ): Promise<void> {
+  const productId = existing.id;
   const patch: Record<string, unknown> = { description: def.description };
   if (def.compareAtPrice) patch.compare_at_price = def.compareAtPrice;
-  if (def.sku) patch.master_attributes = { sku: def.sku };
+  // Top-level `sku` (permitted, delegated to master); master_attributes is dropped.
+  if (def.sku) patch.sku = def.sku;
+  // taxon_ids on PUT replaces the whole list, so only touch it when the list
+  // response told us the current ids.
+  if (Array.isArray(existing.taxon_ids)) {
+    const taxons = mergeTaxonIds(existing.taxon_ids, taxonIdList);
+    if (taxons) patch.taxon_ids = taxons;
+  } else {
+    console.warn(
+      `    [warn] No taxon_ids for ${productId}; taxons not checked`
+    );
+  }
 
   try {
     await put(`/products/${productId}`, { product: patch });

@@ -1,112 +1,57 @@
 import { GetServerSideProps } from "next";
 import { ProductDetails } from "../components/ProductDetails";
 import { UserProfile } from "../components/UserProfile";
+import { ServiceUnavailable } from "../components/404/ServiceUnavailable";
 import { Layout } from "@components/Layout";
-
-const RESERVED_SLUGS = [
-  "cart",
-  "checkout",
-  "login",
-  "signup",
-  "account",
-  "browse",
-  "about",
-  "terms",
-  "privacy",
-  "home",
-  "reset-password",
-  "thank-you",
-  "update-email",
-  "update-password",
-  "api",
-  "admin",
-  "tv",
-  "user",
-  "images",
-  "fonts",
-  "static",
-  "assets",
-  "_next",
-  "creator-application"
-];
+import { resolveSlug } from "../lib/slugRoute";
 
 interface SlugPageProps {
-  type: "product" | "profile";
+  type: "product" | "profile" | "unavailable";
   slug: string;
-  productData?: any;
-  profileData?: any;
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+// Server-rendered per request, so nothing here is cached: a product published
+// or hidden in the admin is right on the next request. The props never carry
+// product or profile data; the page fetches what was confirmed on the client.
+export const getServerSideProps: GetServerSideProps<SlugPageProps> = async ({
+  params,
+  res
+}) => {
   const slug = params?.slug as string;
+  const resolved = await resolveSlug(slug || "", {
+    baseUrl: process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080"
+  });
 
-  if (!slug || RESERVED_SLUGS.includes(slug)) {
-    return { notFound: true };
+  switch (resolved.kind) {
+    case "product":
+      return { props: { type: "product", slug } };
+    case "profile":
+      res.setHeader("X-Robots-Tag", "noindex");
+      return { props: { type: "profile", slug } };
+    case "unavailable":
+      // The API failed, so this may well exist. A 503 tells crawlers and caches
+      // to come back, where a 404 could get a real page dropped.
+      res.statusCode = 503;
+      res.setHeader("Retry-After", "30");
+      res.setHeader("Cache-Control", "no-store");
+      res.setHeader("X-Robots-Tag", "noindex");
+      return { props: { type: "unavailable", slug } };
+    default:
+      res.setHeader("X-Robots-Tag", "noindex");
+      return { notFound: true };
   }
-
-  // 1. Try product lookup by slug
-  const spreeUrl =
-    process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080";
-  try {
-    const productRes = await fetch(
-      `${spreeUrl}/api/v2/storefront/products?filter[slug]=${encodeURIComponent(
-        slug
-      )}&include=images,variants,option_types`,
-      { headers: { "Content-Type": "application/vnd.api+json" } }
-    );
-    if (productRes.ok) {
-      const productData = await productRes.json();
-      if (productData.data && productData.data.length > 0) {
-        return {
-          props: { type: "product", slug, productData }
-        };
-      }
-    }
-  } catch {
-    // Product lookup failed, try profile
-  }
-
-  // 2. Try user profile by handle
-  try {
-    const profileRes = await fetch(
-      `${spreeUrl}/api/v1/users/by_handle/${encodeURIComponent(
-        slug.toLowerCase()
-      )}/profile`
-    );
-    if (profileRes.ok) {
-      const profileJson = await profileRes.json();
-      if (profileJson.response_data) {
-        return {
-          props: {
-            type: "profile" as const,
-            slug,
-            // Only what the page needs; the client fetches the profile itself.
-            profileData: {
-              id: profileJson.response_data.id ?? null,
-              display_name: profileJson.response_data.display_name ?? null
-            }
-          }
-        };
-      }
-    }
-  } catch {
-    // fall through to 404
-  }
-
-  // 3. Neither found — fall back to client-side product detail rendering
-  // (lets ProductDetails handle its own loading/404 via useProduct hook)
-  return {
-    props: { type: "product", slug }
-  };
 };
 
-export default function SlugPage({
-  type,
-  slug,
-  productData,
-  profileData
-}: SlugPageProps) {
-  if (type === "profile" && profileData) {
+export default function SlugPage({ type, slug }: SlugPageProps) {
+  if (type === "unavailable") {
+    return (
+      <Layout>
+        <ServiceUnavailable />
+      </Layout>
+    );
+  }
+
+  if (type === "profile") {
     return (
       <Layout>
         <UserProfile username={slug} />
@@ -114,6 +59,7 @@ export default function SlugPage({
     );
   }
 
-  // Default: render product details (client-side hook handles loading)
+  // Confirmed visible on the server; the client hook fetches it and renders
+  // not-found itself if it's hidden in the meantime.
   return <ProductDetails props={{}} />;
 }

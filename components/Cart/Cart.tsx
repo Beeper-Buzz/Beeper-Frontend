@@ -6,6 +6,7 @@ import { Minus, Plus, X, Trash2 } from "lucide-react";
 import { Button } from "@components/ui";
 import {
   useCart,
+  useUnavailableCartLines,
   updateItemQuantity,
   removeItemFromCart
 } from "../../hooks/useCart";
@@ -14,6 +15,7 @@ import { Layout } from "../Layout";
 import { Loading } from "../Loading";
 import { QueryKeys } from "../../hooks/queryKeys";
 import { useAuth } from "../../config/auth";
+import { UnavailableCartLines } from "./UnavailableCartLines";
 
 export const Cart = () => {
   const router = useRouter();
@@ -23,6 +25,8 @@ export const Cart = () => {
 
   const { data: cartData, isLoading, isError, error } = useCart();
   const { data: productsData } = useProducts(1);
+  const unavailableLines = useUnavailableCartLines(cartData);
+  const hasUnavailable = unavailableLines.length > 0;
 
   useEffect(() => {
     if (Array.isArray(cartData?.included)) {
@@ -192,8 +196,15 @@ export const Cart = () => {
                   </div>
 
                   <div className="mt-2 flex items-center justify-between">
-                    {/* Quantity controls */}
-                    <div className="flex items-center gap-1">
+                    {/* Quantity controls: the backend refuses them on a line
+                        that can't be bought, so only removing it is offered. */}
+                    <div
+                      className={`flex items-center gap-1 ${
+                        unavailableLines.some((l) => l.id === lineItemId)
+                          ? "invisible"
+                          : ""
+                      }`}
+                    >
                       <button
                         onClick={() =>
                           handleUpdateItemQuantity(lineItemId, quantity - 1)
@@ -296,6 +307,12 @@ export const Cart = () => {
             )}
           </div>
 
+          <UnavailableCartLines
+            lines={unavailableLines}
+            onRemove={handleRemoveItem}
+            disabled={removeFromCartMutation.isLoading}
+          />
+
           <div>{renderCartItems()}</div>
 
           {/* Totals */}
@@ -325,7 +342,8 @@ export const Cart = () => {
             {user ? (
               <button
                 onClick={() => router.push("/checkout")}
-                className="neon-btn"
+                disabled={hasUnavailable}
+                className="neon-btn disabled:pointer-events-none disabled:opacity-50"
               >
                 Checkout
               </button>
@@ -333,7 +351,8 @@ export const Cart = () => {
               <>
                 <button
                   onClick={() => router.push("/checkout")}
-                  className="neon-btn"
+                  disabled={hasUnavailable}
+                  className="neon-btn disabled:pointer-events-none disabled:opacity-50"
                 >
                   Checkout as Guest
                 </button>

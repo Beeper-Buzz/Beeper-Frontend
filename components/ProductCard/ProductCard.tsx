@@ -11,12 +11,37 @@ import { useToggleFavorite, useCheckFavorite } from "@hooks/useFavorites";
 import { useAuth } from "@config/auth";
 import { cn } from "@lib/utils";
 import constants from "@utilities/constants";
+import { MediaItem, staticMedia } from "@lib/productMedia";
+import { ProductMedia } from "@components/ProductMedia";
+
+// Shown when a product has no media at all.
+export const CardMediaPlaceholder: React.FC<{ glyph?: string }> = ({
+  glyph = "Δ"
+}) => (
+  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neon-cyan/5 via-surface-deep to-neon-magenta/5">
+    <span className="font-micro5-charted text-3xl text-white/10">{glyph}</span>
+  </div>
+);
 
 // ──────────────────────────────────────────────
 // Spree-powered ProductCard (original)
 // ──────────────────────────────────────────────
 
-export const ProductCard = ({ imgSrc, item, opts }: any) => {
+interface ProductCardProps {
+  item: any;
+  opts?: any[];
+  /** Grid media from pickGridMedia (lib/productMedia). */
+  media?: MediaItem | null;
+  /** Legacy: a plain image URL, used when `media` is not given. */
+  imgSrc?: string;
+}
+
+export const ProductCard = ({
+  imgSrc,
+  item,
+  opts,
+  media
+}: ProductCardProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -60,10 +85,16 @@ export const ProductCard = ({ imgSrc, item, opts }: any) => {
     >
       {/* Image Container */}
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-surface-deep transition-all duration-500 group-hover:shadow-[0_0_18px_rgba(0,255,255,0.25)]">
-        <img
-          src={imgSrc}
-          alt={item.attributes.name}
-          className="h-full w-full object-cover transition-transform duration-500 ease-expo-out group-hover:scale-105"
+        <ProductMedia
+          media={
+            media !== undefined
+              ? media
+              : staticMedia(imgSrc, item.attributes.name)
+          }
+          surface="grid"
+          className="h-full w-full overflow-hidden"
+          mediaClassName="h-full w-full object-cover transition-transform duration-500 ease-expo-out group-hover:scale-105"
+          placeholder={<CardMediaPlaceholder />}
         />
 
         {/* Favorite Button */}

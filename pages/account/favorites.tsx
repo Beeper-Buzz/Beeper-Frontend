@@ -66,8 +66,10 @@ const Favorites = () => {
     });
   };
 
-  const handleCardClick = (productSlug: string) => {
-    router.push(`/${productSlug}`);
+  // A favorite can outlive its product page: a hidden product's link leads to
+  // the 404 page, and the card still shows and can be removed.
+  const handleCardClick = (productSlug?: string) => {
+    if (productSlug) router.push(`/${productSlug}`);
   };
 
   return (

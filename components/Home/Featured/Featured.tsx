@@ -1,12 +1,16 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { MediaItem } from "@lib/productMedia";
+import { ProductMedia } from "@components/ProductMedia";
 
 export interface FeaturedProduct {
   name: string;
   price: string;
   href: string;
   image?: string;
+  /** Grid media (video / GIF / image); wins over `image`. */
+  media?: MediaItem | null;
 }
 
 export interface FeaturedProps {
@@ -17,11 +21,6 @@ export interface FeaturedProps {
 
 /** Static placeholder products matching seed data */
 const PLACEHOLDER_PRODUCTS: FeaturedProduct[] = [
-  {
-    name: "Beeper \u03948",
-    price: "$199.99",
-    href: "/beeper-8"
-  },
   {
     name: "Carrying Case",
     price: "$29.99",
@@ -99,12 +98,22 @@ const Featured: React.FC<FeaturedProps> = ({ products, title }) => {
           viewport={{ once: true, margin: "-50px" }}
         >
           {items.map((product) => (
-            <motion.div key={product.name} variants={cardVariants}>
+            <motion.div
+              key={product.href + product.name}
+              variants={cardVariants}
+            >
               <Link href={product.href} className="block">
                 <div className="glass-panel group flex w-[200px] flex-shrink-0 flex-col items-center p-5 transition-all duration-500 hover:-translate-y-1 hover:border-transparent hover:bg-white/[0.08] hover:shadow-[0_0_18px_rgba(0,255,255,0.25)] sm:w-[220px]">
                   {/* Image placeholder */}
                   <div className="mb-4 flex h-[140px] w-full items-center justify-center rounded-lg bg-white/[0.03] sm:h-[160px]">
-                    {product.image ? (
+                    {product.media ? (
+                      <ProductMedia
+                        media={product.media}
+                        surface="grid"
+                        className="h-full w-full overflow-hidden rounded-lg"
+                        mediaClassName="h-full w-full rounded-lg object-cover"
+                      />
+                    ) : product.image ? (
                       <img
                         src={product.image}
                         alt={product.name}

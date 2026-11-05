@@ -2,6 +2,8 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@lib/utils";
+import { MediaItem } from "@lib/productMedia";
+import { ProductMedia } from "@components/ProductMedia";
 
 export interface MarketplaceProduct {
   name: string;
@@ -16,12 +18,27 @@ export interface MarketplaceProduct {
 interface MarketplaceCardProps {
   product: MarketplaceProduct;
   index?: number;
+  /** Media of the Spree product with the same slug, when it has any. */
+  media?: MediaItem | null;
 }
 
 export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({
   product,
-  index = 0
+  index = 0,
+  media = null
 }) => {
+  const placeholder = (
+    <div className="absolute inset-0 flex items-center justify-center">
+      {/* Placeholder gradient artwork */}
+      <div className="absolute inset-0 bg-gradient-to-br from-neon-magenta/10 via-surface-deep to-neon-cyan/10" />
+      <span className="relative font-pressstart text-lg text-white/20">
+        {product.type === "Sample Packs" && "♫"}
+        {product.type === "Synths" && "◈"}
+        {product.type === "Visualizers" && "◉"}
+      </span>
+    </div>
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -37,16 +54,14 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({
           )}
         >
           {/* Artwork area - landscape aspect ratio */}
-          <div className="relative aspect-[16/9] w-full bg-surface-deep">
-            <div className="absolute inset-0 flex items-center justify-center">
-              {/* Placeholder gradient artwork */}
-              <div className="absolute inset-0 bg-gradient-to-br from-neon-magenta/10 via-surface-deep to-neon-cyan/10" />
-              <span className="relative font-pressstart text-lg text-white/20">
-                {product.type === "Sample Packs" && "♫"}
-                {product.type === "Synths" && "◈"}
-                {product.type === "Visualizers" && "◉"}
-              </span>
-            </div>
+          <div className="relative aspect-[16/9] w-full overflow-hidden bg-surface-deep">
+            <ProductMedia
+              media={media}
+              surface="grid"
+              className="absolute inset-0"
+              mediaClassName="h-full w-full object-cover"
+              placeholder={placeholder}
+            />
 
             {/* Type badge */}
             <div className="absolute left-3 top-3">

@@ -17,6 +17,8 @@ import { useProductFeed, FeedType } from "@hooks/useProductFeed";
 import { LogoBlob } from "../LogoBlob/LogoBlob";
 import { ShopMarketplaceSplit } from "./ShopMarketplaceSplit";
 import { SpecsGrid } from "./SpecsGrid";
+import { useFeaturedProducts } from "@hooks/useFeaturedProducts";
+import { pickGridMedia } from "@lib/productMedia";
 
 // Utility to parse settings (handles Ruby hash string or object)
 function parseSettings(settings: any): any {
@@ -210,28 +212,25 @@ export const DynamicHome = ({
     initialProducts
   );
 
-  // Transform Spree product feed into FeaturedProduct[] for the Featured strip
+  const { data: featuredTaxonData } = useFeaturedProducts();
+
+  // The Featured strip: the Featured taxon when it has products, else the
+  // latest feed (previous behavior), else the strip's own placeholders.
   const featuredProducts = useMemo<FeaturedProduct[] | undefined>(() => {
-    if (!feedData?.data || feedData.data.length === 0) return undefined;
-    const allImages =
-      feedData.included?.filter((e: any) => e.type === "image") || [];
+    const source = featuredTaxonData?.data?.length
+      ? featuredTaxonData
+      : feedData?.data?.length
+      ? feedData
+      : null;
+    if (!source) return undefined;
     const apiUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
-    return feedData.data.map((item: any) => {
-      const imgId = item.relationships?.images?.data?.[0]?.id;
-      const imgRecord = imgId
-        ? allImages.find((e: any) => e.id === imgId)
-        : null;
-      const imgUrl =
-        imgRecord?.attributes?.styles?.[4]?.url ||
-        imgRecord?.attributes?.styles?.[0]?.url;
-      return {
-        name: item.attributes.name,
-        price: item.attributes.display_price || `$${item.attributes.price}`,
-        href: `/${item.attributes.slug}`,
-        image: imgUrl ? `${apiUrl}${imgUrl}` : undefined
-      };
-    });
-  }, [feedData]);
+    return source.data.map((item: any) => ({
+      name: item.attributes.name,
+      price: item.attributes.display_price || `$${item.attributes.price}`,
+      href: `/${item.attributes.slug}`,
+      media: pickGridMedia(item, source.included as any, { baseUrl: apiUrl })
+    }));
+  }, [featuredTaxonData, feedData]);
 
   // Ensure video is muted for autoplay (iOS requires muted attribute set via JS)
   const videoRef = useRef<HTMLVideoElement>(null);

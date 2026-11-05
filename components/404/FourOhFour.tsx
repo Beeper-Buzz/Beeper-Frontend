@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import Head from "next/head";
 import { useMemo } from "react";
 
 const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
@@ -25,6 +26,9 @@ export const FourOhFour = () => {
 
   return (
     <>
+      <Head>
+        <meta name="robots" content="noindex" />
+      </Head>
       <div className="flex min-h-[60vh] flex-col items-center justify-center px-5 text-center">
         <h1 className="mb-4 font-title text-8xl font-black tracking-tight text-neon-cyan">
           404
