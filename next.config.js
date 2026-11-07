@@ -2,6 +2,9 @@ const Module = require("module");
 const path = require("path");
 const resolveFrom = require("resolve-from");
 const Dotenv = require("dotenv-webpack");
+// Required before the Module.prototype.require patch below, so Sentry's own
+// module resolution is not routed through the react/react-dom redirect.
+const { withSentryConfig } = require("@sentry/nextjs");
 const node_modules = path.resolve(__dirname, "node_modules");
 
 const originalRequire = Module.prototype.require;
@@ -41,8 +44,14 @@ const isLocalDevEnvironment = !process.env.DEPLOY_ENV;
 const SPREE_API_URL =
   process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080";
 
-module.exports = {
+const moduleExports = {
   swcMinify: true,
+  sentry: {
+    // Upload source maps to Sentry but do not serve them to browsers, so the
+    // storefront's original source is not readable from production devtools.
+    // Default in @sentry/nextjs 8+, opt-in on the 7.x line this app is pinned to.
+    hideSourceMaps: true
+  },
   async rewrites() {
     return [
       {
@@ -95,6 +104,19 @@ module.exports = {
     return config;
   }
 };
+
+// Source maps are only uploaded when a token is present. Without this guard the
+// plugin fails the build in environments that have no SENTRY_AUTH_TOKEN — which
+// includes the Docker image build (see Dockerfile) and local `yarn build`.
+const sentryWebpackPluginOptions = {
+  org: "material-instinct-llc",
+  project: "beeper-frontend",
+  silent: true,
+  dryRun: !process.env.SENTRY_AUTH_TOKEN
+};
+
+module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+
 function loadEnvVariables() {
   // eslint-disable-next-line global-require
   require("dotenv").config({
