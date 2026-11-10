@@ -75,14 +75,6 @@
   font-display: swap;
 }
 @font-face {
-  font-family: "MicroTechnic";
-  src: url("../public/fonts/beeper/Micro Technic Extended Bold.ttf")
-    format("truetype");
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
   font-family: "DS-Digital";
   src: url("../public/fonts/beeper/DS-DIGITAL-BOLD.TTF") format("truetype");
   font-weight: bold;

@@ -68,8 +68,8 @@
   transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
   padding: 12px 24px;
   border-radius: 8px;
-  font-family: "MicroTechnic", "IBM Plex Mono", monospace;
-  font-weight: bold;
+  font-family: "Michroma", "IBM Plex Mono", monospace;
+  font-weight: normal;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
@@ -202,14 +202,14 @@
   animation: gradient-shift 20s ease-in-out infinite;
 }
 
-/* === Micro Technic — Neumorphic Pill Input === */
+/* === Michroma — Neumorphic Pill Input === */
 .mt-input {
   width: 100%;
   border-radius: 9999px;
   border: 0;
   background: #1a0a2e;
   padding: 12px 130px 12px 20px;
-  font-family: "MicroTechnic", sans-serif;
+  font-family: "Michroma", sans-serif;
   font-size: 0.875rem;
   color: #c084fc;
   outline: none;
@@ -235,7 +235,7 @@
   border: 1px solid rgba(255, 0, 138, 0.15);
   background: #2d0a3e;
   padding: 0 20px;
-  font-family: "MicroTechnic", sans-serif;
+  font-family: "Michroma", sans-serif;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
   color: #e9b0ff;

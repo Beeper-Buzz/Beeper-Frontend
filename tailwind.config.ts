@@ -130,7 +130,6 @@ const config: Config = {
         "mono-semibold": ["ibmplexmono_body_mono_semibold", "monospace"],
         "mono-extralight": ["ibmplexmono_body_mono_extralight", "monospace"],
         pressstart: ["PressStart2P", "monospace"],
-        microtechnic: ["MicroTechnic", "sans-serif"],
         "ds-digital": ["DS-Digital", "monospace"],
         digital7: ["Digital7Mono", "Digital7", "monospace"],
         michroma: ["Michroma", "sans-serif"],
