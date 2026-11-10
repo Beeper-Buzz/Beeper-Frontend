@@ -59,7 +59,7 @@ export const MicroTechnicInput = forwardRef<
             initial={{ opacity: 0, letterSpacing: "0.3em" }}
             animate={{ opacity: 1, letterSpacing: "0.15em" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="font-microtechnic text-[0.65rem] uppercase tracking-[0.15em] text-cyan-400/70"
+            className="font-michroma text-[0.65rem] uppercase tracking-[0.15em] text-cyan-400/70"
           >
             {tagline}
           </motion.span>
@@ -80,7 +80,7 @@ export const MicroTechnicInput = forwardRef<
               border-0
               bg-[#1a0a2e]
               px-5 py-3 pr-[130px]
-              font-microtechnic text-sm
+              font-michroma text-sm
               text-[#c084fc]
               outline-none
               transition-shadow duration-300
@@ -106,7 +106,7 @@ export const MicroTechnicInput = forwardRef<
               border border-[rgba(255,0,138,0.15)]
               bg-[#2d0a3e]
               px-5
-              font-microtechnic text-xs
+              font-michroma text-xs
               tracking-wider
               text-[#e9b0ff]
               transition-all duration-300
