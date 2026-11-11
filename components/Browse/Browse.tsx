@@ -478,7 +478,7 @@ export const Browse: React.FC = () => {
           >
             <h1
               className={cn(
-                "font-pressstart text-2xl sm:text-3xl",
+                "font-microtechnic text-2xl sm:text-3xl",
                 mode === "shop" ? "neon-text-cyan" : "neon-text-magenta"
               )}
             >

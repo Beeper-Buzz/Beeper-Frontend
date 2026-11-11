@@ -166,16 +166,17 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
         );
       })}
 
-      {/* Tagline "PLAY WITH MUSIC" */}
+      {/* Tagline "PLAY WITH MUSIC" in Micro Technic: ~275 units wide at 18, a bit
+          narrower than the wordmark (x 31..343); caps top at ~110, clear of it */}
       {showTagline && (
         <text
           x="192.5"
-          y="118"
+          y="124"
           textAnchor="middle"
           fill="white"
-          fontFamily="'IBM Plex Mono', 'ibmplexmono_body_mono_semibold', monospace"
-          fontSize="12"
-          letterSpacing="0.15em"
+          fontFamily="MicroTechnic, Michroma, sans-serif"
+          fontSize="18"
+          letterSpacing="0.06em"
           style={{ textTransform: "uppercase" } as any}
         >
           PLAY WITH MUSIC

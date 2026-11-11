@@ -92,7 +92,9 @@ const SectionRenderers: Record<
   content: ({ section }) => (
     <div className="px-10 py-5">
       {section.title && (
-        <h2 className="mb-4 text-2xl font-bold text-white">{section.title}</h2>
+        <h2 className="mb-4 font-microtechnic text-2xl font-bold text-white">
+          {section.title}
+        </h2>
       )}
       <div dangerouslySetInnerHTML={{ __html: section.content }} />
     </div>
@@ -133,7 +135,7 @@ const SectionRenderers: Record<
     return (
       <div className="py-10">
         {section.title && (
-          <h2 className="mb-4 text-2xl font-bold text-white">
+          <h2 className="mb-4 font-microtechnic text-2xl font-bold text-white">
             {section.title}
           </h2>
         )}

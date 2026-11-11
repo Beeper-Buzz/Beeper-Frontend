@@ -153,7 +153,7 @@ export const Category = () => {
           {/* Product Info */}
           <div className="m-[2%] w-full md:w-auto">
             <div className="max-w-[400px] text-center text-white">
-              <h2 className="font-title text-2xl font-semibold">
+              <h2 className="font-microtechnic text-2xl font-semibold">
                 {data?.data?.attributes?.name}
               </h2>
               <p className="mt-3 font-body text-sm leading-relaxed text-white/50">

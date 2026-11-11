@@ -117,6 +117,18 @@
   font-style: normal;
   font-display: swap;
 }
+/* Micro Technic Extended Bold (Image Club Graphics, 1992): titles only. Commercial,
+   no licence obtained yet; the owner accepted the risk on 2026-11-11 and a licence
+   is being pursued. No lowercase (a-z draw as capitals) and no Greek capital delta:
+   those fall back to Michroma. */
+@font-face {
+  font-family: "MicroTechnic";
+  src: url("../public/fonts/beeper/MicroTechnicExtended-Bold.woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 @font-face {
   font-family: "Micro5";
   src: url("../public/fonts/beeper/Micro5-Regular.ttf") format("truetype");
