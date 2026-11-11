@@ -66,7 +66,7 @@ export const ProfileBanner = ({
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="neon-text-magenta font-pressstart text-lg sm:text-xl">
+            <h1 className="neon-text-magenta font-microtechnic text-lg sm:text-xl">
               {displayName}
             </h1>
             {user.is_creator && <CreatorBadge />}

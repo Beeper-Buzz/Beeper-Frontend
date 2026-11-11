@@ -77,7 +77,7 @@ const Featured: React.FC<FeaturedProps> = ({ products, title }) => {
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="neon-text-cyan mb-8 text-center font-pressstart text-sm sm:text-base md:text-lg">
+        <h2 className="neon-text-cyan mb-8 text-center font-microtechnic text-sm sm:text-base md:text-lg">
           {title || "FEATURED"}
         </h2>
       </motion.div>

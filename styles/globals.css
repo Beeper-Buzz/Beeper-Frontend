@@ -185,15 +185,15 @@
 
   /* Typography compositions */
   .heading-xl {
-    @apply font-title text-title-xl tracking-tight;
+    @apply font-microtechnic text-title-xl tracking-tight;
   }
 
   .heading-lg {
-    @apply font-title text-title-lg tracking-tight;
+    @apply font-microtechnic text-title-lg tracking-tight;
   }
 
   .heading-md {
-    @apply font-title text-title-md;
+    @apply font-microtechnic text-title-md;
   }
 
   .heading-sm {

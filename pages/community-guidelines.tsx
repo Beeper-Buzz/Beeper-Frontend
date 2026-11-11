@@ -41,7 +41,7 @@ const NOT_ALLOWED = [
 const SectionHeading: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => (
-  <h2 className="neon-text-cyan mb-6 font-pressstart text-sm leading-relaxed sm:text-base">
+  <h2 className="neon-text-cyan mb-6 font-microtechnic text-sm leading-relaxed sm:text-base">
     {children}
   </h2>
 );
@@ -64,7 +64,7 @@ const CommunityGuidelines: React.FC = () => (
 
     <div className="section-container flex flex-col items-center py-16 sm:py-24">
       <div className="w-full max-w-3xl">
-        <h1 className="neon-text-magenta mb-12 text-center font-pressstart text-lg leading-relaxed sm:text-xl">
+        <h1 className="neon-text-magenta mb-12 text-center font-microtechnic text-lg leading-relaxed sm:text-xl">
           COMMUNITY GUIDELINES
         </h1>
 

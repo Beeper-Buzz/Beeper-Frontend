@@ -40,7 +40,7 @@ export const ResetPassword = () => {
         <ArrowLeft className="h-4 w-4" />
         Back
       </button>
-      <h1 className="mb-6 text-center font-pressstart text-sm text-neon-cyan">
+      <h1 className="mb-6 text-center font-microtechnic text-sm text-neon-cyan">
         {resetPasswordForm.title}
       </h1>
       <Formik

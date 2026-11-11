@@ -54,7 +54,7 @@ const Newsletter: React.FC<NewsletterProps> = () => {
         transition={{ duration: 0.6 }}
         className="glass-panel mx-auto max-w-2xl px-8 py-12 text-center sm:px-12"
       >
-        <h2 className="neon-text-cyan mb-6 font-pressstart text-sm sm:text-base">
+        <h2 className="neon-text-cyan mb-6 font-microtechnic text-sm sm:text-base">
           STAY IN THE LOOP
         </h2>
 

@@ -119,7 +119,7 @@ export const OrderDetail = () => {
           Back to Orders
         </Button>
 
-        <h1 className="neon-text-magenta mb-1 font-pressstart text-2xl sm:text-3xl">
+        <h1 className="neon-text-magenta mb-1 font-microtechnic text-2xl sm:text-3xl">
           Order Details
         </h1>
         <p className="mb-8 font-mono text-lg text-muted-foreground">
