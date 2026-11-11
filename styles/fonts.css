@@ -128,6 +128,8 @@
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+  /* Drawn at 80 % of the font size wherever it is used (titles, the tagline). */
+  size-adjust: 80%;
 }
 @font-face {
   font-family: "Micro5";

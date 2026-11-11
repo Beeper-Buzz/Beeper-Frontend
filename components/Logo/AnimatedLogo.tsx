@@ -166,12 +166,13 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
         );
       })}
 
-      {/* Tagline "PLAY WITH MUSIC" in Micro Technic: ~275 units wide at 18, a bit
-          narrower than the wordmark (x 31..343); caps top at ~110, clear of it */}
+      {/* Tagline "PLAY WITH MUSIC" in Micro Technic (drawn at 80 %: 14.4 units,
+          ~229 wide, about two thirds of the wordmark x 31..343); caps top at
+          ~112, 8 units under the letters' lowest point (y 104) */}
       {showTagline && (
         <text
           x="192.5"
-          y="124"
+          y="123.5"
           textAnchor="middle"
           fill="white"
           fontFamily="MicroTechnic, Michroma, sans-serif"
