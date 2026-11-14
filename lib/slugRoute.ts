@@ -36,7 +36,9 @@ export const RESERVED_SLUGS = [
   "static",
   "assets",
   "_next",
-  "creator-application"
+  "creator-application",
+  "creators",
+  "creator"
 ];
 
 // Product slugs (FriendlyId) and handles only use these. Everything else, like
