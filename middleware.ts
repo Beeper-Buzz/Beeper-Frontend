@@ -20,7 +20,10 @@ const protectedRoutes = [
   "/account",
   "/thank-you",
   "/update-email",
-  "/update-password"
+  "/update-password",
+  // Creator portal (/creator/*). Matched by path segment, so the public
+  // /creators page stays open.
+  "/creator"
 ];
 
 // Define auth routes that should redirect to home if already logged in
@@ -59,8 +62,8 @@ export function middleware(request: NextRequest) {
   }
 
   // Check if the current path is a protected route
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
+  const isProtectedRoute = protectedRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
   // Check if the current path is an auth route
