@@ -4,6 +4,8 @@ import { describe, test } from "node:test";
 import {
   cartHasDigital,
   cartNeedsDelivery,
+  checkoutFailure,
+  DIGITAL_ACCOUNT_MESSAGE,
   isDigitalRequiresAccountError,
   loginRedirectFor
 } from "../digitalCheckout";
@@ -133,5 +135,26 @@ describe("marketplace product attributes", () => {
     assert.equal(formatBytes(0), "0 B");
     assert.equal(formatBytes(1536), "1.5 KB");
     assert.equal(formatBytes(5 * 1024 * 1024), "5.0 MB");
+  });
+});
+
+describe("checkoutFailure", () => {
+  test("keeps the digital_requires_account code from a Spree failure", () => {
+    const err = checkoutFailure(
+      {
+        summary: "Unprocessable",
+        serverResponse: { data: { error: "digital_requires_account" } }
+      },
+      "Failed"
+    );
+    assert.equal(isDigitalRequiresAccountError(err), true);
+    assert.equal(err.message, DIGITAL_ACCOUNT_MESSAGE);
+  });
+
+  test("other failures keep their text, or the fallback", () => {
+    const a = checkoutFailure({ summary: "Insufficient stock" }, "Failed");
+    assert.equal(a.message, "Insufficient stock");
+    assert.equal(isDigitalRequiresAccountError(a), false);
+    assert.equal(checkoutFailure({}, "Failed").message, "Failed");
   });
 });

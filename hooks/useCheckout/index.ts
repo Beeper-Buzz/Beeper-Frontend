@@ -3,7 +3,7 @@ import { spreeClient } from "@config/spree";
 import { QueryKeys } from "@hooks/queryKeys";
 import constants from "@utilities/constants";
 import { IOrderResult } from "@spree/storefront-api-v2-sdk/types/interfaces/Order";
-import { spreeErrorText } from "../../lib/cartAvailability";
+import { checkoutFailure } from "../../lib/digitalCheckout";
 
 interface CheckoutAddress {
   firstname: string;
@@ -76,9 +76,7 @@ export const updateCheckout = async (data: CheckoutData) => {
   } else {
     constants.IS_DEBUG &&
       console.error("Checkout update failed:", response.fail());
-    throw new Error(
-      spreeErrorText(response.fail()) || "Checkout update failed"
-    );
+    throw checkoutFailure(response.fail(), "Checkout update failed");
   }
 };
 
@@ -97,9 +95,7 @@ export const advanceCheckout = async () => {
   } else {
     constants.IS_DEBUG &&
       console.error("Checkout advance failed:", response.fail());
-    throw new Error(
-      spreeErrorText(response.fail()) || "Failed to advance checkout"
-    );
+    throw checkoutFailure(response.fail(), "Failed to advance checkout");
   }
 };
 
@@ -122,9 +118,7 @@ export const completeCheckout = async () => {
   } else {
     constants.IS_DEBUG &&
       console.error("Checkout completion failed:", response.fail());
-    throw new Error(
-      spreeErrorText(response.fail()) || "Failed to complete checkout"
-    );
+    throw checkoutFailure(response.fail(), "Failed to complete checkout");
   }
 };
 

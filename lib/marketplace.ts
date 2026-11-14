@@ -52,3 +52,50 @@ export function formatBytes(n: number): string {
   if (n < 1024 * 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)} MB`;
   return `${(n / 1024 / 1024 / 1024).toFixed(2)} GB`;
 }
+
+export type MarketplaceSort =
+  | "name_asc"
+  | "name_desc"
+  | "price_asc"
+  | "price_desc"
+  | "newest";
+
+export interface MarketplaceFilter {
+  kinds: DigitalKind[];
+  search: string;
+  sort: string;
+}
+
+const priceOf = (p: ProductLike) => parseFloat(p?.attributes?.price || "0") || 0;
+const nameOf = (p: ProductLike) => String(p?.attributes?.name || "");
+
+/**
+ * Browse's marketplace grid: products with a known digital kind, narrowed by
+ * kind chips and a search over the name, slug and creator, then sorted.
+ */
+export function filterMarketplace<T extends { attributes?: Record<string, any> }>(
+  products: T[],
+  { kinds, search, sort }: MarketplaceFilter
+): T[] {
+  const s = search.trim().toLowerCase();
+  const out = products.filter((p) => {
+    const kind = digitalKindOf(p);
+    if (!kind) return false;
+    if (kinds.length > 0 && !kinds.includes(kind)) return false;
+    if (!s) return true;
+    const creator = creatorOf(p);
+    return [nameOf(p), p.attributes?.slug, creator?.name, creator?.handle]
+      .filter(Boolean)
+      .some((v) => String(v).toLowerCase().includes(s));
+  });
+  const by: Record<MarketplaceSort, (a: T, b: T) => number> = {
+    name_asc: (a, b) => nameOf(a).localeCompare(nameOf(b)),
+    name_desc: (a, b) => nameOf(b).localeCompare(nameOf(a)),
+    price_asc: (a, b) => priceOf(a) - priceOf(b),
+    price_desc: (a, b) => priceOf(b) - priceOf(a),
+    newest: (a, b) =>
+      new Date(b.attributes?.created_at || 0).getTime() -
+      new Date(a.attributes?.created_at || 0).getTime()
+  };
+  return out.sort(by[sort as MarketplaceSort] || by.name_asc);
+}

@@ -17,13 +17,10 @@ interface ProductListProps {
   products?: any;
   /** Static shop product placeholders */
   placeholderProducts?: PlaceholderShopProduct[];
-  /** Static marketplace product placeholders */
+  /** Marketplace taxon products (storefront v2 resources) */
   marketplaceProducts?: MarketplaceProduct[];
-  /**
-   * Spree products ({ data, included }) to look marketplace cards up in by
-   * slug, so a static card shows the real product media when there is any.
-   */
-  mediaSource?: any;
+  /** The `included` resources that came with the marketplace products. */
+  marketplaceIncluded?: any[];
   title?: string;
   layout?: "grid" | "scroll";
   excludeProductId?: string;
@@ -39,20 +36,18 @@ export const ProductList: React.FC<ProductListProps> = ({
   layout = "grid",
   excludeProductId,
   mode,
-  mediaSource
+  marketplaceIncluded
 }) => {
   const baseUrl = process.env.NEXT_PUBLIC_SPREE_API_URL || "";
 
-  // slug -> grid media, for the static marketplace cards
-  const mediaBySlug = useMemo(() => {
+  // product id -> grid media, for the marketplace cards
+  const mediaById = useMemo(() => {
     const map = new Map<string, ReturnType<typeof pickGridMedia>>();
-    for (const p of mediaSource?.data || []) {
-      const slug = p?.attributes?.slug;
-      if (slug)
-        map.set(slug, pickGridMedia(p, mediaSource?.included, { baseUrl }));
+    for (const p of marketplaceProducts || []) {
+      map.set(p.id, pickGridMedia(p, marketplaceIncluded, { baseUrl }));
     }
     return map;
-  }, [mediaSource, baseUrl]);
+  }, [marketplaceProducts, marketplaceIncluded, baseUrl]);
 
   // ── Marketplace mode ──
   if (mode === "marketplace" && marketplaceProducts) {
@@ -62,10 +57,10 @@ export const ProductList: React.FC<ProductListProps> = ({
         <div className="mt-3 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {marketplaceProducts.map((product, i) => (
             <MarketplaceCard
-              key={product.slug}
+              key={product.id}
               product={product}
               index={i}
-              media={mediaBySlug.get(product.slug) || null}
+              media={mediaById.get(product.id) || null}
             />
           ))}
         </div>

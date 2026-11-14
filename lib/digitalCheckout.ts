@@ -8,7 +8,7 @@
 // (`digital_kind` from the product endpoint). Anything unknown keeps delivery:
 // asking for an address too many is safe, skipping a needed one is not.
 
-import { cartLineSlugs } from "./cartAvailability";
+import { cartLineSlugs, spreeErrorText } from "./cartAvailability";
 
 type CartDoc =
   | { data?: { attributes?: Record<string, any> }; included?: any[] }
@@ -67,3 +67,20 @@ export function isDigitalRequiresAccountError(err: unknown): boolean {
 
 export const loginRedirectFor = (path: string): string =>
   `/login?redirect=${encodeURIComponent(path)}`;
+
+/**
+ * The Error a checkout step throws for a Spree failure. Its message is what
+ * the page shows; a `digital_requires_account` refusal keeps that code so
+ * the page can send the guest to sign in.
+ */
+export function checkoutFailure(
+  fail: unknown,
+  fallback: string
+): Error & { code?: string } {
+  if (isDigitalRequiresAccountError(fail)) {
+    const err: Error & { code?: string } = new Error(DIGITAL_ACCOUNT_MESSAGE);
+    err.code = DIGITAL_REQUIRES_ACCOUNT;
+    return err;
+  }
+  return new Error(spreeErrorText(fail) || fallback);
+}

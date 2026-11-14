@@ -172,6 +172,19 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link
+                      href="/account/library"
+                      className={cn(
+                        "cursor-pointer no-underline",
+                        pathname === "/account/library"
+                          ? "pointer-events-none text-neon-cyan"
+                          : "text-white hover:text-neon-cyan"
+                      )}
+                    >
+                      My Library
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link
                       href="/account/settings"
                       className={cn(
                         "cursor-pointer no-underline",
