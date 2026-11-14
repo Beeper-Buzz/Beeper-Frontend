@@ -103,8 +103,9 @@ const CreatorsPage = () => (
         <p className="mt-4 max-w-2xl font-body text-sm text-white/60">
           The share is of the price the buyer paid after discounts. Earnings
           become payable 14 days after the order completes, and refunded orders
-          don&apos;t count. Payouts are sent by hand for now; you set the payout
-          email in the studio.
+          don&apos;t count. Payouts are sent by hand for now, to the payout
+          email support keeps on file for you: contact hello@beeper.buzz to set
+          it.
         </p>
       </section>
 

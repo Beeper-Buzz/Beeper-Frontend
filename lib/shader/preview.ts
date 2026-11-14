@@ -82,6 +82,8 @@ export class ShaderRunner {
     const gl = this.gl;
     if (!gl)
       return { ok: false, error: "WebGL isn't available in this browser." };
+    if (gl.isContextLost())
+      return { ok: false, error: "The graphics context was lost." };
     let fragSrc: string;
     try {
       fragSrc = buildPreviewShader(source, params);
@@ -156,10 +158,32 @@ export class ShaderRunner {
     return this.raf !== 0;
   }
 
+  /** One frame at time `t` (seconds), not animated: for Reduce Motion. */
+  drawStill(t = 1): void {
+    if (!this.gl || !this.program || this.raf) return;
+    this.draw(t);
+  }
+
+  /**
+   * The GPU dropped the context: stop and forget the GL objects, which are
+   * gone. After `webglcontextrestored`, compile again.
+   */
+  contextLost(): void {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    this.raf = 0;
+    this.program = null;
+    this.buffer = null;
+    this.uniforms.clear();
+  }
+
   dispose(): void {
     this.stop();
     const gl = this.gl;
-    if (!gl) return;
+    if (!gl || gl.isContextLost()) {
+      this.program = null;
+      this.buffer = null;
+      return;
+    }
     if (this.program) gl.deleteProgram(this.program);
     if (this.buffer) gl.deleteBuffer(this.buffer);
     this.program = null;

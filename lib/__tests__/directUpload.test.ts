@@ -142,4 +142,35 @@ describe("uploadFile", () => {
       (e: unknown) => e instanceof ApiError && e.status === 422
     );
   });
+
+  test("a cancel during the POST stops before the PUT", async () => {
+    const ctrl = new AbortController();
+    let seenSignal: AbortSignal | null | undefined;
+    g.fetch = (async (_url: string, init: RequestInit) => {
+      seenSignal = init.signal;
+      ctrl.abort();
+      return new Response(
+        JSON.stringify({
+          signed_id: "sig-1",
+          direct_upload: { url: "https://bucket.example/abc", headers: {} }
+        }),
+        { status: 200 }
+      );
+    }) as unknown as typeof fetch;
+    const f = Object.assign(new Blob(["x"], { type: "audio/wav" }), {
+      name: "a.wav"
+    });
+    let put = false;
+    await assert.rejects(
+      uploadFile(f, "tok", undefined, {
+        signal: ctrl.signal,
+        put: async () => {
+          put = true;
+        }
+      }),
+      /cancelled/i
+    );
+    assert.equal(put, false);
+    assert.ok(seenSignal, "the POST got an abort signal");
+  });
 });

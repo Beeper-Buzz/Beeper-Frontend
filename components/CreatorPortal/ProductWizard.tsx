@@ -18,9 +18,19 @@ import {
   draftToInput,
   emptyDraft,
   FILE_GROUPS,
+  filesChanged,
+  presetFile,
   ProductDraft,
+  sameManifest,
   stepErrors
 } from "../../lib/creator/productDraft";
+import {
+  canDelete,
+  canEdit,
+  canSubmitNow,
+  willSubmit
+} from "../../lib/creator/reviewRules";
+import { uploadFile } from "../../lib/upload/directUpload";
 import {
   DIGITAL_KINDS,
   DigitalKind,
@@ -60,11 +70,12 @@ type StepId = (typeof STEPS)[number]["id"];
 const KIND_INFO: Record<DigitalKind, { body: string; files: string }> = {
   sample_pack: {
     body: "One-shots and loops that load onto the Sampler's 16 pads and keys.",
-    files: "WAV, AIFF, FLAC or MP3, up to 50 MB each"
+    files:
+      "Up to 64 samples (16 load on pads). WAV, AIFF, FLAC or MP3, up to 50 MB each"
   },
   effect_preset: {
     body: "Settings for the app's effects rack, applied in one tap.",
-    files: "No files: you set the effects here"
+    files: "No files to upload: you set the effects here"
   },
   visualizer: {
     body: "A GLSL scene that reacts to the bass, mids, highs and beat.",
@@ -95,11 +106,18 @@ export const ProductWizard: React.FC<{ productId: number | null }> = ({
   );
 };
 
+// The files picked in this tab, by name and size, so playback and the
+// shader preview keep working after a save remounts the editor on the
+// server's copy (whose files have no URLs).
+const pickedFiles = new Map<string, File>();
+const pickedKey = (name: string, size: number) => `${name}:${size}`;
+
 const existingJobs = (p: CreatorProduct | null): UploadJob[] =>
   (p?.asset?.files || []).map((f) => ({
     key: `existing-${f.id}`,
     name: f.filename,
     size: f.byte_size,
+    file: pickedFiles.get(pickedKey(f.filename, f.byte_size)),
     progress: 1,
     status: "done",
     existingId: f.id
@@ -126,6 +144,13 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
   const files = useUploadQueue({ allowed, initial: existingJobs(product) });
   const image = useUploadQueue({ allowed: ["image"], max: 1 });
   const demo = useUploadQueue({ allowed: ["audio"], max: 1 });
+  useEffect(() => {
+    for (const j of files.jobs)
+      if (j.file) pickedFiles.set(pickedKey(j.name, j.size), j.file);
+  }, [files.jobs]);
+  const [shaderErrors, setShaderErrors] = useState<string[]>([]);
+  const [submitNote, setSubmitNote] = useState<string | null>(null);
+  const [presetError, setPresetError] = useState<unknown>(null);
 
   const stepParam = String(router.query.step || "");
   const step: StepId = (STEPS.find((s) => s.id === stepParam)?.id ||
@@ -138,7 +163,9 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
     );
   const stepIndex = STEPS.findIndex((s) => s.id === step);
 
-  const errors = stepErrors(draft, files.jobs as DraftFile[]);
+  const errors = stepErrors(draft, files.jobs as DraftFile[], {
+    shaderErrors: draft.kind === "visualizer" ? shaderErrors : []
+  });
   const previewBusy = image.busy || demo.busy;
   const errorCount =
     errors.kind.length + errors.details.length + errors.files.length;
@@ -146,11 +173,24 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
   const originalFileIds = product
     ? (product.asset?.files || []).map((f) => f.id)
     : null;
-  const input = () =>
+  const manifest = draftManifest(draft, files.jobs as DraftFile[]).manifest;
+  const manifestChanged =
+    !product || !sameManifest(manifest, product.asset?.manifest);
+  // Files or manifest differ from the server's: saving starts a new version.
+  const assetDirty =
+    draft.kind === "effect_preset"
+      ? manifestChanged || !product?.asset?.files.length
+      : manifestChanged ||
+        filesChanged(files.jobs as DraftFile[], originalFileIds);
+  const previewDirty = !!(image.jobs.length || demo.jobs.length);
+
+  const input = (presetSignedId?: string) =>
     draftToInput(draft, files.jobs as DraftFile[], {
       originalFileIds,
+      originalManifest: product ? product.asset?.manifest ?? null : undefined,
       previewImageSignedId: image.jobs[0]?.signedId,
-      previewAudioSignedId: demo.jobs[0]?.signedId
+      previewAudioSignedId: demo.jobs[0]?.signedId,
+      presetSignedId
     });
 
   // Unsaved changes guard.
@@ -173,21 +213,62 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
 
+  // In-app navigation away with unsaved changes asks first. Step changes
+  // (same page, new ?step=) and our own post-save moves pass through.
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
+  const leaving = useRef(false);
+  useEffect(() => {
+    const onRoute = (url: string) => {
+      if (leaving.current || !dirtyRef.current) return;
+      const path = (u: string) => u.split(/[?#]/)[0];
+      if (path(url) === path(router.asPath)) return;
+      if (window.confirm("Leave without saving? Your changes will be lost."))
+        return;
+      router.events.emit("routeChangeError");
+      // Next has no cancel API: throwing aborts the route change.
+      throw new Error("Navigation cancelled: unsaved changes");
+    };
+    router.events.on("routeChangeStart", onRoute);
+    return () => {
+      try {
+        router.events.off("routeChangeStart", onRoute);
+      } catch {
+        // never throw from cleanup
+      }
+    };
+  }, [router]);
+
   const state = product?.review_state;
-  const locked = state === "submitted";
-  const canSubmit =
-    !locked &&
-    state !== "rejected" &&
-    (!product ||
-      state === "draft" ||
-      state === "changes_requested" ||
-      (state === "approved" && (dirty || product.asset?.status === "draft")));
+  const editable = !product || canEdit(product);
+  const locked = !editable;
+  const live = !!product?.live_asset_version;
+  const canSubmit = willSubmit(product, {
+    asset: assetDirty,
+    preview: previewDirty
+  });
 
   const doSave = async (): Promise<CreatorProduct | null> => {
     if (!draft.kind) return null;
-    const saved = await save.mutateAsync({ id: product?.id, input: input() });
+    setPresetError(null);
+    let presetSignedId: string | undefined;
+    if (draft.kind === "effect_preset" && assetDirty) {
+      // The preset is the asset's single file: preset.json from the manifest.
+      try {
+        presetSignedId = (await uploadFile(presetFile(manifest), undefined))
+          .signedId;
+      } catch (e) {
+        setPresetError(e);
+        throw e;
+      }
+    }
+    const saved = await save.mutateAsync({
+      id: product?.id,
+      input: input(presetSignedId)
+    });
     baseline.current = null;
     if (!product) {
+      leaving.current = true;
       await router.replace(
         { pathname: `/creator/products/${saved.id}`, query: { step } },
         undefined,
@@ -199,14 +280,23 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
 
   const onSave = () => {
     save.reset();
+    setSubmitNote(null);
     doSave().catch(() => undefined);
   };
 
   const onSubmit = async () => {
+    setSubmitNote(null);
     try {
       const saved = dirty || !product ? await doSave() : product;
       if (!saved) return;
+      if (!canSubmitNow(saved)) {
+        setSubmitNote(
+          "Saved. There's nothing new to review: details on a live product change right away."
+        );
+        return;
+      }
       await submit.mutateAsync(saved.id);
+      leaving.current = true;
       router.push("/creator/products");
     } catch {
       // shown through save.error / submit.error
@@ -241,7 +331,6 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
       ? errors.files.length > 0
       : false;
 
-  const manifest = draftManifest(draft, files.jobs as DraftFile[]).manifest;
   const totalBytes = files.jobs.reduce((n, j) => n + j.size, 0);
 
   return (
@@ -270,7 +359,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
           )
         }
         actions={
-          product?.review_state === "draft" ? (
+          product && canDelete(product) ? (
             <button
               type="button"
               className={btnDanger}
@@ -283,7 +372,10 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                 )
                   del
                     .mutateAsync(product.id)
-                    .then(() => router.push("/creator/products"))
+                    .then(() => {
+                      leaving.current = true;
+                      return router.push("/creator/products");
+                    })
                     .catch(() => undefined);
               }}
             >
@@ -308,14 +400,17 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
         )}
       {locked && (
         <div className="mb-4 rounded-md border border-neon-amber/40 bg-neon-amber/[0.06] px-3 py-2 font-body text-sm text-white/80">
-          This product is in review, so it can&apos;t be edited until the review
-          is done.
+          {state === "submitted"
+            ? "This product is in review, so it can't be edited until the review is done."
+            : "This product was rejected before it went live, so it can't be edited. Start a new product instead."}
         </div>
       )}
-      {state === "approved" && (
-        <div className="mb-4 rounded-md border border-glass-border px-3 py-2 font-body text-sm text-white/60">
-          This product is live. Changes you submit go through review as a new
-          version; buyers keep the live version until it&apos;s approved.
+      {live && editable && (
+        <div className="mb-4 rounded-md border border-glass-border px-3 py-2 font-body text-sm text-white/70">
+          This product is live. Name, description, price and category change as
+          soon as you save. New files, effect or sample settings, or new preview
+          media become a new version for review; buyers keep the live version
+          until it&apos;s approved.
         </div>
       )}
       <ErrorNote error={del.error} />
@@ -345,7 +440,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                 disabled={!draft.kind && s.id !== "kind"}
                 aria-current={current ? "step" : undefined}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-md border px-2 py-1 font-body text-xs transition-colors disabled:opacity-30",
+                  "flex items-center gap-1.5 rounded-md border px-2 py-1 font-body-bold text-xs transition-colors disabled:opacity-30",
                   current
                     ? "border-neon-cyan/70 bg-neon-cyan/10 text-neon-cyan"
                     : "border-glass-border text-white/60 hover:text-white"
@@ -356,10 +451,13 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                   {s.label}
                 </span>
                 {bad && (
-                  <span
-                    className="h-1.5 w-1.5 rounded-full bg-neon-pink"
-                    aria-label="has problems"
-                  />
+                  <>
+                    <span
+                      className="h-1.5 w-1.5 rounded-full bg-neon-pink"
+                      aria-hidden
+                    />
+                    <span className="sr-only">, has problems</span>
+                  </>
                 )}
               </button>
             </li>
@@ -397,7 +495,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                     <p className="mt-1 font-body text-sm text-white/65">
                       {KIND_INFO[k].body}
                     </p>
-                    <p className="mt-2 font-body text-xs text-white/40">
+                    <p className="mt-2 font-body-bold text-xs text-white/60">
                       {KIND_INFO[k].files}
                     </p>
                   </button>
@@ -405,7 +503,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
               })}
             </div>
             {product && (
-              <p className="mt-2 font-body text-xs text-white/40">
+              <p className="mt-2 font-body-bold text-xs text-white/60">
                 The kind can&apos;t change after a product is created.
               </p>
             )}
@@ -429,7 +527,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
               <Field
                 label="Price (USD)"
                 htmlFor="pd-price"
-                hint="0 makes it free"
+                hint="At least $0.50"
               >
                 <input
                   id="pd-price"
@@ -514,7 +612,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
             }
             aside={
               allowed.length ? (
-                <span className={`${numCls} text-xs text-white/40`}>
+                <span className={`${numCls} text-xs text-white/60`}>
                   {files.jobs.length} files · {formatBytes(totalBytes)}
                 </span>
               ) : undefined
@@ -535,7 +633,10 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                     hint={KIND_INFO[draft.kind].files}
                   />
                   {files.rejected.map((r) => (
-                    <p key={r} className="font-body text-xs text-neon-pink">
+                    <p
+                      key={r}
+                      className="font-body-bold text-xs text-neon-pink"
+                    >
                       {r}
                     </p>
                   ))}
@@ -563,6 +664,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                   setDraft={setDraft}
                   files={files.jobs as DraftFile[]}
                   sourceFor={sourceFor}
+                  onShaderErrors={setShaderErrors}
                 />
               )}
               <StepProblems list={errors.files} />
@@ -572,6 +674,12 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
 
         {step === "preview" && (
           <Section title="Preview media">
+            {live && (
+              <p className="mb-3 font-body-bold text-xs text-white/70">
+                New preview media on a live product go through review too. The
+                shop keeps the current ones until then.
+              </p>
+            )}
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <div className="font-title-condensed text-xs text-white/60">
@@ -642,17 +750,15 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
         {step === "review" && draft.kind && (
           <Section title="Review and submit">
             <dl className="grid grid-cols-[8rem_1fr] gap-x-3 gap-y-1.5 font-body text-sm">
-              <dt className="text-white/50">Kind</dt>
+              <dt className="text-white/60">Kind</dt>
               <dd className="text-white">{kindLabel(draft.kind)}</dd>
-              <dt className="text-white/50">Name</dt>
+              <dt className="text-white/60">Name</dt>
               <dd className="text-white">{draft.name || "—"}</dd>
-              <dt className="text-white/50">Price</dt>
+              <dt className="text-white/60">Price</dt>
               <dd className={`${numCls} text-white`}>
-                {Number(draft.price) === 0 && draft.price !== ""
-                  ? "Free"
-                  : formatMoney(draft.price || 0)}
+                {formatMoney(draft.price || 0)}
               </dd>
-              <dt className="text-white/50">Contents</dt>
+              <dt className="text-white/60">Contents</dt>
               <dd className="text-white">
                 {draft.kind === "sample_pack" &&
                   `${(manifest.samples || []).length} samples, ${formatBytes(
@@ -665,7 +771,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                     (manifest.params || []).length
                   } parameters`}
               </dd>
-              <dt className="text-white/50">Cover</dt>
+              <dt className="text-white/60">Cover</dt>
               <dd className="text-white">
                 {image.jobs[0]?.name ||
                   (product?.preview?.image_url ? "Saved" : "None")}
@@ -688,7 +794,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                         </span>
                         <button
                           type="button"
-                          className="font-body text-xs text-white/70 underline"
+                          className="font-body-bold text-xs text-white/70 underline"
                           onClick={() => goTo(id)}
                         >
                           Fix
@@ -698,7 +804,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                         {list.map((e) => (
                           <li
                             key={e}
-                            className="font-body text-xs text-white/75"
+                            className="font-body-bold text-xs text-white/75"
                           >
                             {e}
                           </li>
@@ -708,12 +814,12 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                   );
                 })}
               </div>
-            ) : (
-              <p className="mt-4 font-body text-sm text-white/60">
+            ) : canSubmit ? (
+              <p className="mt-4 font-body text-sm text-white/70">
                 Ready. After you submit, an admin listens to it, checks it loads
                 in the app and puts it live, or sends it back with a note.
               </p>
-            )}
+            ) : null}
 
             <details className="mt-4 rounded-md border border-glass-border">
               <summary className="cursor-pointer px-3 py-2 font-body text-sm text-white/60">
@@ -727,6 +833,10 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
         )}
       </fieldset>
 
+      <ErrorNote
+        error={presetError}
+        fallback="The preset file didn't upload. Try again."
+      />
       <ErrorNote error={save.error} fallback="Saving failed. Try again." />
       <ErrorNote
         error={submit.error}
@@ -753,7 +863,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
             Next <ChevronRight className="h-4 w-4" />
           </button>
         )}
-        <span className="ml-auto font-body text-xs text-white/40">
+        <span className="ml-auto font-body-bold text-xs text-white/60">
           {dirty ? "Unsaved changes" : product ? "Saved" : ""}
         </span>
         <button
@@ -764,7 +874,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
           }
           onClick={onSave}
         >
-          {save.isLoading ? "Saving…" : "Save draft"}
+          {save.isLoading ? "Saving…" : live ? "Save" : "Save draft"}
         </button>
         {step === "review" && (
           <button
@@ -780,17 +890,24 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
             }
             onClick={onSubmit}
           >
-            {submit.isLoading ? "Submitting…" : "Submit for review"}
+            {submit.isLoading
+              ? "Submitting…"
+              : live
+              ? "Submit new version"
+              : "Submit for review"}
           </button>
         )}
       </div>
-      {state && !canSubmit && step === "review" && !locked && (
-        <p className="mt-2 font-body text-xs text-white/45">
-          {state === "rejected"
-            ? "Rejected products can't be resubmitted. Make a new product instead."
-            : `This product is ${REVIEW[
-                state
-              ].label.toLowerCase()}; change something to submit a new version.`}
+      {submitNote && (
+        <p role="status" className="mt-2 font-body-bold text-xs text-white/70">
+          {submitNote}
+        </p>
+      )}
+      {product && !canSubmit && step === "review" && !locked && (
+        <p className="mt-2 font-body-bold text-xs text-white/60">
+          {live
+            ? "Nothing to review: change the files, the effect or sample settings, or the preview media to submit a new version. Details save straight to the shop."
+            : "Add files before submitting."}
         </p>
       )}
       {locked && <Chip className="mt-2">Locked while in review</Chip>}
@@ -802,7 +919,7 @@ const StepProblems: React.FC<{ list: string[] }> = ({ list }) =>
   list.length ? (
     <ul className="mt-3 space-y-0.5">
       {list.map((e) => (
-        <li key={e} className="font-body text-xs text-neon-amber">
+        <li key={e} className="font-body-bold text-xs text-neon-amber">
           {e}
         </li>
       ))}

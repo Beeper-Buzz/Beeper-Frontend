@@ -125,7 +125,7 @@ export const ApplyForm: React.FC<{ defaultName?: string }> = ({
                       <span className="block font-body text-sm text-white">
                         {kindLabel(k, true)}
                       </span>
-                      <span className="block font-body text-xs text-white/45">
+                      <span className="block font-body-bold text-xs text-white/60">
                         {KIND_HINT[k]}
                       </span>
                     </span>
@@ -134,7 +134,7 @@ export const ApplyForm: React.FC<{ defaultName?: string }> = ({
               })}
             </div>
             {tried && errors.kinds && (
-              <p className="mt-1 font-body text-xs text-neon-pink">
+              <p className="mt-1 font-body-bold text-xs text-neon-pink">
                 {errors.kinds}
               </p>
             )}
@@ -190,7 +190,7 @@ export const ApplyForm: React.FC<{ defaultName?: string }> = ({
               />
               <button
                 type="button"
-                className="shrink-0 rounded p-2 text-white/40 hover:text-neon-pink"
+                className="shrink-0 rounded p-2 text-white/60 hover:text-neon-pink"
                 aria-label={`Remove link ${i + 1}`}
                 onClick={() =>
                   setLinks((ls) =>
@@ -205,7 +205,9 @@ export const ApplyForm: React.FC<{ defaultName?: string }> = ({
             </div>
           ))}
           {tried && errors.links && (
-            <p className="font-body text-xs text-neon-pink">{errors.links}</p>
+            <p className="font-body-bold text-xs text-neon-pink">
+              {errors.links}
+            </p>
           )}
           {links.length < MAX_LINKS && (
             <button
@@ -222,13 +224,13 @@ export const ApplyForm: React.FC<{ defaultName?: string }> = ({
       <Section
         title="Demo files"
         aside={
-          <span className="font-mono-semibold text-xs text-white/40">
+          <span className="font-mono-semibold text-xs text-white/60">
             {demos.jobs.length}/3
           </span>
         }
       >
         <div className="space-y-2">
-          <p className="font-body text-sm text-white/55">
+          <p className="font-body text-sm text-white/60">
             Up to three examples of what you&apos;d sell: a few samples, a
             screenshot of a scene, a shader file.
           </p>
@@ -241,7 +243,7 @@ export const ApplyForm: React.FC<{ defaultName?: string }> = ({
             hint="WAV, AIFF, FLAC, MP3 up to 50 MB · images up to 10 MB · GLSL"
           />
           {demos.rejected.map((r) => (
-            <p key={r} className="font-body text-xs text-neon-pink">
+            <p key={r} className="font-body-bold text-xs text-neon-pink">
               {r}
             </p>
           ))}
@@ -271,7 +273,7 @@ export const ApplyForm: React.FC<{ defaultName?: string }> = ({
             : "Send application"}
         </button>
         {demos.failed && (
-          <span className="font-body text-xs text-neon-pink">
+          <span className="font-body-bold text-xs text-neon-pink">
             Retry or remove the files that failed.
           </span>
         )}

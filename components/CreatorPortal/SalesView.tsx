@@ -93,14 +93,14 @@ export const SalesView: React.FC = () => {
         {sales.isLoading ? (
           <Skeleton className="h-32" />
         ) : !sales.data?.rows?.length ? (
-          <p className="font-body text-sm text-white/50">
+          <p className="font-body text-sm text-white/60">
             No sales in this range.
           </p>
         ) : (
           <div className="-mx-4 overflow-x-auto sm:mx-0">
             <table className="w-full min-w-[520px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-glass-border font-title-condensed text-xs text-white/50">
+                <tr className="border-b border-glass-border font-title-condensed text-xs text-white/60">
                   <th className="px-3 py-2 font-normal">Date</th>
                   <th className="px-3 py-2 font-normal">Order</th>
                   <th className="px-3 py-2 font-normal">Product</th>
@@ -150,7 +150,7 @@ export const SalesView: React.FC = () => {
             </table>
           </div>
         )}
-        <p className="mt-3 font-body text-xs text-white/40">
+        <p className="mt-3 font-body-bold text-xs text-white/60">
           Earnings are pending for 14 days after an order completes, then
           payable. Refunded or cancelled orders show as void.
         </p>

@@ -19,7 +19,8 @@ import {
   Section,
   Skeleton,
   Sparkline,
-  Stat
+  Stat,
+  PAYOUT_EMAIL_COPY
 } from "./kit";
 
 export const Overview: React.FC = () => {
@@ -83,7 +84,7 @@ export const Overview: React.FC = () => {
           aside={
             <Link
               href="/creator/sales"
-              className="font-body text-xs text-white/50 hover:text-white"
+              className="font-body-bold text-xs text-white/60 hover:text-white"
             >
               All sales
             </Link>
@@ -99,7 +100,7 @@ export const Overview: React.FC = () => {
                 <span className={`${numCls} text-2xl text-white`}>
                   {formatMoney(earned30, cur)}
                 </span>
-                <span className="font-body text-sm text-white/50">
+                <span className="font-body text-sm text-white/60">
                   earned from <span className={numCls}>{units30}</span>{" "}
                   {units30 === 1 ? "sale" : "sales"}
                 </span>
@@ -121,7 +122,7 @@ export const Overview: React.FC = () => {
               ["Sales", counts.sales]
             ].map(([label, n]) => (
               <div key={label} className="rounded-md bg-white/[0.03] px-3 py-2">
-                <dt className="font-title-condensed text-xs text-white/50">
+                <dt className="font-title-condensed text-xs text-white/60">
                   {label}
                 </dt>
                 <dd className={`${numCls} text-xl text-white`}>{n}</dd>
@@ -129,9 +130,8 @@ export const Overview: React.FC = () => {
             ))}
           </dl>
           {!account.payout_email && (
-            <p className="mt-3 font-body text-xs text-neon-amber">
-              No payout email on file yet. Ask support to add one before your
-              first payout.
+            <p className="mt-3 font-body-bold text-xs text-neon-amber">
+              No payout email on file yet. {PAYOUT_EMAIL_COPY}
             </p>
           )}
         </Section>
@@ -143,7 +143,7 @@ export const Overview: React.FC = () => {
         ) : products.isError ? (
           <ErrorNote error={products.error} />
         ) : attention.length === 0 ? (
-          <p className="font-body text-sm text-white/50">
+          <p className="font-body text-sm text-white/60">
             Nothing waiting. Everything you&apos;ve made is live or in review.
           </p>
         ) : (
@@ -157,17 +157,17 @@ export const Overview: React.FC = () => {
                   <span className="min-w-0 flex-1 truncate font-body text-sm text-white">
                     {p.name}
                   </span>
-                  <span className="font-body text-xs text-white/40">
+                  <span className="font-body-bold text-xs text-white/60">
                     {kindLabel(p.kind)}
                   </span>
                   <ReviewChip state={p.review_state} />
-                  <span className={`${numCls} text-xs text-white/40`}>
+                  <span className={`${numCls} text-xs text-white/60`}>
                     {formatDate(p.updated_at)}
                   </span>
                   {p.review_note &&
                     (p.review_state === "changes_requested" ||
                       p.review_state === "rejected") && (
-                      <span className="w-full font-body text-xs text-white/60">
+                      <span className="w-full font-body-bold text-xs text-white/60">
                         {p.review_note}
                       </span>
                     )}

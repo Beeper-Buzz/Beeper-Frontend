@@ -80,8 +80,13 @@ export function buildVisualizer(
   return { manifest: { format: 1, shader: draft.shader, params }, errors };
 }
 
+// One pass, so whichever comment opens first wins: "// a /*" is a line
+// comment and "/* // */" a block comment. An unterminated block comment runs
+// to the end of the file. Line breaks inside block comments are kept.
 const stripComments = (src: string) =>
-  src.replace(/\/\*[\s\S]*?\*\//g, " ").replace(/\/\/[^\n]*/g, " ");
+  src.replace(/\/\*[\s\S]*?(?:\*\/|$)|\/\/[^\n]*/g, (m) =>
+    m.startsWith("//") ? " " : m.replace(/[^\n]/g, " ")
+  );
 
 const FORBIDDEN: [RegExp, string][] = [
   [/#\s*version\b/, "#version not allowed"],

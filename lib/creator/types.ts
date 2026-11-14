@@ -98,7 +98,8 @@ export interface CreatorProductInput {
   name: string;
   description: string;
   price: number;
-  kind: DigitalKind;
+  /** Create only: any `kind` (or `manifest`) in a PATCH counts as an asset change. */
+  kind?: DigitalKind;
   taxon_ids: number[];
   preview_image_signed_id?: string | null;
   preview_audio_signed_id?: string | null;
@@ -108,11 +109,14 @@ export interface CreatorProductInput {
    */
   files?: string[];
   /**
-   * Existing asset file ids to carry into the new version alongside `files`
-   * (the API returns file ids, not signed ids). Contract addition to spec §1.3.
+   * When given, the draft's files become exactly these existing files
+   * (attachment ids from `asset.files`) plus the new uploads in `files`.
    */
   keep_file_ids?: number[];
-  manifest: Record<string, any>;
+  /** Attachment ids to take out of the draft (unused: keep_file_ids covers it). */
+  remove_file_ids?: number[];
+  /** Sent on create, and on update only when it changed. */
+  manifest?: Record<string, any>;
 }
 
 export interface SalesPoint {

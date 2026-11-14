@@ -13,7 +13,14 @@ import {
   VizParamDraft
 } from "../../../lib/manifests/visualizer";
 import { extensionOf } from "../../../lib/upload/directUpload";
-import { btnGhost, inputCls, labelCls, numCls, selectCls } from "../kit";
+import {
+  btnGhost,
+  inputCls,
+  labelCls,
+  numCls,
+  NumInput,
+  selectCls
+} from "../kit";
 import { ShaderPreview } from "./ShaderPreview";
 
 const small = cn(inputCls, "px-2 py-1.5 text-[13px]");
@@ -32,7 +39,9 @@ export const VisualizerEditor: React.FC<{
   setDraft: (fn: (d: ProductDraft) => ProductDraft) => void;
   files: DraftFile[];
   sourceFor: (f: DraftFile) => Blob | string | null;
-}> = ({ draft, setDraft, files, sourceFor }) => {
+  /** The shader file's rule errors, so the wizard can block submitting. */
+  onShaderErrors?: (errors: string[]) => void;
+}> = ({ draft, setDraft, files, sourceFor, onShaderErrors }) => {
   const glsl = files.filter(
     (f) => extensionOf(f.name) === "glsl" && f.status !== "error"
   );
@@ -72,6 +81,10 @@ export const VisualizerEditor: React.FC<{
     () => (source ? checkShaderSource(source) : []),
     [source]
   );
+  const errorsKey = sourceErrors.join("\n");
+  useEffect(() => {
+    onShaderErrors?.(errorsKey ? errorsKey.split("\n") : []);
+  }, [errorsKey, onShaderErrors]);
 
   // Only well-formed params reach the GPU.
   const previewParams = useMemo(
@@ -94,8 +107,6 @@ export const VisualizerEditor: React.FC<{
       ...d,
       vizParams: d.vizParams.map((p, j) => (j === i ? { ...p, ...patch } : p))
     }));
-
-  const numIn = (v: string) => (v.trim() === "" ? NaN : Number(v));
 
   return (
     <div className="space-y-4">
@@ -128,12 +139,14 @@ export const VisualizerEditor: React.FC<{
             params={previewParams}
           />
           {loadError && (
-            <p className="mt-2 font-body text-xs text-white/50">{loadError}</p>
+            <p className="mt-2 font-body-bold text-xs text-white/60">
+              {loadError}
+            </p>
           )}
           {sourceErrors.length > 0 && (
             <ul className="mt-2 space-y-1">
               {sourceErrors.map((e) => (
-                <li key={e} className="font-body text-xs text-neon-pink">
+                <li key={e} className="font-body-bold text-xs text-neon-pink">
                   {e}
                 </li>
               ))}
@@ -173,7 +186,7 @@ export const VisualizerEditor: React.FC<{
             </button>
           </div>
           {draft.vizParams.length === 0 && (
-            <p className="font-body text-xs text-white/45">
+            <p className="font-body-bold text-xs text-white/60">
               Parameters become <code className="text-white/70">uP_name</code>{" "}
               uniforms. Give one a drive to move it with the music.
             </p>
@@ -205,7 +218,7 @@ export const VisualizerEditor: React.FC<{
                 />
                 <button
                   type="button"
-                  className="justify-self-end rounded p-1 text-white/40 hover:text-neon-pink"
+                  className="justify-self-end rounded p-1 text-white/60 hover:text-neon-pink"
                   aria-label={`Remove parameter ${p.name}`}
                   onClick={() =>
                     setDraft((d) => ({
@@ -217,18 +230,15 @@ export const VisualizerEditor: React.FC<{
                   <X className="h-4 w-4" />
                 </button>
                 {(["min", "default", "max"] as const).map((k) => (
-                  <input
+                  <NumInput
                     key={k}
                     aria-label={`Parameter ${i + 1} ${k}`}
                     title={k}
                     placeholder={k}
-                    type="number"
-                    step="any"
                     className={cn(small, numCls, "col-span-1 min-w-0")}
-                    value={Number.isFinite(p[k]) ? p[k] : ""}
-                    onChange={(e) =>
-                      setParam(i, { [k]: numIn(e.target.value) })
-                    }
+                    value={p[k]}
+                    invalid={!Number.isFinite(p[k])}
+                    onCommit={(v) => setParam(i, { [k]: v ?? NaN })}
                   />
                 ))}
                 <select
@@ -250,7 +260,7 @@ export const VisualizerEditor: React.FC<{
                   ))}
                 </select>
                 {bad && (
-                  <p className="col-span-6 font-body text-[11px] text-neon-pink">
+                  <p className="col-span-6 font-body-bold text-[11px] text-neon-pink">
                     Start with a lowercase letter; letters and digits only, up
                     to 24.
                   </p>
@@ -268,7 +278,7 @@ export const VisualizerEditor: React.FC<{
         <pre className="overflow-auto border-t border-glass-border p-3 font-mono-semibold text-[11px] leading-relaxed text-white/70">
           {CONTRACT}
         </pre>
-        <p className="px-3 pb-3 font-body text-xs text-white/45">
+        <p className="px-3 pb-3 font-body-bold text-xs text-white/60">
           GLSL ES 1.00, up to 64 KB, no textures. No precision, uniform,
           attribute or varying declarations, no main() and no #version,
           #extension or #include.

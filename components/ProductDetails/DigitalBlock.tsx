@@ -66,7 +66,7 @@ export const DigitalBlock: React.FC<{
           <p className="font-body text-sm text-white">
             Digital download · use it in the Beeper app
           </p>
-          <p className="mt-0.5 font-body text-xs text-white/50">
+          <p className="mt-0.5 font-body-bold text-xs text-white/60">
             {kindLabel(kind)}
             {included && (
               <>
@@ -116,7 +116,7 @@ export const DigitalBlock: React.FC<{
               {claim.isError && (
                 <p
                   role="alert"
-                  className="mt-2 font-body text-xs text-neon-pink"
+                  className="mt-2 font-body-bold text-xs text-neon-pink"
                 >
                   {apiErrorMessage(
                     claim.error,

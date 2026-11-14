@@ -33,7 +33,7 @@ export const SalesChart: React.FC<{
 
   return (
     <div>
-      <div className="mb-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 font-body text-xs text-white/50">
+      <div className="mb-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 font-body-bold text-xs text-white/60">
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-sm bg-neon-cyan" aria-hidden />{" "}
           Earned
@@ -108,7 +108,7 @@ export const SalesChart: React.FC<{
           />
         )}
       </svg>
-      <div className={`${numCls} relative h-4 text-[10px] text-white/40`}>
+      <div className={`${numCls} relative h-4 text-[10px] text-white/60`}>
         {ticks.map((t) => (
           <span
             key={t}

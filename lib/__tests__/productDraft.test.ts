@@ -8,6 +8,8 @@ import {
   draftToInput,
   DraftFile,
   emptyDraft,
+  presetFile,
+  sameManifest,
   stepErrors
 } from "../creator/productDraft";
 
@@ -93,7 +95,7 @@ describe("draftToInput", () => {
     });
     assert.equal("files" in input, false);
     assert.equal(input.price, 9.99);
-    assert.equal(input.manifest.samples[0].file, "kick.wav");
+    assert.equal(input.manifest?.samples[0].file, "kick.wav");
   });
 
   test("sends new signed ids plus the kept existing files when they change", () => {
@@ -106,7 +108,7 @@ describe("draftToInput", () => {
     assert.deepEqual(input.files, ["sig-2"]);
     assert.deepEqual(input.keep_file_ids, [11]);
     assert.deepEqual(
-      input.manifest.samples.map((s: { file: string }) => s.file),
+      input.manifest?.samples.map((s: { file: string }) => s.file),
       ["kick.wav", "snare.wav"]
     );
   });
@@ -122,7 +124,7 @@ describe("draftToInput", () => {
       originalFileIds: null
     });
     assert.deepEqual(input.files, ["sig-g"]);
-    assert.equal(input.manifest.shader, "glow.glsl");
+    assert.equal(input.manifest?.shader, "glow.glsl");
   });
 });
 
@@ -144,7 +146,7 @@ describe("draftManifest", () => {
 });
 
 describe("stepErrors", () => {
-  test("details need a name and a price of 0 or more", () => {
+  test("details need a name and a price of at least 0.50", () => {
     const d = {
       ...emptyDraft(),
       kind: "sample_pack" as const,
@@ -153,7 +155,13 @@ describe("stepErrors", () => {
     };
     const e = stepErrors(d, []);
     assert.ok(e.details.includes("Name the product."));
-    assert.ok(e.details.includes("Price must be 0 or more."));
+    assert.ok(e.details.includes("Price must be at least $0.50."));
+    const free = stepErrors({ ...d, name: "x", price: "0" }, []);
+    assert.ok(free.details.includes("Price must be at least $0.50."));
+    assert.deepEqual(
+      stepErrors({ ...d, name: "x", price: "0.5" }, []).details,
+      []
+    );
     assert.deepEqual(e.kind, []);
   });
 
@@ -168,5 +176,111 @@ describe("stepErrors", () => {
   test("an effect preset needs no files but needs an effect", () => {
     const d = { ...emptyDraft(), kind: "effect_preset" as const };
     assert.ok(stepErrors(d, []).files.includes("add at least one effect"));
+  });
+});
+
+describe("effect preset file", () => {
+  test("an effect preset sends its preset.json as the only file", () => {
+    const d = {
+      ...emptyDraft(),
+      kind: "effect_preset" as const,
+      name: "Wash",
+      price: "1",
+      effects: [{ id: "reverb", enabled: true, params: {} }]
+    };
+    const input = draftToInput(d, [], {
+      originalFileIds: [5],
+      presetSignedId: "sig-p"
+    });
+    assert.deepEqual(input.files, ["sig-p"]);
+    assert.deepEqual(input.keep_file_ids, []);
+  });
+
+  test("without a new preset.json an effect preset leaves its files alone", () => {
+    const d = { ...emptyDraft(), kind: "effect_preset" as const };
+    const input = draftToInput(d, [], { originalFileIds: [5] });
+    assert.equal("files" in input, false);
+    assert.equal("keep_file_ids" in input, false);
+  });
+
+  test("presetFile is the manifest as JSON named preset.json", async () => {
+    const f = presetFile({ format: 1, effects: [] });
+    assert.equal(f.name, "preset.json");
+    assert.equal(f.type, "application/json");
+    assert.deepEqual(JSON.parse(await f.text()), { format: 1, effects: [] });
+  });
+
+  test("sameManifest ignores key order and the server's files key", () => {
+    assert.equal(
+      sameManifest(
+        { format: 1, effects: [{ id: "a", params: { x: 1, y: 2 } }] },
+        {
+          effects: [{ params: { y: 2, x: 1 }, id: "a" }],
+          format: 1,
+          files: [{ id: 1 }]
+        }
+      ),
+      true
+    );
+    assert.equal(sameManifest({ a: 1 }, { a: 2 }), false);
+  });
+});
+
+describe("stepErrors in words", () => {
+  test("sample problems name the file", () => {
+    const d = {
+      ...emptyDraft(),
+      kind: "sample_pack" as const,
+      samples: { "a.wav": { pad: 1 }, "b.wav": { pad: 1 } }
+    };
+    const e = stepErrors(d, [uploaded("a.wav", "s1"), uploaded("b.wav", "s2")]);
+    assert.ok(
+      e.files.includes("b.wav: Pad 1 is already used by a.wav."),
+      e.files.join(" | ")
+    );
+    assert.ok(!e.files.some((m) => m.startsWith("samples[")));
+  });
+
+  test("shader rule errors block the files step, named by file", () => {
+    const d = { ...emptyDraft(), kind: "visualizer" as const };
+    const e = stepErrors(d, [uploaded("glow.glsl", "s")], {
+      shaderErrors: ["uniform declarations not allowed"]
+    });
+    assert.ok(e.files.includes("glow.glsl: uniform declarations not allowed"));
+  });
+});
+
+describe("draftToInput on a live product", () => {
+  test("an update leaves kind and an unchanged manifest out", () => {
+    const prod = product();
+    const d = { ...draftFromProduct(prod), name: "Dustier Drums" };
+    const input = draftToInput(d, [existing(11, "kick.wav")], {
+      originalFileIds: [11],
+      originalManifest: prod.asset?.manifest
+    });
+    assert.equal(input.name, "Dustier Drums");
+    assert.equal("kind" in input, false);
+    assert.equal("manifest" in input, false);
+    assert.equal("files" in input, false);
+  });
+
+  test("a changed manifest is sent", () => {
+    const prod = product();
+    const d = draftFromProduct(prod);
+    d.samples["kick.wav"] = { ...d.samples["kick.wav"], gain_db: -6 };
+    const input = draftToInput(d, [existing(11, "kick.wav")], {
+      originalFileIds: [11],
+      originalManifest: prod.asset?.manifest
+    });
+    assert.equal(input.manifest?.samples[0].gain_db, -6);
+  });
+
+  test("a new product sends its kind and manifest", () => {
+    const d = { ...emptyDraft(), kind: "visualizer" as const };
+    const input = draftToInput(d, [uploaded("a.glsl", "s")], {
+      originalFileIds: null
+    });
+    assert.equal(input.kind, "visualizer");
+    assert.equal(input.manifest?.shader, "a.glsl");
   });
 });

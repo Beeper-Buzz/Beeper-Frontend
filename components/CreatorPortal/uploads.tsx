@@ -41,57 +41,74 @@ export function useUploadQueue({
   concurrency?: number;
   initial?: UploadJob[];
 }) {
-  const [jobs, setJobs] = useState<UploadJob[]>(initial);
+  const [jobs, setJobsState] = useState<UploadJob[]>(initial);
   const [rejected, setRejected] = useState<string[]>([]);
+  // The list as of the last change, so `add` can decide outside an updater
+  // (updaters must stay pure: React may run them twice).
+  const jobsRef = useRef<UploadJob[]>(initial);
+  const setJobs = useCallback(
+    (next: UploadJob[] | ((js: UploadJob[]) => UploadJob[])) =>
+      setJobsState((js) => {
+        const out = typeof next === "function" ? next(js) : next;
+        jobsRef.current = out;
+        return out;
+      }),
+    []
+  );
   const controllers = useRef(new Map<string, AbortController>());
   const started = useRef(new Set<string>());
 
   const patch = useCallback(
     (key: string, p: Partial<UploadJob>) =>
       setJobs((js) => js.map((j) => (j.key === key ? { ...j, ...p } : j))),
-    []
+    [setJobs]
   );
 
   const add = useCallback(
     (files: FileList | File[]) => {
       const problems: string[] = [];
-      setJobs((js) => {
-        const out = [...js];
-        for (const f of Array.from(files)) {
-          if (max && out.length >= max) {
-            problems.push(`Only ${max} file${max === 1 ? "" : "s"} allowed.`);
-            break;
-          }
-          const problem = checkUpload(f, allowed);
-          if (problem) {
-            problems.push(problem);
-            continue;
-          }
-          if (out.some((j) => j.name === f.name)) {
-            problems.push(`${f.name} is already in the list.`);
-            continue;
-          }
-          out.push({
-            key: nextKey(),
-            name: f.name,
-            size: f.size,
-            file: f,
-            progress: 0,
-            status: "queued"
-          });
+      const current = jobsRef.current;
+      const accepted: UploadJob[] = [];
+      for (const f of Array.from(files)) {
+        if (max && current.length + accepted.length >= max) {
+          problems.push(`Only ${max} file${max === 1 ? "" : "s"} allowed.`);
+          break;
         }
-        return out;
-      });
+        const problem = checkUpload(f, allowed);
+        if (problem) {
+          problems.push(problem);
+          continue;
+        }
+        if (
+          current.some((j) => j.name === f.name) ||
+          accepted.some((j) => j.name === f.name)
+        ) {
+          problems.push(`${f.name} is already in the list.`);
+          continue;
+        }
+        accepted.push({
+          key: nextKey(),
+          name: f.name,
+          size: f.size,
+          file: f,
+          progress: 0,
+          status: "queued"
+        });
+      }
+      if (accepted.length) setJobs((js) => [...js, ...accepted]);
       setRejected(problems);
     },
-    [allowed, max]
+    [allowed, max, setJobs]
   );
 
-  const remove = useCallback((key: string) => {
-    controllers.current.get(key)?.abort();
-    controllers.current.delete(key);
-    setJobs((js) => js.filter((j) => j.key !== key));
-  }, []);
+  const remove = useCallback(
+    (key: string) => {
+      controllers.current.get(key)?.abort();
+      controllers.current.delete(key);
+      setJobs((js) => js.filter((j) => j.key !== key));
+    },
+    [setJobs]
+  );
 
   const retry = useCallback(
     (key: string) =>
@@ -203,7 +220,9 @@ export const FileDrop: React.FC<{
     >
       <FileUp className="h-5 w-5 text-neon-cyan" aria-hidden />
       <span className="font-body text-sm text-white">{label}</span>
-      {hint && <span className="font-body text-xs text-white/40">{hint}</span>}
+      {hint && (
+        <span className="font-body-bold text-xs text-white/60">{hint}</span>
+      )}
       <input
         id={id}
         type="file"
@@ -234,7 +253,7 @@ export const UploadList: React.FC<{
             <span className="min-w-0 flex-1 truncate font-body text-sm text-white">
               {j.name}
             </span>
-            <span className={cn(numCls, "shrink-0 text-xs text-white/40")}>
+            <span className={cn(numCls, "shrink-0 text-xs text-white/60")}>
               {formatBytes(j.size)}
             </span>
             {j.status === "done" && (
@@ -256,7 +275,7 @@ export const UploadList: React.FC<{
             <button
               type="button"
               onClick={() => onRemove(j.key)}
-              className="shrink-0 rounded p-1 text-white/40 hover:text-neon-pink"
+              className="shrink-0 rounded p-1 text-white/60 hover:text-neon-pink"
               aria-label={`Remove ${j.name}`}
             >
               <X className="h-4 w-4" />
@@ -278,7 +297,9 @@ export const UploadList: React.FC<{
             </div>
           )}
           {j.status === "error" && (
-            <p className="mt-1 font-body text-xs text-neon-pink">{j.error}</p>
+            <p className="mt-1 font-body-bold text-xs text-neon-pink">
+              {j.error}
+            </p>
           )}
           {extra?.(j)}
         </li>

@@ -59,11 +59,35 @@ export const nameFromFile = (file: string): string =>
     .replace(/[_-]+/g, " ")
     .trim() || file;
 
+/** Pads claimed by more than one sample: pad -> the files, in order. */
+export function padConflicts(
+  samples: { file: string; pad?: number }[]
+): Map<number, string[]> {
+  const byPad = new Map<number, string[]>();
+  for (const s of samples) {
+    if (s.pad === undefined) continue;
+    byPad.set(s.pad, [...(byPad.get(s.pad) || []), s.file]);
+  }
+  return new Map(Array.from(byPad).filter(([, files]) => files.length > 1));
+}
+
+/**
+ * `errors` mirror the server's wording (by index); `rowErrors` say the same
+ * things in words, keyed by file name, for the editor's rows.
+ */
 export function buildSamplePack(
   draft: SamplePackDraft,
   attachedFiles: string[]
-): { manifest: SamplePackManifest; errors: string[] } {
+): {
+  manifest: SamplePackManifest;
+  errors: string[];
+  rowErrors: Record<string, string[]>;
+} {
   const errors: string[] = [];
+  const rowErrors: Record<string, string[]> = {};
+  const row = (file: string, msg: string) => {
+    (rowErrors[file] = rowErrors[file] || []).push(msg);
+  };
   const attached = new Set(attachedFiles);
 
   if (
@@ -73,23 +97,26 @@ export function buildSamplePack(
   ) {
     errors.push("pack_id invalid");
   }
-  if (draft.bpm !== undefined && !inRange(draft.bpm, 20, 400)) {
-    errors.push("bpm must be 20..400");
+  // The server keeps bpm as given; it only has to be a number.
+  if (draft.bpm !== undefined && !Number.isFinite(draft.bpm)) {
+    errors.push("bpm must be a number");
   }
   if (draft.samples.length < 1 || draft.samples.length > MAX_SAMPLES) {
     errors.push(`samples must have 1..${MAX_SAMPLES} entries`);
   }
 
   // Pads the creator chose, first come first served.
-  const used = new Set<number>();
+  const used = new Map<number, string>();
   draft.samples.forEach((s, i) => {
     if (s.pad === undefined) return;
     if (!isInt(s.pad) || s.pad < 1 || s.pad > PAD_COUNT) {
       errors.push(`samples[${i}].pad must be 1..${PAD_COUNT}`);
+      row(s.file, `Pad must be 1 to ${PAD_COUNT}.`);
     } else if (used.has(s.pad)) {
       errors.push(`samples[${i}].pad ${s.pad} is already used`);
+      row(s.file, `Pad ${s.pad} is already used by ${used.get(s.pad)}.`);
     } else {
-      used.add(s.pad);
+      used.set(s.pad, s.file);
     }
   });
 
@@ -115,19 +142,34 @@ export function buildSamplePack(
       while (used.has(next) && next <= PAD_COUNT) next++;
       if (next <= PAD_COUNT) {
         out.pad = next;
-        used.add(next);
+        used.set(next, s.file);
       }
     }
 
     const at = `samples[${i}]`;
-    if (!attached.has(s.file)) errors.push(`file "${s.file}" is not attached`);
-    if (!isAudio(s.file)) errors.push(`${at}.file "${s.file}" is not audio`);
-    if (!isInt(out.root_note) || out.root_note < 0 || out.root_note > 127)
+    if (!attached.has(s.file)) {
+      errors.push(`file "${s.file}" is not attached`);
+      row(s.file, "This file isn't uploaded yet.");
+    }
+    if (!isAudio(s.file)) {
+      errors.push(`${at}.file "${s.file}" is not audio`);
+      row(s.file, "Only audio files can be samples.");
+    }
+    if (!isInt(out.root_note) || out.root_note < 0 || out.root_note > 127) {
       errors.push(`${at}.root_note must be 0..127`);
+      row(s.file, "Root note must be a whole number from 0 to 127.");
+    }
     for (const k of ["low_note", "high_note"] as const) {
       const v = out[k];
-      if (v !== undefined && (!isInt(v) || v < 0 || v > 127))
+      if (v !== undefined && (!isInt(v) || v < 0 || v > 127)) {
         errors.push(`${at}.${k} must be 0..127`);
+        row(
+          s.file,
+          `${
+            k === "low_note" ? "Lowest" : "Highest"
+          } note must be a whole number from 0 to 127.`
+        );
+      }
     }
     if ((out.low_note === undefined) !== (out.high_note === undefined)) {
       errors.push(
@@ -135,15 +177,19 @@ export function buildSamplePack(
           ? `${at}.low_note given without high_note`
           : `${at}.high_note given without low_note`
       );
+      row(s.file, "A key zone needs both a lowest and a highest note.");
     } else if (
       out.low_note !== undefined &&
       out.high_note !== undefined &&
       out.low_note > out.high_note
     ) {
       errors.push(`${at}.low_note must not be above high_note`);
+      row(s.file, "The key zone's lowest note is above its highest.");
     }
-    if (!inRange(out.gain_db, -24, 12))
+    if (!inRange(out.gain_db, -24, 12)) {
       errors.push(`${at}.gain_db must be -24..12`);
+      row(s.file, "Gain must be from -24 to 12 dB.");
+    }
     if (
       out.start_ms !== undefined &&
       out.end_ms !== undefined &&
@@ -158,5 +204,5 @@ export function buildSamplePack(
   const manifest: SamplePackManifest = { format: 1, samples };
   if (draft.pack_id) manifest.pack_id = draft.pack_id;
   if (draft.bpm !== undefined) manifest.bpm = draft.bpm;
-  return { manifest, errors };
+  return { manifest, errors, rowErrors };
 }

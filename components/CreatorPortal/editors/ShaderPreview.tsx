@@ -4,10 +4,16 @@ import { cn } from "@lib/utils";
 import { ShaderRunner, ParamSpec } from "../../../lib/shader/preview";
 import { numCls } from "../kit";
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
 /**
  * Live WebGL1 preview with the app's prelude and uniforms. The music is
  * simulated (a pulse at the chosen tempo), so drives can be checked without
- * audio. Pauses when off screen or when the user prefers reduced motion.
+ * audio. With Reduce Motion it draws one still frame until you press play;
+ * it pauses off screen, and recompiles when the browser restores a lost GPU
+ * context.
  */
 export const ShaderPreview: React.FC<{
   source: string | null;
@@ -21,6 +27,9 @@ export const ShaderPreview: React.FC<{
   const [bpm, setBpm] = useState(120);
   const [manual, setManual] = useState<Record<string, number>>({});
   const [supported, setSupported] = useState(true);
+  const [lost, setLost] = useState(false);
+  // Bumped when a lost context comes back, to compile again.
+  const [contextEpoch, setContextEpoch] = useState(0);
   const paramsKey = JSON.stringify(params);
 
   useEffect(() => {
@@ -33,8 +42,22 @@ export const ShaderPreview: React.FC<{
       setStalled(true);
       setPlaying(false);
     };
+    const onLost = (e: Event) => {
+      e.preventDefault(); // lets the browser restore it
+      runner.contextLost();
+      setPlaying(false);
+      setLost(true);
+    };
+    const onRestored = () => {
+      setLost(false);
+      setContextEpoch((n) => n + 1);
+    };
+    canvas.addEventListener("webglcontextlost", onLost);
+    canvas.addEventListener("webglcontextrestored", onRestored);
     return () => {
       try {
+        canvas.removeEventListener("webglcontextlost", onLost);
+        canvas.removeEventListener("webglcontextrestored", onRestored);
         runner.dispose();
       } catch {
         // never throw from cleanup
@@ -43,10 +66,10 @@ export const ShaderPreview: React.FC<{
     };
   }, []);
 
-  // Recompile when the source or the params change.
+  // Compile when the source or the params change, or the context comes back.
   useEffect(() => {
     const runner = runnerRef.current;
-    if (!runner || !runner.supported) return;
+    if (!runner || !runner.supported || lost) return;
     runner.stop();
     setStalled(false);
     if (!source) {
@@ -54,6 +77,8 @@ export const ShaderPreview: React.FC<{
       setPlaying(false);
       return;
     }
+    runner.manual = manual;
+    runner.bpm = bpm;
     const res = runner.compile(source, JSON.parse(paramsKey));
     if (!res.ok) {
       setError(res.error);
@@ -61,24 +86,24 @@ export const ShaderPreview: React.FC<{
       return;
     }
     setError(null);
-    const reduce =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (!reduce) {
+    if (prefersReducedMotion()) {
+      runner.drawStill();
+      setPlaying(false);
+    } else {
       runner.play();
       setPlaying(true);
-    } else {
-      setPlaying(false);
     }
-  }, [source, paramsKey]);
+    // manual and bpm are pushed by their own effect below.
+  }, [source, paramsKey, contextEpoch, lost]);
 
   useEffect(() => {
-    if (runnerRef.current) runnerRef.current.bpm = bpm;
-  }, [bpm]);
-
-  useEffect(() => {
-    if (runnerRef.current) runnerRef.current.manual = manual;
-  }, [manual]);
+    const r = runnerRef.current;
+    if (!r) return;
+    r.bpm = bpm;
+    r.manual = manual;
+    // Paused: show the new settings on a still frame.
+    if (!r.playing) r.drawStill();
+  }, [bpm, manual]);
 
   // Pause off screen.
   useEffect(() => {
@@ -98,7 +123,7 @@ export const ShaderPreview: React.FC<{
 
   const toggle = () => {
     const r = runnerRef.current;
-    if (!r || error) return;
+    if (!r || error || lost) return;
     if (r.playing) {
       r.stop();
       setPlaying(false);
@@ -109,6 +134,18 @@ export const ShaderPreview: React.FC<{
     }
   };
 
+  const overlay = !supported
+    ? "WebGL isn't available in this browser, so there's no live preview."
+    : lost
+    ? "The graphics card dropped the preview. It comes back on its own; if it doesn't, reload the page."
+    : !source
+    ? "Add a .glsl file to see it here."
+    : stalled
+    ? "The preview stopped: frames took over 50 ms. The app would fall back to its default scene. Simplify the shader and press play."
+    : error
+    ? "The shader didn't compile. See the log below."
+    : null;
+
   return (
     <div className="space-y-2">
       <div className="relative overflow-hidden rounded-md border border-glass-border bg-black">
@@ -117,15 +154,9 @@ export const ShaderPreview: React.FC<{
           className="block aspect-video w-full"
           aria-label="Visualizer preview"
         />
-        {(!source || error || stalled || !supported) && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70 p-4 text-center font-body text-sm text-white/70">
-            {!supported
-              ? "WebGL isn't available in this browser, so there's no live preview."
-              : !source
-              ? "Add a .glsl file to see it here."
-              : stalled
-              ? "The preview stopped: frames took over 50 ms. The app would fall back to its default scene. Simplify the shader and press play."
-              : "The shader didn't compile. See the log below."}
+        {overlay && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 p-4 text-center font-body-bold text-sm text-white/80">
+            {overlay}
           </div>
         )}
       </div>
@@ -134,7 +165,7 @@ export const ShaderPreview: React.FC<{
         <button
           type="button"
           onClick={toggle}
-          disabled={!source || !!error || !supported}
+          disabled={!source || !!error || !supported || lost}
           className="flex h-8 w-8 items-center justify-center rounded-md border border-glass-border text-neon-cyan hover:border-neon-cyan/60 disabled:opacity-30"
           aria-label={playing ? "Pause preview" : "Play preview"}
         >
@@ -144,7 +175,7 @@ export const ShaderPreview: React.FC<{
             <Play className="h-4 w-4" />
           )}
         </button>
-        <label className="flex items-center gap-2 font-body text-xs text-white/60">
+        <label className="flex items-center gap-2 font-title-condensed text-xs text-white/70">
           Tempo
           <input
             type="range"
@@ -167,7 +198,7 @@ export const ShaderPreview: React.FC<{
             return (
               <label
                 key={p.name}
-                className="grid grid-cols-[6rem_1fr_3.5rem] items-center gap-2 font-body text-xs text-white/60"
+                className="grid grid-cols-[6rem_1fr_3.5rem] items-center gap-2 font-title-condensed text-xs text-white/70"
               >
                 <span className="truncate">
                   {p.name}
@@ -200,7 +231,7 @@ export const ShaderPreview: React.FC<{
       )}
 
       {error && (
-        <pre className="max-h-40 overflow-auto whitespace-pre-wrap rounded-md border border-neon-pink/30 bg-neon-pink/[0.05] p-2 font-mono-semibold text-[11px] text-neon-pink">
+        <pre className="max-h-40 overflow-auto whitespace-pre-wrap rounded-md border border-neon-pink/30 bg-neon-pink/[0.05] p-2 font-mono-semibold text-xs text-neon-pink">
           {error}
         </pre>
       )}

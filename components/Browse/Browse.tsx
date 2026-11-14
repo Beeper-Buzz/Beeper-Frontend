@@ -95,8 +95,9 @@ export const Browse: React.FC = () => {
   const { data: productsData, isLoading } = useProducts(1);
 
   // Marketplace taxon products (fetched once the marketplace tab opens)
-  const { data: marketplaceData, isLoading: marketplaceLoading } =
-    useMarketplaceProducts(mode === "marketplace");
+  // A page at a time; "Load more" fetches the next.
+  const marketplace = useMarketplaceProducts(mode === "marketplace");
+  const marketplaceLoading = marketplace.isLoading;
 
   // Featured taxon (null when missing, empty or failing: no shelf)
   const { data: featuredData } = useFeaturedProducts();
@@ -266,16 +267,17 @@ export const Browse: React.FC = () => {
   // Marketplace products, filtered by kind chip + search, then sorted
   const filteredMarketplace = useMemo(
     () =>
-      filterMarketplace(marketplaceData?.data || [], {
+      filterMarketplace(marketplace.data, {
         kinds: activeChips.filter(isDigitalKind),
         search: filters.search,
         sort: filters.sort
       }),
-    [marketplaceData, activeChips, filters.search, filters.sort]
+    [marketplace.data, activeChips, filters.search, filters.sort]
   );
   const marketplaceEmpty =
     !marketplaceLoading &&
-    filterMarketplace(marketplaceData?.data || [], {
+    !marketplace.hasNextPage &&
+    filterMarketplace(marketplace.data, {
       kinds: [],
       search: "",
       sort: "name_asc"
@@ -654,7 +656,7 @@ export const Browse: React.FC = () => {
                   marketplaceLoading ? null : filteredMarketplace.length > 0 ? (
                     <ProductList
                       marketplaceProducts={filteredMarketplace}
-                      marketplaceIncluded={marketplaceData?.included}
+                      marketplaceIncluded={marketplace.included}
                       title=""
                       mode="marketplace"
                     />
@@ -668,6 +670,40 @@ export const Browse: React.FC = () => {
                   )}
                 </motion.div>
               </AnimatePresence>
+
+              {/* More marketplace pages: filters and sort apply to what's loaded */}
+              {mode === "marketplace" &&
+                !marketplaceLoading &&
+                marketplace.hasNextPage && (
+                  <div className="mt-6 flex flex-col items-center gap-2">
+                    <p className="font-body-bold text-xs text-white/60">
+                      Showing{" "}
+                      <span className="font-mono-semibold tabular-nums">
+                        {marketplace.data.length}
+                      </span>
+                      {marketplace.total ? (
+                        <>
+                          {" "}
+                          of{" "}
+                          <span className="font-mono-semibold tabular-nums">
+                            {marketplace.total}
+                          </span>
+                        </>
+                      ) : null}
+                      . Search, kinds and sort cover what&apos;s loaded.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => marketplace.fetchNextPage()}
+                      disabled={marketplace.isFetchingNextPage}
+                      className="rounded-lg border border-neon-magenta bg-transparent px-6 py-2.5 font-title text-sm font-semibold text-neon-magenta transition-all hover:bg-neon-magenta hover:text-black disabled:opacity-50"
+                    >
+                      {marketplace.isFetchingNextPage
+                        ? "Loading…"
+                        : "Load more"}
+                    </button>
+                  </div>
+                )}
             </main>
           </div>
         </div>

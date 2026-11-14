@@ -83,12 +83,10 @@ export const useCreator = (enabled = true) =>
 export const useCreatorProducts = (enabled = true) =>
   useQuery<CreatorProduct[], ApiError>(
     [QueryKeys.CREATOR_PRODUCTS],
-    async () => {
-      const res = await v1<CreatorProduct[] | { products: CreatorProduct[] }>(
-        "/creator/products"
-      );
-      return Array.isArray(res) ? res : res?.products || [];
-    },
+    async () =>
+      // 200 { products: [Product] }, newest first.
+      (await v1<{ products: CreatorProduct[] }>("/creator/products"))
+        ?.products || [],
     { enabled, retry: retryTransient, staleTime: 15_000 }
   );
 

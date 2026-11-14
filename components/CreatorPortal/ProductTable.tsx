@@ -69,7 +69,7 @@ export const ProductTable: React.FC = () => {
               aria-pressed={filter === f.id}
               onClick={() => setFilter(f.id)}
               className={cn(
-                "whitespace-nowrap rounded-md border px-2.5 py-1 font-body text-xs transition-colors",
+                "whitespace-nowrap rounded-md border px-2.5 py-1 font-body-bold text-xs transition-colors",
                 filter === f.id
                   ? "border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan"
                   : "border-glass-border text-white/60 hover:text-white"
@@ -77,7 +77,7 @@ export const ProductTable: React.FC = () => {
             >
               {f.label}
               {n !== undefined && (
-                <span className={`${numCls} ml-1.5 text-white/40`}>{n}</span>
+                <span className={`${numCls} ml-1.5 text-white/60`}>{n}</span>
               )}
             </button>
           );
@@ -104,7 +104,7 @@ export const ProductTable: React.FC = () => {
         <div className="glass-panel overflow-hidden">
           <table className="w-full border-collapse text-left">
             <thead className="hidden border-b border-glass-border sm:table-header-group">
-              <tr className="font-title-condensed text-xs text-white/50">
+              <tr className="font-title-condensed text-xs text-white/60">
                 <th className="px-3 py-2 font-normal">Product</th>
                 <th className="px-3 py-2 font-normal">State</th>
                 <th className="px-3 py-2 text-right font-normal">Price</th>
@@ -126,7 +126,7 @@ export const ProductTable: React.FC = () => {
                     >
                       {p.name || "Untitled"}
                     </Link>
-                    <span className="font-body text-xs text-white/40">
+                    <span className="font-body-bold text-xs text-white/60">
                       {kindLabel(p.kind)}
                     </span>
                   </td>
@@ -141,7 +141,7 @@ export const ProductTable: React.FC = () => {
                       : formatMoney(p.price, p.currency)}
                   </td>
                   <td
-                    className={`${numCls} hidden text-right text-sm text-white/50 sm:table-cell sm:px-3 sm:py-2`}
+                    className={`${numCls} hidden text-right text-sm text-white/60 sm:table-cell sm:px-3 sm:py-2`}
                   >
                     {p.live_asset_version ? `v${p.live_asset_version}` : "—"}
                     {p.asset &&
@@ -156,13 +156,13 @@ export const ProductTable: React.FC = () => {
                     className={`${numCls} text-right text-xs text-white/70 sm:px-3 sm:py-2 sm:text-sm`}
                   >
                     {p.sales_count}
-                    <span className="font-body text-white/40 sm:hidden">
+                    <span className="font-body text-white/60 sm:hidden">
                       {" "}
                       sold
                     </span>
                   </td>
                   <td
-                    className={`${numCls} hidden text-right text-sm text-white/50 sm:table-cell sm:px-3 sm:py-2`}
+                    className={`${numCls} hidden text-right text-sm text-white/60 sm:table-cell sm:px-3 sm:py-2`}
                   >
                     {formatDate(p.updated_at)}
                   </td>
@@ -171,7 +171,7 @@ export const ProductTable: React.FC = () => {
             </tbody>
           </table>
           {rows.length === 0 && (
-            <p className="px-3 py-6 text-center font-body text-sm text-white/50">
+            <p className="px-3 py-6 text-center font-body text-sm text-white/60">
               No products in this state.
             </p>
           )}

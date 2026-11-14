@@ -8,7 +8,8 @@ import {
   PageTitle,
   Section,
   Skeleton,
-  Stat
+  Stat,
+  PAYOUT_EMAIL_COPY
 } from "./kit";
 
 export const PayoutsView: React.FC = () => {
@@ -43,7 +44,7 @@ export const PayoutsView: React.FC = () => {
         ) : payouts.isError ? (
           <ErrorNote error={payouts.error} />
         ) : !payouts.data?.length ? (
-          <p className="font-body text-sm text-white/50">
+          <p className="font-body text-sm text-white/60">
             No payouts yet. Payable earnings are paid out by hand, usually
             monthly.
           </p>
@@ -51,7 +52,7 @@ export const PayoutsView: React.FC = () => {
           <div className="-mx-4 overflow-x-auto sm:mx-0">
             <table className="w-full min-w-[420px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-glass-border font-title-condensed text-xs text-white/50">
+                <tr className="border-b border-glass-border font-title-condensed text-xs text-white/60">
                   <th className="px-3 py-2 font-normal">Paid</th>
                   <th className="px-3 py-2 text-right font-normal">Amount</th>
                   <th className="px-3 py-2 font-normal">Reference</th>
@@ -76,7 +77,7 @@ export const PayoutsView: React.FC = () => {
                     >
                       {p.reference || "—"}
                     </td>
-                    <td className="px-3 py-1.5 font-body text-xs text-white/60">
+                    <td className="px-3 py-1.5 font-body-bold text-xs text-white/60">
                       {p.note || ""}
                     </td>
                   </tr>
@@ -85,9 +86,8 @@ export const PayoutsView: React.FC = () => {
             </table>
           </div>
         )}
-        <p className="mt-3 font-body text-xs text-white/40">
-          To change your payout email, contact hello@beeper.buzz from the
-          address on your account.
+        <p className="mt-3 font-body-bold text-xs text-white/60">
+          {PAYOUT_EMAIL_COPY}
         </p>
       </Section>
     </>

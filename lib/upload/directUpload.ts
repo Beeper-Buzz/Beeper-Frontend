@@ -128,30 +128,43 @@ export class UploadError extends Error {
 /** PUT with XHR: fetch can't report upload progress. */
 export const xhrPut: Put = (url, body, headers, onProgress, signal) =>
   new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new UploadError(0, "Upload cancelled."));
+      return;
+    }
     const xhr = new XMLHttpRequest();
+    const onAbort = () => xhr.abort();
+    const done = () => signal?.removeEventListener("abort", onAbort);
     xhr.open("PUT", url);
     Object.entries(headers).forEach(([k, v]) => xhr.setRequestHeader(k, v));
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) onProgress(e.loaded, e.total);
     };
-    xhr.onload = () =>
-      xhr.status >= 200 && xhr.status < 300
-        ? resolve()
-        : reject(
-            new UploadError(
-              xhr.status,
-              `Storage refused the file (${xhr.status}).`
-            )
-          );
-    xhr.onerror = () =>
+    xhr.onload = () => {
+      done();
+      if (xhr.status >= 200 && xhr.status < 300) resolve();
+      else
+        reject(
+          new UploadError(
+            xhr.status,
+            `Storage refused the file (${xhr.status}).`
+          )
+        );
+    };
+    xhr.onerror = () => {
+      done();
       reject(
         new UploadError(
           0,
           "The upload didn't reach storage. Check your connection; if it keeps failing, storage may not accept uploads from this site yet."
         )
       );
-    xhr.onabort = () => reject(new UploadError(0, "Upload cancelled."));
-    signal?.addEventListener("abort", () => xhr.abort());
+    };
+    xhr.onabort = () => {
+      done();
+      reject(new UploadError(0, "Upload cancelled."));
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
     xhr.send(body);
   });
 
@@ -177,9 +190,13 @@ export async function uploadFile(
       onProgress?.({ phase: "hash", fraction: (done / total) * HASH_SHARE })
   });
 
+  const cancelled = () => new UploadError(0, "Upload cancelled.");
+  if (opts.signal?.aborted) throw cancelled();
+
   const created = await v1<DirectUpload>("/uploads", {
     method: "POST",
     token,
+    signal: opts.signal,
     body: {
       filename: file.name,
       byte_size: file.size,
@@ -190,6 +207,8 @@ export async function uploadFile(
   if (!created?.signed_id || !created.direct_upload?.url) {
     throw new ApiError(500, created, "The upload wasn't accepted.");
   }
+  // Removed while the POST was in flight: don't start the PUT.
+  if (opts.signal?.aborted) throw cancelled();
 
   await (opts.put || xhrPut)(
     created.direct_upload.url,

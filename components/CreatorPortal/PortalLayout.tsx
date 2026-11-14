@@ -51,7 +51,7 @@ export const PortalLayout: React.FC<{
               Creator studio
             </span>
             {creator.data?.profile?.handle && (
-              <span className="truncate font-body text-sm text-white/50">
+              <span className="truncate font-body text-sm text-white/60">
                 @{creator.data.profile.handle}
               </span>
             )}

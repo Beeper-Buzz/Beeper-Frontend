@@ -92,7 +92,7 @@ const ItemRow: React.FC<{ item: LibraryItem }> = ({ item }) => {
               <Chip>{SOURCE[item.source] || item.source}</Chip>
             )}
           </div>
-          <div className="mt-0.5 truncate font-body text-xs text-white/50">
+          <div className="mt-0.5 truncate font-body-bold text-xs text-white/60">
             {item.product.creator ? `by ${item.product.creator.name} · ` : ""}
             <span className={numCls}>
               v{item.asset?.version ?? 1} ·{" "}
@@ -112,7 +112,7 @@ const ItemRow: React.FC<{ item: LibraryItem }> = ({ item }) => {
       </div>
 
       {revoked ? (
-        <p className="border-t border-glass-border px-3 py-2 font-body text-xs text-white/50">
+        <p className="border-t border-glass-border px-3 py-2 font-body-bold text-xs text-white/60">
           This order was refunded or cancelled, so the files are no longer
           available. The app removes its copy within 7 days.
         </p>
@@ -130,7 +130,7 @@ const ItemRow: React.FC<{ item: LibraryItem }> = ({ item }) => {
               type="button"
               aria-expanded={open}
               onClick={() => setOpen((o) => !o)}
-              className="ml-auto inline-flex items-center gap-1 rounded px-2 py-1 font-body text-xs text-white/60 hover:text-white sm:ml-0"
+              className="ml-auto inline-flex items-center gap-1 rounded px-2 py-1 font-body-bold text-xs text-white/60 hover:text-white sm:ml-0"
             >
               {files.length} {files.length === 1 ? "file" : "files"}
               <ChevronDown
@@ -149,10 +149,10 @@ const ItemRow: React.FC<{ item: LibraryItem }> = ({ item }) => {
         <ul className="divide-y divide-glass-border border-t border-glass-border">
           {files.map((f) => (
             <li key={f.id} className="flex items-center gap-2 px-3 py-1.5">
-              <span className="min-w-0 flex-1 truncate font-body text-xs text-white/80">
+              <span className="min-w-0 flex-1 truncate font-body-bold text-xs text-white/80">
                 {f.filename}
               </span>
-              <span className={`${numCls} shrink-0 text-[11px] text-white/40`}>
+              <span className={`${numCls} shrink-0 text-[11px] text-white/60`}>
                 {formatBytes(f.byte_size)}
               </span>
               <button
@@ -172,7 +172,10 @@ const ItemRow: React.FC<{ item: LibraryItem }> = ({ item }) => {
         </ul>
       )}
       {error && (
-        <p role="alert" className="px-3 pb-2 font-body text-xs text-neon-pink">
+        <p
+          role="alert"
+          className="px-3 pb-2 font-body-bold text-xs text-neon-pink"
+        >
           {error}
         </p>
       )}
@@ -199,7 +202,7 @@ export const LibraryView: React.FC<{ enabled: boolean }> = ({ enabled }) => {
         <h2 className="font-michroma text-sm text-white">
           Your library is empty
         </h2>
-        <p className="mx-auto mt-2 max-w-sm font-body text-sm text-white/50">
+        <p className="mx-auto mt-2 max-w-sm font-body text-sm text-white/60">
           Sample packs, effect presets and visualizers you buy or claim land
           here and in the Beeper app&apos;s library.
         </p>
@@ -214,7 +217,7 @@ export const LibraryView: React.FC<{ enabled: boolean }> = ({ enabled }) => {
 
   return (
     <div className="space-y-6">
-      <p className="font-body text-sm text-white/50">
+      <p className="font-body text-sm text-white/60">
         Everything here is also in the Beeper app&apos;s library when you sign
         in with this account.
       </p>
@@ -225,7 +228,7 @@ export const LibraryView: React.FC<{ enabled: boolean }> = ({ enabled }) => {
             className="mb-2 flex items-baseline gap-2 font-michroma text-xs text-white/80"
           >
             {kindLabel(g.kind, true)}
-            <span className={`${numCls} text-[11px] text-white/40`}>
+            <span className={`${numCls} text-[11px] text-white/60`}>
               {g.items.length}
             </span>
           </h2>

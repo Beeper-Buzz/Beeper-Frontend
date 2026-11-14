@@ -86,10 +86,18 @@ export function draftFromProduct(p: CreatorProduct): ProductDraft {
 const usable = (files: DraftFile[]) =>
   files.filter((f) => f.status === "done" && (f.signedId || f.existingId));
 
+/** Creators can't sell for less than this; free products are admin-only. */
+export const MIN_PRICE = 0.5;
+export const MAX_PRICE = 999;
+
 export function draftManifest(
   d: ProductDraft,
   files: DraftFile[]
-): { manifest: Record<string, any>; errors: string[] } {
+): {
+  manifest: Record<string, any>;
+  errors: string[];
+  rowErrors?: Record<string, string[]>;
+} {
   const names = usable(files).map((f) => f.name);
   switch (d.kind) {
     case "sample_pack": {
@@ -116,33 +124,78 @@ export function draftManifest(
   }
 }
 
+/** The upload list differs from the asset's files as loaded. */
+export function filesChanged(
+  files: DraftFile[],
+  originalFileIds: number[] | null
+): boolean {
+  const ready = usable(files);
+  if (originalFileIds === null) return ready.length > 0;
+  const kept = ready
+    .filter((f) => !f.signedId && f.existingId !== undefined)
+    .map((f) => f.existingId as number);
+  return (
+    ready.some((f) => f.signedId) ||
+    kept.length !== originalFileIds.length ||
+    !kept.every((id) => originalFileIds.includes(id))
+  );
+}
+
 export function draftToInput(
   d: ProductDraft,
   files: DraftFile[],
   {
     originalFileIds,
+    originalManifest,
     previewImageSignedId,
-    previewAudioSignedId
+    previewAudioSignedId,
+    presetSignedId
   }: {
     /** The asset's file ids as loaded; null for a new product. */
     originalFileIds: number[] | null;
+    /**
+     * The asset's manifest as loaded. On update, the manifest is sent only
+     * when it differs: the server treats any manifest (or kind) in a PATCH as
+     * a new version for review, so a live product's details-only edit must
+     * leave both out. Undefined: always send it.
+     */
+    originalManifest?: Record<string, any> | null;
     previewImageSignedId?: string | null;
     previewAudioSignedId?: string | null;
+    /** effect_preset: a freshly uploaded preset.json, when the preset changed. */
+    presetSignedId?: string | null;
   }
 ): CreatorProductInput {
   const ready = usable(files);
+  const isNew = originalFileIds === null;
+  const manifest = draftManifest(d, files).manifest;
   const input: CreatorProductInput = {
     name: d.name.trim(),
     description: d.description.trim(),
     price: Math.round(Number(d.price || 0) * 100) / 100,
-    kind: d.kind as DigitalKind,
-    taxon_ids: d.taxonIds,
-    manifest: draftManifest(d, files).manifest
+    taxon_ids: d.taxonIds
   };
+  if (isNew) input.kind = d.kind as DigitalKind;
+  if (
+    isNew ||
+    originalManifest === undefined ||
+    !sameManifest(manifest, originalManifest)
+  )
+    input.manifest = manifest;
   if (previewImageSignedId)
     input.preview_image_signed_id = previewImageSignedId;
   if (previewAudioSignedId)
     input.preview_audio_signed_id = previewAudioSignedId;
+
+  // An effect preset's only file is its preset.json, uploaded on save when
+  // the preset changed; it replaces whatever the draft had.
+  if (d.kind === "effect_preset") {
+    if (presetSignedId) {
+      input.files = [presetSignedId];
+      if (originalFileIds !== null) input.keep_file_ids = [];
+    }
+    return input;
+  }
 
   const added = ready
     .filter((f) => f.signedId)
@@ -150,17 +203,50 @@ export function draftToInput(
   const kept = ready
     .filter((f) => !f.signedId && f.existingId !== undefined)
     .map((f) => f.existingId as number);
-  const unchanged =
-    originalFileIds !== null &&
-    added.length === 0 &&
-    kept.length === originalFileIds.length &&
-    kept.every((id) => originalFileIds.includes(id));
-  if (!unchanged) {
+  if (filesChanged(files, originalFileIds) || isNew) {
     input.files = added;
     if (originalFileIds !== null) input.keep_file_ids = kept;
   }
   return input;
 }
+
+/** effect_preset: the manifest as the asset's file. */
+export const presetFile = (manifest: Record<string, any>): File =>
+  new File([JSON.stringify(manifest, null, 2)], "preset.json", {
+    type: "application/json"
+  });
+
+const sortKeys = (v: unknown): unknown =>
+  Array.isArray(v)
+    ? v.map(sortKeys)
+    : v && typeof v === "object"
+    ? Object.fromEntries(
+        Object.keys(v as object)
+          .sort()
+          .map((k) => [k, sortKeys((v as Record<string, unknown>)[k])])
+      )
+    : v;
+
+/**
+ * Same manifest, ignoring key order (the server stores JSONB) and the
+ * server-owned `files` key.
+ */
+export function sameManifest(
+  a: Record<string, any> | null | undefined,
+  b: Record<string, any> | null | undefined
+): boolean {
+  const strip = (m: Record<string, any> | null | undefined) => {
+    const { files: _files, ...rest } = m || {};
+    return JSON.stringify(sortKeys(rest));
+  };
+  return strip(a) === strip(b);
+}
+
+const GENERAL_WORDS: Record<string, string> = {
+  "pack_id invalid": "Pack id must be 3 to 40 of a-z, 0-9 and -.",
+  "bpm must be a number": "Tempo must be a number.",
+  "samples must have 1..64 entries": "Add 1 to 64 samples."
+};
 
 export interface StepErrors {
   kind: string[];
@@ -169,20 +255,44 @@ export interface StepErrors {
   preview: string[];
 }
 
-export function stepErrors(d: ProductDraft, files: DraftFile[]): StepErrors {
+export function stepErrors(
+  d: ProductDraft,
+  files: DraftFile[],
+  extra: {
+    /** checkShaderSource() of the visualizer's shader, once it's been read. */
+    shaderErrors?: string[];
+  } = {}
+): StepErrors {
   const details: string[] = [];
   if (!d.name.trim()) details.push("Name the product.");
   const price = Number(d.price);
-  if (d.price.trim() === "" || !Number.isFinite(price) || price < 0)
-    details.push("Price must be 0 or more.");
-  else if (price > 999) details.push("Price must be 999 or less.");
+  if (d.price.trim() === "" || !Number.isFinite(price) || price < MIN_PRICE)
+    details.push("Price must be at least $0.50.");
+  else if (price > MAX_PRICE) details.push("Price must be $999 or less.");
 
   const fileErrors: string[] = [];
   if (files.some((f) => f.status === "queued" || f.status === "uploading"))
     fileErrors.push("Wait for uploads to finish.");
   if (files.some((f) => f.status === "error"))
     fileErrors.push("Retry or remove the files that failed.");
-  if (d.kind) fileErrors.push(...draftManifest(d, files).errors);
+  if (d.kind) {
+    const built = draftManifest(d, files);
+    if (built.rowErrors) {
+      // Sample packs: say it per file, in words.
+      for (const e of built.errors) {
+        if (/^samples\[\d+\]|^file "/.test(e)) continue;
+        fileErrors.push(GENERAL_WORDS[e] || e);
+      }
+      for (const [file, list] of Object.entries(built.rowErrors))
+        for (const m of list) fileErrors.push(`${file}: ${m}`);
+    } else {
+      fileErrors.push(...built.errors);
+    }
+    if (d.kind === "visualizer" && extra.shaderErrors?.length) {
+      const shader = built.manifest.shader || "shader";
+      for (const e of extra.shaderErrors) fileErrors.push(`${shader}: ${e}`);
+    }
+  }
 
   return {
     kind: d.kind ? [] : ["Pick what you're making."],

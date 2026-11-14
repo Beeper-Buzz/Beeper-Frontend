@@ -16,7 +16,13 @@ export const PRELUDE_UNIFORMS = [
   "uBeatPhase"
 ];
 
-export const PRELUDE = `precision mediump float;
+// highp where the GPU offers it in fragment shaders, else mediump; the app's
+// ShaderScene uses the same block.
+export const PRELUDE = `#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
 uniform float uTime;
 uniform vec2 uResolution;
 uniform float uBass, uMid, uHigh, uLevel;

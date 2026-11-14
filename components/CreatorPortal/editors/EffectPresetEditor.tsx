@@ -46,7 +46,7 @@ export const EffectPresetEditor: React.FC<{
   return (
     <div className="space-y-3">
       {draft.effects.length === 0 && (
-        <p className="font-body text-sm text-white/50">
+        <p className="font-body text-sm text-white/60">
           Add the effects this preset turns on. Effects you leave out keep
           whatever the player has set.
         </p>
@@ -92,10 +92,10 @@ export const EffectPresetEditor: React.FC<{
               <span className="font-michroma text-xs text-white">
                 {def.label}
               </span>
-              <span className="hidden min-w-0 flex-1 truncate font-body text-xs text-white/40 sm:block">
+              <span className="hidden min-w-0 flex-1 truncate font-body-bold text-xs text-white/60 sm:block">
                 {def.description}
               </span>
-              <label className="ml-auto flex items-center gap-1.5 font-body text-xs text-white/70">
+              <label className="ml-auto flex items-center gap-1.5 font-body-bold text-xs text-white/70">
                 <input
                   type="checkbox"
                   className="h-4 w-4 accent-neon-cyan"
@@ -108,7 +108,7 @@ export const EffectPresetEditor: React.FC<{
               </label>
               <button
                 type="button"
-                className="rounded p-1 text-white/40 hover:text-neon-pink"
+                className="rounded p-1 text-white/60 hover:text-neon-pink"
                 aria-label={`Remove ${def.label}`}
                 onClick={() =>
                   setDraft((d) => ({
@@ -131,7 +131,7 @@ export const EffectPresetEditor: React.FC<{
                   >
                     <label
                       htmlFor={id}
-                      className="truncate font-body text-xs text-white/60"
+                      className="truncate font-body-bold text-xs text-white/60"
                     >
                       {p.label}
                     </label>

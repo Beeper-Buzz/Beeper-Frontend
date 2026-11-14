@@ -6,7 +6,11 @@ import {
   buildEffectPreset,
   defaultEffectEntry
 } from "../manifests/effectPreset";
-import { buildSamplePack, noteName } from "../manifests/samplePack";
+import {
+  buildSamplePack,
+  noteName,
+  padConflicts
+} from "../manifests/samplePack";
 import {
   buildVisualizer,
   checkShaderSource,
@@ -110,6 +114,46 @@ describe("sample pack builder", () => {
     );
     assert.ok(errors.includes('file "kick.wav" is not attached'));
     assert.ok(errors.includes('samples[1].file "cover.png" is not audio'));
+  });
+
+  test("any numeric bpm is accepted (the server has no range)", () => {
+    assert.deepEqual(
+      buildSamplePack({ bpm: 900, samples: [sample("a.wav")] }, ["a.wav"])
+        .errors,
+      []
+    );
+    assert.ok(
+      buildSamplePack({ bpm: NaN, samples: [sample("a.wav")] }, [
+        "a.wav"
+      ]).errors.includes("bpm must be a number")
+    );
+  });
+
+  test("row errors are keyed by file name, in words", () => {
+    const { rowErrors } = buildSamplePack(
+      {
+        samples: [
+          sample("kick.wav", { pad: 2 }),
+          sample("snare.wav", { pad: 2, root_note: 200 })
+        ]
+      },
+      ["kick.wav", "snare.wav"]
+    );
+    assert.deepEqual(rowErrors["kick.wav"], undefined);
+    assert.deepEqual(rowErrors["snare.wav"], [
+      "Pad 2 is already used by kick.wav.",
+      "Root note must be a whole number from 0 to 127."
+    ]);
+  });
+
+  test("padConflicts lists every file that claims a pad", () => {
+    const m = padConflicts([
+      { file: "a.wav", pad: 1 },
+      { file: "b.wav", pad: 1 },
+      { file: "c.wav", pad: 3 },
+      { file: "d.wav" }
+    ]);
+    assert.deepEqual(Array.from(m.entries()), [[1, ["a.wav", "b.wav"]]]);
   });
 
   test("rejects an invalid pack_id and an empty pack", () => {
@@ -304,6 +348,30 @@ describe("shader source checks", () => {
     assert.deepEqual(checkShaderSource(`// uniform float x;\n${ok}`), []);
   });
 
+  test("a line comment hides a block-comment opener, and vice versa", () => {
+    // "// a /*" is one line comment: the uniform on the next line is code.
+    assert.ok(
+      checkShaderSource(`// a /*\nuniform float x;\n${ok}`).includes(
+        "uniform declarations not allowed"
+      )
+    );
+    // "/* // */" is one block comment: the uniform after it is code.
+    assert.ok(
+      checkShaderSource(`/* // */ uniform float x;\n${ok}`).includes(
+        "uniform declarations not allowed"
+      )
+    );
+    // An unterminated block comment runs to the end of the file.
+    assert.deepEqual(checkShaderSource(`${ok}\n/* uniform float x;`), []);
+  });
+
+  test("words inside identifiers are not keywords", () => {
+    assert.deepEqual(
+      checkShaderSource(`float uniformity = 1.0;\nfloat mainly = 2.0;\n${ok}`),
+      []
+    );
+  });
+
   test("rejects files over 64 KB", () => {
     const big = ok + " ".repeat(SHADER_MAX_BYTES);
     assert.ok(checkShaderSource(big).includes("shader too large (max 64 KB)"));
@@ -325,7 +393,18 @@ describe("preview shader", () => {
     );
     assert.match(src, /void main\(\)/);
     assert.match(src, /beeperMain\(gl_FragCoord\.xy \/ uResolution\)/);
-    assert.match(src, /^precision mediump float;/);
+    assert.ok(
+      src.startsWith(
+        [
+          "#ifdef GL_FRAGMENT_PRECISION_HIGH",
+          "precision highp float;",
+          "#else",
+          "precision mediump float;",
+          "#endif",
+          ""
+        ].join("\n")
+      )
+    );
   });
 
   test("refuses param names outside the manifest rule", () => {

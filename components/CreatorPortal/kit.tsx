@@ -2,7 +2,7 @@
 // Tools first: dense, legible, fast. Michroma only for titles; IBM Plex Mono
 // for every number; neon colour only where it carries state.
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { cn } from "@lib/utils";
 import { apiErrorMessage } from "../../lib/api/v1";
@@ -24,6 +24,10 @@ export const btnDanger =
 
 export const numCls = "font-mono-semibold tabular-nums";
 
+/** Payout emails are set by support: there's no endpoint to change one. */
+export const SUPPORT_EMAIL = "hello@beeper.buzz";
+export const PAYOUT_EMAIL_COPY = `To set or change your payout email, contact support at ${SUPPORT_EMAIL} from your account's email address.`;
+
 export const Field: React.FC<{
   label: string;
   htmlFor?: string;
@@ -38,9 +42,9 @@ export const Field: React.FC<{
     </label>
     {children}
     {error ? (
-      <p className="mt-1 font-body text-xs text-neon-pink">{error}</p>
+      <p className="mt-1 font-body-bold text-xs text-neon-pink">{error}</p>
     ) : hint ? (
-      <p className="mt-1 font-body text-xs text-white/40">{hint}</p>
+      <p className="mt-1 font-body-bold text-xs text-white/60">{hint}</p>
     ) : null}
   </div>
 );
@@ -74,7 +78,7 @@ export const PageTitle: React.FC<{
       <h1 className="font-michroma text-lg text-white sm:text-xl">
         {children}
       </h1>
-      {sub && <p className="mt-1 font-body text-sm text-white/50">{sub}</p>}
+      {sub && <p className="mt-1 font-body text-sm text-white/60">{sub}</p>}
     </div>
     {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
   </div>
@@ -162,7 +166,7 @@ export const Stat: React.FC<{
   accent?: boolean;
 }> = ({ label, value, sub, accent }) => (
   <div className="min-w-0 rounded-md border border-glass-border bg-white/[0.03] px-3 py-2.5">
-    <div className="font-title-condensed text-xs text-white/50">{label}</div>
+    <div className="font-title-condensed text-xs text-white/60">{label}</div>
     <div
       className={cn(
         numCls,
@@ -172,7 +176,9 @@ export const Stat: React.FC<{
     >
       {value}
     </div>
-    {sub && <div className="font-body text-[11px] text-white/40">{sub}</div>}
+    {sub && (
+      <div className="font-body-bold text-[11px] text-white/60">{sub}</div>
+    )}
   </div>
 );
 
@@ -246,3 +252,50 @@ export const selectCls = cn(
   inputCls,
   "max-w-none appearance-auto bg-none normal-case [text-align-last:left]"
 );
+
+/**
+ * A number field that holds what is typed and commits on blur (or Enter):
+ * an empty field commits undefined, anything that isn't a number commits NaN
+ * so the step's checks catch it. While not focused it follows the value.
+ */
+export const NumInput: React.FC<
+  Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "value" | "onChange" | "type"
+  > & {
+    value: number | undefined;
+    onCommit: (v: number | undefined) => void;
+    invalid?: boolean;
+  }
+> = ({ value, onCommit, invalid, className, onBlur, onKeyDown, ...rest }) => {
+  const shown = value === undefined || Number.isNaN(value) ? "" : String(value);
+  const [raw, setRaw] = useState(shown);
+  const [focused, setFocused] = useState(false);
+  useEffect(() => {
+    // Keep the typed text when it didn't parse (NaN), so it can be fixed.
+    if (!focused && !Number.isNaN(value)) setRaw(shown);
+  }, [shown, focused, value]);
+  return (
+    <input
+      {...rest}
+      type="text"
+      inputMode="decimal"
+      autoComplete="off"
+      aria-invalid={invalid || undefined}
+      className={cn(className, invalid && "border-neon-pink/60")}
+      value={raw}
+      onFocus={() => setFocused(true)}
+      onChange={(e) => setRaw(e.target.value)}
+      onBlur={(e) => {
+        setFocused(false);
+        const t = raw.trim();
+        onCommit(t === "" ? undefined : Number(t));
+        onBlur?.(e);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+        onKeyDown?.(e);
+      }}
+    />
+  );
+};
