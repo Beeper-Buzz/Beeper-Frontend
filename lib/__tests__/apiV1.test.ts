@@ -1,6 +1,12 @@
 import { afterEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { ApiError, apiErrorMessage, v1, v1Url } from "../api/v1";
+import {
+  ApiError,
+  apiErrorMessage,
+  apiFieldErrors,
+  v1,
+  v1Url
+} from "../api/v1";
 
 type Call = { url: string; init: RequestInit };
 const g = globalThis as unknown as { fetch: typeof fetch };
@@ -113,6 +119,27 @@ describe("apiErrorMessage", () => {
     );
   });
 
+  it("prefers field errors over the generic error", () => {
+    assert.equal(
+      apiErrorMessage(
+        new ApiError(422, {
+          error: "Affiliate account could not be saved",
+          fields: { code: ["has already been taken"] }
+        })
+      ),
+      "Code has already been taken"
+    );
+    assert.equal(
+      apiErrorMessage(
+        new ApiError(422, {
+          error: "x",
+          fields: { payout_email: ["is invalid"], code: ["is too short"] }
+        })
+      ),
+      "Payout email is invalid. Code is too short"
+    );
+  });
+
   it("falls back for empty bodies and other errors", () => {
     assert.equal(
       apiErrorMessage(new ApiError(500, null), "Try again"),
@@ -123,5 +150,24 @@ describe("apiErrorMessage", () => {
       "Can't reach Beeper. Check your connection and try again."
     );
     assert.equal(apiErrorMessage("nope", "Fallback"), "Fallback");
+  });
+});
+
+describe("apiFieldErrors", () => {
+  it("maps fields to their first message", () => {
+    assert.deepEqual(
+      apiFieldErrors(
+        new ApiError(422, {
+          error: "x",
+          fields: { code: ["has already been taken", "is bad"], base: "nope" }
+        })
+      ),
+      { code: "has already been taken", base: "nope" }
+    );
+  });
+
+  it("is empty without fields", () => {
+    assert.deepEqual(apiFieldErrors(new ApiError(422, { error: "x" })), {});
+    assert.deepEqual(apiFieldErrors(new Error("x")), {});
   });
 });

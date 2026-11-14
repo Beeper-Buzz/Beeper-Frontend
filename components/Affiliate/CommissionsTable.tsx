@@ -72,7 +72,7 @@ export const CommissionsTable: React.FC<{ currency: string }> = ({
         <div className={cn("transition-opacity", isFetching && "opacity-60")}>
           <table className="hidden w-full border-collapse text-sm sm:table">
             <thead>
-              <tr className="border-b border-white/10 text-left font-body-bold text-xs text-white/45">
+              <tr className="border-b border-white/10 text-left font-body-bold text-xs text-white/55">
                 <th className="pb-2 pr-3 font-normal">Order</th>
                 <th className="pb-2 pr-3 font-normal">Placed</th>
                 <th className="pb-2 pr-3 text-right font-normal">
@@ -105,7 +105,7 @@ export const CommissionsTable: React.FC<{ currency: string }> = ({
                       "py-2.5 pr-3 text-right",
                       num,
                       r.state === "void"
-                        ? "text-white/40 line-through"
+                        ? "text-white/55 line-through"
                         : "text-white"
                     )}
                   >
@@ -139,13 +139,13 @@ export const CommissionsTable: React.FC<{ currency: string }> = ({
                     "text-right text-sm",
                     num,
                     r.state === "void"
-                      ? "text-white/40 line-through"
+                      ? "text-white/55 line-through"
                       : "text-white"
                   )}
                 >
                   {formatMoney(r.amount, currency)}
                 </span>
-                <span className="font-body-bold text-xs leading-5 text-white/50">
+                <span className="font-body-bold text-xs leading-5 text-white/55">
                   {formatDate(r.created_at)}, order{" "}
                   <span className={num}>
                     {formatMoney(r.base_amount, currency)}

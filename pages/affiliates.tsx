@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { Layout } from "../components/Layout";
 import { useAuth } from "@config/auth";
+import { useAffiliate } from "@hooks/useAffiliate";
 import { CONTACT_EMAIL, SITE_TITLE } from "@utilities/branding";
 import { formatBps } from "@lib/affiliate/stats";
 import {
@@ -38,10 +39,13 @@ const STEPS = [
 const FACTS = [
   { value: RATE, label: "of every order you send us" },
   {
-    value: `${DEFAULT_COOKIE_DAYS} days`,
+    value: `${DEFAULT_COOKIE_DAYS}-day window`,
     label: "for a click to turn into an order"
   },
-  { value: `${HOLD_DAYS} days`, label: "until a commission is approved" }
+  {
+    value: `${HOLD_DAYS}-day hold`,
+    label: "before a commission is approved"
+  }
 ];
 
 const FAQ = [
@@ -65,10 +69,16 @@ const FAQ = [
 
 const AffiliatesPage = () => {
   const { user } = useAuth();
+  // null once we know the shopper hasn't applied; undefined while unknown.
+  const { data: affiliate } = useAffiliate(!!user);
   const ctaHref = user
     ? APPLY_PATH
     : `/login?redirect=${encodeURIComponent(APPLY_PATH)}`;
-  const ctaLabel = user ? "Apply or open your dashboard" : "Sign in to apply";
+  const ctaLabel = !user
+    ? "Sign in to apply"
+    : affiliate === null
+    ? "Apply"
+    : "Open affiliate dashboard";
 
   return (
     <Layout>

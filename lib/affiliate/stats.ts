@@ -41,6 +41,25 @@ export function presetRange(
   return { from: isoDate(start), to: isoDate(today) };
 }
 
+/** The backend's stats limit (spec: at most 366 days). */
+export const MAX_RANGE_DAYS = 366;
+
+const parseIso = (iso: string): number | null => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+  if (!m) return null;
+  const t = Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  const d = new Date(t);
+  return d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3] ? t : null;
+};
+
+/** from <= to, both real dates, spanning at most MAX_RANGE_DAYS days. */
+export function isValidRange(range: { from: string; to: string }): boolean {
+  const from = parseIso(range.from);
+  const to = parseIso(range.to);
+  if (from === null || to === null || from > to) return false;
+  return (to - from) / 86400000 + 1 <= MAX_RANGE_DAYS;
+}
+
 export function summarizeSeries(series: StatsPoint[]): SeriesSummary {
   let clicks = 0;
   let orders = 0;

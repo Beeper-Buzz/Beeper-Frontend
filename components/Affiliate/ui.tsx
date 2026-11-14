@@ -38,10 +38,10 @@ export const labelClass =
   "mb-1.5 block font-body-bold text-[13px] leading-4 text-white/70";
 
 export const fieldClass =
-  "block w-full rounded-md border border-white/15 bg-white/[0.04] px-3 py-2.5 font-body-bold text-[16px] leading-5 text-white placeholder:text-white/30 transition-colors focus:border-neon-cyan focus:bg-white/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/30 disabled:opacity-50";
+  "block w-full rounded-md border border-white/15 bg-white/[0.04] px-3 py-2.5 font-body-bold text-[16px] leading-5 text-white placeholder:text-white/45 transition-colors aria-[invalid=true]:border-neon-pink focus:border-neon-cyan focus:bg-white/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/30 disabled:opacity-50";
 
 export const hintClass =
-  "mt-1.5 font-body-bold text-xs leading-4 text-white/50";
+  "mt-1.5 font-body-bold text-xs leading-4 text-white/60";
 
 export const STATE_STYLE: Record<
   CommissionState,
@@ -50,7 +50,7 @@ export const STATE_STYLE: Record<
   pending: { label: "Pending", dot: "bg-neon-amber", text: "text-neon-amber" },
   approved: { label: "Approved", dot: "bg-neon-cyan", text: "text-neon-cyan" },
   paid: { label: "Paid", dot: "bg-neon-lime", text: "text-neon-lime" },
-  void: { label: "Void", dot: "bg-white/30", text: "text-white/40" }
+  void: { label: "Void", dot: "bg-white/40", text: "text-white/55" }
 };
 
 export const StateChip: React.FC<{ state: CommissionState }> = ({ state }) => {

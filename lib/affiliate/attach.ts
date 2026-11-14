@@ -6,7 +6,7 @@ const ATTACHED_KEY = "bb_ref_attached";
 interface AttachTarget {
   /** Signed-in shopper. */
   bearerToken?: string | null;
-  /** Guest cart. */
+  /** The cart's token (guest carts, and signed-in carts when known). */
   orderToken?: string | null;
   /** Used to remember that this order already carries this code. */
   orderNumber?: string | null;
@@ -50,14 +50,21 @@ export async function attachRefToOrder(target: AttachTarget): Promise<void> {
         method: "PATCH",
         body: { code: ref.code },
         token: target.bearerToken || null,
-        orderToken: target.bearerToken ? null : target.orderToken,
+        // Both when we have them: the token names this cart exactly.
+        orderToken: target.orderToken || null,
         timeoutMs: 5000
       });
       remember(key);
     } catch (e) {
-      // 4xx means the server has decided (already attached, completed order,
-      // unknown code): don't ask again for this order. Retry later otherwise.
-      if (e instanceof ApiError && e.status >= 400 && e.status < 500) {
+      // A 4xx other than 401/403/429 means the server has decided (already
+      // attached, completed order, unknown code): don't ask again for this
+      // order. Auth trouble, rate limits and network failures retry later.
+      if (
+        e instanceof ApiError &&
+        e.status >= 400 &&
+        e.status < 500 &&
+        ![401, 403, 408, 429].includes(e.status)
+      ) {
         remember(key);
       }
     }

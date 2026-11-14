@@ -112,7 +112,7 @@ export const LinkBuilder: React.FC<{ code: string; link?: string }> = ({
             Link to any page
           </label>
           <div className="flex items-stretch overflow-hidden rounded-md border border-white/15 bg-white/[0.04] focus-within:border-neon-cyan">
-            <span className="flex select-none items-center whitespace-nowrap border-r border-white/10 px-2.5 font-mono-semibold text-[13px] text-white/40">
+            <span className="flex select-none items-center whitespace-nowrap border-r border-white/10 px-2.5 font-mono-semibold text-[13px] text-white/55">
               {host}/
             </span>
             <input
@@ -123,7 +123,7 @@ export const LinkBuilder: React.FC<{ code: string; link?: string }> = ({
               autoCapitalize="none"
               autoCorrect="off"
               spellCheck={false}
-              className="min-w-0 flex-1 bg-transparent px-3 py-2.5 font-mono-semibold text-[16px] leading-5 text-white placeholder:text-white/30 focus:outline-none"
+              className="min-w-0 flex-1 bg-transparent px-3 py-2.5 font-mono-semibold text-[16px] leading-5 text-white placeholder:text-white/45 focus:outline-none"
             />
           </div>
           <p className={cn(hintClass, !built && page && "text-neon-amber")}>
@@ -187,7 +187,7 @@ export const LinkBuilder: React.FC<{ code: string; link?: string }> = ({
               <div className="h-full w-full animate-pulse rounded-sm bg-black/10" />
             )}
           </div>
-          <figcaption className="mt-1.5 text-center font-body-bold text-[11px] text-white/40">
+          <figcaption className="mt-1.5 text-center font-body-bold text-[11px] text-white/55">
             Scans to this link
           </figcaption>
         </figure>

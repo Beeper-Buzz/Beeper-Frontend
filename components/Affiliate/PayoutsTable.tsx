@@ -31,7 +31,7 @@ export const PayoutsTable: React.FC<{ currency: string }> = ({ currency }) => {
       ) : (
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="border-b border-white/10 text-left font-body-bold text-xs text-white/45">
+            <tr className="border-b border-white/10 text-left font-body-bold text-xs text-white/55">
               <th className="pb-2 pr-3 font-normal">Paid</th>
               <th className="pb-2 pr-3 text-right font-normal">Amount</th>
               <th className="pb-2 font-normal">Reference</th>
@@ -52,7 +52,7 @@ export const PayoutsTable: React.FC<{ currency: string }> = ({ currency }) => {
                 <td className="break-all py-2.5 font-body-bold text-white/70">
                   {p.reference || "—"}
                   {p.note && (
-                    <span className="mt-0.5 block text-xs text-white/45">
+                    <span className="mt-0.5 block text-xs text-white/55">
                       {p.note}
                     </span>
                   )}

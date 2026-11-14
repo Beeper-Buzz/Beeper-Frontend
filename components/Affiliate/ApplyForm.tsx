@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Check, Loader2, X } from "lucide-react";
 import { cn } from "@lib/utils";
-import { apiErrorMessage } from "@lib/api/v1";
+import { apiErrorMessage, apiFieldErrors } from "@lib/api/v1";
 import { normalizeRefCode } from "@lib/affiliate/ref";
 import { formatBps } from "@lib/affiliate/stats";
 import {
@@ -9,11 +9,15 @@ import {
   DEFAULT_COMMISSION_BPS,
   DEFAULT_COOKIE_DAYS
 } from "@lib/affiliate/terms";
+import type { Affiliate } from "@lib/affiliate/types";
 import {
   useAffiliateCodeAvailable,
   useApplyAffiliate
 } from "@hooks/useAffiliate";
-import { Panel, fieldClass, hintClass, labelClass } from "./ui";
+import { Panel, fieldClass, ghostBtn, hintClass, labelClass } from "./ui";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ERROR_ID = "aff-apply-error";
 
 const useDebounced = <T,>(value: T, ms: number) => {
   const [debounced, setDebounced] = useState(value);
@@ -24,12 +28,15 @@ const useDebounced = <T,>(value: T, ms: number) => {
   return debounced;
 };
 
-const CodeStatus: React.FC<{ raw: string; debounced: string }> = ({
-  raw,
-  debounced
-}) => {
+const CodeStatus: React.FC<{
+  raw: string;
+  debounced: string;
+  ownCode?: string;
+}> = ({ raw, debounced, ownCode }) => {
   const valid = normalizeRefCode(raw);
-  const { data, isFetching, isError } = useAffiliateCodeAvailable(debounced);
+  const { data, isFetching, isError } = useAffiliateCodeAvailable(
+    valid && valid === ownCode ? "" : debounced
+  );
 
   if (!raw.trim()) {
     return (
@@ -45,6 +52,9 @@ const CodeStatus: React.FC<{ raw: string; debounced: string }> = ({
         Use 4–24 letters, numbers or dashes.
       </p>
     );
+  }
+  if (valid === ownCode) {
+    return <p className={hintClass}>Your current code.</p>;
   }
   if (raw !== debounced || isFetching) {
     return (
@@ -74,16 +84,35 @@ const CodeStatus: React.FC<{ raw: string; debounced: string }> = ({
   );
 };
 
-export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
-  defaultEmail = ""
-}) => {
-  const [code, setCode] = useState("");
-  const [website, setWebsite] = useState("");
-  const [audience, setAudience] = useState("");
-  const [channels, setChannels] = useState<string[]>([]);
-  const [message, setMessage] = useState("");
-  const [payoutEmail, setPayoutEmail] = useState(defaultEmail);
+type Field =
+  | "code"
+  | "website"
+  | "audience"
+  | "channels"
+  | "message"
+  | "payout_email";
+
+export const ApplyForm: React.FC<{
+  defaultEmail?: string;
+  /** A previous (rejected) application to start from. */
+  previous?: Affiliate | null;
+  onCancel?: () => void;
+}> = ({ defaultEmail = "", previous, onCancel }) => {
+  const app = previous?.application;
+  const [code, setCode] = useState(previous?.code || "");
+  const [website, setWebsite] = useState(app?.website || "");
+  const [audience, setAudience] = useState(app?.audience || "");
+  const [channels, setChannels] = useState<string[]>(
+    (app?.channels || []).filter(Boolean) as string[]
+  );
+  const [message, setMessage] = useState(app?.message || "");
+  const [payoutEmail, setPayoutEmail] = useState(
+    previous?.payout_email || defaultEmail
+  );
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<Field, string>>
+  >({});
   const debouncedCode = useDebounced(code, 400);
   const availability = useAffiliateCodeAvailable(debouncedCode);
   const apply = useApplyAffiliate();
@@ -99,29 +128,46 @@ export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
       cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c]
     );
 
+  const fail = (field: Field, msg: string) => {
+    setFieldErrors({ [field]: msg });
+    setFormError(msg);
+  };
+
+  /** aria wiring for an input: invalid flag plus the shared error text. */
+  const invalid = (field: Field) =>
+    fieldErrors[field]
+      ? { "aria-invalid": true as const, "aria-errormessage": ERROR_ID }
+      : {};
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
+    setFieldErrors({});
     const normalized = normalizeRefCode(code);
     if (code.trim() && !normalized) {
-      setFormError("Your code needs 4–24 letters, numbers or dashes.");
-      return;
+      return fail("code", "Your code needs 4–24 letters, numbers or dashes.");
     }
-    if (normalized && availability.data?.available === false) {
-      setFormError(`${normalized} is taken. Pick another code.`);
-      return;
+    if (
+      normalized &&
+      normalized !== previous?.code &&
+      availability.data?.available === false
+    ) {
+      return fail("code", `${normalized} is taken. Pick another code.`);
     }
     if (!audience.trim()) {
-      setFormError("Tell us about your audience.");
-      return;
+      return fail("audience", "Tell us about your audience.");
     }
     if (channels.length === 0) {
-      setFormError("Pick at least one place you'll share your link.");
-      return;
+      return fail(
+        "channels",
+        "Pick at least one place you'll share your link."
+      );
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payoutEmail.trim())) {
-      setFormError("Enter the email address we should pay you at.");
-      return;
+    if (!EMAIL_RE.test(payoutEmail.trim())) {
+      return fail(
+        "payout_email",
+        "Enter the email address we should pay you at."
+      );
     }
     apply.mutate(
       {
@@ -133,16 +179,21 @@ export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
         payout_email: payoutEmail.trim()
       },
       {
-        onError: (err) =>
+        onError: (err) => {
+          setFieldErrors(apiFieldErrors(err) as Partial<Record<Field, string>>);
           setFormError(
             apiErrorMessage(err, "Your application didn't go through.")
-          )
+          );
+        }
       }
     );
   };
 
   return (
-    <Panel title="Apply to the affiliate program" id="affiliate-apply">
+    <Panel
+      title={previous ? "Apply again" : "Apply to the affiliate program"}
+      id="affiliate-apply"
+    >
       <p className="mb-6 max-w-prose font-body-bold text-sm leading-6 text-white/70">
         Earn {formatBps(DEFAULT_COMMISSION_BPS)} of every order placed through
         your link within {DEFAULT_COOKIE_DAYS} days of the click. We review
@@ -154,8 +205,13 @@ export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
           <label htmlFor="aff-code" className={labelClass}>
             Your code
           </label>
-          <div className="flex items-stretch overflow-hidden rounded-md border border-white/15 bg-white/[0.04] focus-within:border-neon-cyan">
-            <span className="flex select-none items-center whitespace-nowrap border-r border-white/10 px-2.5 font-mono-semibold text-[13px] text-white/40 xs:px-3">
+          <div
+            className={cn(
+              "flex items-stretch overflow-hidden rounded-md border bg-white/[0.04] focus-within:border-neon-cyan",
+              fieldErrors.code ? "border-neon-pink" : "border-white/15"
+            )}
+          >
+            <span className="flex select-none items-center whitespace-nowrap border-r border-white/10 px-2.5 font-mono-semibold text-[13px] text-white/55 xs:px-3">
               ?ref=
             </span>
             <input
@@ -168,11 +224,16 @@ export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
               spellCheck={false}
               placeholder="yourname"
               aria-describedby="aff-code-status"
-              className="min-w-0 flex-1 bg-transparent px-3 py-2.5 font-mono-semibold text-[16px] leading-5 text-white placeholder:text-white/30 focus:outline-none"
+              {...invalid("code")}
+              className="min-w-0 flex-1 bg-transparent px-3 py-2.5 font-mono-semibold text-[16px] leading-5 text-white placeholder:text-white/45 focus:outline-none"
             />
           </div>
           <div id="aff-code-status" aria-live="polite">
-            <CodeStatus raw={code} debounced={debouncedCode} />
+            <CodeStatus
+              raw={code}
+              debounced={debouncedCode}
+              ownCode={previous?.code}
+            />
           </div>
         </div>
 
@@ -188,6 +249,7 @@ export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
               placeholder="https://"
+              {...invalid("website")}
               className={fieldClass}
             />
           </div>
@@ -202,13 +264,18 @@ export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
               value={payoutEmail}
               onChange={(e) => setPayoutEmail(e.target.value)}
               required
+              {...invalid("payout_email")}
               className={fieldClass}
             />
             <p className={hintClass}>Where we send your commission.</p>
           </div>
         </div>
 
-        <fieldset className="m-0 min-w-0 border-0 p-0">
+        <fieldset
+          className="m-0 min-w-0 border-0 p-0"
+          aria-invalid={fieldErrors.channels ? true : undefined}
+          aria-errormessage={fieldErrors.channels ? ERROR_ID : undefined}
+        >
           <legend className={labelClass}>Where you&apos;ll share it</legend>
           <div className="flex flex-wrap gap-2">
             {AFFILIATE_CHANNELS.map((c) => {
@@ -244,13 +311,14 @@ export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
             rows={2}
             maxLength={500}
             placeholder="Who follows you, and roughly how many people."
+            {...invalid("audience")}
             className={cn(fieldClass, "resize-y")}
           />
         </div>
 
         <div>
           <label htmlFor="aff-message" className={labelClass}>
-            Anything else <span className="text-white/40">(optional)</span>
+            Anything else <span className="text-white/55">(optional)</span>
           </label>
           <textarea
             id="aff-message"
@@ -259,12 +327,14 @@ export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
             rows={3}
             maxLength={2000}
             placeholder="How you plan to feature Beeper."
+            {...invalid("message")}
             className={cn(fieldClass, "resize-y")}
           />
         </div>
 
         {formError && (
           <p
+            id={ERROR_ID}
             role="alert"
             className="m-0 rounded-md border border-neon-pink/40 bg-neon-pink/10 px-3 py-2 font-body-bold text-sm text-neon-pink"
           >
@@ -280,7 +350,12 @@ export const ApplyForm: React.FC<{ defaultEmail?: string }> = ({
           >
             {apply.isLoading ? "Applying…" : "Apply"}
           </button>
-          <p className="m-0 font-body-bold text-xs text-white/50">
+          {onCancel && (
+            <button type="button" onClick={onCancel} className={ghostBtn}>
+              Cancel
+            </button>
+          )}
+          <p className="m-0 font-body-bold text-xs text-white/55">
             By applying you agree to the program terms below.
           </p>
         </div>

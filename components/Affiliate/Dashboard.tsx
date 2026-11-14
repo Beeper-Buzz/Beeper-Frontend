@@ -1,6 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { cn } from "@lib/utils";
-import { formatBps, presetRange, summarizeSeries } from "@lib/affiliate/stats";
+import {
+  MAX_RANGE_DAYS,
+  formatBps,
+  isValidRange,
+  presetRange,
+  summarizeSeries
+} from "@lib/affiliate/stats";
 import type { Affiliate } from "@lib/affiliate/types";
 import { useAffiliateStats } from "@hooks/useAffiliate";
 import { LinkBuilder } from "./LinkBuilder";
@@ -9,6 +15,7 @@ import { StatsChart } from "./StatsChart";
 import { CommissionsTable } from "./CommissionsTable";
 import { PayoutsTable } from "./PayoutsTable";
 import { Terms } from "./Terms";
+import { PayoutEmail } from "./PayoutEmail";
 import { Panel, num } from "./ui";
 
 type Preset = 7 | 30 | 90 | "custom";
@@ -31,7 +38,7 @@ export const Dashboard: React.FC<{ affiliate: Affiliate }> = ({
     () => (preset === "custom" ? custom : presetRange(preset)),
     [preset, custom]
   );
-  const validRange = range.from <= range.to;
+  const validRange = isValidRange(range);
   const stats = useAffiliateStats(range, validRange);
   const series = stats.data?.series || [];
   const summary = stats.data ? summarizeSeries(series) : null;
@@ -43,7 +50,7 @@ export const Dashboard: React.FC<{ affiliate: Affiliate }> = ({
         <h2 className="m-0 font-michroma text-base leading-6 text-white sm:text-lg">
           Affiliate dashboard
         </h2>
-        <p className="m-0 font-body-bold text-sm text-white/60">
+        <p className="m-0 font-body-bold text-sm text-white/65">
           <span className={cn("text-white", num)}>{affiliate.code}</span>
           {"  "}earns{" "}
           <span className={cn("text-white", num)}>
@@ -53,6 +60,8 @@ export const Dashboard: React.FC<{ affiliate: Affiliate }> = ({
         </p>
       </div>
 
+      <PayoutEmail email={affiliate.payout_email} className="-mt-2" />
+
       <LinkBuilder code={affiliate.code} link={affiliate.link} />
 
       <Panel
@@ -60,7 +69,7 @@ export const Dashboard: React.FC<{ affiliate: Affiliate }> = ({
         id="aff-performance"
         aside={
           <div
-            role="radiogroup"
+            role="group"
             aria-label="Date range"
             className="flex rounded-md border border-white/10 bg-black/30 p-0.5"
           >
@@ -70,8 +79,7 @@ export const Dashboard: React.FC<{ affiliate: Affiliate }> = ({
                 <button
                   key={String(p.value)}
                   type="button"
-                  role="radio"
-                  aria-checked={on}
+                  aria-pressed={on}
                   onClick={() => setPreset(p.value)}
                   className={cn(
                     "rounded px-2.5 py-1.5 font-body-bold text-xs leading-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/40",
@@ -116,8 +124,13 @@ export const Dashboard: React.FC<{ affiliate: Affiliate }> = ({
               />
             </label>
             {!validRange && (
-              <span className="font-body-bold text-xs text-neon-amber">
-                The start date is after the end date.
+              <span
+                role="alert"
+                className="font-body-bold text-xs text-neon-amber"
+              >
+                {custom.from > custom.to
+                  ? "The start date is after the end date."
+                  : `Pick a range of ${MAX_RANGE_DAYS} days or less.`}
               </span>
             )}
           </div>
@@ -130,9 +143,14 @@ export const Dashboard: React.FC<{ affiliate: Affiliate }> = ({
         />
 
         <div className="mt-5">
-          {stats.isError && !stats.data ? (
-            <p className="m-0 font-body-bold text-sm text-white/60">
-              Stats didn&apos;t load.{" "}
+          {stats.isError && (
+            <p
+              role="alert"
+              className="m-0 mb-3 font-body-bold text-sm text-neon-amber"
+            >
+              {stats.data
+                ? "The latest stats didn't load, so these may be out of date. "
+                : "Stats didn't load. "}
               <button
                 type="button"
                 onClick={() => stats.refetch()}
@@ -141,15 +159,16 @@ export const Dashboard: React.FC<{ affiliate: Affiliate }> = ({
                 Try again
               </button>
             </p>
-          ) : stats.isLoading ? (
+          )}
+          {stats.isLoading ? (
             <div className="h-[230px] animate-pulse rounded-md bg-white/[0.03]" />
-          ) : (
+          ) : stats.data ? (
             <StatsChart
               series={series}
               currency={currency}
               loading={stats.isFetching}
             />
-          )}
+          ) : null}
         </div>
       </Panel>
 
@@ -160,6 +179,7 @@ export const Dashboard: React.FC<{ affiliate: Affiliate }> = ({
         <Terms
           commissionBps={affiliate.commission_bps}
           cookieDays={affiliate.cookie_days}
+          onDashboard
         />
       </div>
     </div>

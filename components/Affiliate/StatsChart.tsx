@@ -299,7 +299,7 @@ export const StatsChart: React.FC<{
                     ? "end"
                     : "middle"
                 }
-                fill="rgba(255,255,255,0.45)"
+                fill="rgba(255,255,255,0.6)"
                 fontSize={11}
                 fontFamily="ibmplexmono_body_mono_semibold, monospace"
               >
@@ -364,15 +364,28 @@ export const StatsChart: React.FC<{
         )}
       </div>
 
+      {/* Screen readers hear the day the playhead (arrow keys) is on. */}
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
+        {active !== null && series[active]
+          ? `${longDay(series[active].date)}: ${fmt(
+              "clicks",
+              values.clicks[active]
+            )} clicks, ${fmt("orders", values.orders[active])} orders, ${fmt(
+              "commission",
+              values.commission[active]
+            )} commission.`
+          : ""}
+      </p>
+
       {n > 0 && (
         <details className="mt-3">
-          <summary className="cursor-pointer font-body-bold text-xs text-white/50 hover:text-white/80">
+          <summary className="cursor-pointer font-body-bold text-xs text-white/55 hover:text-white/80">
             Daily numbers
           </summary>
           <div className="mt-2 max-h-64 overflow-auto rounded-md border border-white/10">
             <table className="w-full border-collapse text-xs">
               <thead className="sticky top-0 bg-[#0A0020]">
-                <tr className="text-left font-body-bold text-white/50">
+                <tr className="text-left font-body-bold text-white/55">
                   <th className="px-3 py-2 font-normal">Day</th>
                   <th className="px-3 py-2 text-right font-normal">Clicks</th>
                   <th className="px-3 py-2 text-right font-normal">Orders</th>

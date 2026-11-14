@@ -82,6 +82,7 @@ export const updateCheckout = async (data: CheckoutData) => {
     ) {
       void attachRefToOrder({
         ...tokens,
+        orderToken: tokens.orderToken || order.data?.attributes?.token,
         orderNumber: order.data?.attributes?.number
       });
     }

@@ -11,8 +11,10 @@ import { Panel } from "./ui";
 export const Terms: React.FC<{
   commissionBps?: number | null;
   cookieDays?: number | null;
+  /** On the dashboard, payments are listed on the same page. */
+  onDashboard?: boolean;
   className?: string;
-}> = ({ commissionBps, cookieDays, className }) => {
+}> = ({ commissionBps, cookieDays, onDashboard, className }) => {
   const rate = formatBps(commissionBps || DEFAULT_COMMISSION_BPS);
   const days = cookieDays || DEFAULT_COOKIE_DAYS;
   const items = [
@@ -20,7 +22,9 @@ export const Terms: React.FC<{
     `An order counts if it's placed within ${days} days of someone clicking your link. If they click another affiliate's link after yours, the newer link gets the order.`,
     "Your own orders don't earn commission.",
     `Commissions stay pending for ${HOLD_DAYS} days after the order, then are approved. A cancelled or refunded order is voided, and a partial refund lowers the commission.`,
-    "We pay approved commissions by hand to your payout email and list each payment here.",
+    onDashboard
+      ? "We pay approved commissions by hand to your payout email and list each payment here."
+      : "We pay approved commissions by hand to your payout email.",
     "You see the last four characters of each order number and its amounts, never the buyer's name or email."
   ];
   return (

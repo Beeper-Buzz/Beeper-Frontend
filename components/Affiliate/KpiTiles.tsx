@@ -44,19 +44,17 @@ const Tile: React.FC<{
 
 const Group: React.FC<{
   caption: string;
-  compact?: boolean;
+  /** Grid columns for the tiles. */
+  cols: string;
+  loading?: boolean;
   children: React.ReactNode;
-}> = ({ caption, compact, children }) => (
-  <div className="min-w-0">
-    <p className="m-0 mb-2 font-body-bold text-xs text-white/45">{caption}</p>
-    <dl
-      className={cn(
-        "m-0 grid grid-cols-3 gap-2",
-        compact && "max-xs:grid-cols-1"
-      )}
-    >
-      {children}
-    </dl>
+}> = ({ caption, cols, loading, children }) => (
+  <div
+    className={cn("min-w-0 transition-opacity", loading && "opacity-60")}
+    aria-busy={loading || undefined}
+  >
+    <p className="m-0 mb-2 font-body-bold text-xs text-white/55">{caption}</p>
+    <dl className={cn("m-0 grid gap-2", cols)}>{children}</dl>
   </div>
 );
 
@@ -68,14 +66,13 @@ export const KpiTiles: React.FC<{
   const cur = totals.currency || "USD";
   const dash = "—";
   return (
-    <div
-      className={cn(
-        "grid gap-4 transition-opacity lg:grid-cols-2",
-        loading && "opacity-60"
-      )}
-      aria-busy={loading}
-    >
-      <Group caption="In this range">
+    <div className="grid gap-4">
+      {/* Only the range-driven tiles wait on the stats query. */}
+      <Group
+        caption="In this range"
+        cols="grid-cols-2 sm:grid-cols-4"
+        loading={loading}
+      >
         <Tile
           label="Clicks"
           value={summary ? summary.clicks.toLocaleString("en-US") : dash}
@@ -96,8 +93,16 @@ export const KpiTiles: React.FC<{
               : dash
           }
         />
+        <Tile
+          label="Commission"
+          value={summary ? formatMoney(summary.commission, cur) : dash}
+          accent="bg-neon-lime"
+        />
       </Group>
-      <Group caption="Commission balance, all time" compact>
+      <Group
+        caption="Commission balance, all time"
+        cols="grid-cols-3 max-xs:grid-cols-1"
+      >
         <Tile
           label="Pending"
           compact

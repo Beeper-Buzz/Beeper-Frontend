@@ -168,6 +168,7 @@ export const addItemToCart = async (item: AddItem) => {
       // Fire-and-forget: a referral code must never hold up or fail the add.
       void attachRefToOrder({
         bearerToken: token.access_token,
+        orderToken: cart.data?.attributes?.token,
         orderNumber: cart.data?.attributes?.number
       });
       return cart;

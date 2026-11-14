@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import { useAuth } from "@config/auth";
 import { SITE_TITLE } from "@utilities/branding";
@@ -15,6 +15,7 @@ const AffiliatePage = () => {
   const { user } = useAuth();
   const { data: affiliate, isLoading, isError, refetch } = useAffiliate(!!user);
   const email = user?.data?.attributes?.email;
+  const [reapplying, setReapplying] = useState(false);
 
   let content: React.ReactNode;
   if (!user || isLoading) {
@@ -46,6 +47,17 @@ const AffiliatePage = () => {
         <Terms />
       </div>
     );
+  } else if (affiliate.status === "rejected" && reapplying) {
+    content = (
+      <div className="grid gap-5">
+        <ApplyForm
+          defaultEmail={email}
+          previous={affiliate}
+          onCancel={() => setReapplying(false)}
+        />
+        <Terms />
+      </div>
+    );
   } else if (affiliate.status === "approved") {
     content = <Dashboard affiliate={affiliate} />;
   } else {
@@ -57,6 +69,7 @@ const AffiliatePage = () => {
               status: "pending" | "rejected" | "suspended";
             }
           }
+          onApplyAgain={() => setReapplying(true)}
         />
         <Terms
           commissionBps={affiliate.commission_bps}

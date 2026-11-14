@@ -2,6 +2,7 @@ import React from "react";
 import { Clock, Ban, CircleSlash } from "lucide-react";
 import { CONTACT_EMAIL } from "@utilities/branding";
 import type { Affiliate } from "@lib/affiliate/types";
+import { PayoutEmail } from "./PayoutEmail";
 import { Panel, num } from "./ui";
 
 const COPY = {
@@ -15,7 +16,7 @@ const COPY = {
     icon: CircleSlash,
     tone: "text-white/60",
     title: "Application not approved",
-    body: "We can't add you to the program right now. If something has changed, write to us and we'll take another look."
+    body: "We can't add you to the program right now. If something has changed, apply again or write to us."
   },
   suspended: {
     icon: Ban,
@@ -27,7 +28,9 @@ const COPY = {
 
 export const StatusCard: React.FC<{
   affiliate: Affiliate & { status: keyof typeof COPY };
-}> = ({ affiliate }) => {
+  /** Rejected applicants may apply again (POST /affiliate). */
+  onApplyAgain?: () => void;
+}> = ({ affiliate, onApplyAgain }) => {
   const c = COPY[affiliate.status];
   const Icon = c.icon;
   const channels = affiliate.application?.channels?.filter(Boolean) || [];
@@ -48,14 +51,14 @@ export const StatusCard: React.FC<{
 
       <dl className="mt-5 grid gap-x-6 gap-y-3 border-t border-white/10 pt-4 text-sm xs:grid-cols-2">
         <div className="min-w-0">
-          <dt className="font-body-bold text-xs text-white/50">Code</dt>
+          <dt className="font-body-bold text-xs text-white/55">Code</dt>
           <dd className={`m-0 mt-0.5 truncate text-white ${num}`}>
             {affiliate.code || "—"}
           </dd>
         </div>
         {channels.length > 0 && (
           <div className="min-w-0">
-            <dt className="font-body-bold text-xs text-white/50">Channels</dt>
+            <dt className="font-body-bold text-xs text-white/55">Channels</dt>
             <dd className="m-0 mt-0.5 font-body-bold text-white/80">
               {channels.join(", ")}
             </dd>
@@ -63,16 +66,34 @@ export const StatusCard: React.FC<{
         )}
       </dl>
 
-      {affiliate.status !== "pending" && (
-        <a
-          href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-            `Affiliate account: ${affiliate.code}`
-          )}`}
-          className="mt-5 inline-block font-body-bold text-sm text-neon-cyan underline underline-offset-4"
-        >
-          Email {CONTACT_EMAIL}
-        </a>
+      {affiliate.status === "pending" && (
+        <PayoutEmail
+          email={affiliate.payout_email}
+          className="mt-4 border-t border-white/10 pt-4"
+        />
       )}
+
+      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+        {affiliate.status === "rejected" && onApplyAgain && (
+          <button
+            type="button"
+            onClick={onApplyAgain}
+            className="neon-btn text-xs"
+          >
+            Apply again
+          </button>
+        )}
+        {affiliate.status !== "pending" && (
+          <a
+            href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
+              `Affiliate account: ${affiliate.code}`
+            )}`}
+            className="inline-block font-body-bold text-sm text-neon-cyan underline underline-offset-4"
+          >
+            Email {CONTACT_EMAIL}
+          </a>
+        )}
+      </div>
     </Panel>
   );
 };

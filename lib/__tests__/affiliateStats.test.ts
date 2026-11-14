@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   formatBps,
   formatMoney,
+  isValidRange,
   presetRange,
   summarizeSeries,
   toNumber
@@ -19,6 +20,20 @@ describe("presetRange", () => {
       from: "2026-10-16",
       to: "2026-11-14"
     });
+  });
+});
+
+describe("isValidRange", () => {
+  it("accepts from <= to within 366 days", () => {
+    assert.equal(isValidRange({ from: "2026-11-14", to: "2026-11-14" }), true);
+    assert.equal(isValidRange({ from: "2025-11-14", to: "2026-11-14" }), true);
+  });
+
+  it("rejects reversed, over-long and malformed ranges", () => {
+    assert.equal(isValidRange({ from: "2026-11-15", to: "2026-11-14" }), false);
+    assert.equal(isValidRange({ from: "2025-11-13", to: "2026-11-14" }), false);
+    assert.equal(isValidRange({ from: "", to: "2026-11-14" }), false);
+    assert.equal(isValidRange({ from: "2026-13-01", to: "2026-11-14" }), false);
   });
 });
 

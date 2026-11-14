@@ -7,3 +7,4 @@ export { StatsChart } from "./StatsChart";
 export { CommissionsTable } from "./CommissionsTable";
 export { PayoutsTable } from "./PayoutsTable";
 export { Terms } from "./Terms";
+export { PayoutEmail } from "./PayoutEmail";

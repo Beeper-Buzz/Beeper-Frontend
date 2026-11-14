@@ -27,6 +27,7 @@ export interface Affiliate {
   commission_bps: number;
   cookie_days: number;
   application: AffiliateApplication | null;
+  payout_email?: string | null;
   totals: AffiliateTotals;
 }
 
@@ -39,9 +40,8 @@ export interface AffiliateApplyInput {
   payout_email: string;
 }
 
-export type AffiliateUpdateInput = Partial<
-  Pick<AffiliateApplyInput, "code" | "payout_email">
-> & { application?: AffiliateApplication };
+/** PATCH /affiliate: top-level fields; code only changes while pending. */
+export type AffiliateUpdateInput = Partial<AffiliateApplyInput>;
 
 export interface AffiliateStats {
   series: StatsPoint[];
