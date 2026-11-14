@@ -684,8 +684,8 @@ const MarketplaceEmpty: React.FC = () => (
       Nothing in the marketplace yet
     </h2>
     <p className="mb-6 max-w-sm font-body text-sm text-white/50">
-      Sample packs, effect presets and visualizers made by Beeper creators
-      show up here once they're approved.
+      Sample packs, effect presets and visualizers made by Beeper creators show
+      up here once they're approved.
     </p>
     <Link
       href="/creators"

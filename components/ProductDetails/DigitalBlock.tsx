@@ -114,7 +114,10 @@ export const DigitalBlock: React.FC<{
                 {claim.isLoading ? "Adding…" : "Add to library, free"}
               </button>
               {claim.isError && (
-                <p role="alert" className="mt-2 font-body text-xs text-neon-pink">
+                <p
+                  role="alert"
+                  className="mt-2 font-body text-xs text-neon-pink"
+                >
                   {apiErrorMessage(
                     claim.error,
                     "Couldn't add it. Try adding it to your cart instead."

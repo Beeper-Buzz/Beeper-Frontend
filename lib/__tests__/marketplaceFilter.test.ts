@@ -27,7 +27,11 @@ const names = (xs: { attributes?: Record<string, any> }[]) =>
 
 describe("filterMarketplace", () => {
   test("keeps only products with a known digital kind", () => {
-    const out = filterMarketplace(items, { kinds: [], search: "", sort: "name_asc" });
+    const out = filterMarketplace(items, {
+      kinds: [],
+      search: "",
+      sort: "name_asc"
+    });
     assert.deepEqual(names(out), ["Dusty Drums", "Glow Grid", "Tape Echo"]);
   });
 
@@ -41,17 +45,25 @@ describe("filterMarketplace", () => {
   });
 
   test("search matches the creator's name as well as the product", () => {
-    const out = filterMarketplace(items, { kinds: [], search: "mo l", sort: "name_asc" });
+    const out = filterMarketplace(items, {
+      kinds: [],
+      search: "mo l",
+      sort: "name_asc"
+    });
     assert.deepEqual(names(out), ["Glow Grid"]);
   });
 
   test("sorts by price and by newest", () => {
     assert.deepEqual(
-      names(filterMarketplace(items, { kinds: [], search: "", sort: "price_asc" })),
+      names(
+        filterMarketplace(items, { kinds: [], search: "", sort: "price_asc" })
+      ),
       ["Glow Grid", "Tape Echo", "Dusty Drums"]
     );
     assert.deepEqual(
-      names(filterMarketplace(items, { kinds: [], search: "", sort: "newest" }))[0],
+      names(
+        filterMarketplace(items, { kinds: [], search: "", sort: "newest" })
+      )[0],
       "Tape Echo"
     );
   });

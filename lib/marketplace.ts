@@ -66,17 +66,17 @@ export interface MarketplaceFilter {
   sort: string;
 }
 
-const priceOf = (p: ProductLike) => parseFloat(p?.attributes?.price || "0") || 0;
+const priceOf = (p: ProductLike) =>
+  parseFloat(p?.attributes?.price || "0") || 0;
 const nameOf = (p: ProductLike) => String(p?.attributes?.name || "");
 
 /**
  * Browse's marketplace grid: products with a known digital kind, narrowed by
  * kind chips and a search over the name, slug and creator, then sorted.
  */
-export function filterMarketplace<T extends { attributes?: Record<string, any> }>(
-  products: T[],
-  { kinds, search, sort }: MarketplaceFilter
-): T[] {
+export function filterMarketplace<
+  T extends { attributes?: Record<string, any> }
+>(products: T[], { kinds, search, sort }: MarketplaceFilter): T[] {
   const s = search.trim().toLowerCase();
   const out = products.filter((p) => {
     const kind = digitalKindOf(p);

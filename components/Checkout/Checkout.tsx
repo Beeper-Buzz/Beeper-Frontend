@@ -491,17 +491,19 @@ const CheckoutForm = () => {
               </Link>{" "}
               and you&apos;ll come straight back here.
             </div>
-          ) : !user && (
-            <p className="mb-8 font-title text-sm text-white/50">
-              Already have an account?{" "}
-              <Link
-                href="/login?redirect=/checkout"
-                className="font-semibold text-neon-cyan underline transition-colors hover:text-neon-cyan/80"
-              >
-                Login
-              </Link>{" "}
-              to checkout faster.
-            </p>
+          ) : (
+            !user && (
+              <p className="mb-8 font-title text-sm text-white/50">
+                Already have an account?{" "}
+                <Link
+                  href="/login?redirect=/checkout"
+                  className="font-semibold text-neon-cyan underline transition-colors hover:text-neon-cyan/80"
+                >
+                  Login
+                </Link>{" "}
+                to checkout faster.
+              </p>
+            )
           )}
 
           <UnavailableCartLines
@@ -595,193 +597,193 @@ const CheckoutForm = () => {
 
               {/* Shipping Address (not for a digital-only order) */}
               {needsDelivery && (
-              <section className="glass-panel space-y-4 p-6">
-                <h2 className="font-pressstart text-[10px] text-neon-cyan">
-                  Shipping Address
-                </h2>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <section className="glass-panel space-y-4 p-6">
+                  <h2 className="font-pressstart text-[10px] text-neon-cyan">
+                    Shipping Address
+                  </h2>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="firstName" className={labelClass}>
+                        First Name *
+                      </label>
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="lastName" className={labelClass}>
+                        Last Name *
+                      </label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
                   <div>
-                    <label htmlFor="firstName" className={labelClass}>
-                      First Name *
+                    <label htmlFor="address1" className={labelClass}>
+                      Address *
                     </label>
                     <input
                       type="text"
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName}
+                      id="address1"
+                      name="address1"
+                      value={formData.address1}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="Street address"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="address2" className={labelClass}>
+                      Apartment, suite, etc. (optional)
+                    </label>
+                    <input
+                      type="text"
+                      id="address2"
+                      name="address2"
+                      value={formData.address2}
+                      onChange={handleInputChange}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="city" className={labelClass}>
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="state" className={labelClass}>
+                        State *
+                      </label>
+                      <input
+                        type="text"
+                        id="state"
+                        name="state"
+                        value={formData.state}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="CA"
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="zipcode" className={labelClass}>
+                        ZIP Code *
+                      </label>
+                      <input
+                        type="text"
+                        id="zipcode"
+                        name="zipcode"
+                        value={formData.zipcode}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="country" className={labelClass}>
+                        Country *
+                      </label>
+                      <select
+                        id="country"
+                        name="country"
+                        value={formData.country}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      >
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className={labelClass}>
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
                       onChange={handleInputChange}
                       required
                       className={inputClass}
                     />
                   </div>
-                  <div>
-                    <label htmlFor="lastName" className={labelClass}>
-                      Last Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      required
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="address1" className={labelClass}>
-                    Address *
-                  </label>
-                  <input
-                    type="text"
-                    id="address1"
-                    name="address1"
-                    value={formData.address1}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Street address"
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="address2" className={labelClass}>
-                    Apartment, suite, etc. (optional)
-                  </label>
-                  <input
-                    type="text"
-                    id="address2"
-                    name="address2"
-                    value={formData.address2}
-                    onChange={handleInputChange}
-                    className={inputClass}
-                  />
-                </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="city" className={labelClass}>
-                      City *
-                    </label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      required
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="state" className={labelClass}>
-                      State *
-                    </label>
-                    <input
-                      type="text"
-                      id="state"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="CA"
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="zipcode" className={labelClass}>
-                      ZIP Code *
-                    </label>
-                    <input
-                      type="text"
-                      id="zipcode"
-                      name="zipcode"
-                      value={formData.zipcode}
-                      onChange={handleInputChange}
-                      required
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="country" className={labelClass}>
-                      Country *
-                    </label>
-                    <select
-                      id="country"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      required
-                      className={inputClass}
-                    >
-                      <option value="US">United States</option>
-                      <option value="CA">Canada</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="phone" className={labelClass}>
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                    className={inputClass}
-                  />
-                </div>
-              </section>
+                </section>
               )}
 
               {/* Shipping Rates */}
               {needsDelivery &&
                 estimatedShipping?.data &&
                 estimatedShipping.data.length > 0 && (
-                <section className="glass-panel p-6">
-                  <h2 className="mb-4 font-pressstart text-[10px] text-neon-cyan">
-                    Shipping Method
-                  </h2>
-                  <div className="space-y-2">
-                    {estimatedShipping.data.map((rate: any) => (
-                      <label
-                        key={rate.attributes.shipping_method_id}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg border border-glass-border p-3 transition-colors hover:bg-white/5"
-                      >
-                        <input
-                          type="radio"
-                          name="shippingRate"
-                          value={rate.attributes.shipping_method_id}
-                          checked={
-                            selectedShippingRate?.attributes
-                              ?.shipping_method_id ===
-                            rate.attributes.shipping_method_id
-                          }
-                          onChange={() => setSelectedShippingRate(rate)}
-                          className="accent-neon-cyan"
-                        />
-                        <span className="font-title text-sm text-white">
-                          {rate.attributes.name} -{" "}
-                          {rate.attributes.display_cost}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleRecalculateShipping}
-                    disabled={estimateShippingMutation.isLoading}
-                    className="neon-btn mt-3 !px-4 !py-2 !text-xs"
-                  >
-                    {estimateShippingMutation.isLoading
-                      ? "Calculating..."
-                      : "Recalculate Shipping"}
-                  </button>
-                </section>
-              )}
+                  <section className="glass-panel p-6">
+                    <h2 className="mb-4 font-pressstart text-[10px] text-neon-cyan">
+                      Shipping Method
+                    </h2>
+                    <div className="space-y-2">
+                      {estimatedShipping.data.map((rate: any) => (
+                        <label
+                          key={rate.attributes.shipping_method_id}
+                          className="flex cursor-pointer items-center gap-2 rounded-lg border border-glass-border p-3 transition-colors hover:bg-white/5"
+                        >
+                          <input
+                            type="radio"
+                            name="shippingRate"
+                            value={rate.attributes.shipping_method_id}
+                            checked={
+                              selectedShippingRate?.attributes
+                                ?.shipping_method_id ===
+                              rate.attributes.shipping_method_id
+                            }
+                            onChange={() => setSelectedShippingRate(rate)}
+                            className="accent-neon-cyan"
+                          />
+                          <span className="font-title text-sm text-white">
+                            {rate.attributes.name} -{" "}
+                            {rate.attributes.display_cost}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRecalculateShipping}
+                      disabled={estimateShippingMutation.isLoading}
+                      className="neon-btn mt-3 !px-4 !py-2 !text-xs"
+                    >
+                      {estimateShippingMutation.isLoading
+                        ? "Calculating..."
+                        : "Recalculate Shipping"}
+                    </button>
+                  </section>
+                )}
 
               {/* Billing Address */}
               <section className="glass-panel space-y-4 p-6">

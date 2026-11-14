@@ -11,7 +11,13 @@ import { apiErrorMessage } from "../../lib/api/v1";
 import { groupLibrary } from "../../lib/library";
 import { formatBytes, kindLabel } from "../../lib/marketplace";
 import type { LibraryItem } from "../../lib/creator/types";
-import { Chip, ErrorNote, formatDate, numCls, Skeleton } from "../CreatorPortal/kit";
+import {
+  Chip,
+  ErrorNote,
+  formatDate,
+  numCls,
+  Skeleton
+} from "../CreatorPortal/kit";
 
 const SOURCE: Record<LibraryItem["source"], string> = {
   order: "Bought",
@@ -190,7 +196,9 @@ export const LibraryView: React.FC<{ enabled: boolean }> = ({ enabled }) => {
   if (groups.length === 0)
     return (
       <div className="glass-panel px-5 py-12 text-center">
-        <h2 className="font-michroma text-sm text-white">Your library is empty</h2>
+        <h2 className="font-michroma text-sm text-white">
+          Your library is empty
+        </h2>
         <p className="mx-auto mt-2 max-w-sm font-body text-sm text-white/50">
           Sample packs, effect presets and visualizers you buy or claim land
           here and in the Beeper app&apos;s library.

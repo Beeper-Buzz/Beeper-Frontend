@@ -13,7 +13,13 @@ const item = (
 ): LibraryItem => ({
   ownership_id: id,
   variant_id: id * 10,
-  product: { id, slug: name.toLowerCase(), name, image_url: null, creator: null },
+  product: {
+    id,
+    slug: name.toLowerCase(),
+    name,
+    image_url: null,
+    creator: null
+  },
   kind,
   asset: { id, version: 1, byte_size: 10, manifest: {}, files: [] },
   source: "order",
@@ -36,7 +42,13 @@ describe("groupLibrary", () => {
   test("newest first within a kind, revoked items last", () => {
     const [g] = groupLibrary([
       item(1, "sample_pack", "Old", null, "2026-10-01T00:00:00Z"),
-      item(2, "sample_pack", "Gone", "2026-11-10T00:00:00Z", "2026-11-09T00:00:00Z"),
+      item(
+        2,
+        "sample_pack",
+        "Gone",
+        "2026-11-10T00:00:00Z",
+        "2026-11-09T00:00:00Z"
+      ),
       item(3, "sample_pack", "New", null, "2026-11-05T00:00:00Z")
     ]);
     assert.deepEqual(
