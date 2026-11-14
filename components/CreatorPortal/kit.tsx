@@ -240,3 +240,9 @@ export const Sparkline: React.FC<{
     </svg>
   );
 };
+
+/** Undo the site-wide `select` styling (huge, centred, uppercase). */
+export const selectCls = cn(
+  inputCls,
+  "max-w-none appearance-auto bg-none normal-case [text-align-last:left]"
+);

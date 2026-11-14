@@ -102,8 +102,16 @@ export interface CreatorProductInput {
   taxon_ids: number[];
   preview_image_signed_id?: string | null;
   preview_audio_signed_id?: string | null;
-  /** Signed ids of the asset's files: newly uploaded and kept existing ones. */
-  files: string[];
+  /**
+   * Signed ids of newly uploaded files. Left out when the files didn't change,
+   * so an approved product's live version isn't replaced by a no-op edit.
+   */
+  files?: string[];
+  /**
+   * Existing asset file ids to carry into the new version alongside `files`
+   * (the API returns file ids, not signed ids). Contract addition to spec §1.3.
+   */
+  keep_file_ids?: number[];
   manifest: Record<string, any>;
 }
 

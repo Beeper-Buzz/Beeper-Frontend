@@ -12,6 +12,7 @@ import {
   checkShaderSource,
   SHADER_MAX_BYTES
 } from "../manifests/visualizer";
+import { paramValue, syntheticFrame } from "../shader/preview";
 import { buildPreviewShader, PRELUDE_UNIFORMS } from "../shader/source";
 
 const sample = (file: string, extra: Record<string, unknown> = {}) => ({
@@ -333,5 +334,28 @@ describe("preview shader", () => {
         { name: "x; uniform sampler2D t" }
       ])
     );
+  });
+});
+
+describe("preview audio simulation", () => {
+  test("beat is 1 on the beat and gone after a quarter beat", () => {
+    assert.equal(syntheticFrame(0, 120).beat, 1);
+    assert.equal(syntheticFrame(0.125, 120).beat, 0);
+    assert.ok(syntheticFrame(0.1, 120).beatPhase > 0.19);
+  });
+
+  test("a driven param moves from its value toward max with its band", () => {
+    const frame = {
+      bass: 0.5,
+      mid: 0,
+      high: 0,
+      level: 0,
+      beat: 1,
+      beatPhase: 0
+    };
+    const p = { name: "glow", min: 0, max: 2, default: 1 };
+    assert.equal(paramValue(p, frame), 1);
+    assert.equal(paramValue({ ...p, drive: "bass" }, frame), 1.5);
+    assert.equal(paramValue({ ...p, drive: "beat" }, frame, 0), 2);
   });
 });
