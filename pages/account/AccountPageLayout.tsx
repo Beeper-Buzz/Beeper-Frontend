@@ -6,7 +6,8 @@ import {
   CreditCard,
   User,
   MapPin,
-  Heart
+  Heart,
+  BadgePercent
 } from "lucide-react";
 import { cn } from "@lib/utils";
 import { Layout } from "../../components/Layout";
@@ -16,6 +17,7 @@ const navItems = [
   { label: "Addresses", href: "/account/addresses", icon: MapPin },
   { label: "Payment Methods", href: "/account/payment", icon: CreditCard },
   { label: "Favorites", href: "/account/favorites", icon: Heart },
+  { label: "Affiliate", href: "/account/affiliate", icon: BadgePercent },
   { label: "My Style", href: "/account/mystyle", icon: Palette },
   { label: "Profile", href: "/account/profile", icon: User },
   { label: "Account Details", href: "/account", icon: User }
