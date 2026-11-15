@@ -63,7 +63,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ username }) => {
           {getInitials(displayName)}
         </div>
         <div>
-          <h1 className="font-title text-xl font-bold text-white">
+          <h1 className="font-microtechnic text-xl font-bold text-white">
             {displayName}
           </h1>
           {userData.display_name && (

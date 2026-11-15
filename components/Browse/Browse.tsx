@@ -3,6 +3,7 @@ import { GetStaticProps } from "next";
 import { QueryClient } from "react-query";
 import { dehydrate } from "react-query/hydration";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@lib/utils";
@@ -13,9 +14,15 @@ import { useProducts } from "@hooks/useProducts";
 import { fetchProducts } from "@hooks/useProducts";
 import { QueryKeys } from "@hooks/queryKeys";
 import { ModeToggle, BrowseMode } from "./ModeToggle";
-import { MarketplaceProduct } from "./MarketplaceCard";
 import { FeaturedShelf } from "./FeaturedShelf";
 import { useFeaturedProducts } from "@hooks/useFeaturedProducts";
+import { useMarketplaceProducts } from "@hooks/useMarketplace";
+import {
+  DIGITAL_KINDS,
+  filterMarketplace,
+  isDigitalKind,
+  kindLabel
+} from "../../lib/marketplace";
 
 // ──────────────────────────────────────────────
 // Placeholder product data (fallback when Spree is not seeded)
@@ -51,40 +58,7 @@ const SHOP_PRODUCTS: ShopProduct[] = [
   }
 ];
 
-const MARKETPLACE_PRODUCTS: MarketplaceProduct[] = [
-  {
-    name: "Beeper iOS App",
-    slug: "beeper-ios-app",
-    price: "$4.99",
-    type: "Synths",
-    compatibility: "iOS 16+"
-  },
-  {
-    name: "Starter Sample Pack",
-    slug: "starter-sample-pack",
-    price: "$9.99",
-    type: "Sample Packs",
-    format: "WAV / MIDI",
-    fileCount: "64 samples"
-  },
-  {
-    name: "Analog Dreams Synth",
-    slug: "analog-dreams-synth",
-    price: "$6.99",
-    type: "Synths",
-    compatibility: "iOS 16+"
-  },
-  {
-    name: "Neon Grid Visualizer",
-    slug: "neon-grid-visualizer",
-    price: "$3.99",
-    type: "Visualizers",
-    compatibility: "iOS 16+"
-  }
-];
-
 const SHOP_CATEGORIES = ["Devices", "Accessories", "Apparel"];
-const MARKETPLACE_CATEGORIES = ["Sample Packs", "Synths", "Visualizers"];
 
 // ──────────────────────────────────────────────
 
@@ -119,6 +93,11 @@ export const Browse: React.FC = () => {
 
   // Spree API products (may be empty if not seeded)
   const { data: productsData, isLoading } = useProducts(1);
+
+  // Marketplace taxon products (fetched once the marketplace tab opens)
+  // A page at a time; "Load more" fetches the next.
+  const marketplace = useMarketplaceProducts(mode === "marketplace");
+  const marketplaceLoading = marketplace.isLoading;
 
   // Featured taxon (null when missing, empty or failing: no shelf)
   const { data: featuredData } = useFeaturedProducts();
@@ -157,9 +136,11 @@ export const Browse: React.FC = () => {
     );
   }, [filters]);
 
-  // Category chips for the active mode
-  const chipCategories =
-    mode === "shop" ? SHOP_CATEGORIES : MARKETPLACE_CATEGORIES;
+  // Category chips for the active mode (marketplace chips are digital kinds)
+  const chipCategories: { value: string; label: string }[] =
+    mode === "shop"
+      ? SHOP_CATEGORIES.map((c) => ({ value: c, label: c }))
+      : DIGITAL_KINDS.map((k) => ({ value: k, label: kindLabel(k, true) }));
 
   const handleChipToggle = (chip: string) => {
     setActiveChips((prev) =>
@@ -283,21 +264,24 @@ export const Browse: React.FC = () => {
     return items;
   }, [activeChips, filters.search]);
 
-  // Marketplace placeholder products, filtered by chip + search
-  const filteredMarketplacePlaceholders = useMemo(() => {
-    let items = [...MARKETPLACE_PRODUCTS];
-    if (activeChips.length > 0) {
-      items = items.filter((p) => activeChips.includes(p.type));
-    }
-    if (filters.search) {
-      const s = filters.search.toLowerCase();
-      items = items.filter(
-        (p) =>
-          p.name.toLowerCase().includes(s) || p.slug.toLowerCase().includes(s)
-      );
-    }
-    return items;
-  }, [activeChips, filters.search]);
+  // Marketplace products, filtered by kind chip + search, then sorted
+  const filteredMarketplace = useMemo(
+    () =>
+      filterMarketplace(marketplace.data, {
+        kinds: activeChips.filter(isDigitalKind),
+        search: filters.search,
+        sort: filters.sort
+      }),
+    [marketplace.data, activeChips, filters.search, filters.sort]
+  );
+  const marketplaceEmpty =
+    !marketplaceLoading &&
+    !marketplace.hasNextPage &&
+    filterMarketplace(marketplace.data, {
+      kinds: [],
+      search: "",
+      sort: "name_asc"
+    }).length === 0;
 
   // Determine if Spree data is available
   const hasSpreeData =
@@ -463,7 +447,7 @@ export const Browse: React.FC = () => {
       ? hasSpreeData
         ? filteredSpreeProducts.length
         : filteredShopPlaceholders.length
-      : filteredMarketplacePlaceholders.length;
+      : filteredMarketplace.length;
 
   return (
     <Layout>
@@ -478,7 +462,7 @@ export const Browse: React.FC = () => {
           >
             <h1
               className={cn(
-                "font-pressstart text-2xl sm:text-3xl",
+                "font-microtechnic text-2xl sm:text-3xl",
                 mode === "shop" ? "neon-text-cyan" : "neon-text-magenta"
               )}
             >
@@ -497,20 +481,22 @@ export const Browse: React.FC = () => {
           >
             {/* Filter chips */}
             <div className="flex flex-wrap gap-2">
-              {chipCategories.map((chip) => (
+              {chipCategories.map(({ value, label }) => (
                 <button
-                  key={chip}
-                  onClick={() => handleChipToggle(chip)}
+                  key={value}
+                  type="button"
+                  aria-pressed={activeChips.includes(value)}
+                  onClick={() => handleChipToggle(value)}
                   className={cn(
                     "rounded-lg px-4 py-2 font-title text-xs uppercase tracking-wider transition-all duration-200",
-                    activeChips.includes(chip)
+                    activeChips.includes(value)
                       ? mode === "shop"
                         ? "bg-neon-cyan/20 border border-neon-cyan text-neon-cyan"
                         : "bg-neon-magenta/20 border border-neon-magenta text-neon-magenta"
                       : "glass-panel text-white/50 hover:text-white/70 hover:bg-white/[0.08]"
                   )}
                 >
-                  {chip}
+                  {label}
                 </button>
               ))}
             </div>
@@ -618,7 +604,8 @@ export const Browse: React.FC = () => {
               </div>
 
               {/* Loading state */}
-              {isLoading && mode === "shop" && (
+              {((isLoading && mode === "shop") ||
+                (marketplaceLoading && mode === "marketplace")) && (
                 <div className="flex min-h-[300px] items-center justify-center">
                   <Loading />
                 </div>
@@ -666,13 +653,15 @@ export const Browse: React.FC = () => {
                       )
                     ) : null
                   ) : // ── Marketplace mode ──
-                  filteredMarketplacePlaceholders.length > 0 ? (
+                  marketplaceLoading ? null : filteredMarketplace.length > 0 ? (
                     <ProductList
-                      marketplaceProducts={filteredMarketplacePlaceholders}
-                      mediaSource={productsData}
+                      marketplaceProducts={filteredMarketplace}
+                      marketplaceIncluded={marketplace.included}
                       title=""
                       mode="marketplace"
                     />
+                  ) : marketplaceEmpty ? (
+                    <MarketplaceEmpty />
                   ) : (
                     <EmptyState
                       hasActiveFilters={hasActiveFilters}
@@ -681,6 +670,40 @@ export const Browse: React.FC = () => {
                   )}
                 </motion.div>
               </AnimatePresence>
+
+              {/* More marketplace pages: filters and sort apply to what's loaded */}
+              {mode === "marketplace" &&
+                !marketplaceLoading &&
+                marketplace.hasNextPage && (
+                  <div className="mt-6 flex flex-col items-center gap-2">
+                    <p className="font-body-bold text-xs text-white/60">
+                      Showing{" "}
+                      <span className="font-mono-semibold tabular-nums">
+                        {marketplace.data.length}
+                      </span>
+                      {marketplace.total ? (
+                        <>
+                          {" "}
+                          of{" "}
+                          <span className="font-mono-semibold tabular-nums">
+                            {marketplace.total}
+                          </span>
+                        </>
+                      ) : null}
+                      . Search, kinds and sort cover what&apos;s loaded.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => marketplace.fetchNextPage()}
+                      disabled={marketplace.isFetchingNextPage}
+                      className="rounded-lg border border-neon-magenta bg-transparent px-6 py-2.5 font-title text-sm font-semibold text-neon-magenta transition-all hover:bg-neon-magenta hover:text-black disabled:opacity-50"
+                    >
+                      {marketplace.isFetchingNextPage
+                        ? "Loading…"
+                        : "Load more"}
+                    </button>
+                  </div>
+                )}
             </main>
           </div>
         </div>
@@ -689,7 +712,25 @@ export const Browse: React.FC = () => {
   );
 };
 
-// ── Empty state sub-component ──
+// ── Empty state sub-components ──
+
+const MarketplaceEmpty: React.FC = () => (
+  <div className="glass-panel flex flex-col items-center justify-center px-5 py-20 text-center">
+    <h2 className="mb-3 font-title text-lg text-white">
+      Nothing in the marketplace yet
+    </h2>
+    <p className="mb-6 max-w-sm font-body text-sm text-white/50">
+      Sample packs, effect presets and visualizers made by Beeper creators show
+      up here once they're approved.
+    </p>
+    <Link
+      href="/creators"
+      className="rounded-lg border border-neon-magenta bg-transparent px-6 py-2.5 font-title text-sm font-semibold text-neon-magenta no-underline transition-all hover:bg-neon-magenta hover:text-black"
+    >
+      Sell your sounds
+    </Link>
+  </div>
+);
 
 const EmptyState: React.FC<{
   hasActiveFilters: boolean;

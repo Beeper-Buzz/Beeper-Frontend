@@ -124,7 +124,7 @@ const AddressesPage = () => {
     <Layout>
       <div className="section-container py-10">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="neon-text-magenta font-pressstart text-2xl sm:text-3xl">
+          <h1 className="neon-text-magenta font-microtechnic text-2xl sm:text-3xl">
             Addresses
           </h1>
           {!showForm && (

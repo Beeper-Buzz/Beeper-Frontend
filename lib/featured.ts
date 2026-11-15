@@ -17,6 +17,8 @@ export const FEATURED_INCLUDE =
 export interface ProductsDoc {
   data: JsonApiResource[];
   included?: JsonApiResource[];
+  /** Spree's paging meta, when the API sent it. */
+  meta?: { total_count?: number; total_pages?: number; count?: number };
 }
 
 export const featuredTaxonPermalink = (): string =>
@@ -38,6 +40,8 @@ export interface FetchFeaturedOptions {
   baseUrl: string;
   permalink?: string;
   perPage?: number;
+  /** 1-based page of the taxon's products. */
+  page?: number;
   fetchImpl?: FetchLike;
   /**
    * Give up (no featured) after this long. getStaticProps awaits this, so a
@@ -52,6 +56,7 @@ export async function fetchFeaturedProducts({
   baseUrl,
   permalink = featuredTaxonPermalink(),
   perPage = 12,
+  page,
   fetchImpl,
   timeoutMs = 8000
 }: FetchFeaturedOptions): Promise<ProductsDoc | null> {
@@ -96,7 +101,10 @@ export async function fetchFeaturedProducts({
         const url =
           `${base}/api/v2/storefront/products?filter[taxons]=${encodeURIComponent(
             String(taxonId)
-          )}` + `&sort_by=default&per_page=${perPage}&include=${include}`;
+          )}` +
+          `&sort_by=default&per_page=${perPage}` +
+          (page && page > 1 ? `&page=${page}` : "") +
+          `&include=${include}`;
         const res = await doFetch(url, init);
         if (!res.ok) {
           const body = res.text ? await res.text().catch(() => "") : "";
@@ -108,7 +116,9 @@ export async function fetchFeaturedProducts({
     );
 
     if (!doc || !Array.isArray(doc.data) || doc.data.length === 0) return null;
-    return { data: doc.data, included: doc.included || [] };
+    const out: ProductsDoc = { data: doc.data, included: doc.included || [] };
+    if (doc.meta) out.meta = doc.meta;
+    return out;
   };
 
   try {

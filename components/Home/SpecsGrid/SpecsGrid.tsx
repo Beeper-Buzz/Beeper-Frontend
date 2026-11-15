@@ -36,7 +36,7 @@ const SpecsGrid: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="mx-auto max-w-4xl"
       >
-        <h2 className="neon-text-cyan mb-10 text-center font-pressstart text-sm sm:text-base md:text-lg">
+        <h2 className="neon-text-cyan mb-10 text-center font-microtechnic text-sm sm:text-base md:text-lg">
           BEEPER {"\u0394"}8 SPECS
         </h2>
 

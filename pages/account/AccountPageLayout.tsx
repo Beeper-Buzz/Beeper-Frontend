@@ -7,6 +7,8 @@ import {
   User,
   MapPin,
   Heart,
+  Library,
+  Sparkles,
   BadgePercent
 } from "lucide-react";
 import { cn } from "@lib/utils";
@@ -17,6 +19,8 @@ const navItems = [
   { label: "Addresses", href: "/account/addresses", icon: MapPin },
   { label: "Payment Methods", href: "/account/payment", icon: CreditCard },
   { label: "Favorites", href: "/account/favorites", icon: Heart },
+  { label: "Library", href: "/account/library", icon: Library },
+  { label: "Creator", href: "/account/creator", icon: Sparkles },
   { label: "Affiliate", href: "/account/affiliate", icon: BadgePercent },
   { label: "My Style", href: "/account/mystyle", icon: Palette },
   { label: "Profile", href: "/account/profile", icon: User },
@@ -29,7 +33,7 @@ const AccountPageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Layout>
       <div className="section-container min-h-[calc(100vh-400px)] py-10">
-        <h1 className="neon-text-magenta mb-8 font-pressstart text-2xl sm:text-3xl">
+        <h1 className="neon-text-magenta mb-8 font-microtechnic text-2xl sm:text-3xl">
           Account
         </h1>
 

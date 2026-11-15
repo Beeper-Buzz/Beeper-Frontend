@@ -290,7 +290,9 @@ export const Cart = () => {
         }}
       >
         <div className="section-container">
-          <h2 className="neon-text-cyan mb-8 font-pressstart text-lg">Cart</h2>
+          <h2 className="neon-text-cyan mb-8 font-microtechnic text-lg">
+            Cart
+          </h2>
 
           <div className="mb-6 flex items-center justify-between">
             <span className="font-micro5 text-sm text-white/60">

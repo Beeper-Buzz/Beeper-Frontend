@@ -61,7 +61,7 @@ export async function getStaticProps() {
 const SectionHeading: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => (
-  <h2 className="neon-text-cyan mb-6 font-pressstart text-sm leading-relaxed sm:text-base">
+  <h2 className="neon-text-cyan mb-6 font-microtechnic text-sm leading-relaxed sm:text-base">
     {children}
   </h2>
 );
@@ -98,7 +98,7 @@ const About: React.FC<AboutProps> = ({ page }) => {
           // Admin-authored content wins when a page with this slug is published.
           <article className="w-full max-w-3xl">
             {page.title && (
-              <h1 className="neon-text-magenta mb-10 text-center font-pressstart text-lg leading-relaxed sm:text-xl">
+              <h1 className="neon-text-magenta mb-10 text-center font-microtechnic text-lg leading-relaxed sm:text-xl">
                 {page.title}
               </h1>
             )}
@@ -109,7 +109,7 @@ const About: React.FC<AboutProps> = ({ page }) => {
           </article>
         ) : (
           <div className="w-full max-w-3xl">
-            <h1 className="neon-text-magenta mb-12 text-center font-pressstart text-lg leading-relaxed sm:text-xl">
+            <h1 className="neon-text-magenta mb-12 text-center font-microtechnic text-lg leading-relaxed sm:text-xl">
               ABOUT {SITE_TITLE.toUpperCase()}
             </h1>
 
