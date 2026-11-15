@@ -1,0 +1,4 @@
+# The glTF visualizer core is a byte-for-byte copy of the shared spec (LF); keep it LF on every checkout.
+lib/gltfVisualizer/core/** text eol=lf
+lib/gltfVisualizer/fixtures/** text eol=lf
+lib/gltfVisualizer/*.json text eol=lf

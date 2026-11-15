@@ -174,3 +174,28 @@ describe("uploadFile", () => {
     assert.ok(seenSignal, "the POST got an abort signal");
   });
 });
+
+describe("3D scenes", () => {
+  test("a .glb uploads as model/gltf-binary whatever the browser says", () => {
+    assert.equal(contentTypeFor("dancer.glb", ""), "model/gltf-binary");
+    assert.equal(
+      contentTypeFor("Dancer.GLB", "application/octet-stream"),
+      "model/gltf-binary"
+    );
+  });
+  test("a .glb is a model, up to 20 MB, accepted only where models are", () => {
+    assert.equal(checkUpload(file("a.glb", 20 * 1024 * 1024), ["model"]), null);
+    assert.match(
+      checkUpload(file("a.glb", 20 * 1024 * 1024 + 1), ["model"]) || "",
+      /20 MB/
+    );
+    assert.match(
+      checkUpload(file("a.glb", 10), ["text"]) || "",
+      /can't be uploaded here/
+    );
+    assert.match(
+      checkUpload(file("a.gltf", 10)) || "",
+      /Export glTF Binary \(\.glb\)/
+    );
+  });
+});
