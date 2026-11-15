@@ -11,7 +11,8 @@ import {
   outputKeyOf,
   SourceName,
   TargetConfig,
-  TargetKind
+  TargetKind,
+  validateManifest
 } from "./core/manifest";
 
 /** What the studio edits: the manifest minus the envelope and the file names. */
@@ -42,14 +43,92 @@ export function gltfManifest(
   return out as unknown as GltfVisualizerManifest;
 }
 
-/** The editable part of a stored or imported manifest (anything else is dropped). */
+const objects = <T>(v: unknown): T[] | undefined =>
+  Array.isArray(v) ? (v.filter(isObj) as T[]) : undefined;
+
+/**
+ * The editable part of a stored or imported manifest (anything else is dropped). Shapes the
+ * editors map over are enforced: `view` an object, `materials` and every list an array of
+ * objects (other entries dropped), so a malformed file can't crash the studio.
+ */
 export function configFromManifest(m: unknown): GltfConfig {
   const c = emptyGltfConfig();
   if (!isObj(m)) return c;
-  if (m.view !== undefined) c.view = m.view;
-  if (m.materials !== undefined) c.materials = m.materials;
-  if (isObj(m.audio)) c.audio = m.audio as GltfConfig["audio"];
+  if (isObj(m.view)) {
+    c.view = { ...m.view };
+    if (c.view.camera !== undefined && !isObj(c.view.camera))
+      delete c.view.camera;
+  }
+  const materials = objects<NonNullable<GltfConfig["materials"]>[number]>(
+    m.materials
+  );
+  if (materials) c.materials = materials;
+  if (isObj(m.audio)) {
+    const a = m.audio;
+    const audio: GltfConfig["audio"] = { ...a, schemaVersion: 1 };
+    const bindings = objects<BindingConfig>(a.bindings);
+    if (bindings) audio.bindings = bindings;
+    else delete audio.bindings;
+    if (isObj(a.idle)) {
+      const clips = objects<{ clip: string; timeScale?: number }>(a.idle.clips);
+      if (clips) audio.idle = { ...a.idle, clips };
+      else delete audio.idle;
+    } else delete audio.idle;
+    if (isObj(a.noteClips)) {
+      const rules = objects<NoteClipRuleConfig>(a.noteClips.rules);
+      audio.noteClips = {
+        ...(a.noteClips as NonNullable<GltfConfig["audio"]["noteClips"]>),
+        rules: rules || []
+      };
+    } else delete audio.noteClips;
+    c.audio = audio;
+  }
   return c;
+}
+
+/** The largest visualizer.json the studio imports (real ones are a few KB). */
+export const IMPORT_MAX_BYTES = 256 * 1024;
+
+// Errors that mean the file has the wrong shape (not just a value to fix in the studio).
+const STRUCTURAL =
+  /: (must be an object|must be an array|must be an integer|must be a number|must be true or false|must be a name of|must be one of|unknown key|required\b)/;
+
+/**
+ * A visualizer.json to import: the config, or why it can't be imported. Refuses anything that
+ * isn't a 3D scene manifest or has structural errors (listed, up to `maxErrors`); value errors
+ * (ranges, names) import and show in the studio like any other edit.
+ */
+export function parseVisualizerImport(
+  text: string,
+  maxErrors = 5
+): { config: GltfConfig; scene: string | null } | { errors: string[] } {
+  let m: unknown;
+  try {
+    m = JSON.parse(text);
+  } catch {
+    return { errors: ["isn't valid JSON"] };
+  }
+  if (!isObj(m) || m.type !== "gltf")
+    return {
+      errors: ['isn\'t a 3D scene visualizer.json (no "type": "gltf")']
+    };
+  // The scene and poster names belong to this product's files, not the imported ones.
+  const probe: Record<string, unknown> = { ...m, scene: "scene.glb" };
+  delete probe.poster;
+  delete probe.files;
+  const structural = validateManifest(probe, null).filter((e) =>
+    STRUCTURAL.test(e)
+  );
+  if (structural.length) {
+    const shown = structural.slice(0, maxErrors);
+    if (structural.length > shown.length)
+      shown.push(`…and ${structural.length - shown.length} more`);
+    return { errors: shown };
+  }
+  return {
+    config: configFromManifest(m),
+    scene: typeof m.scene === "string" ? m.scene : null
+  };
 }
 
 // ---------------------------------------------------------------------------------------------

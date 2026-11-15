@@ -10,6 +10,8 @@ import {
   buildGltfVisualizer,
   buildVisualizer,
   GltfSceneCheck,
+  strayFileError,
+  VIZ_FILE_EXTS,
   vizSceneTypeOf,
   VizParamDraft,
   VizSceneType
@@ -19,6 +21,7 @@ import {
   emptyGltfConfig,
   GltfConfig
 } from "../gltfVisualizer/edit";
+import { SCENE_CHECKING } from "../gltfVisualizer/sceneCheck";
 import { extensionOf, UploadGroup } from "../upload/directUpload";
 
 export interface DraftFile {
@@ -162,6 +165,22 @@ export function draftManifest(
       return { manifest: {}, errors: ["pick what you're making"] };
   }
 }
+
+/**
+ * Files that don't belong to the visualizer's current type (left over from switching Shader ⇄
+ * 3D scene). The server rejects them next to the other type's manifest, so they block saving.
+ */
+export function strayFiles(d: ProductDraft, files: DraftFile[]): DraftFile[] {
+  if (d.kind !== "visualizer") return [];
+  const exts = VIZ_FILE_EXTS[d.vizType];
+  return files.filter(
+    (f) => f.status !== "error" && !exts.includes(extensionOf(f.name))
+  );
+}
+
+/** What stops a save (not just a submit): files the server would refuse. */
+export const saveBlockers = (d: ProductDraft, files: DraftFile[]): string[] =>
+  strayFiles(d, files).map((f) => strayFileError(f.name, d.vizType));
 
 /** The upload list differs from the asset's files as loaded. */
 export function filesChanged(
@@ -316,6 +335,14 @@ export function stepErrors(
     fileErrors.push("Wait for uploads to finish.");
   if (files.some((f) => f.status === "error"))
     fileErrors.push("Retry or remove the files that failed.");
+  if (
+    d.kind === "visualizer" &&
+    d.vizType === "gltf" &&
+    !extra.gltfScene &&
+    usable(files).some((f) => extensionOf(f.name) === "glb")
+  )
+    // Not inspected yet (the wizard reads it at every step): never "no problems".
+    fileErrors.push(SCENE_CHECKING);
   if (d.kind) {
     const built = draftManifest(d, files, extra.gltfScene || null);
     if (built.rowErrors) {

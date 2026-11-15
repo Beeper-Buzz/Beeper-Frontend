@@ -35,6 +35,18 @@ const ext = (name: string) => (name.split(".").pop() || "").toLowerCase();
 const POSTER_EXTS = ["png", "jpg", "jpeg", "webp"];
 const MB = 1024 * 1024;
 
+/** The file types each kind of visualizer is made of; anything else is a leftover. */
+export const VIZ_FILE_EXTS: Record<VizSceneType, readonly string[]> = {
+  shader: ["glsl", "json"],
+  gltf: ["glb", ...POSTER_EXTS]
+};
+
+/** A file that belongs to the other kind of visualizer (left over from switching type). */
+export const strayFileError = (name: string, type: VizSceneType): string =>
+  `files: ${name} isn't part of a ${
+    type === "gltf" ? "3D scene" : "shader"
+  }; remove it`;
+
 /**
  * The glTF manifest for the attached files (the .glb is `scene`, an image is
  * `poster`) and every problem with it: file rules, the inspector's GLB errors,
@@ -66,8 +78,7 @@ export function buildGltfVisualizer(
           DEFAULT_LIMITS.posterMaxBytes / MB
         } MB limit`
       );
-  for (const f of others)
-    fileErrors.push(`files: ${f.name} isn't part of a 3D scene; remove it`);
+  for (const f of others) fileErrors.push(strayFileError(f.name, "gltf"));
 
   const manifest = gltfManifest(
     draft.config,
@@ -123,6 +134,9 @@ export function buildVisualizer(
   attachedFiles: string[]
 ): { manifest: VisualizerManifest; errors: string[] } {
   const errors: string[] = [];
+  for (const name of attachedFiles)
+    if (!VIZ_FILE_EXTS.shader.includes(ext(name)))
+      errors.push(strayFileError(name, "shader"));
   if (!draft.shader || !/\.glsl$/i.test(draft.shader)) {
     errors.push("add a .glsl shader file");
   } else if (!attachedFiles.includes(draft.shader)) {

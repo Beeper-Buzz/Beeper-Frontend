@@ -16,11 +16,20 @@ import {
   errorPath,
   errorsAt,
   gltfManifest,
+  IMPORT_MAX_BYTES,
   moveItem,
+  parseVisualizerImport,
   targetChoices,
   withSources
 } from "../gltfVisualizer/edit";
-import { buildGltfVisualizer } from "../manifests/visualizer";
+import {
+  SCENE_CHECKING,
+  SCENE_DOWNLOAD_FAILED,
+  SCENE_OPEN_PREVIEW,
+  sceneCheckFrom,
+  sceneFileKey
+} from "../gltfVisualizer/sceneCheck";
+import { buildGltfVisualizer, buildVisualizer } from "../manifests/visualizer";
 
 const summary: SceneSummary = {
   nodes: ["Root", "Cone", "KeyLight", "Cam", "Dup", "Dup", ""],
@@ -415,5 +424,205 @@ describe("buildGltfVisualizer", () => {
         e.startsWith("audio.bindings[0].target.node: ")
       )
     );
+  });
+});
+
+describe("the wizard's scene check", () => {
+  const inspection = (errors: string[] = []) => ({
+    errors,
+    summary,
+    stats: null
+  });
+  const file = (over: Partial<Parameters<typeof sceneCheckFrom>[0]> = {}) => ({
+    key: sceneFileKey("dancer.glb", 5000),
+    bytes: new ArrayBuffer(8),
+    inspection: inspection(),
+    readError: null,
+    ...over
+  });
+
+  test("keys files by name and size", () => {
+    assert.equal(sceneFileKey("dancer.glb", 5000), "dancer.glb:5000");
+  });
+
+  test("blocks while the file is unread or being read", () => {
+    assert.deepEqual(sceneCheckFrom(null, null).errors, [SCENE_CHECKING]);
+    assert.deepEqual(
+      sceneCheckFrom(file({ bytes: null, inspection: null }), null).errors,
+      [SCENE_CHECKING]
+    );
+  });
+
+  test("a failed download asks to re-pick the file", () => {
+    const c = sceneCheckFrom(
+      file({ bytes: null, inspection: null, readError: SCENE_DOWNLOAD_FAILED }),
+      { loaded: true, error: null }
+    );
+    assert.deepEqual(c.errors, [SCENE_DOWNLOAD_FAILED]);
+    assert.match(c.errors[0], /re-pick the file/);
+  });
+
+  test("the inspector's errors come before anything the preview knows", () => {
+    const c = sceneCheckFrom(
+      file({ inspection: inspection(["scene: Draco isn't supported"]) }),
+      {
+        loaded: true,
+        error: null
+      }
+    );
+    assert.deepEqual(c.errors, ["scene: Draco isn't supported"]);
+    assert.equal(c.summary, summary);
+  });
+
+  test("until the preview has built the rig once, it asks to open the Scene step", () => {
+    assert.deepEqual(sceneCheckFrom(file(), null).errors, [SCENE_OPEN_PREVIEW]);
+    assert.deepEqual(
+      sceneCheckFrom(file(), { loaded: false, error: null }).errors,
+      [SCENE_OPEN_PREVIEW]
+    );
+  });
+
+  test("a loader or rig error blocks; a loaded scene passes", () => {
+    assert.deepEqual(
+      sceneCheckFrom(file(), {
+        loaded: true,
+        error: "audio.bindings[0].target: no such node"
+      }).errors,
+      ["audio.bindings[0].target: no such node"]
+    );
+    const ok = sceneCheckFrom(file(), { loaded: true, error: null });
+    assert.deepEqual(ok.errors, []);
+    assert.equal(ok.summary, summary);
+  });
+});
+
+describe("leftover files", () => {
+  test("a shader visualizer flags a scene's files", () => {
+    const { errors } = buildVisualizer({ shader: "a.glsl", params: [] }, [
+      "a.glsl",
+      "dancer.glb",
+      "poster.png"
+    ]);
+    assert.deepEqual(errors, [
+      "files: dancer.glb isn't part of a shader; remove it",
+      "files: poster.png isn't part of a shader; remove it"
+    ]);
+  });
+
+  test("a 3D scene flags a shader's files", () => {
+    const { errors } = buildGltfVisualizer(
+      { config: emptyGltfConfig() },
+      [
+        { name: "dancer.glb", size: 10 },
+        { name: "a.glsl", size: 10 }
+      ],
+      null
+    );
+    assert.ok(
+      errors.includes("files: a.glsl isn't part of a 3D scene; remove it")
+    );
+  });
+});
+
+describe("importing a visualizer.json", () => {
+  const good = {
+    format: 1,
+    type: "gltf",
+    scene: "other.glb",
+    view: { lighting: "studio" },
+    audio: {
+      schemaVersion: 1,
+      bindings: [
+        {
+          source: "kick",
+          target: { kind: "node", node: "Cone", property: "scale" }
+        }
+      ]
+    }
+  };
+
+  test("a valid file imports its config and the scene it was written for", () => {
+    const r = parseVisualizerImport(JSON.stringify(good));
+    assert.ok("config" in r);
+    if (!("config" in r)) return;
+    assert.equal(r.scene, "other.glb");
+    assert.equal(r.config.audio.bindings?.length, 1);
+    assert.deepEqual(r.config.view, { lighting: "studio" });
+  });
+
+  test("value problems import (they show in the studio like any edit)", () => {
+    const m = structuredClone(good) as any;
+    m.audio.bindings[0].outputRange = [1, 99];
+    const r = parseVisualizerImport(JSON.stringify(m));
+    assert.ok("config" in r);
+  });
+
+  test("not JSON, not a 3D scene, or the wrong shape: refused with the reasons", () => {
+    assert.deepEqual(parseVisualizerImport("{nope"), {
+      errors: ["isn't valid JSON"]
+    });
+    assert.deepEqual(
+      parseVisualizerImport(JSON.stringify({ format: 1, shader: "a.glsl" })),
+      { errors: ['isn\'t a 3D scene visualizer.json (no "type": "gltf")'] }
+    );
+    const bad = parseVisualizerImport(
+      JSON.stringify({
+        ...good,
+        audio: { schemaVersion: 1, bindings: { a: 1 } }
+      })
+    );
+    assert.ok("errors" in bad);
+    if ("errors" in bad)
+      assert.ok(
+        bad.errors.some((e) => e.startsWith("audio.bindings: must be an array"))
+      );
+    const wrongMaterials = parseVisualizerImport(
+      JSON.stringify({ ...good, materials: { material: "*" } })
+    );
+    assert.ok("errors" in wrongMaterials);
+  });
+
+  test("lists at most five reasons", () => {
+    const m = structuredClone(good) as any;
+    m.audio.bindings = Array.from({ length: 8 }, () => 7);
+    const r = parseVisualizerImport(JSON.stringify(m));
+    assert.ok("errors" in r);
+    if (!("errors" in r)) return;
+    assert.equal(r.errors.length, 6);
+    assert.match(r.errors[5], /^…and 3 more$/);
+  });
+
+  test("the cap on file size is 256 KB", () => {
+    assert.equal(IMPORT_MAX_BYTES, 256 * 1024);
+  });
+
+  test("configFromManifest drops shapes the editors can't map over", () => {
+    const c = configFromManifest({
+      type: "gltf",
+      view: "dark",
+      materials: { material: "*" },
+      audio: {
+        schemaVersion: 1,
+        bindings: [
+          7,
+          null,
+          { source: "kick", target: { kind: "camera", property: "dolly" } }
+        ],
+        idle: { clips: "Idle" },
+        noteClips: { initial: "Idle", rules: { a: 1 } }
+      }
+    });
+    assert.equal(c.view, undefined);
+    assert.equal(c.materials, undefined);
+    assert.equal(c.audio.bindings?.length, 1);
+    assert.equal(c.audio.idle, undefined);
+    assert.deepEqual(c.audio.noteClips?.rules, []);
+    // A list of objects keeps its objects only.
+    const c2 = configFromManifest({
+      materials: [{ material: "*", toon: { steps: 3 } }, "x"],
+      audio: { idle: { clips: [{ clip: "Idle" }, 3] } }
+    });
+    assert.equal(c2.materials?.length, 1);
+    assert.deepEqual(c2.audio.idle?.clips, [{ clip: "Idle" }]);
   });
 });
