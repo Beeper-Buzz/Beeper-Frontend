@@ -71,6 +71,18 @@ const COMPONENT_SIZES: { [type: number]: number } = { 5120: 1, 5121: 1, 5122: 2,
 const TYPE_COMPONENTS: { [type: string]: number } = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4, MAT2: 4, MAT3: 9, MAT4: 16 };
 const INDEX_SIZES: { [type: number]: number } = { 5121: 1, 5123: 2, 5125: 4 };
 
+// Work bounds against crafted files (the Ruby inspector uses the same numbers and messages).
+/** Errors kept; any beyond are summarised by one final "scene: …and N more problem(s)". */
+export const MAX_ERRORS = 100;
+/** An array with a limit is skipped (treated as empty) when longer than this × its limit. */
+export const SKIP_FACTOR = 4;
+/** Length cap, and skip, for arrays the limits don't bound (accessors, bufferViews, …). */
+export const MAX_UNBOUNDED_ARRAY = 65536;
+/** JSON arrays/objects nested deeper than this are refused (Ruby JSON's max_nesting default). */
+export const MAX_JSON_DEPTH = 100;
+/** Markers a JPEG header scan reads before giving up. */
+export const MAX_JPEG_MARKERS = 512;
+
 type Json = { [key: string]: unknown };
 
 const isObj = (v: unknown): v is Json => typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -205,8 +217,10 @@ export function imageSize(bytes: Uint8Array, mime: string): { width: number; hei
   }
   if (mime === 'image/jpeg') {
     let i = 2;
+    let markers = 0;
     while (i + 1 < n) {
       if (bytes[i] !== 0xff) return null;
+      if (++markers > MAX_JPEG_MARKERS) return null; // a crafted marker chain can't run long
       let m = bytes[i + 1];
       while (m === 0xff && i + 2 < n) {
         i++; // fill bytes
@@ -233,6 +247,31 @@ export function imageSize(bytes: Uint8Array, mime: string): { width: number; hei
 // ---------------------------------------------------------------------------------------------
 // GLB
 
+/**
+ * True when JSON text nests arrays/objects deeper than `max`. A string-aware bracket scan run
+ * before JSON.parse, so the result doesn't depend on the parser (Ruby mirrors it exactly):
+ * outside strings '[' and '{' add one and ']' and '}' subtract one; '"' opens a string, inside
+ * which a backslash skips the next character and '"' closes it. The outermost value is depth 1.
+ */
+export function jsonTooDeep(text: string, max: number = MAX_JSON_DEPTH): boolean {
+  let depth = 0;
+  let inString = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i);
+    if (inString) {
+      if (c === 0x5c) i++; // backslash
+      else if (c === 0x22) inString = false;
+    } else if (c === 0x22) {
+      inString = true;
+    } else if (c === 0x5b || c === 0x7b) {
+      if (++depth > max) return true;
+    } else if (c === 0x5d || c === 0x7d) {
+      depth--;
+    }
+  }
+  return false;
+}
+
 /** Inspects a GLB per spec §6.3. Errors are "<path>: <message>" with paths under `scene`. */
 export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMITS): GlbInspection {
   const errors: string[] = [];
@@ -258,6 +297,7 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
   }
   const text = decodeUtf8(bytes, 20, 20 + jsonLength);
   if (text === null) return fatal('the JSON chunk is not valid UTF-8');
+  if (jsonTooDeep(text)) return fatal('JSON nested too deeply');
   let parsed: unknown;
   try {
     parsed = JSON.parse(text);
@@ -281,18 +321,32 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
     if (offset !== n) return fatal('unexpected data after the BIN chunk');
   }
 
+  let dropped = 0;
   const err = (path: string, message: string): void => {
-    errors.push(`${path}: ${message}`);
+    if (errors.length < MAX_ERRORS) errors.push(`${path}: ${message}`);
+    else dropped++;
   };
-  const arrayOf = (key: string): unknown[] => {
+  // Over SKIP_FACTOR × limit (or MAX_UNBOUNDED_ARRAY without one): one "<n> <noun>; the limit is
+  // <limit>" error and the array counts as empty from then on, so nothing iterates it.
+  const capped = (path: string, noun: string, v: unknown[], limit: number | null): unknown[] => {
+    if (v.length <= (limit === null ? MAX_UNBOUNDED_ARRAY : SKIP_FACTOR * limit)) return v;
+    err(path, `${v.length} ${noun}; the limit is ${limit === null ? MAX_UNBOUNDED_ARRAY : limit}`);
+    return [];
+  };
+  const arrayOf = (key: string, limit: number | null = null): unknown[] => {
     const v = json[key];
     if (v === undefined) return [];
     if (!Array.isArray(v)) {
       err(`scene.${key}`, 'must be an array');
       return [];
     }
-    return v;
+    return capped(`scene.${key}`, key, v, limit);
   };
+  // Arrays inspected only for their length.
+  for (const key of ['samplers', 'textures', 'scenes']) {
+    const v = json[key];
+    if (Array.isArray(v)) capped(`scene.${key}`, key, v, null);
+  }
 
   // asset + extensions
   if (!isObj(json.asset) || json.asset.version !== '2.0') err('scene.asset.version', 'must be "2.0"');
@@ -306,9 +360,12 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
       err('scene.extensionsUsed', `${e}: ${why}`);
     }
   }
+  const usedSet: { [name: string]: boolean } = Object.create(null); // linear, not used.indexOf per entry
+  for (let i = 0; i < used.length; i++) if (typeof used[i] === 'string') usedSet[used[i] as string] = true;
   const required = arrayOf('extensionsRequired');
   for (let i = 0; i < required.length; i++) {
-    if (used.indexOf(required[i]) < 0) err('scene.extensionsRequired', `${String(required[i])} is not listed in extensionsUsed`);
+    const r = required[i];
+    if (typeof r !== 'string' || !usedSet[r]) err('scene.extensionsRequired', `${String(r)} is not listed in extensionsUsed`);
   }
 
   // buffers: one, no uri, inside the BIN chunk
@@ -426,12 +483,15 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
   }
   const accessorCount = (ref: unknown): number => (isInt(ref) && ref >= 0 && ref < accCount.length ? accCount[ref] : -1);
 
-  // images: embedded PNG/JPEG, header dimensions within the limits
-  const images = arrayOf('images');
+  // images: embedded PNG/JPEG, header dimensions within the limits. Past maxImages only the count
+  // error is reported; headers are read once per bufferView, in place.
+  const images = arrayOf('images', limits.maxImages);
   if (images.length > limits.maxImages) err('scene.images', `${images.length} images; the limit is ${limits.maxImages}`);
   const imageStats: ImageStat[] = [];
+  const headers: ({ mime: string | null; size: { width: number; height: number } | null } | undefined)[] = [];
   let texturePixels = 0;
-  for (let i = 0; i < images.length; i++) {
+  const inspected = Math.min(images.length, limits.maxImages);
+  for (let i = 0; i < inspected; i++) {
     const img = images[i];
     const path = `scene.images[${i}]`;
     if (!isObj(img)) {
@@ -453,13 +513,19 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
       continue;
     }
     if (!viewOk[view]) continue; // its bufferView already has an error
-    const data = bytes.subarray(viewStart[view], viewStart[view] + viewLength[view]);
+    let head = headers[view];
+    if (head === undefined) {
+      const data = bytes.subarray(viewStart[view], viewStart[view] + viewLength[view]);
+      const sniffed = sniffImageMime(data);
+      head = { mime: sniffed, size: sniffed === null ? null : imageSize(data, sniffed) };
+      headers[view] = head;
+    }
     const kind = mime === 'image/png' ? 'PNG' : 'JPEG';
-    if (sniffImageMime(data) !== mime) {
+    if (head.mime !== mime) {
       err(path, `the bytes are not a ${kind} (mimeType says ${mime})`);
       continue;
     }
-    const size = imageSize(data, mime);
+    const size = head.size;
     if (size === null) {
       err(path, `can't read the ${kind} header`);
       continue;
@@ -475,14 +541,15 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
   }
 
   // scene graph counts
-  const nodes = arrayOf('nodes');
-  const meshes = arrayOf('meshes');
-  const materials = arrayOf('materials');
-  const skins = arrayOf('skins');
-  const cameras = arrayOf('cameras');
-  const animations = arrayOf('animations');
+  const nodes = arrayOf('nodes', limits.maxNodes);
+  const meshes = arrayOf('meshes', limits.maxMeshes);
+  const materials = arrayOf('materials', limits.maxMaterials);
+  const skins = arrayOf('skins', limits.maxSkins);
+  const cameras = arrayOf('cameras', limits.maxCameras);
+  const animations = arrayOf('animations', limits.maxAnimations);
   const lightsExt = isObj(json.extensions) && isObj(json.extensions.KHR_lights_punctual) ? json.extensions.KHR_lights_punctual : null;
-  const lights = lightsExt && Array.isArray(lightsExt.lights) ? lightsExt.lights : [];
+  const lights =
+    lightsExt && Array.isArray(lightsExt.lights) ? capped('scene.extensions.KHR_lights_punctual.lights', 'lights', lightsExt.lights, limits.maxLights) : [];
   if (nodes.length > limits.maxNodes) err('scene.nodes', `${nodes.length} nodes; the limit is ${limits.maxNodes}`);
   if (meshes.length > limits.maxMeshes) err('scene.meshes', `${meshes.length} meshes; the limit is ${limits.maxMeshes}`);
   if (materials.length > limits.maxMaterials) err('scene.materials', `${materials.length} materials; the limit is ${limits.maxMaterials}`);
@@ -510,7 +577,7 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
     let verts = 0;
     let targets = 0;
     const mats: number[] = [];
-    const prims = isObj(mesh) && Array.isArray(mesh.primitives) ? mesh.primitives : [];
+    const prims = isObj(mesh) && Array.isArray(mesh.primitives) ? capped(`${path}.primitives`, 'primitives', mesh.primitives, limits.maxDrawCalls) : [];
     if (!isObj(mesh) || !Array.isArray(mesh.primitives)) err(`${path}.primitives`, 'must be an array');
     for (let p = 0; p < prims.length; p++) {
       const prim = prims[p];
@@ -554,7 +621,10 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
     const extras = isObj(mesh) && isObj(mesh.extras) ? mesh.extras : null;
     const targetNames = extras && Array.isArray(extras.targetNames) ? extras.targetNames : [];
     const morphs: string[] = [];
-    for (let t = 0; t < targets; t++) morphs.push(typeof targetNames[t] === 'string' ? (targetNames[t] as string) : '');
+    // Names are listed only up to SKIP_FACTOR × the limit; past the limit the error above stands.
+    if (targets <= SKIP_FACTOR * limits.maxMorphTargets) {
+      for (let t = 0; t < targets; t++) morphs.push(typeof targetNames[t] === 'string' ? (targetNames[t] as string) : '');
+    }
     meshSummaries.push({ name: nameOf(mesh), morphs });
     meshTriangles.push(tris);
     meshVertices.push(verts);
@@ -611,7 +681,7 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
   for (let i = 0; i < animations.length; i++) {
     const anim = animations[i];
     const path = `scene.animations[${i}]`;
-    const samplers = isObj(anim) && Array.isArray(anim.samplers) ? anim.samplers : [];
+    const samplers = isObj(anim) && Array.isArray(anim.samplers) ? capped(`${path}.samplers`, 'samplers', anim.samplers, null) : [];
     let duration = 0;
     let keys = 0;
     for (let j = 0; j < samplers.length; j++) {
@@ -664,5 +734,6 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
     clips,
     keyframes,
   };
+  if (dropped > 0) errors.push(`scene: …and ${dropped} more problem${dropped === 1 ? '' : 's'}`);
   return { errors, summary, stats };
 }

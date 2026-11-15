@@ -2,7 +2,7 @@ import { describe, test } from 'node:test';
 import * as assert from 'node:assert/strict';
 import { TextDecoder, TextEncoder } from 'util';
 import { DEFAULT_LIMITS, GltfLimits } from '../limits';
-import { decodeUtf8, decodeUtf8Lossy, encodeUtf8, imageSize, inspectGlb, sniffImageMime } from '../glb';
+import { MAX_ERRORS, MAX_JPEG_MARKERS, decodeUtf8, decodeUtf8Lossy, encodeUtf8, imageSize, inspectGlb, jsonTooDeep, sniffImageMime } from '../glb';
 import { validateManifest } from '../manifest';
 import { TestGlbSpec, buildGlb, cubePrimitive, makeJpegHeader, makePng, trianglePrimitive } from '../testGlb';
 import { errorPathOf, manifestCases, pathMatches } from './helpers';
@@ -261,4 +261,194 @@ describe('UTF-8 without TextDecoder', () => {
 
 test('paths helper sanity', () => {
   assert.deepStrictEqual(paths(['scene.images[3]: x', 'scene: y']), ['scene.images[3]', 'scene']);
+});
+
+// ---------------------------------------------------------------------------------------------
+// Work bounds against crafted files
+
+/** A GLB from raw JSON and BIN bytes (no builder conveniences). */
+function rawGlb(json: object, bin: Uint8Array): Uint8Array {
+  const text = encodeUtf8(JSON.stringify(json));
+  const jsonLen = (text.length + 3) & ~3;
+  const binLen = (bin.length + 3) & ~3;
+  const total = 12 + 8 + jsonLen + (bin.length > 0 ? 8 + binLen : 0);
+  const out = new Uint8Array(total);
+  const dv = new DataView(out.buffer);
+  dv.setUint32(0, 0x46546c67, true);
+  dv.setUint32(4, 2, true);
+  dv.setUint32(8, total, true);
+  dv.setUint32(12, jsonLen, true);
+  dv.setUint32(16, 0x4e4f534a, true);
+  out.set(text, 20);
+  out.fill(0x20, 20 + text.length, 20 + jsonLen);
+  if (bin.length > 0) {
+    dv.setUint32(20 + jsonLen, binLen, true);
+    dv.setUint32(24 + jsonLen, 0x004e4942, true);
+    out.set(bin, 28 + jsonLen);
+  }
+  return out;
+}
+
+/** A GLB whose only bufferView holds `data`, referenced by `count` JPEG images. */
+function imagesOnOneView(data: Uint8Array, count: number): Uint8Array {
+  const images: object[] = [];
+  for (let i = 0; i < count; i++) images.push({ bufferView: 0, mimeType: 'image/jpeg' });
+  const json = {
+    asset: { version: '2.0' },
+    buffers: [{ byteLength: data.length }],
+    bufferViews: [{ buffer: 0, byteLength: data.length }],
+    images,
+  };
+  return rawGlb(json, data);
+}
+
+/** SOI, `chain` empty APP0 segments, then an SOF0 of w×h. */
+function jpegChain(chain: number, w: number, h: number): Uint8Array {
+  const out: number[] = [0xff, 0xd8];
+  for (let i = 0; i < chain; i++) out.push(0xff, 0xe0, 0x00, 0x02);
+  out.push(0xff, 0xc0, 0x00, 0x11, 0x08, h >> 8, h & 0xff, w >> 8, w & 0xff, 0x03, 1, 0x22, 0, 2, 0x11, 1, 3, 0x11, 1);
+  return new Uint8Array(out);
+}
+
+const nest = (depth: number): unknown => {
+  let v: unknown = [];
+  for (let i = 1; i < depth; i++) v = [v];
+  return v;
+};
+
+const elapsed = (fn: () => void): number => {
+  const t0 = Date.now();
+  fn();
+  return Date.now() - t0;
+};
+
+describe('work bounds', () => {
+  test('50k images on one bufferView: one count error, no header parsing', () => {
+    const glb = imagesOnOneView(makeJpegHeader(8, 8), 50000);
+    let result = inspectGlb(glb, limits({ jsonChunkMaxBytes: 4 << 20 }));
+    const ms = elapsed(() => (result = inspectGlb(glb, limits({ jsonChunkMaxBytes: 4 << 20 }))));
+    assert.deepStrictEqual(result.errors, ['scene.images: 50000 images; the limit is 16']);
+    assert.ok(result.stats);
+    assert.deepStrictEqual(result.stats.images, []);
+    assert.ok(ms < 2000, `${ms} ms`);
+  });
+
+  test('over maxImages but under 4× the limit: only the first maxImages are inspected', () => {
+    const glb = imagesOnOneView(makeJpegHeader(8, 8), 40);
+    const { errors, stats } = inspectGlb(glb);
+    assert.deepStrictEqual(errors, ['scene.images: 40 images; the limit is 16']);
+    assert.ok(stats);
+    assert.deepStrictEqual(stats.images.map((i) => i.index), Array.from({ length: 16 }, (_, i) => i));
+    assert.equal(stats.texturePixels, 16 * 64);
+  });
+
+  test('a header is parsed once per bufferView (a 1 MB fill-byte run × 50k images stays fast)', () => {
+    const slow = new Uint8Array(1 << 20).fill(0xff);
+    slow[1] = 0xd8; // SOI, then fill bytes to the end: one parse walks the whole view
+    const glb = imagesOnOneView(slow, 50000);
+    let errors: string[] = [];
+    const ms = elapsed(() => (errors = inspectGlb(glb, limits({ maxImages: 100000, jsonChunkMaxBytes: 4 << 20 })).errors));
+    assert.ok(ms < 3000, `${ms} ms`);
+    assert.equal(errors.length, MAX_ERRORS + 1);
+    assert.equal(errors[0], "scene.images[0]: can't read the JPEG header");
+    assert.equal(errors[MAX_ERRORS], `scene: …and ${50000 - MAX_ERRORS} more problems`);
+  });
+
+  test('the JPEG marker scan stops after MAX_JPEG_MARKERS markers', () => {
+    assert.equal(MAX_JPEG_MARKERS, 512);
+    assert.deepStrictEqual(imageSize(jpegChain(511, 640, 480), 'image/jpeg'), { width: 640, height: 480 }); // SOF is marker 512
+    assert.equal(imageSize(jpegChain(512, 640, 480), 'image/jpeg'), null); // SOF would be marker 513
+    assert.deepStrictEqual(inspectGlb(imagesOnOneView(jpegChain(100000, 64, 64), 1)).errors, ["scene.images[0]: can't read the JPEG header"]);
+    assert.deepStrictEqual(inspectGlb(imagesOnOneView(jpegChain(511, 64, 64), 1)).errors, []);
+  });
+
+  test('700k empty bufferViews: one early error, the list stays bounded', () => {
+    const glb = buildGlb(simple({ editJson: (j) => (j.bufferViews = new Array(700000).fill({})) }));
+    let errors: string[] = [];
+    const ms = elapsed(() => (errors = inspectGlb(glb, limits({ jsonChunkMaxBytes: 4 << 20 })).errors));
+    assert.ok(ms < 3000, `${ms} ms`);
+    assert.equal(errors[0], 'scene.bufferViews: 700000 bufferViews; the limit is 65536');
+    assert.equal(errors.filter((e) => pathMatches(e, 'scene.bufferViews')).length, 1);
+    assert.ok(errors.length <= MAX_ERRORS + 1, `${errors.length} errors`);
+  });
+
+  test('the error list keeps MAX_ERRORS entries, then one summary line', () => {
+    const bad = (k: number) => buildGlb(simple({ editJson: (j) => (j.bufferViews = j.bufferViews.concat(new Array(k).fill({}))) }));
+    assert.equal(MAX_ERRORS, 100);
+    const at = inspectGlb(bad(100)).errors;
+    assert.equal(at.length, 100);
+    assert.ok(at.every((e) => / no such buffer$/.test(e)));
+    const one = inspectGlb(bad(101)).errors;
+    assert.equal(one.length, 101);
+    assert.equal(one[100], 'scene: …and 1 more problem');
+    const many = inspectGlb(bad(300)).errors;
+    assert.equal(many.length, 101);
+    assert.equal(many[100], 'scene: …and 200 more problems');
+  });
+
+  test('arrays with a limit are skipped past 4× it; the count error is the same either way', () => {
+    const nodes = (k: number) => buildGlb(simple({ editJson: (j) => (j.nodes = new Array(k).fill({ name: 'N' })) }));
+    const at = inspectGlb(nodes(4 * 512), DEFAULT_LIMITS);
+    assert.deepStrictEqual(at.errors, ['scene.nodes: 2048 nodes; the limit is 512']);
+    assert.equal(at.summary?.nodes.length, 2048);
+    const over = inspectGlb(nodes(4 * 512 + 1), DEFAULT_LIMITS);
+    assert.deepStrictEqual(over.errors, ['scene.nodes: 2049 nodes; the limit is 512']);
+    assert.deepStrictEqual(over.summary?.nodes, []);
+    assert.equal(over.stats?.nodes, 0);
+    const lights = inspectGlb(buildGlb(simple({ editJson: (j) => (j.extensions = { KHR_lights_punctual: { lights: new Array(17).fill({ type: 'point' }) } }) })));
+    assert.deepStrictEqual(lights.errors, ['scene.extensions.KHR_lights_punctual.lights: 17 lights; the limit is 4']);
+  });
+
+  test('arrays without a limit are capped at 65536', () => {
+    for (const key of ['accessors', 'samplers', 'textures', 'scenes', 'buffers', 'extensionsUsed']) {
+      const { errors } = inspectGlb(buildGlb(simple({ editJson: (j) => (j[key] = new Array(65537).fill(0)) })));
+      assert.equal(errors[0], `scene.${key}: 65537 ${key}; the limit is 65536`, key);
+      assert.equal(errors.filter((e) => pathMatches(e, `scene.${key}`)).length, 1, key);
+    }
+    const ok = inspectGlb(buildGlb(simple({ editJson: (j) => (j.textures = new Array(65536).fill({})) })));
+    assert.deepStrictEqual(ok.errors, []);
+  });
+
+  test('extensionsRequired is checked in linear time', () => {
+    const names = Array.from({ length: 60000 }, (_, i) => `X_${i}`);
+    const glb = buildGlb(simple({ editJson: (j) => ((j.extensionsUsed = names), (j.extensionsRequired = names.concat(['Y']))) }));
+    let errors: string[] = [];
+    const ms = elapsed(() => (errors = inspectGlb(glb).errors));
+    assert.ok(ms < 2000, `${ms} ms`);
+    assert.equal(errors[errors.length - 1], 'scene: …and 59901 more problems'); // 60000 unsupported + 1 not listed, 100 kept
+  });
+
+  test('per-mesh primitives past 4 × maxDrawCalls, morph names past 4 × maxMorphTargets, samplers past 65536', () => {
+    const prims = (k: number) => buildGlb(simple({ editJson: (j) => (j.meshes[0].primitives = new Array(k).fill(j.meshes[0].primitives[0])) }));
+    const lim = limits({ maxDrawCalls: 2 });
+    assert.deepStrictEqual(inspectGlb(prims(9), lim).errors, ['scene.meshes[0].primitives: 9 primitives; the limit is 2']);
+    assert.deepStrictEqual(inspectGlb(prims(8), lim).errors, ['scene: 8 draw calls; the limit is 2']);
+
+    const targets = (k: number) => buildGlb(simple({ editJson: (j) => (j.meshes[0].primitives[0].targets = new Array(k).fill({})) }));
+    const one = limits({ maxMorphTargets: 1 });
+    const four = inspectGlb(targets(4), one);
+    assert.deepStrictEqual(four.errors, ['scene.meshes[0]: 4 morph targets; the limit is 1']);
+    assert.deepStrictEqual(four.summary?.meshes[0].morphs, ['', '', '', '']);
+    const five = inspectGlb(targets(5), one);
+    assert.deepStrictEqual(five.errors, ['scene.meshes[0]: 5 morph targets; the limit is 1']);
+    assert.deepStrictEqual(five.summary?.meshes[0].morphs, []);
+    assert.equal(five.stats?.morphTargets, 5);
+
+    const samplers = inspectGlb(buildGlb(simple({ editJson: (j) => (j.animations = [{ channels: [], samplers: new Array(65537).fill({}) }]) })));
+    assert.deepStrictEqual(samplers.errors, ['scene.animations[0].samplers: 65537 samplers; the limit is 65536']);
+  });
+
+  test('JSON nested deeper than 100 is refused, as Ruby JSON does', () => {
+    const deep = (depth: number) => buildGlb(simple({ editJson: (j) => (j.extras = nest(depth - 1)) })); // the root object is depth 1
+    assert.deepStrictEqual(inspectGlb(deep(100)).errors, []);
+    const refused = inspectGlb(deep(101));
+    assert.deepStrictEqual(refused.errors, ['scene: JSON nested too deeply']);
+    assert.equal(refused.summary, null);
+    // Brackets inside strings don't count, escaped quotes don't end a string.
+    assert.deepStrictEqual(inspectGlb(buildGlb(simple({ editJson: (j) => (j.extras = { s: '"\\'.repeat(3) + '['.repeat(500) }) }))).errors, []);
+    assert.equal(jsonTooDeep('['.repeat(100) + ']'.repeat(100)), false);
+    assert.equal(jsonTooDeep('['.repeat(101)), true); // decided before parsing: invalid JSON too
+    assert.equal(jsonTooDeep('{"a":"[[[[\\"[[["}'), false);
+    assert.equal(jsonTooDeep('[{}]', 1), true);
+  });
 });

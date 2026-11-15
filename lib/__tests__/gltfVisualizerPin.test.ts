@@ -13,7 +13,7 @@ import { test } from "node:test";
 const SHA256SUMS = `
 7436002510df77494285dea9d993edd761289e65b47e3f2b0996ca070d207481  fixtures/manifest-cases.json
 57d5289fbcd9c85bf62bddccdce5181d4230d1880c0c4f0c07a4785af8029d4e  ts/__tests__/bindings.test.ts
-214c4289d60e7443482da66b7e46f61359880662ffd9c4d157dda4378a4a6747  ts/__tests__/glb.test.ts
+04bbd066e9e1cf810b53622641c66d031d826a5df64bc2ab82e9c7c813f48ec0  ts/__tests__/glb.test.ts
 959875acf3481adc091f0e26ad4e674a99ab844f77b70839dba9174654405f49  ts/__tests__/helpers.ts
 6d8e87ee7f9e6ef8a67c895681ccdc2ef5f5195d5463d4018c0f11a055d78545  ts/__tests__/limits.test.ts
 5763f71642881e54d379f7ca4b0ee7deafbd4c6d621daea5f8fd064e8af7016c  ts/__tests__/manifest.test.ts
@@ -22,7 +22,7 @@ e742eeea897207e66f177356dde2241490a0f5a597e96741a9f9ce9b5078b5f3  ts/__tests__/r
 1e4254104423c4c6f76cf2aeb74f12054a467cd3b0806f1dc94eb02126b051c4  ts/__tests__/scenes.ts
 1ea3f2fe50a160b0eb85745770eccc2e92c4886590ad842f6593f9646eb8e10d  ts/__tests__/schema.ajv.test.ts
 63c172de2a2b13753b3a5920096a326a33cc12cdff931feaed4723c7e52f6d23  ts/bindings.ts
-2b680f2ac06da63e7d09c28718c3989876414cd84dbd1ca76762baecab03a5f8  ts/glb.ts
+f9382308c99ca0f1077081037d1540b780e1ea10f710e0d99496e6b91b6cfb4a  ts/glb.ts
 3c4af5bc086b45f3b1169a70bdd9e30578785c4508ed227ce47f89a5bb49db58  ts/index.ts
 f84353ea37ce6e15201497a390b814691b117602fab328aa24991a1a14c7219e  ts/limits.ts
 cee29ce921aaa45dbbe65c37d9ba5dd260bf82d9f6253a08f8ea97cd02bfcbe9  ts/manifest.ts
