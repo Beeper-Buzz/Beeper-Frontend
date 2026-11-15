@@ -97,7 +97,7 @@ export const Account = () => {
   return (
     <Layout>
       <div className="section-container py-10">
-        <h1 className="neon-text-magenta mb-8 font-pressstart text-2xl sm:text-3xl">
+        <h1 className="neon-text-magenta mb-8 font-microtechnic text-2xl sm:text-3xl">
           My Account
         </h1>
 

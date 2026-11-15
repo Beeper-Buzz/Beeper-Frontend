@@ -38,7 +38,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
     >
       <div className="mx-auto max-w-[800px]">
         {title && (
-          <h2 className="mb-4 text-[2.5rem] font-bold sm:text-[1.75rem]">
+          <h2 className="mb-4 font-microtechnic text-[2.5rem] font-bold sm:text-[1.75rem]">
             {title}
           </h2>
         )}

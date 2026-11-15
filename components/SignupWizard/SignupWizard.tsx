@@ -220,7 +220,7 @@ export const SignupWizard = () => {
                     transition={{ duration: 0.25, ease: "easeInOut" }}
                   >
                     <div className="glass-panel p-6 sm:p-8">
-                      <h2 className="mb-2 text-center font-pressstart text-base text-white sm:text-lg">
+                      <h2 className="mb-2 text-center font-microtechnic text-base text-white sm:text-lg">
                         {step.label}
                       </h2>
                       <p className="mb-6 text-center font-micro5 text-xl tracking-widest text-white/50">

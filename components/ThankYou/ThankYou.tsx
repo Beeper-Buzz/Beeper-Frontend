@@ -26,7 +26,7 @@ export const ThankYou = () => {
     <Layout>
       <div className="mx-auto mt-20 max-w-[800px] px-5 py-10 text-center">
         <div className="mb-5 text-[80px] text-green-DEFAULT">✓</div>
-        <h1 className="mb-5 font-title text-title-lg">
+        <h1 className="mb-5 font-microtechnic text-title-lg">
           Thank You for Your Order!
         </h1>
         <p className="mb-8 font-body text-body-lg text-gray-DEFAULT">

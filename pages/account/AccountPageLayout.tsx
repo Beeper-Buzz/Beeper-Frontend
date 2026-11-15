@@ -27,7 +27,7 @@ const AccountPageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Layout>
       <div className="section-container min-h-[calc(100vh-400px)] py-10">
-        <h1 className="neon-text-magenta mb-8 font-pressstart text-2xl sm:text-3xl">
+        <h1 className="neon-text-magenta mb-8 font-microtechnic text-2xl sm:text-3xl">
           Account
         </h1>
 

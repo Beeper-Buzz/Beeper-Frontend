@@ -133,6 +133,7 @@ const config: Config = {
         "ds-digital": ["DS-Digital", "monospace"],
         digital7: ["Digital7Mono", "Digital7", "monospace"],
         michroma: ["Michroma", "sans-serif"],
+        microtechnic: ["MicroTechnic", "Michroma", "sans-serif"],
         micro5: ["Micro5", "monospace"],
         "micro5-charted": ["Micro5Charted", "monospace"]
       },

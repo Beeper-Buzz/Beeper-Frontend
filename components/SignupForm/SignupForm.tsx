@@ -102,7 +102,7 @@ export const SignupForm = () => {
               </button>
               <TipBot speech={speechMarkup()} />
               <div className="mt-4">
-                <h1 className="mb-2 text-center font-pressstart text-sm text-neon-cyan">
+                <h1 className="mb-2 text-center font-microtechnic text-sm text-neon-cyan">
                   Signup
                 </h1>
                 <p className="mb-6 text-center font-body text-sm text-white/50">

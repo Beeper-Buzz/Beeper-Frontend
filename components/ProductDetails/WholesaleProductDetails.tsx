@@ -386,7 +386,7 @@ export const WholesaleProductDetails = ({
               >
                 <div className="glass-panel p-6 text-center md:p-8">
                   {/* Product Name */}
-                  <h1 className="neon-text-magenta font-pressstart text-lg leading-relaxed md:text-xl">
+                  <h1 className="neon-text-magenta font-microtechnic text-lg leading-relaxed md:text-xl">
                     {thisProduct?.data?.attributes?.name}
                   </h1>
 

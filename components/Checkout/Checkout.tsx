@@ -444,7 +444,7 @@ const CheckoutForm = () => {
         }}
       >
         <div className="section-container">
-          <h1 className="neon-text-cyan mb-2 font-pressstart text-sm md:text-base">
+          <h1 className="neon-text-cyan mb-2 font-microtechnic text-sm md:text-base">
             Checkout
           </h1>
 

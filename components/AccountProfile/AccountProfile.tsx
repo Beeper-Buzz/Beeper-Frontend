@@ -47,7 +47,7 @@ export const AccountProfile = () => {
           </div>
         )}
 
-        <h1 className="neon-text-magenta font-pressstart text-2xl sm:text-3xl mb-8">
+        <h1 className="neon-text-magenta font-microtechnic text-2xl sm:text-3xl mb-8">
           Your Profile
         </h1>
 
