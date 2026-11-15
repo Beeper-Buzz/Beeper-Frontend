@@ -8,6 +8,7 @@ import {
   draftToInput,
   DraftFile,
   emptyDraft,
+  fileGroupsFor,
   presetFile,
   sameManifest,
   stepErrors
@@ -282,5 +283,150 @@ describe("draftToInput on a live product", () => {
     });
     assert.equal(input.kind, "visualizer");
     assert.equal(input.manifest?.shader, "a.glsl");
+  });
+});
+
+describe("3D scene visualizers", () => {
+  const gltfManifest = {
+    format: 1,
+    type: "gltf",
+    scene: "dancer.glb",
+    poster: "poster.jpg",
+    view: { lighting: "scene" },
+    audio: {
+      schemaVersion: 1,
+      bindings: [
+        {
+          source: "kick",
+          target: { kind: "node", node: "Cone", property: "scale" }
+        }
+      ]
+    },
+    files: { "dancer.glb": "abc" }
+  };
+  const gltfProduct = () =>
+    product({
+      kind: "visualizer",
+      asset: {
+        id: 2,
+        version: 1,
+        status: "draft",
+        manifest: gltfManifest,
+        files: [
+          {
+            id: 21,
+            filename: "dancer.glb",
+            byte_size: 5000,
+            content_type: "model/gltf-binary"
+          },
+          {
+            id: 22,
+            filename: "poster.jpg",
+            byte_size: 900,
+            content_type: "image/jpeg"
+          }
+        ]
+      }
+    });
+
+  test("a gltf manifest loads as a 3D scene draft with its config", () => {
+    const d = draftFromProduct(gltfProduct());
+    assert.equal(d.vizType, "gltf");
+    assert.deepEqual(d.gltf.view, { lighting: "scene" });
+    assert.equal(d.gltf.audio.bindings?.length, 1);
+    assert.equal(d.shader, "");
+  });
+
+  test("a shader manifest stays a shader draft", () => {
+    const d = draftFromProduct(
+      product({
+        kind: "visualizer",
+        asset: {
+          id: 2,
+          version: 1,
+          status: "draft",
+          manifest: { format: 1, shader: "a.glsl", params: [] },
+          files: []
+        }
+      })
+    );
+    assert.equal(d.vizType, "shader");
+  });
+
+  test("file groups follow the scene type", () => {
+    const d = { ...emptyDraft(), kind: "visualizer" as const };
+    assert.deepEqual(fileGroupsFor(d), ["text"]);
+    assert.deepEqual(fileGroupsFor({ ...d, vizType: "gltf" }), [
+      "model",
+      "image"
+    ]);
+    assert.deepEqual(fileGroupsFor({ ...emptyDraft(), kind: null }), []);
+  });
+
+  test("unchanged files and config send no manifest; the manifest round-trips", () => {
+    const p = gltfProduct();
+    const d = draftFromProduct(p);
+    const files = [existing(21, "dancer.glb"), existing(22, "poster.jpg")];
+    const built = draftManifest(d, files).manifest;
+    assert.ok(sameManifest(built, p.asset?.manifest));
+    const input = draftToInput(d, files, {
+      originalFileIds: [21, 22],
+      originalManifest: p.asset?.manifest
+    });
+    assert.equal(input.manifest, undefined);
+    assert.equal(input.files, undefined);
+  });
+
+  test("a new scene sends the gltf manifest and the uploaded files", () => {
+    const d = {
+      ...emptyDraft(),
+      kind: "visualizer" as const,
+      vizType: "gltf" as const,
+      name: "Dancer",
+      price: "2"
+    };
+    const input = draftToInput(
+      d,
+      [uploaded("dancer.glb", "sg"), uploaded("poster.jpg", "sp")],
+      { originalFileIds: null }
+    );
+    assert.equal(input.manifest?.type, "gltf");
+    assert.equal(input.manifest?.scene, "dancer.glb");
+    assert.equal(input.manifest?.poster, "poster.jpg");
+    assert.deepEqual(input.files, ["sg", "sp"]);
+  });
+
+  test("stepErrors blocks on scene problems and names that don't resolve", () => {
+    const d = {
+      ...draftFromProduct(gltfProduct()),
+      name: "Dancer",
+      price: "2"
+    };
+    const files = [existing(21, "dancer.glb")];
+    assert.deepEqual(stepErrors(d, files).files, []);
+    const checked = stepErrors(d, files, {
+      gltfScene: {
+        errors: ["scene: GLB version 1; only version 2 is supported"],
+        summary: {
+          nodes: ["Root"],
+          meshes: [],
+          materials: [],
+          animations: [],
+          lights: [],
+          cameras: []
+        },
+        stats: null
+      }
+    }).files;
+    assert.equal(
+      checked[0],
+      "scene: GLB version 1; only version 2 is supported"
+    );
+    assert.ok(
+      checked.some((e) => e.startsWith("audio.bindings[0].target.node:"))
+    );
+    assert.deepEqual(stepErrors({ ...d, vizType: "gltf" }, []).files, [
+      "scene: add a .glb file (in Blender: File → Export → glTF Binary)"
+    ]);
   });
 });

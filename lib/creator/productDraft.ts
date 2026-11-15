@@ -6,7 +6,19 @@ import type { DigitalKind } from "../marketplace";
 import type { CreatorProduct, CreatorProductInput } from "./types";
 import { buildSamplePack, SampleDraft } from "../manifests/samplePack";
 import { buildEffectPreset, EffectEntry } from "../manifests/effectPreset";
-import { buildVisualizer, VizParamDraft } from "../manifests/visualizer";
+import {
+  buildGltfVisualizer,
+  buildVisualizer,
+  GltfSceneCheck,
+  vizSceneTypeOf,
+  VizParamDraft,
+  VizSceneType
+} from "../manifests/visualizer";
+import {
+  configFromManifest,
+  emptyGltfConfig,
+  GltfConfig
+} from "../gltfVisualizer/edit";
 import { extensionOf, UploadGroup } from "../upload/directUpload";
 
 export interface DraftFile {
@@ -33,8 +45,11 @@ export interface ProductDraft {
   // effect_preset
   effects: EffectEntry[];
   // visualizer
+  vizType: VizSceneType;
   shader: string;
   vizParams: VizParamDraft[];
+  /** vizType "gltf": the 3D scene's config (the manifest minus envelope and files). */
+  gltf: GltfConfig;
 }
 
 export const emptyDraft = (): ProductDraft => ({
@@ -47,8 +62,10 @@ export const emptyDraft = (): ProductDraft => ({
   bpm: "",
   samples: {},
   effects: [],
+  vizType: "shader",
   shader: "",
-  vizParams: []
+  vizParams: [],
+  gltf: emptyGltfConfig()
 });
 
 /** Which uploads each kind's file step accepts. */
@@ -57,6 +74,14 @@ export const FILE_GROUPS: Record<DigitalKind, UploadGroup[]> = {
   effect_preset: [],
   visualizer: ["text"]
 };
+
+/** The upload groups of a draft's file step (a 3D scene takes a .glb and a poster). */
+export const fileGroupsFor = (d: ProductDraft): UploadGroup[] =>
+  !d.kind
+    ? []
+    : d.kind === "visualizer" && d.vizType === "gltf"
+    ? ["model", "image"]
+    : FILE_GROUPS[d.kind];
 
 export function draftFromProduct(p: CreatorProduct): ProductDraft {
   const d = emptyDraft();
@@ -77,8 +102,13 @@ export function draftFromProduct(p: CreatorProduct): ProductDraft {
   } else if (p.kind === "effect_preset") {
     d.effects = Array.isArray(m.effects) ? m.effects : [];
   } else if (p.kind === "visualizer") {
-    d.shader = m.shader || "";
-    d.vizParams = Array.isArray(m.params) ? m.params : [];
+    d.vizType = vizSceneTypeOf(m);
+    if (d.vizType === "gltf") {
+      d.gltf = configFromManifest(m);
+    } else {
+      d.shader = m.shader || "";
+      d.vizParams = Array.isArray(m.params) ? m.params : [];
+    }
   }
   return d;
 }
@@ -92,7 +122,9 @@ export const MAX_PRICE = 999;
 
 export function draftManifest(
   d: ProductDraft,
-  files: DraftFile[]
+  files: DraftFile[],
+  /** vizType "gltf": the picked GLB's inspection, so names are checked too. */
+  gltfScene: GltfSceneCheck | null = null
 ): {
   manifest: Record<string, any>;
   errors: string[];
@@ -114,6 +146,13 @@ export function draftManifest(
     case "effect_preset":
       return buildEffectPreset(d.effects);
     case "visualizer": {
+      if (d.vizType === "gltf") {
+        const attached = usable(files).map((f) => ({
+          name: f.name,
+          size: f.size
+        }));
+        return buildGltfVisualizer({ config: d.gltf }, attached, gltfScene);
+      }
       const glsl = names.filter((n) => extensionOf(n) === "glsl");
       const shader =
         d.shader && glsl.includes(d.shader) ? d.shader : glsl[0] || "";
@@ -261,6 +300,8 @@ export function stepErrors(
   extra: {
     /** checkShaderSource() of the visualizer's shader, once it's been read. */
     shaderErrors?: string[];
+    /** A 3D scene's GLB inspection (and loader errors), once it's been read. */
+    gltfScene?: GltfSceneCheck | null;
   } = {}
 ): StepErrors {
   const details: string[] = [];
@@ -276,7 +317,7 @@ export function stepErrors(
   if (files.some((f) => f.status === "error"))
     fileErrors.push("Retry or remove the files that failed.");
   if (d.kind) {
-    const built = draftManifest(d, files);
+    const built = draftManifest(d, files, extra.gltfScene || null);
     if (built.rowErrors) {
       // Sample packs: say it per file, in words.
       for (const e of built.errors) {
@@ -288,7 +329,11 @@ export function stepErrors(
     } else {
       fileErrors.push(...built.errors);
     }
-    if (d.kind === "visualizer" && extra.shaderErrors?.length) {
+    if (
+      d.kind === "visualizer" &&
+      d.vizType !== "gltf" &&
+      extra.shaderErrors?.length
+    ) {
       const shader = built.manifest.shader || "shader";
       for (const e of extra.shaderErrors) fileErrors.push(`${shader}: ${e}`);
     }
