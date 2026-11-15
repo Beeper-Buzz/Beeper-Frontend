@@ -273,7 +273,8 @@ try {
 
 ## Testing
 
-- No test suite currently implemented
+- `yarn test`: node:test suites for `lib/` (an explicit file list in package.json; add new suites there)
+- `lib/gltfVisualizer/core`, its `fixtures/` and `*.json` are byte-for-byte copies of the workspace's `specs/gltf-visualizer` (the glTF visualizer core shared with the app and server). Don't edit them here: change the spec copy, regenerate its SHA256SUMS, copy them in, and update the hashes in `lib/__tests__/gltfVisualizerPin.test.ts`. They're excluded from eslint and prettier so the bytes stay identical.
 - Manual testing against local backend required
 - Test cart operations thoroughly (add, update, remove)
 

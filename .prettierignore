@@ -1,2 +1,7 @@
 node_modules
 .next
+# The glTF visualizer core and contract are byte-for-byte copies of the
+# workspace spec (pinned by lib/__tests__/gltfVisualizerPin.test.ts).
+lib/gltfVisualizer/core
+lib/gltfVisualizer/fixtures
+lib/gltfVisualizer/*.json

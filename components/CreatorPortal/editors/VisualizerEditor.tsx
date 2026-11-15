@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { Plus, X } from "lucide-react";
 import { cn } from "@lib/utils";
 import type {
@@ -7,11 +8,18 @@ import type {
 } from "../../../lib/creator/productDraft";
 import {
   checkShaderSource,
+  GltfSceneCheck,
   MAX_VIZ_PARAMS,
   VIZ_DRIVES,
   VIZ_PARAM_NAME_RE,
-  VizParamDraft
+  VizParamDraft,
+  VizSceneType
 } from "../../../lib/manifests/visualizer";
+import { emptyGltfConfig } from "../../../lib/gltfVisualizer/edit";
+import type {
+  SceneFileState,
+  ScenePreviewState
+} from "../../../lib/gltfVisualizer/sceneCheck";
 import { extensionOf } from "../../../lib/upload/directUpload";
 import {
   btnGhost,
@@ -19,9 +27,147 @@ import {
   labelCls,
   numCls,
   NumInput,
-  selectCls
+  selectCls,
+  Skeleton
 } from "../kit";
+import type { UploadJob } from "../uploads";
 import { ShaderPreview } from "./ShaderPreview";
+import { Segmented } from "./gltf/fields";
+
+// three, the loader and the rig load only when a creator opens the 3D studio.
+const GltfStudio = dynamic(() => import("./gltf/GltfStudio"), {
+  ssr: false,
+  loading: () => <Skeleton className="h-96" />
+});
+
+/** The 3D studio's hooks into the wizard's upload queue. */
+export interface SceneFilesApi {
+  jobs: UploadJob[];
+  add: (files: File[]) => void;
+  remove: (key: string) => void;
+  retry: (key: string) => void;
+  rejected: string[];
+}
+
+/** Keeps a studio crash (a malformed setup) from taking the wizard down; offers a reset. */
+class StudioBoundary extends React.Component<
+  { children: React.ReactNode; onReset: () => void },
+  { error: string | null }
+> {
+  state = { error: null as string | null };
+  static getDerivedStateFromError(e: unknown) {
+    return { error: e instanceof Error ? e.message : String(e) };
+  }
+  render() {
+    if (this.state.error === null) return this.props.children;
+    return (
+      <div className="space-y-2 rounded-md border border-neon-pink/40 bg-neon-pink/5 p-4">
+        <p className="font-body-bold text-sm text-white">
+          The 3D studio hit a problem with this setup and stopped.
+        </p>
+        <p className="font-mono-semibold text-[11px] text-white/60">
+          {this.state.error}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className={cn(btnGhost, "px-2 py-1 text-xs")}
+            onClick={() => this.setState({ error: null })}
+          >
+            Try again
+          </button>
+          <button
+            type="button"
+            className={cn(btnGhost, "px-2 py-1 text-xs")}
+            onClick={() => {
+              this.props.onReset();
+              this.setState({ error: null });
+            }}
+          >
+            Reset the scene setup
+          </button>
+        </div>
+        <p className="font-body-bold text-xs text-white/60">
+          Resetting clears the bindings, rules and view; the .glb and poster
+          stay.
+        </p>
+      </div>
+    );
+  }
+}
+
+/**
+ * Shader | 3D scene. A visualizer is one or the other. A new product can switch (the file step
+ * then flags the other type's files); once it exists the type is fixed.
+ */
+export const VisualizerEditor: React.FC<{
+  draft: ProductDraft;
+  setDraft: (fn: (d: ProductDraft) => ProductDraft) => void;
+  files: DraftFile[];
+  sourceFor: (f: DraftFile) => Blob | string | null;
+  onShaderErrors?: (errors: string[]) => void;
+  sceneFiles: SceneFilesApi;
+  /** The wizard's read of the .glb, its check, and where the preview reports to. */
+  scene: SceneFileState | null;
+  sceneCheck: GltfSceneCheck | null;
+  onPreviewStatus: (s: ScenePreviewState) => void;
+  /** The product exists: its type is set (the server versions the manifest). */
+  typeLocked?: boolean;
+}> = ({
+  sceneFiles,
+  scene,
+  sceneCheck,
+  onPreviewStatus,
+  typeLocked,
+  ...props
+}) => {
+  const { draft, setDraft } = props;
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Segmented<VizSceneType>
+          label="Scene type"
+          value={draft.vizType}
+          onChange={(v) => setDraft((d) => ({ ...d, vizType: v }))}
+          disabled={typeLocked}
+          options={[
+            { value: "shader", label: "Shader" },
+            { value: "gltf", label: "3D scene" }
+          ]}
+        />
+        <p className="font-body-bold text-xs text-white/60">
+          {draft.vizType === "gltf"
+            ? "A GLB whose parts move with the music."
+            : "A GLSL fragment shader."}
+          {typeLocked
+            ? " The type is set once the product exists; make a new product for the other kind."
+            : ""}
+        </p>
+      </div>
+      {draft.vizType === "gltf" ? (
+        <StudioBoundary
+          onReset={() => setDraft((d) => ({ ...d, gltf: emptyGltfConfig() }))}
+        >
+          <GltfStudio
+            draft={draft}
+            setDraft={setDraft}
+            jobs={sceneFiles.jobs}
+            sourceFor={props.sourceFor}
+            onAddFiles={sceneFiles.add}
+            onRemoveFile={sceneFiles.remove}
+            onRetryFile={sceneFiles.retry}
+            rejected={sceneFiles.rejected}
+            scene={scene}
+            sceneCheck={sceneCheck}
+            onPreviewStatus={onPreviewStatus}
+          />
+        </StudioBoundary>
+      ) : (
+        <ShaderEditor {...props} />
+      )}
+    </div>
+  );
+};
 
 const small = cn(inputCls, "px-2 py-1.5 text-[13px]");
 
@@ -34,7 +180,7 @@ vec4 beeperMain(vec2 uv) {
   return vec4(vec3(0.0, 1.0, 1.0) * ring + uBeat * 0.1, 1.0);
 }`;
 
-export const VisualizerEditor: React.FC<{
+const ShaderEditor: React.FC<{
   draft: ProductDraft;
   setDraft: (fn: (d: ProductDraft) => ProductDraft) => void;
   files: DraftFile[];

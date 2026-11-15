@@ -10,7 +10,7 @@
 import { ApiError, v1 } from "../api/v1";
 import { md5BlobBase64 } from "./md5";
 
-export type UploadGroup = "audio" | "image" | "text";
+export type UploadGroup = "audio" | "image" | "text" | "model";
 
 const KB = 1024;
 const MB = 1024 * KB;
@@ -45,6 +45,12 @@ export const UPLOAD_RULES: Record<
     max: 256 * KB,
     maxLabel: "256 KB",
     types: { json: "application/json", glsl: "text/plain" }
+  },
+  // A visualizer's 3D scene (the backend's `scene` rule): GLB only.
+  model: {
+    max: 20 * MB,
+    maxLabel: "20 MB",
+    types: { glb: "model/gltf-binary" }
   }
 };
 
@@ -92,8 +98,10 @@ export function checkUpload(
   allowed?: UploadGroup[]
 ): string | null {
   const group = groupOf(f.name);
+  if (!group && extensionOf(f.name) === "gltf")
+    return `${f.name} can't be uploaded: a 3D scene is one file. Export glTF Binary (.glb).`;
   if (!group)
-    return `${f.name} can't be uploaded. Use WAV, AIFF, FLAC, MP3, PNG, JPG, WebP, JSON or GLSL.`;
+    return `${f.name} can't be uploaded. Use WAV, AIFF, FLAC, MP3, PNG, JPG, WebP, JSON, GLSL or GLB.`;
   if (allowed && !allowed.includes(group))
     return `${f.name} can't be uploaded here.`;
   if (f.size <= 0) return `${f.name} is empty.`;

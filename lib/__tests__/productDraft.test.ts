@@ -8,10 +8,14 @@ import {
   draftToInput,
   DraftFile,
   emptyDraft,
+  fileGroupsFor,
   presetFile,
   sameManifest,
-  stepErrors
+  saveBlockers,
+  stepErrors,
+  strayFiles
 } from "../creator/productDraft";
+import { SCENE_CHECKING } from "../gltfVisualizer/sceneCheck";
 
 const product = (over: Partial<CreatorProduct> = {}): CreatorProduct => ({
   id: 7,
@@ -282,5 +286,254 @@ describe("draftToInput on a live product", () => {
     });
     assert.equal(input.kind, "visualizer");
     assert.equal(input.manifest?.shader, "a.glsl");
+  });
+});
+
+describe("3D scene visualizers", () => {
+  const gltfManifest = {
+    format: 1,
+    type: "gltf",
+    scene: "dancer.glb",
+    poster: "poster.jpg",
+    view: { lighting: "scene" },
+    audio: {
+      schemaVersion: 1,
+      bindings: [
+        {
+          source: "kick",
+          target: { kind: "node", node: "Cone", property: "scale" }
+        }
+      ]
+    },
+    files: { "dancer.glb": "abc" }
+  };
+  const gltfProduct = () =>
+    product({
+      kind: "visualizer",
+      asset: {
+        id: 2,
+        version: 1,
+        status: "draft",
+        manifest: gltfManifest,
+        files: [
+          {
+            id: 21,
+            filename: "dancer.glb",
+            byte_size: 5000,
+            content_type: "model/gltf-binary"
+          },
+          {
+            id: 22,
+            filename: "poster.jpg",
+            byte_size: 900,
+            content_type: "image/jpeg"
+          }
+        ]
+      }
+    });
+
+  test("a gltf manifest loads as a 3D scene draft with its config", () => {
+    const d = draftFromProduct(gltfProduct());
+    assert.equal(d.vizType, "gltf");
+    assert.deepEqual(d.gltf.view, { lighting: "scene" });
+    assert.equal(d.gltf.audio.bindings?.length, 1);
+    assert.equal(d.shader, "");
+  });
+
+  test("a shader manifest stays a shader draft", () => {
+    const d = draftFromProduct(
+      product({
+        kind: "visualizer",
+        asset: {
+          id: 2,
+          version: 1,
+          status: "draft",
+          manifest: { format: 1, shader: "a.glsl", params: [] },
+          files: []
+        }
+      })
+    );
+    assert.equal(d.vizType, "shader");
+  });
+
+  test("file groups follow the scene type", () => {
+    const d = { ...emptyDraft(), kind: "visualizer" as const };
+    assert.deepEqual(fileGroupsFor(d), ["text"]);
+    assert.deepEqual(fileGroupsFor({ ...d, vizType: "gltf" }), [
+      "model",
+      "image"
+    ]);
+    assert.deepEqual(fileGroupsFor({ ...emptyDraft(), kind: null }), []);
+  });
+
+  test("unchanged files and config send no manifest; the manifest round-trips", () => {
+    const p = gltfProduct();
+    const d = draftFromProduct(p);
+    const files = [existing(21, "dancer.glb"), existing(22, "poster.jpg")];
+    const built = draftManifest(d, files).manifest;
+    assert.ok(sameManifest(built, p.asset?.manifest));
+    const input = draftToInput(d, files, {
+      originalFileIds: [21, 22],
+      originalManifest: p.asset?.manifest
+    });
+    assert.equal(input.manifest, undefined);
+    assert.equal(input.files, undefined);
+  });
+
+  test("a new scene sends the gltf manifest and the uploaded files", () => {
+    const d = {
+      ...emptyDraft(),
+      kind: "visualizer" as const,
+      vizType: "gltf" as const,
+      name: "Dancer",
+      price: "2"
+    };
+    const input = draftToInput(
+      d,
+      [uploaded("dancer.glb", "sg"), uploaded("poster.jpg", "sp")],
+      { originalFileIds: null }
+    );
+    assert.equal(input.manifest?.type, "gltf");
+    assert.equal(input.manifest?.scene, "dancer.glb");
+    assert.equal(input.manifest?.poster, "poster.jpg");
+    assert.deepEqual(input.files, ["sg", "sp"]);
+  });
+
+  test("stepErrors blocks on scene problems and names that don't resolve", () => {
+    const d = {
+      ...draftFromProduct(gltfProduct()),
+      name: "Dancer",
+      price: "2"
+    };
+    const files = [existing(21, "dancer.glb")];
+    // A .glb nobody has checked yet is never "no problems".
+    assert.deepEqual(stepErrors(d, files).files, [SCENE_CHECKING]);
+    const checked = stepErrors(d, files, {
+      gltfScene: {
+        errors: ["scene: GLB version 1; only version 2 is supported"],
+        summary: {
+          nodes: ["Root"],
+          meshes: [],
+          materials: [],
+          animations: [],
+          lights: [],
+          cameras: []
+        },
+        stats: null
+      }
+    }).files;
+    assert.equal(
+      checked[0],
+      "scene: GLB version 1; only version 2 is supported"
+    );
+    assert.ok(
+      checked.some((e) => e.startsWith("audio.bindings[0].target.node:"))
+    );
+    assert.deepEqual(stepErrors({ ...d, vizType: "gltf" }, []).files, [
+      "scene: add a .glb file (in Blender: File → Export → glTF Binary)"
+    ]);
+  });
+
+  test("a checked scene with no problems passes", () => {
+    const d = {
+      ...draftFromProduct(gltfProduct()),
+      name: "Dancer",
+      price: "2"
+    };
+    const files = [existing(21, "dancer.glb"), existing(22, "poster.jpg")];
+    const summary = {
+      nodes: ["Cone"],
+      meshes: [],
+      materials: [],
+      animations: [],
+      lights: [],
+      cameras: []
+    };
+    assert.deepEqual(
+      stepErrors(d, files, {
+        gltfScene: { errors: [], summary, stats: null }
+      }).files,
+      []
+    );
+  });
+
+  test("3D → shader: the scene's files are flagged and block saving", () => {
+    const p = gltfProduct();
+    const d = { ...draftFromProduct(p), vizType: "shader" as const };
+    const files = [
+      existing(21, "dancer.glb"),
+      existing(22, "poster.jpg"),
+      uploaded("rings.glsl", "sr")
+    ];
+    assert.deepEqual(
+      strayFiles(d, files).map((f) => f.name),
+      ["dancer.glb", "poster.jpg"]
+    );
+    assert.deepEqual(saveBlockers(d, files), [
+      "files: dancer.glb isn't part of a shader; remove it",
+      "files: poster.jpg isn't part of a shader; remove it"
+    ]);
+    const errs = stepErrors(d, files).files;
+    assert.ok(
+      errs.includes("files: dancer.glb isn't part of a shader; remove it")
+    );
+    // Removed: nothing blocks the save.
+    assert.deepEqual(saveBlockers(d, [uploaded("rings.glsl", "sr")]), []);
+  });
+
+  test("shader → 3D: the .glsl is flagged and blocks saving", () => {
+    const d = {
+      ...draftFromProduct(
+        product({
+          kind: "visualizer",
+          asset: {
+            id: 2,
+            version: 1,
+            status: "draft",
+            manifest: { format: 1, shader: "rings.glsl", params: [] },
+            files: [
+              {
+                id: 31,
+                filename: "rings.glsl",
+                byte_size: 300,
+                content_type: "text/plain"
+              }
+            ]
+          }
+        })
+      ),
+      vizType: "gltf" as const
+    };
+    const files = [existing(31, "rings.glsl"), uploaded("dancer.glb", "sg")];
+    assert.deepEqual(saveBlockers(d, files), [
+      "files: rings.glsl isn't part of a 3D scene; remove it"
+    ]);
+    assert.ok(
+      stepErrors(d, files).files.includes(
+        "files: rings.glsl isn't part of a 3D scene; remove it"
+      )
+    );
+    // A failed upload isn't sent, so it doesn't block the save (it blocks submitting).
+    assert.deepEqual(
+      saveBlockers(d, [{ ...uploaded("x.glsl", "s"), status: "error" }]),
+      []
+    );
+  });
+
+  test("replacing the .glb on a saved scene uploads the new one and drops the old id", () => {
+    const p = gltfProduct();
+    const d = draftFromProduct(p);
+    const files = [
+      uploaded("dancer-v2.glb", "sg2"),
+      existing(22, "poster.jpg")
+    ];
+    const input = draftToInput(d, files, {
+      originalFileIds: [21, 22],
+      originalManifest: p.asset?.manifest
+    });
+    assert.deepEqual(input.files, ["sg2"]);
+    assert.deepEqual(input.keep_file_ids, [22]);
+    assert.equal(input.manifest?.scene, "dancer-v2.glb");
+    assert.equal(input.manifest?.poster, "poster.jpg");
   });
 });

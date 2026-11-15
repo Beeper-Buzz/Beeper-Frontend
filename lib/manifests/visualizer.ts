@@ -1,6 +1,100 @@
 // visualizer manifest (spec §1.5) and the source rules for its .glsl file.
 // The file holds helpers and `vec4 beeperMain(vec2 uv)` only; the host prelude
 // (spec §3.6, lib/shader/source.ts) declares precision, uniforms and main.
+//
+// A visualizer is either a shader (no `type`, or "shader") or a 3D scene
+// (`type: "gltf"`, specs/2026-11-15-creator-gltf-visualizers-design.md): one
+// .glb plus an optional poster, checked by the shared core in lib/gltfVisualizer.
+
+import type { SceneStats, SceneSummary } from "../gltfVisualizer/core/glb";
+import { DEFAULT_LIMITS } from "../gltfVisualizer/core/limits";
+import {
+  GltfVisualizerManifest,
+  validateManifest
+} from "../gltfVisualizer/core/manifest";
+import { GltfConfig, gltfManifest } from "../gltfVisualizer/edit";
+
+export type VizSceneType = "shader" | "gltf";
+
+/** A stored visualizer manifest's scene type. */
+export const vizSceneTypeOf = (m: unknown): VizSceneType =>
+  typeof m === "object" &&
+  m !== null &&
+  (m as { type?: unknown }).type === "gltf"
+    ? "gltf"
+    : "shader";
+
+/** What the studio knows about the picked GLB (the inspector, plus loader errors). */
+export interface GltfSceneCheck {
+  errors: string[];
+  summary: SceneSummary | null;
+  stats: SceneStats | null;
+}
+
+const ext = (name: string) => (name.split(".").pop() || "").toLowerCase();
+const POSTER_EXTS = ["png", "jpg", "jpeg", "webp"];
+const MB = 1024 * 1024;
+
+/** The file types each kind of visualizer is made of; anything else is a leftover. */
+export const VIZ_FILE_EXTS: Record<VizSceneType, readonly string[]> = {
+  shader: ["glsl", "json"],
+  gltf: ["glb", ...POSTER_EXTS]
+};
+
+/** A file that belongs to the other kind of visualizer (left over from switching type). */
+export const strayFileError = (name: string, type: VizSceneType): string =>
+  `files: ${name} isn't part of a ${
+    type === "gltf" ? "3D scene" : "shader"
+  }; remove it`;
+
+/**
+ * The glTF manifest for the attached files (the .glb is `scene`, an image is
+ * `poster`) and every problem with it: file rules, the inspector's GLB errors,
+ * then the shared validator (names resolve once the scene is inspected).
+ */
+export function buildGltfVisualizer(
+  draft: { config: GltfConfig },
+  attached: { name: string; size: number }[],
+  scene: GltfSceneCheck | null
+): { manifest: GltfVisualizerManifest; errors: string[] } {
+  const glbs = attached.filter((f) => ext(f.name) === "glb");
+  const posters = attached.filter((f) => POSTER_EXTS.includes(ext(f.name)));
+  const others = attached.filter(
+    (f) => ext(f.name) !== "glb" && !POSTER_EXTS.includes(ext(f.name))
+  );
+  const fileErrors: string[] = [];
+  if (!glbs.length)
+    fileErrors.push(
+      "scene: add a .glb file (in Blender: File → Export → glTF Binary)"
+    );
+  else if (glbs.length > 1)
+    fileErrors.push("scene: attach one .glb file; remove the others");
+  if (posters.length > 1)
+    fileErrors.push("poster: attach one poster image; remove the others");
+  for (const p of posters)
+    if (p.size > DEFAULT_LIMITS.posterMaxBytes)
+      fileErrors.push(
+        `poster: ${p.name} is over the ${
+          DEFAULT_LIMITS.posterMaxBytes / MB
+        } MB limit`
+      );
+  for (const f of others) fileErrors.push(strayFileError(f.name, "gltf"));
+
+  const manifest = gltfManifest(
+    draft.config,
+    glbs[0]?.name || "",
+    posters[0]?.name || null
+  );
+  let checks = validateManifest(manifest, scene?.summary || null, {
+    stats: scene?.stats || null
+  });
+  // No .glb yet: the file rule above says it better than the name pattern.
+  if (!glbs.length) checks = checks.filter((e) => !e.startsWith("scene: "));
+  const errors: string[] = [];
+  for (const e of [...(scene?.errors || []), ...fileErrors, ...checks])
+    if (!errors.includes(e)) errors.push(e);
+  return { manifest, errors };
+}
 
 export const VIZ_PARAM_NAME_RE = /^[a-z][a-zA-Z0-9]{0,23}$/;
 export const VIZ_DRIVES = ["bass", "mid", "high", "level", "beat"] as const;
@@ -40,6 +134,9 @@ export function buildVisualizer(
   attachedFiles: string[]
 ): { manifest: VisualizerManifest; errors: string[] } {
   const errors: string[] = [];
+  for (const name of attachedFiles)
+    if (!VIZ_FILE_EXTS.shader.includes(ext(name)))
+      errors.push(strayFileError(name, "shader"));
   if (!draft.shader || !/\.glsl$/i.test(draft.shader)) {
     errors.push("add a .glsl shader file");
   } else if (!attachedFiles.includes(draft.shader)) {
