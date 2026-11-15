@@ -109,7 +109,7 @@ export const FeaturedShelf: React.FC<FeaturedShelfProps> = ({ featured }) => {
 
           {/* Copy */}
           <div className="relative flex flex-col justify-center gap-5 border-t border-glass-border p-6 sm:p-8 md:col-span-5 md:border-l md:border-t-0 lg:p-10">
-            <h2 className="neon-text-magenta font-pressstart text-base leading-relaxed sm:text-lg lg:text-xl">
+            <h2 className="neon-text-magenta font-microtechnic text-base leading-relaxed sm:text-lg lg:text-xl">
               {hero.attributes?.name}
             </h2>
 

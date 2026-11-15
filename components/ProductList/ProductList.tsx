@@ -53,7 +53,9 @@ export const ProductList: React.FC<ProductListProps> = ({
   if (mode === "marketplace" && marketplaceProducts) {
     return (
       <section className="w-full pb-5">
-        {title && <h2 className="font-title text-xl text-white">{title}</h2>}
+        {title && (
+          <h2 className="font-microtechnic text-xl text-white">{title}</h2>
+        )}
         <div className="mt-3 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {marketplaceProducts.map((product, i) => (
             <MarketplaceCard
@@ -72,7 +74,9 @@ export const ProductList: React.FC<ProductListProps> = ({
   if (mode === "shop" && placeholderProducts) {
     return (
       <section className="w-full pb-5">
-        {title && <h2 className="font-title text-xl text-white">{title}</h2>}
+        {title && (
+          <h2 className="font-microtechnic text-xl text-white">{title}</h2>
+        )}
         <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {placeholderProducts.map((product, i) => (
             <PlaceholderProductCard
@@ -102,7 +106,9 @@ export const ProductList: React.FC<ProductListProps> = ({
 
   return (
     <section className="w-full pb-5">
-      {title && <h2 className="font-title text-xl text-white">{title}</h2>}
+      {title && (
+        <h2 className="font-microtechnic text-xl text-white">{title}</h2>
+      )}
       <div
         className={
           isScroll

@@ -30,7 +30,7 @@ export const FourOhFour = () => {
         <meta name="robots" content="noindex" />
       </Head>
       <div className="flex min-h-[60vh] flex-col items-center justify-center px-5 text-center">
-        <h1 className="mb-4 font-title text-8xl font-black tracking-tight text-neon-cyan">
+        <h1 className="mb-4 font-microtechnic text-8xl font-black tracking-tight text-neon-cyan">
           404
         </h1>
         <p className="font-body text-lg text-white/50">

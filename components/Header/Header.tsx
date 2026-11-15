@@ -103,10 +103,7 @@ export const Header: React.FC<HeaderProps> = ({ darkMode }) => {
                 animate={true}
                 showTagline={false}
               />
-              <span
-                className="text-[7px] leading-none tracking-[0.15em] text-white uppercase -mt-[6px]"
-                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
-              >
+              <span className="-mt-[6px] font-microtechnic text-[8px] uppercase leading-none tracking-[0.06em] text-white">
                 PLAY WITH MUSIC
               </span>
             </a>

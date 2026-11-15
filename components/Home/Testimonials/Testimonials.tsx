@@ -52,7 +52,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({
     return (
       <div className="mx-auto max-w-[1200px] px-5 py-16 text-center sm:py-10">
         {title && (
-          <h2 className="mb-4 text-3xl font-bold text-white sm:text-2xl">
+          <h2 className="mb-4 font-microtechnic text-3xl font-bold text-white sm:text-2xl">
             {title}
           </h2>
         )}
@@ -85,7 +85,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({
   return (
     <div className="mx-auto max-w-[1200px] px-5 py-16 text-center sm:py-10">
       {title && (
-        <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-2xl">
+        <h2 className="mb-4 font-microtechnic text-3xl font-bold text-foreground sm:text-2xl">
           {title}
         </h2>
       )}
