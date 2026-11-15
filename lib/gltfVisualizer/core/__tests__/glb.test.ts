@@ -2,7 +2,7 @@ import { describe, test } from 'node:test';
 import * as assert from 'node:assert/strict';
 import { TextDecoder, TextEncoder } from 'util';
 import { DEFAULT_LIMITS, GltfLimits } from '../limits';
-import { MAX_ERRORS, MAX_JPEG_MARKERS, decodeUtf8, decodeUtf8Lossy, encodeUtf8, imageSize, inspectGlb, jsonTooDeep, sniffImageMime } from '../glb';
+import { MAX_ERRORS, MAX_JPEG_MARKERS, decodeUtf8, decodeUtf8Lossy, encodeUtf8, hasImageTrailer, imageSize, inspectGlb, jsonTooDeep, sniffImageMime } from '../glb';
 import { validateManifest } from '../manifest';
 import { TestGlbSpec, buildGlb, cubePrimitive, makeJpegHeader, makePng, trianglePrimitive } from '../testGlb';
 import { errorPathOf, manifestCases, pathMatches } from './helpers';
@@ -289,10 +289,10 @@ function rawGlb(json: object, bin: Uint8Array): Uint8Array {
   return out;
 }
 
-/** A GLB whose only bufferView holds `data`, referenced by `count` JPEG images. */
-function imagesOnOneView(data: Uint8Array, count: number): Uint8Array {
+/** A GLB whose only bufferView holds `data`, referenced by `count` images of `mime`. */
+function imagesOnOneView(data: Uint8Array, count: number, mime = 'image/jpeg'): Uint8Array {
   const images: object[] = [];
-  for (let i = 0; i < count; i++) images.push({ bufferView: 0, mimeType: 'image/jpeg' });
+  for (let i = 0; i < count; i++) images.push({ bufferView: 0, mimeType: mime });
   const json = {
     asset: { version: '2.0' },
     buffers: [{ byteLength: data.length }],
@@ -302,11 +302,11 @@ function imagesOnOneView(data: Uint8Array, count: number): Uint8Array {
   return rawGlb(json, data);
 }
 
-/** SOI, `chain` empty APP0 segments, then an SOF0 of w×h. */
+/** SOI, `chain` empty APP0 segments, an SOF0 of w×h, EOI. */
 function jpegChain(chain: number, w: number, h: number): Uint8Array {
   const out: number[] = [0xff, 0xd8];
   for (let i = 0; i < chain; i++) out.push(0xff, 0xe0, 0x00, 0x02);
-  out.push(0xff, 0xc0, 0x00, 0x11, 0x08, h >> 8, h & 0xff, w >> 8, w & 0xff, 0x03, 1, 0x22, 0, 2, 0x11, 1, 3, 0x11, 1);
+  out.push(0xff, 0xc0, 0x00, 0x11, 0x08, h >> 8, h & 0xff, w >> 8, w & 0xff, 0x03, 1, 0x22, 0, 2, 0x11, 1, 3, 0x11, 1, 0xff, 0xd9);
   return new Uint8Array(out);
 }
 
@@ -450,5 +450,72 @@ describe('work bounds', () => {
     assert.equal(jsonTooDeep('['.repeat(101)), true); // decided before parsing: invalid JSON too
     assert.equal(jsonTooDeep('{"a":"[[[[\\"[[["}'), false);
     assert.equal(jsonTooDeep('[{}]', 1), true);
+  });
+});
+
+describe('image trailers', () => {
+  const cat = (a: Uint8Array, tail: number[]): Uint8Array => {
+    const out = new Uint8Array(a.length + tail.length);
+    out.set(a);
+    out.set(tail, a.length);
+    return out;
+  };
+  const png = makePng(4, 4);
+  const jpeg = makeJpegHeader(640, 480);
+  const one = (data: Uint8Array, mime: string) => inspectGlb(imagesOnOneView(data, 1, mime)).errors;
+
+  test('complete PNG and JPEG pass and are counted', () => {
+    assert.deepStrictEqual(Array.from(png.subarray(png.length - 12)), [0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82]);
+    assert.deepStrictEqual(Array.from(jpeg.subarray(jpeg.length - 2)), [0xff, 0xd9]);
+    assert.ok(hasImageTrailer(png, 'image/png'));
+    assert.ok(hasImageTrailer(jpeg, 'image/jpeg'));
+    assert.ok(hasImageTrailer(makePng(3000, 20, { headerOnly: true }), 'image/png'));
+    assert.deepStrictEqual(one(png, 'image/png'), []);
+    const { errors, stats } = inspectGlb(imagesOnOneView(jpeg, 1));
+    assert.deepStrictEqual(errors, []);
+    assert.deepStrictEqual(stats?.images.map((i) => [i.width, i.height]), [[640, 480]]);
+  });
+
+  test('PNG without IEND', () => {
+    const msg = 'scene.images[0]: the PNG is cut short (no IEND)';
+    assert.deepStrictEqual(inspectGlb(buildGlb(simple({ images: [{ mime: 'image/png', width: 4, height: 4, truncated: true }] }))).errors, [msg]);
+    assert.deepStrictEqual(one(png.subarray(0, png.length - 1), 'image/png'), [msg]); // one CRC byte short
+    assert.deepStrictEqual(one(png.subarray(0, png.length - 30), 'image/png'), [msg]); // inside IDAT
+    const badCrc = png.slice();
+    badCrc[badCrc.length - 1] ^= 1;
+    assert.deepStrictEqual(one(badCrc, 'image/png'), [msg]);
+    // Cut-short images add no stats or pixels.
+    const { stats } = inspectGlb(imagesOnOneView(png.subarray(0, png.length - 1), 1, 'image/png'));
+    assert.deepStrictEqual(stats?.images, []);
+    assert.equal(stats?.texturePixels, 0);
+  });
+
+  test('JPEG without EOI', () => {
+    const msg = 'scene.images[0]: the JPEG is cut short (no EOI)';
+    assert.deepStrictEqual(inspectGlb(buildGlb(simple({ images: [{ mime: 'image/jpeg', width: 8, height: 8, truncated: true }] }))).errors, [msg]);
+    assert.deepStrictEqual(one(makeJpegHeader(8, 8, { noEoi: true }), 'image/jpeg'), [msg]);
+    assert.deepStrictEqual(one(jpeg.subarray(0, jpeg.length - 1), 'image/jpeg'), [msg]);
+    assert.deepStrictEqual(one(cat(jpeg, [0x12]), 'image/jpeg'), [msg]); // junk after EOI
+  });
+
+  test('an unreadable header is reported instead of the trailer', () => {
+    assert.deepStrictEqual(one(makePng(4, 4).subarray(0, 20), 'image/png'), ["scene.images[0]: can't read the PNG header"]);
+  });
+
+  test('padding: up to 3 trailing 0x00 bytes after the trailer, nothing else', () => {
+    for (const k of [1, 2, 3]) {
+      const zeros = new Array(k).fill(0);
+      assert.deepStrictEqual(one(cat(png, zeros), 'image/png'), [], `PNG + ${k}`);
+      assert.deepStrictEqual(one(cat(jpeg, zeros), 'image/jpeg'), [], `JPEG + ${k}`);
+    }
+    assert.deepStrictEqual(one(cat(png, [0, 0, 0, 0]), 'image/png'), ['scene.images[0]: the PNG is cut short (no IEND)']);
+    assert.deepStrictEqual(one(cat(jpeg, [0, 0, 0, 0]), 'image/jpeg'), ['scene.images[0]: the JPEG is cut short (no EOI)']);
+    assert.deepStrictEqual(one(cat(png, [0x20]), 'image/png'), ['scene.images[0]: the PNG is cut short (no IEND)']);
+    assert.deepStrictEqual(one(cat(jpeg, [0, 0xff]), 'image/jpeg'), ['scene.images[0]: the JPEG is cut short (no EOI)']);
+  });
+
+  test('the trailer result is memoised per bufferView like the header', () => {
+    const errors = inspectGlb(imagesOnOneView(makeJpegHeader(8, 8, { noEoi: true }), 3)).errors;
+    assert.deepStrictEqual(errors, [0, 1, 2].map((i) => `scene.images[${i}]: the JPEG is cut short (no EOI)`));
   });
 });

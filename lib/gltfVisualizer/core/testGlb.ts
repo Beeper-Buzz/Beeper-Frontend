@@ -88,6 +88,8 @@ export interface TestImage {
   height: number;
   /** PNG without pixel data (IHDR + IEND), for huge fake sizes; JPEGs are always header-only. */
   headerOnly?: boolean;
+  /** Leave off the trailer (PNG IEND chunk, JPEG EOI), as a truncated file would. */
+  truncated?: boolean;
   /** Declared mimeType when it should differ from the bytes. */
   declaredMime?: string;
 }
@@ -165,8 +167,8 @@ function pngChunk(type: string, data: number[] | Uint8Array): number[] {
   return [...u32be(data.length), ...Array.from(body), ...u32be(crc32(body))];
 }
 
-/** A valid RGBA PNG (stored deflate blocks), or header-only when `headerOnly`. */
-export function makePng(width: number, height: number, opts: { headerOnly?: boolean; rgba?: Vec4 } = {}): Uint8Array {
+/** A valid RGBA PNG (stored deflate blocks) ending in IEND; header-only when `headerOnly`, no IEND when `noIend`. */
+export function makePng(width: number, height: number, opts: { headerOnly?: boolean; rgba?: Vec4; noIend?: boolean } = {}): Uint8Array {
   const out: number[] = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
   out.push(...pngChunk('IHDR', [...u32be(width), ...u32be(height), 8, 6, 0, 0, 0]));
   if (!opts.headerOnly) {
@@ -188,19 +190,20 @@ export function makePng(width: number, height: number, opts: { headerOnly?: bool
     z.push(...u32be(adler32(raw)));
     out.push(...pngChunk('IDAT', z));
   }
-  out.push(...pngChunk('IEND', []));
+  if (!opts.noIend) out.push(...pngChunk('IEND', []));
   return new Uint8Array(out);
 }
 
-/** JPEG markers up to a valid SOF0 (header parsing only; not decodable). */
-export function makeJpegHeader(width: number, height: number): Uint8Array {
-  return new Uint8Array([
+/** SOI, APP0, a valid SOF0, then EOI unless `noEoi` (header parsing only; no scan data, not decodable). */
+export function makeJpegHeader(width: number, height: number, opts: { noEoi?: boolean } = {}): Uint8Array {
+  const bytes = new Uint8Array([
     0xff, 0xd8,
     0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00,
     0xff, 0xc0, 0x00, 0x11, 0x08, (height >> 8) & 0xff, height & 0xff, (width >> 8) & 0xff, width & 0xff,
     0x03, 0x01, 0x22, 0x00, 0x02, 0x11, 0x01, 0x03, 0x11, 0x01,
     0xff, 0xd9,
   ]);
+  return opts.noEoi ? bytes.subarray(0, bytes.length - 2) : bytes;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -431,7 +434,10 @@ export function buildGlb(spec: TestGlbSpec): Uint8Array {
 
   if (spec.images) {
     json.images = spec.images.map((img, i) => {
-      const bytes = img.mime === 'image/png' ? makePng(img.width, img.height, { headerOnly: img.headerOnly }) : makeJpegHeader(img.width, img.height);
+      const bytes =
+        img.mime === 'image/png'
+          ? makePng(img.width, img.height, { headerOnly: img.headerOnly, noIend: img.truncated })
+          : makeJpegHeader(img.width, img.height, { noEoi: img.truncated });
       const mimeType = img.declaredMime || img.mime;
       if (faults.imageUri && i === 0) return { uri: 'texture.png', mimeType };
       return { bufferView: addView(bytes), mimeType };

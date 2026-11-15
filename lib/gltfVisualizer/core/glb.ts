@@ -244,6 +244,28 @@ export function imageSize(bytes: Uint8Array, mime: string): { width: number; hei
   return null;
 }
 
+const PNG_IEND = [0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82];
+/** 0x00 bytes tolerated after an image's trailer (padding some exporters leave in the view). */
+export const MAX_IMAGE_PADDING = 3;
+
+/**
+ * True when the bytes end with the format's trailer once up to MAX_IMAGE_PADDING trailing 0x00
+ * bytes are dropped: PNG, a whole IEND chunk (00 00 00 00 "IEND" AE 42 60 82); JPEG, EOI (FF D9).
+ * Both trailers end in a non-zero byte, so dropping zeros first is unambiguous. A truncated
+ * image still has a readable header but decodes blank in some loaders (stb_image).
+ */
+export function hasImageTrailer(bytes: Uint8Array, mime: string): boolean {
+  let end = bytes.length;
+  for (let k = 0; k < MAX_IMAGE_PADDING && end > 0 && bytes[end - 1] === 0; k++) end--;
+  if (mime === 'image/png') {
+    if (end < PNG_IEND.length) return false;
+    for (let i = 0; i < PNG_IEND.length; i++) if (bytes[end - PNG_IEND.length + i] !== PNG_IEND[i]) return false;
+    return true;
+  }
+  if (mime === 'image/jpeg') return end >= 2 && bytes[end - 2] === 0xff && bytes[end - 1] === 0xd9;
+  return false;
+}
+
 // ---------------------------------------------------------------------------------------------
 // GLB
 
@@ -488,7 +510,7 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
   const images = arrayOf('images', limits.maxImages);
   if (images.length > limits.maxImages) err('scene.images', `${images.length} images; the limit is ${limits.maxImages}`);
   const imageStats: ImageStat[] = [];
-  const headers: ({ mime: string | null; size: { width: number; height: number } | null } | undefined)[] = [];
+  const headers: ({ mime: string | null; size: { width: number; height: number } | null; complete: boolean } | undefined)[] = [];
   let texturePixels = 0;
   const inspected = Math.min(images.length, limits.maxImages);
   for (let i = 0; i < inspected; i++) {
@@ -517,7 +539,11 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
     if (head === undefined) {
       const data = bytes.subarray(viewStart[view], viewStart[view] + viewLength[view]);
       const sniffed = sniffImageMime(data);
-      head = { mime: sniffed, size: sniffed === null ? null : imageSize(data, sniffed) };
+      head = {
+        mime: sniffed,
+        size: sniffed === null ? null : imageSize(data, sniffed),
+        complete: sniffed !== null && hasImageTrailer(data, sniffed),
+      };
       headers[view] = head;
     }
     const kind = mime === 'image/png' ? 'PNG' : 'JPEG';
@@ -528,6 +554,10 @@ export function inspectGlb(bytes: Uint8Array, limits: GltfLimits = DEFAULT_LIMIT
     const size = head.size;
     if (size === null) {
       err(path, `can't read the ${kind} header`);
+      continue;
+    }
+    if (!head.complete) {
+      err(path, `the ${kind} is cut short (no ${kind === 'PNG' ? 'IEND' : 'EOI'})`);
       continue;
     }
     if (size.width > limits.maxTextureSize || size.height > limits.maxTextureSize) {
