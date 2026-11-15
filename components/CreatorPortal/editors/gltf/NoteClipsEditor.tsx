@@ -24,10 +24,12 @@ import {
   hasErrors,
   IconButton,
   miniLabel,
+  newRowId,
   NumField,
   panelTitle,
   Segmented,
-  Select
+  Select,
+  useRowIds
 } from "./fields";
 
 const BASE = "audio.noteClips";
@@ -338,15 +340,19 @@ export const NoteClipsEditor: React.FC<{
   errors: readonly string[];
   choices: TargetChoices;
 }> = ({ noteClips, onChange, errors, choices }) => {
-  const [open, setOpen] = useState<number | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
   const nc = noteClips;
   const rules = nc?.rules || [];
+  const { ids, track } = useRowIds(rules);
   const set = <K extends keyof NoteClipsConfig>(
     k: K,
     v: NoteClipsConfig[K] | undefined
   ) => nc && onChange(withKey(nc, k, v));
-  const setRules = (next: NoteClipRuleConfig[]) =>
-    nc && onChange({ ...nc, rules: next });
+  const setRules = (next: NoteClipRuleConfig[], nextIds: string[]) => {
+    if (!nc) return;
+    track(next, nextIds);
+    onChange({ ...nc, rules: next });
+  };
 
   return (
     <div className="space-y-3">
@@ -444,10 +450,11 @@ export const NoteClipsEditor: React.FC<{
             {rules.map((r, i) => {
               const path = `${BASE}.rules[${i}]`;
               const bad = hasErrors(errors, path);
-              const expanded = open === i;
+              const id = ids[i];
+              const expanded = open === id;
               return (
                 <li
-                  key={i}
+                  key={id}
                   className={cn(
                     "rounded-md border bg-white/[0.02]",
                     bad ? "border-neon-pink/40" : "border-glass-border"
@@ -457,7 +464,7 @@ export const NoteClipsEditor: React.FC<{
                     <IconButton
                       label={expanded ? "Collapse rule" : "Edit rule"}
                       aria-expanded={expanded}
-                      onClick={() => setOpen(expanded ? null : i)}
+                      onClick={() => setOpen(expanded ? null : id)}
                     >
                       {expanded ? (
                         <ChevronDown className="h-4 w-4" />
@@ -467,7 +474,7 @@ export const NoteClipsEditor: React.FC<{
                     </IconButton>
                     <button
                       type="button"
-                      onClick={() => setOpen(expanded ? null : i)}
+                      onClick={() => setOpen(expanded ? null : id)}
                       className={cn(
                         numCls,
                         "min-w-0 flex-1 truncate text-left text-xs text-white/80"
@@ -488,8 +495,7 @@ export const NoteClipsEditor: React.FC<{
                       label="Move rule up"
                       disabled={i === 0}
                       onClick={() => {
-                        setRules(moveItem(rules, i, -1));
-                        setOpen(null);
+                        setRules(moveItem(rules, i, -1), moveItem(ids, i, -1));
                       }}
                     >
                       <ChevronUp className="h-4 w-4" />
@@ -498,8 +504,7 @@ export const NoteClipsEditor: React.FC<{
                       label="Move rule down"
                       disabled={i === rules.length - 1}
                       onClick={() => {
-                        setRules(moveItem(rules, i, 1));
-                        setOpen(null);
+                        setRules(moveItem(rules, i, 1), moveItem(ids, i, 1));
                       }}
                     >
                       <ChevronDown className="h-4 w-4" />
@@ -508,8 +513,10 @@ export const NoteClipsEditor: React.FC<{
                       label="Remove rule"
                       className="hover:text-neon-pink"
                       onClick={() => {
-                        setRules(rules.filter((_, j) => j !== i));
-                        setOpen(null);
+                        setRules(
+                          rules.filter((_, j) => j !== i),
+                          ids.filter((_, j) => j !== i)
+                        );
                       }}
                     >
                       <X className="h-4 w-4" />
@@ -522,7 +529,10 @@ export const NoteClipsEditor: React.FC<{
                       errors={errors}
                       choices={choices}
                       onChange={(next) =>
-                        setRules(rules.map((x, j) => (j === i ? next : x)))
+                        setRules(
+                          rules.map((x, j) => (j === i ? next : x)),
+                          ids
+                        )
                       }
                     />
                   )}
@@ -540,8 +550,9 @@ export const NoteClipsEditor: React.FC<{
               className={cn(btnGhost, "px-2 py-1 font-body-bold text-xs")}
               disabled={rules.length >= DEFAULT_LIMITS.maxNoteClipRules}
               onClick={() => {
-                setRules([...rules, defaultRule(choices)]);
-                setOpen(rules.length);
+                const id = newRowId();
+                setRules([...rules, defaultRule(choices)], [...ids, id]);
+                setOpen(id);
               }}
             >
               <Plus className="h-3.5 w-3.5" /> Add rule

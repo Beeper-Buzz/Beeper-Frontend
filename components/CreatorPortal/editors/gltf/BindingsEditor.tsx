@@ -13,10 +13,7 @@ import {
 } from "../../../../lib/gltfVisualizer/edit";
 import { btnGhost, numCls } from "../../kit";
 import { BindingCard } from "./BindingCard";
-import { FieldErrors, panelTitle } from "./fields";
-
-let seq = 0;
-const newKey = () => `b${Date.now().toString(36)}${(seq++).toString(36)}`;
+import { FieldErrors, newRowId, panelTitle, useRowIds } from "./fields";
 
 export const BindingsEditor: React.FC<{
   bindings: BindingConfig[];
@@ -27,22 +24,22 @@ export const BindingsEditor: React.FC<{
   /** The preview's rig was built from exactly these bindings (meters are live). */
   rigCurrent: boolean;
 }> = ({ bindings, onChange, errors, choices, rigCurrent }) => {
-  // Stable React keys and open state that follow cards through reorders.
-  const [keys, setKeys] = useState<string[]>(() => bindings.map(newKey));
+  // Stable React keys and open state that follow cards through reorders; a list swapped in from
+  // outside (an import) gets new keys.
+  const { ids: list, track } = useRowIds(bindings);
   // Cards with problems start open.
   const [openKeys, setOpenKeys] = useState<Set<string>>(
     () =>
       new Set(
-        keys.filter(
+        list.filter(
           (_, i) => errorsAt(errors, `audio.bindings[${i}]`).length > 0
         )
       )
   );
-  const list =
-    keys.length === bindings.length
-      ? keys
-      : bindings.map((_, i) => keys[i] || newKey());
-  if (list !== keys) setKeys(list);
+  const emit = (next: BindingConfig[], nextIds: string[]) => {
+    track(next, nextIds);
+    onChange(next);
+  };
 
   const max = DEFAULT_LIMITS.maxBindings;
   const toggle = (k: string) =>
@@ -54,24 +51,27 @@ export const BindingsEditor: React.FC<{
     });
 
   const add = () => {
-    const k = newKey();
-    setKeys([...list, k]);
+    const k = newRowId();
     setOpenKeys((s) => new Set(s).add(k));
-    onChange([
-      ...bindings,
-      defaultBinding(
-        choices,
-        bindings.map((b) => b.id)
-      )
-    ]);
+    emit(
+      [
+        ...bindings,
+        defaultBinding(
+          choices,
+          bindings.map((b) => b.id)
+        )
+      ],
+      [...list, k]
+    );
   };
   const move = (i: number, d: number) => {
-    setKeys(moveItem(list, i, d));
-    onChange(moveItem(bindings, i, d));
+    emit(moveItem(bindings, i, d), moveItem(list, i, d));
   };
   const remove = (i: number) => {
-    setKeys(list.filter((_, j) => j !== i));
-    onChange(bindings.filter((_, j) => j !== i));
+    emit(
+      bindings.filter((_, j) => j !== i),
+      list.filter((_, j) => j !== i)
+    );
   };
 
   return (
@@ -112,7 +112,10 @@ export const BindingsEditor: React.FC<{
                 open={openKeys.has(k)}
                 onToggle={() => toggle(k)}
                 onChange={(nb) =>
-                  onChange(bindings.map((x, j) => (j === i ? nb : x)))
+                  emit(
+                    bindings.map((x, j) => (j === i ? nb : x)),
+                    list
+                  )
                 }
                 onMove={(d) => move(i, d)}
                 onRemove={() => remove(i)}

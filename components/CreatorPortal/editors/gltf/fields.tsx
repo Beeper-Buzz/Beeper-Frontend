@@ -1,7 +1,7 @@
 // Compact controls for the 3D-scene studio, built on the portal kit. Every control can show the
 // validator's errors for the manifest path it edits (spec §6.2: "<path>: <message>").
 
-import React from "react";
+import React, { useRef } from "react";
 import { cn } from "@lib/utils";
 import { errorMessage, errorsAt } from "../../../../lib/gltfVisualizer/edit";
 import { inputCls, NumInput, numCls, selectCls } from "../../kit";
@@ -213,18 +213,22 @@ export function Segmented<T extends string>({
   value,
   options,
   onChange,
-  className
+  className,
+  disabled
 }: {
   label: string;
   value: T;
   options: readonly { value: T; label: React.ReactNode }[];
   onChange: (v: T) => void;
   className?: string;
+  /** Shows the choice but doesn't let it change. */
+  disabled?: boolean;
 }) {
   return (
     <div
       role="radiogroup"
       aria-label={label}
+      aria-disabled={disabled || undefined}
       className={cn(
         "inline-flex rounded-md border border-glass-border p-0.5",
         className
@@ -238,12 +242,16 @@ export function Segmented<T extends string>({
             type="button"
             role="radio"
             aria-checked={on}
-            onClick={() => onChange(o.value)}
+            disabled={disabled && !on}
+            onClick={() => !disabled && onChange(o.value)}
             className={cn(
               "rounded px-2.5 py-1 font-body-bold text-xs transition-colors",
               on
                 ? "bg-neon-cyan/15 text-neon-cyan"
-                : "text-white/60 hover:text-white"
+                : "text-white/60 hover:text-white",
+              disabled &&
+                !on &&
+                "cursor-not-allowed opacity-40 hover:text-white/60"
             )}
           >
             {o.label}
@@ -252,4 +260,28 @@ export function Segmented<T extends string>({
       })}
     </div>
   );
+}
+
+let rowSeq = 0;
+/** A React key for a new row. */
+export const newRowId = (): string => `row${++rowSeq}`;
+
+/**
+ * Stable React keys for a list an editor changes itself. The ids follow rows through moves and
+ * removals when the editor records each change with `track` before emitting it; a list replaced
+ * from outside (an import, a reset) gets fresh ids, so its rows remount.
+ */
+export function useRowIds<T>(list: readonly T[]): {
+  ids: string[];
+  track: (next: readonly T[], nextIds: string[]) => void;
+} {
+  const ref = useRef<{ list: readonly T[]; ids: string[] } | null>(null);
+  if (!ref.current || ref.current.list !== list)
+    ref.current = { list, ids: list.map(() => newRowId()) };
+  return {
+    ids: ref.current.ids,
+    track: (next, nextIds) => {
+      ref.current = { list: next, ids: nextIds };
+    }
+  };
 }

@@ -2,6 +2,11 @@
 // the picked bytes, createRig applies the config, and every frame the demo groove's sources and
 // note events drive rig.update. The rig's camera renders unless Inspect is on, which hands the
 // view to orbit controls on R3F's own camera (so the two never fight).
+//
+// The rig mutates what it's given (toon materials, its own disposal) and resolves names through
+// the loader's associations, so it can't be rebuilt on a clone: each config parses the bytes
+// again. One build runs at a time; edits made meanwhile collapse to the latest, and every parse
+// that doesn't become the shown rig is disposed (geometry, materials, textures, ImageBitmaps).
 
 import React, {
   useEffect,
@@ -37,6 +42,10 @@ interface Built {
   pending: PendingNote;
   normalized: NormalizedGltfManifest;
   key: string;
+  /** Mounted in the canvas scene: the Stage disposes it after removing it. */
+  staged: boolean;
+  /** Disposes the rig once. */
+  dispose: () => void;
 }
 
 const errText = (e: unknown) =>
@@ -52,6 +61,34 @@ const parseGlb = (bytes: ArrayBuffer): Promise<GltfLike> =>
       (e) => reject(e)
     )
   );
+
+/** Frees a parsed glTF that never became (or no longer is) a rig. */
+function disposeGltf(gltf: GltfLike): void {
+  try {
+    const textures = new Set<THREE.Texture>();
+    gltf.scene.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (mesh.geometry) mesh.geometry.dispose();
+      const mats = mesh.material
+        ? Array.isArray(mesh.material)
+          ? mesh.material
+          : [mesh.material]
+        : [];
+      for (const m of mats) {
+        for (const v of Object.values(m))
+          if (v instanceof THREE.Texture) textures.add(v);
+        m.dispose();
+      }
+    });
+    textures.forEach((t) => {
+      const img = t.image as { close?: () => void } | null;
+      if (img && typeof img.close === "function") img.close();
+      t.dispose();
+    });
+  } catch {
+    // best effort: never throw while cleaning up
+  }
+}
 
 /** Inside the Canvas: mounts the rig, drives it, renders with its camera or the inspect one. */
 const Stage: React.FC<{
@@ -69,6 +106,7 @@ const Stage: React.FC<{
 
   useEffect(() => {
     const { rig } = built;
+    built.staged = true;
     scene.add(rig.root);
     scene.background = rig.background;
     gl.toneMapping = THREE.ACESFilmicToneMapping;
@@ -78,6 +116,9 @@ const Stage: React.FC<{
     return () => {
       scene.remove(rig.root);
       scene.background = null;
+      built.staged = false;
+      // Out of the scene first, so no frame draws a disposed rig.
+      built.dispose();
     };
   }, [built, gl, scene, invalidate]);
 
@@ -127,19 +168,41 @@ const Stage: React.FC<{
   );
 };
 
+const NO_WEBGL = /webgl|context|gpu/i;
+
+/** Catches the canvas's errors: says WebGL is unavailable only when it is, else offers a retry. */
 class CanvasBoundary extends React.Component<
-  { children: React.ReactNode; onError: (msg: string) => void },
-  { failed: boolean }
+  { children: React.ReactNode; onRetry: () => void },
+  { error: string | null }
 > {
-  state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  componentDidCatch(e: unknown) {
-    this.props.onError(errText(e));
+  state = { error: null as string | null };
+  static getDerivedStateFromError(e: unknown) {
+    return { error: errText(e) };
   }
   render() {
-    return this.state.failed ? null : this.props.children;
+    const { error } = this.state;
+    if (error === null) return this.props.children;
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-2 p-4 text-center font-body-bold text-sm text-white/70">
+        {NO_WEBGL.test(error) ? (
+          <p>
+            WebGL isn&apos;t available here, so there&apos;s no live preview.
+          </p>
+        ) : (
+          <p>The preview stopped: {error}</p>
+        )}
+        <button
+          type="button"
+          className="rounded border border-glass-border px-2 py-1 text-xs text-white/80 hover:text-white"
+          onClick={() => {
+            this.setState({ error: null });
+            this.props.onRetry();
+          }}
+        >
+          Try again
+        </button>
+      </div>
+    );
   }
 }
 
@@ -151,10 +214,16 @@ export interface PreviewStatus {
   building: boolean;
 }
 
+interface Job {
+  bytes: ArrayBuffer;
+  normalized: NormalizedGltfManifest;
+  key: string;
+}
+
 /**
- * `normalized` + `configKey`: the latest valid config (the studio debounces it). Each config
- * rebuilds from the bytes (rig.dispose frees the loaded geometry and textures); the old rig
- * keeps rendering until the new one is ready. Publishes its handle on live.previewRef.
+ * `bytes`: the .glb, only once the inspector passed it. `normalized` + `configKey`: the latest
+ * valid config (the studio debounces it). The old rig keeps rendering until the new one is
+ * ready. Publishes its handle on live.previewRef.
  */
 export const GltfPreview: React.FC<{
   bytes: ArrayBuffer | null;
@@ -175,69 +244,131 @@ export const GltfPreview: React.FC<{
 }) => {
   const live = useLive();
   const [built, setBuilt] = useState<Built | null>(null);
-  const [glError, setGlError] = useState<string | null>(null);
   const [visible, setVisible] = useState(true);
+  const [lost, setLost] = useState(false);
+  const [canvasKey, setCanvasKey] = useState(0);
   const stateRef = useRef<RootState | null>(null);
   const box = useRef<HTMLDivElement | null>(null);
   const onStatusRef = useRef(onStatus);
   onStatusRef.current = onStatus;
 
-  useEffect(() => {
-    if (!bytes || !normalized) {
-      setBuilt(null);
-      onStatusRef.current({ error: null, builtKey: null, building: false });
-      return;
-    }
-    let alive = true;
-    const fail = (error: string) =>
-      alive && onStatusRef.current({ error, builtKey: null, building: false });
+  // The build queue: at most one parse in flight, and only the latest wanted config after it.
+  const queue = useRef<{ want: Job | null; busy: boolean; alive: boolean }>({
+    want: null,
+    busy: false,
+    alive: true
+  });
+  const run = useRef<() => void>(() => undefined);
+  run.current = () => {
+    const q = queue.current;
+    if (q.busy || !q.want || !q.alive) return;
+    const job = q.want;
+    q.want = null;
+    q.busy = true;
     onStatusRef.current({ error: null, builtKey: null, building: true });
-    parseGlb(bytes).then(
+    parseGlb(job.bytes).then(
       (gltf) => {
-        if (!alive) return;
-        let rig: Rig;
-        try {
-          rig = createRig(gltf, normalized, { aspect: 16 / 9 });
-        } catch (e) {
-          // "<manifest path>: message", as the app's fallback reports it.
-          fail(errText(e));
+        q.busy = false;
+        // Unmounted, or a newer config is waiting: this parse is stale.
+        if (!q.alive || q.want) {
+          disposeGltf(gltf);
+          run.current();
           return;
         }
-        const noteClips = normalized.audio.noteClips;
+        let rig: Rig;
+        try {
+          rig = createRig(gltf, job.normalized, { aspect: 16 / 9 });
+        } catch (e) {
+          disposeGltf(gltf);
+          // "<manifest path>: message", as the app's fallback reports it.
+          onStatusRef.current({
+            error: errText(e),
+            builtKey: null,
+            building: false
+          });
+          return;
+        }
+        let disposed = false;
+        const noteClips = job.normalized.audio.noteClips;
         setBuilt({
           rig,
           tables: compileNoteRules(noteClips),
           pending: new PendingNote(noteClips ? noteClips.priority : "last"),
-          normalized,
-          key: configKey
+          normalized: job.normalized,
+          key: job.key,
+          staged: false,
+          dispose: () => {
+            if (disposed) return;
+            disposed = true;
+            try {
+              rig.dispose();
+            } catch {
+              // never throw from cleanup
+            }
+          }
         });
         onStatusRef.current({
           error: null,
-          builtKey: configKey,
+          builtKey: job.key,
           building: false
         });
       },
-      (e) => fail(`scene: three.js couldn't load this file (${errText(e)})`)
+      (e) => {
+        q.busy = false;
+        if (!q.alive) return;
+        if (q.want) {
+          run.current();
+          return;
+        }
+        onStatusRef.current({
+          error: `scene: three.js couldn't load this file (${errText(e)})`,
+          builtKey: null,
+          building: false
+        });
+      }
     );
+  };
+
+  useEffect(() => {
+    const q = queue.current;
+    q.alive = true;
     return () => {
-      alive = false;
+      q.alive = false;
+      q.want = null;
     };
+  }, []);
+
+  useEffect(() => {
+    const q = queue.current;
+    if (!bytes || !normalized) {
+      q.want = null;
+      setBuilt(null);
+      onStatusRef.current({ error: null, builtKey: null, building: false });
+      return;
+    }
+    q.want = { bytes, normalized, key: configKey };
+    run.current();
     // configKey identifies `normalized`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bytes, configKey]);
 
-  // The previous rig is disposed once the next one is mounted (or on unmount).
+  // The rig the meters read. A replaced rig is disposed by the Stage once it's out of the scene;
+  // one that never reached the canvas (no WebGL) is disposed here.
+  const current = useRef<Built | null>(null);
+  current.current = built;
   useEffect(() => {
     const rigRef = live.rigRef;
     rigRef.current = built ? built.rig : null;
     return () => {
       if (!built) return;
       if (rigRef.current === built.rig) rigRef.current = null;
-      try {
-        built.rig.dispose();
-      } catch {
-        // never throw from cleanup
-      }
+      // Checked a moment later (StrictMode re-runs effects on the same rig): unmounted, or
+      // replaced and never in (or already out of) the scene.
+      setTimeout(() => {
+        const q = queue.current;
+        if (!q.alive) built.dispose();
+        else if (current.current !== built && !built.staged) built.dispose();
+      }, 1500);
     };
   }, [built, live.rigRef]);
 
@@ -257,13 +388,20 @@ export const GltfPreview: React.FC<{
     () => ({
       capturePoster: async () => {
         const s = stateRef.current;
-        if (!s || !built) return null;
-        // Render now and read the buffer in the same task (preserveDrawingBuffer as backup).
+        if (!s || !built || lost) return null;
+        // Render and copy in the same task: the drawing buffer is only valid until the browser
+        // composites it (no preserveDrawingBuffer).
         s.gl.render(s.scene, inspect ? s.camera : built.rig.camera);
-        const canvas = s.gl.domElement;
+        const src = s.gl.domElement;
+        const copy = document.createElement("canvas");
+        copy.width = src.width;
+        copy.height = src.height;
+        const ctx = copy.getContext("2d");
+        if (!ctx) return null;
+        ctx.drawImage(src, 0, 0);
         for (const q of [0.92, 0.85, 0.75, 0.6]) {
           const blob = await new Promise<Blob | null>((res) =>
-            canvas.toBlob(res, "image/jpeg", q)
+            copy.toBlob(res, "image/jpeg", q)
           );
           if (blob && blob.size <= POSTER_MAX) return blob;
         }
@@ -281,13 +419,10 @@ export const GltfPreview: React.FC<{
         );
       }
     }),
-    [built, inspect]
+    [built, inspect, lost]
   );
 
-  const glProps = useMemo(
-    () => ({ antialias: true, preserveDrawingBuffer: true, alpha: false }),
-    []
-  );
+  const glProps = useMemo(() => ({ antialias: true, alpha: false }), []);
 
   return (
     <div
@@ -297,23 +432,33 @@ export const GltfPreview: React.FC<{
         background: built ? `#${built.rig.background.getHexString()}` : "#000"
       }}
     >
-      {glError ? (
-        <p className="flex h-full items-center justify-center p-4 text-center font-body-bold text-sm text-white/70">
-          WebGL isn&apos;t available here, so there&apos;s no live preview.
+      <CanvasBoundary onRetry={() => setCanvasKey((k) => k + 1)}>
+        <Canvas
+          key={canvasKey}
+          frameloop={paused || !visible || lost ? "demand" : "always"}
+          dpr={[1, 2]}
+          gl={glProps}
+          camera={{ fov: 40, near: 0.01, far: 1000, position: [0, 1, 4] }}
+          onCreated={(st) => {
+            const c = st.gl.domElement;
+            // three restores its own state; the preview just waits and redraws.
+            c.addEventListener("webglcontextlost", () => setLost(true));
+            c.addEventListener("webglcontextrestored", () => {
+              setLost(false);
+              st.invalidate();
+            });
+          }}
+        >
+          {built && (
+            <Stage built={built} inspect={inspect} stateRef={stateRef} />
+          )}
+        </Canvas>
+      </CanvasBoundary>
+      {lost && (
+        <p className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-4 text-center font-body-bold text-sm text-white/70">
+          The graphics card reset the preview; it comes back when the browser
+          restores it.
         </p>
-      ) : (
-        <CanvasBoundary onError={setGlError}>
-          <Canvas
-            frameloop={paused || !visible ? "demand" : "always"}
-            dpr={[1, 2]}
-            gl={glProps}
-            camera={{ fov: 40, near: 0.01, far: 1000, position: [0, 1, 4] }}
-          >
-            {built && (
-              <Stage built={built} inspect={inspect} stateRef={stateRef} />
-            )}
-          </Canvas>
-        </CanvasBoundary>
       )}
     </div>
   );

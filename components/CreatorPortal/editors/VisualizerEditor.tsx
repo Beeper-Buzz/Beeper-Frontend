@@ -15,6 +15,11 @@ import {
   VizParamDraft,
   VizSceneType
 } from "../../../lib/manifests/visualizer";
+import { emptyGltfConfig } from "../../../lib/gltfVisualizer/edit";
+import type {
+  SceneFileState,
+  ScenePreviewState
+} from "../../../lib/gltfVisualizer/sceneCheck";
 import { extensionOf } from "../../../lib/upload/directUpload";
 import {
   btnGhost,
@@ -44,9 +49,56 @@ export interface SceneFilesApi {
   rejected: string[];
 }
 
+/** Keeps a studio crash (a malformed setup) from taking the wizard down; offers a reset. */
+class StudioBoundary extends React.Component<
+  { children: React.ReactNode; onReset: () => void },
+  { error: string | null }
+> {
+  state = { error: null as string | null };
+  static getDerivedStateFromError(e: unknown) {
+    return { error: e instanceof Error ? e.message : String(e) };
+  }
+  render() {
+    if (this.state.error === null) return this.props.children;
+    return (
+      <div className="space-y-2 rounded-md border border-neon-pink/40 bg-neon-pink/5 p-4">
+        <p className="font-body-bold text-sm text-white">
+          The 3D studio hit a problem with this setup and stopped.
+        </p>
+        <p className="font-mono-semibold text-[11px] text-white/60">
+          {this.state.error}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className={cn(btnGhost, "px-2 py-1 text-xs")}
+            onClick={() => this.setState({ error: null })}
+          >
+            Try again
+          </button>
+          <button
+            type="button"
+            className={cn(btnGhost, "px-2 py-1 text-xs")}
+            onClick={() => {
+              this.props.onReset();
+              this.setState({ error: null });
+            }}
+          >
+            Reset the scene setup
+          </button>
+        </div>
+        <p className="font-body-bold text-xs text-white/60">
+          Resetting clears the bindings, rules and view; the .glb and poster
+          stay.
+        </p>
+      </div>
+    );
+  }
+}
+
 /**
- * Shader | 3D scene. A visualizer is one or the other; switching keeps both
- * setups in the draft, and the file step accepts that type's files.
+ * Shader | 3D scene. A visualizer is one or the other. A new product can switch (the file step
+ * then flags the other type's files); once it exists the type is fixed.
  */
 export const VisualizerEditor: React.FC<{
   draft: ProductDraft;
@@ -55,10 +107,20 @@ export const VisualizerEditor: React.FC<{
   sourceFor: (f: DraftFile) => Blob | string | null;
   onShaderErrors?: (errors: string[]) => void;
   sceneFiles: SceneFilesApi;
-  onSceneCheck: (check: GltfSceneCheck | null) => void;
-  /** The product exists: its scene type is set (the server versions the manifest). */
+  /** The wizard's read of the .glb, its check, and where the preview reports to. */
+  scene: SceneFileState | null;
+  sceneCheck: GltfSceneCheck | null;
+  onPreviewStatus: (s: ScenePreviewState) => void;
+  /** The product exists: its type is set (the server versions the manifest). */
   typeLocked?: boolean;
-}> = ({ sceneFiles, onSceneCheck, typeLocked, ...props }) => {
+}> = ({
+  sceneFiles,
+  scene,
+  sceneCheck,
+  onPreviewStatus,
+  typeLocked,
+  ...props
+}) => {
   const { draft, setDraft } = props;
   return (
     <div className="space-y-4">
@@ -67,6 +129,7 @@ export const VisualizerEditor: React.FC<{
           label="Scene type"
           value={draft.vizType}
           onChange={(v) => setDraft((d) => ({ ...d, vizType: v }))}
+          disabled={typeLocked}
           options={[
             { value: "shader", label: "Shader" },
             { value: "gltf", label: "3D scene" }
@@ -77,22 +140,28 @@ export const VisualizerEditor: React.FC<{
             ? "A GLB whose parts move with the music."
             : "A GLSL fragment shader."}
           {typeLocked
-            ? " Switching type replaces the scene in the next version."
+            ? " The type is set once the product exists; make a new product for the other kind."
             : ""}
         </p>
       </div>
       {draft.vizType === "gltf" ? (
-        <GltfStudio
-          draft={draft}
-          setDraft={setDraft}
-          jobs={sceneFiles.jobs}
-          sourceFor={props.sourceFor}
-          onAddFiles={sceneFiles.add}
-          onRemoveFile={sceneFiles.remove}
-          onRetryFile={sceneFiles.retry}
-          rejected={sceneFiles.rejected}
-          onSceneCheck={onSceneCheck}
-        />
+        <StudioBoundary
+          onReset={() => setDraft((d) => ({ ...d, gltf: emptyGltfConfig() }))}
+        >
+          <GltfStudio
+            draft={draft}
+            setDraft={setDraft}
+            jobs={sceneFiles.jobs}
+            sourceFor={props.sourceFor}
+            onAddFiles={sceneFiles.add}
+            onRemoveFile={sceneFiles.remove}
+            onRetryFile={sceneFiles.retry}
+            rejected={sceneFiles.rejected}
+            scene={scene}
+            sceneCheck={sceneCheck}
+            onPreviewStatus={onPreviewStatus}
+          />
+        </StudioBoundary>
       ) : (
         <ShaderEditor {...props} />
       )}

@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState
+} from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
@@ -22,8 +29,14 @@ import {
   presetFile,
   ProductDraft,
   sameManifest,
-  stepErrors
+  saveBlockers,
+  stepErrors,
+  strayFiles
 } from "../../lib/creator/productDraft";
+import {
+  sceneCheckFrom,
+  ScenePreviewState
+} from "../../lib/gltfVisualizer/sceneCheck";
 import {
   canDelete,
   canEdit,
@@ -31,7 +44,6 @@ import {
   willSubmit
 } from "../../lib/creator/reviewRules";
 import { extensionOf, uploadFile } from "../../lib/upload/directUpload";
-import type { GltfSceneCheck } from "../../lib/manifests/visualizer";
 import {
   DIGITAL_KINDS,
   DigitalKind,
@@ -58,6 +70,11 @@ import { FileDrop, UploadJob, UploadList, useUploadQueue } from "./uploads";
 import { SamplePackEditor } from "./editors/SamplePackEditor";
 import { EffectPresetEditor } from "./editors/EffectPresetEditor";
 import { VisualizerEditor } from "./editors/VisualizerEditor";
+import {
+  previewStateFor,
+  rememberPreview,
+  useSceneFile
+} from "./editors/gltf/sceneFile";
 
 const STEPS = [
   { id: "kind", label: "Kind" },
@@ -152,8 +169,40 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
       if (j.file) pickedFiles.set(pickedKey(j.name, j.size), j.file);
   }, [files.jobs]);
   const [shaderErrors, setShaderErrors] = useState<string[]>([]);
-  // The 3D studio's GLB inspection; null until a scene is read.
-  const [gltfScene, setGltfScene] = useState<GltfSceneCheck | null>(null);
+
+  const sourceFor = (f: DraftFile): Blob | string | null => {
+    const job = files.jobs.find((j) => j.key === f.key);
+    if (job?.file) return job.file;
+    const asset = product?.asset?.files.find((x) => x.id === f.existingId);
+    return asset?.url || null;
+  };
+
+  // A 3D scene's .glb is read and checked here, at every step (not only while the studio is
+  // open), and cached per file so the remount after a save keeps the result.
+  const glbJob = isScene
+    ? files.jobs.find(
+        (j) => extensionOf(j.name) === "glb" && j.status !== "error"
+      ) || null
+    : null;
+  const glbSource = glbJob ? sourceFor(glbJob as DraftFile) : null;
+  const scene = useSceneFile(glbJob, glbSource);
+  const [, bumpPreview] = useReducer((n: number) => n + 1, 0);
+  const sceneKey = scene?.key || null;
+  const onPreviewStatus = useCallback(
+    (s: ScenePreviewState) => {
+      if (!sceneKey) return;
+      const prev = previewStateFor(sceneKey);
+      rememberPreview(sceneKey, {
+        loaded: s.loaded || !!prev?.loaded,
+        error: s.error
+      });
+      bumpPreview();
+    },
+    [sceneKey]
+  );
+  const gltfScene = glbJob
+    ? sceneCheckFrom(scene, previewStateFor(sceneKey))
+    : null;
   const [submitNote, setSubmitNote] = useState<string | null>(null);
   const [presetError, setPresetError] = useState<unknown>(null);
 
@@ -321,13 +370,6 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
       };
     });
 
-  const sourceFor = (f: DraftFile): Blob | string | null => {
-    const job = files.jobs.find((j) => j.key === f.key);
-    if (job?.file) return job.file;
-    const asset = product?.asset?.files.find((x) => x.id === f.existingId);
-    return asset?.url || null;
-  };
-
   const stepHasError = (id: StepId) =>
     id === "kind"
       ? errors.kind.length > 0
@@ -338,12 +380,10 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
       : false;
 
   const totalBytes = files.jobs.reduce((n, j) => n + j.size, 0);
-  const strayJobs = isScene
-    ? files.jobs.filter(
-        (j) =>
-          !["glb", "png", "jpg", "jpeg", "webp"].includes(extensionOf(j.name))
-      )
-    : [];
+  // Files of the other visualizer type (left by switching): the server would refuse them.
+  const strayJobs = strayFiles(draft, files.jobs as DraftFile[]) as UploadJob[];
+  const blockers = saveBlockers(draft, files.jobs as DraftFile[]);
+  const removeStrays = () => strayJobs.forEach((j) => files.remove(j.key));
 
   return (
     <>
@@ -631,18 +671,30 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
             }
           >
             <div className="space-y-4">
-              {/* A 3D scene picks its .glb and poster in the studio. */}
-              {isScene && strayJobs.length > 0 && (
+              {/* Files of the other visualizer type block saving until removed. */}
+              {strayJobs.length > 0 && (
                 <div className="space-y-1">
-                  <p className="font-body-bold text-xs text-neon-amber">
-                    A 3D scene uses one .glb and an optional poster. Remove
-                    these:
-                  </p>
-                  <UploadList
-                    jobs={strayJobs}
-                    onRemove={files.remove}
-                    onRetry={files.retry}
-                  />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-body-bold text-xs text-neon-amber">
+                      {isScene
+                        ? "A 3D scene uses one .glb and an optional poster. These belong to a shader:"
+                        : "A shader visualizer uses .glsl files. These belong to a 3D scene:"}
+                    </p>
+                    <button
+                      type="button"
+                      className={cn(btnGhost, "px-2 py-1 text-xs")}
+                      onClick={removeStrays}
+                    >
+                      Remove {strayJobs.length === 1 ? "it" : "them"}
+                    </button>
+                  </div>
+                  {isScene && (
+                    <UploadList
+                      jobs={strayJobs}
+                      onRemove={files.remove}
+                      onRetry={files.retry}
+                    />
+                  )}
                 </div>
               )}
               {allowed.length > 0 && !isScene && (
@@ -698,7 +750,9 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                     retry: files.retry,
                     rejected: files.rejected
                   }}
-                  onSceneCheck={setGltfScene}
+                  scene={scene}
+                  sceneCheck={gltfScene}
+                  onPreviewStatus={onPreviewStatus}
                   typeLocked={!!product}
                 />
               )}
@@ -913,8 +967,14 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
           type="button"
           className={btnGhost}
           disabled={
-            locked || !draft.kind || save.isLoading || files.busy || previewBusy
+            locked ||
+            !draft.kind ||
+            save.isLoading ||
+            files.busy ||
+            previewBusy ||
+            blockers.length > 0
           }
+          title={blockers.length ? blockers.join("\n") : undefined}
           onClick={onSave}
         >
           {save.isLoading ? "Saving…" : live ? "Save" : "Save draft"}
@@ -941,6 +1001,24 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
           </button>
         )}
       </div>
+      {blockers.length > 0 && !locked && (
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <p className="font-body-bold text-xs text-neon-amber">
+            Saving is off until{" "}
+            {strayJobs.length === 1
+              ? `${strayJobs[0].name} is removed: it isn't`
+              : `${strayJobs.length} files are removed: they aren't`}{" "}
+            part of a {isScene ? "3D scene" : "shader"}.
+          </p>
+          <button
+            type="button"
+            className={cn(btnGhost, "px-2 py-1 text-xs")}
+            onClick={removeStrays}
+          >
+            Remove {strayJobs.length === 1 ? "it" : "them"}
+          </button>
+        </div>
+      )}
       {submitNote && (
         <p role="status" className="mt-2 font-body-bold text-xs text-white/70">
           {submitNote}

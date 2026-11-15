@@ -20,7 +20,6 @@ import {
   Upload
 } from "lucide-react";
 import { cn } from "@lib/utils";
-import { inspectGlb } from "../../../../lib/gltfVisualizer/core/glb";
 import {
   normalizeManifest,
   validateManifest
@@ -30,11 +29,17 @@ import {
   GrooveEvent
 } from "../../../../lib/gltfVisualizer/demoGroove";
 import {
-  configFromManifest,
   GltfConfig,
   gltfManifest,
+  IMPORT_MAX_BYTES,
+  parseVisualizerImport,
   targetChoices
 } from "../../../../lib/gltfVisualizer/edit";
+import {
+  SceneFileState,
+  ScenePreviewState,
+  STUDIO_HIDDEN
+} from "../../../../lib/gltfVisualizer/sceneCheck";
 import type {
   DraftFile,
   ProductDraft
@@ -73,56 +78,6 @@ function useDebounced<T>(value: T, ms: number): T {
   return v;
 }
 
-/** The GLB's bytes: the picked File, or the saved file's URL. */
-function useGlbBytes(
-  job: UploadJob | null,
-  source: Blob | string | null
-): { bytes: ArrayBuffer | null; error: string | null } {
-  const [state, setState] = useState<{
-    bytes: ArrayBuffer | null;
-    error: string | null;
-  }>({
-    bytes: null,
-    error: null
-  });
-  const key = job ? `${job.key}:${job.size}` : "";
-  useEffect(() => {
-    let alive = true;
-    if (!job || !source) {
-      setState({
-        bytes: null,
-        error: job
-          ? "scene: re-pick the .glb to preview it here (the saved copy couldn't be read)"
-          : null
-      });
-      return;
-    }
-    const read =
-      typeof source === "string"
-        ? fetch(source).then((r) => {
-            if (!r.ok) throw new Error(String(r.status));
-            return r.arrayBuffer();
-          })
-        : source.arrayBuffer();
-    read.then(
-      (bytes) => alive && setState({ bytes, error: null }),
-      () =>
-        alive &&
-        setState({
-          bytes: null,
-          error:
-            "scene: couldn't read the saved .glb; pick it again to preview it"
-        })
-    );
-    return () => {
-      alive = false;
-    };
-    // `key` identifies the job and its source.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, typeof source === "string" ? source : source ? "blob" : ""]);
-  return state;
-}
-
 type SettingsTab = "idle" | "materials" | "view";
 
 export const GltfStudio: React.FC<{
@@ -134,8 +89,12 @@ export const GltfStudio: React.FC<{
   onRemoveFile: (key: string) => void;
   onRetryFile: (key: string) => void;
   rejected: string[];
-  /** The GLB inspection + loader errors, for the wizard's step errors. */
-  onSceneCheck: (check: GltfSceneCheck | null) => void;
+  /** The .glb as the wizard read and inspected it (it checks the scene at every step). */
+  scene: SceneFileState | null;
+  /** The wizard's scene check (inspection, read and preview errors). */
+  sceneCheck: GltfSceneCheck | null;
+  /** What the preview learned building the rig: loaded, or a loader/rig error. */
+  onPreviewStatus: (s: ScenePreviewState) => void;
 }> = ({
   draft,
   setDraft,
@@ -145,7 +104,9 @@ export const GltfStudio: React.FC<{
   onRemoveFile,
   onRetryFile,
   rejected,
-  onSceneCheck
+  scene,
+  sceneCheck,
+  onPreviewStatus
 }) => {
   const config = draft.gltf;
   const setConfig = useCallback(
@@ -198,16 +159,15 @@ export const GltfStudio: React.FC<{
   const glbJob = jobs.find((j) => extensionOf(j.name) === "glb") || null;
   const posterJob =
     jobs.find((j) => POSTER_EXTS.includes(extensionOf(j.name))) || null;
-  const glbSource = glbJob ? sourceFor(glbJob as DraftFile) : null;
   const posterSource = posterJob ? sourceFor(posterJob as DraftFile) : null;
   const posterUrl = typeof posterSource === "string" ? posterSource : null;
-  const { bytes, error: readError } = useGlbBytes(glbJob, glbSource);
+  const bytes = scene?.bytes || null;
+  const readError = scene?.readError || null;
   const [posterNote, setPosterNote] = useState<string | null>(null);
 
-  const inspection = useMemo(
-    () => (bytes ? inspectGlb(new Uint8Array(bytes)) : null),
-    [bytes]
-  );
+  const inspection = scene?.inspection || null;
+  // three.js only sees files the inspector passed (no external URIs, Draco or over-limit counts).
+  const previewBytes = inspection && !inspection.errors.length ? bytes : null;
   const summary = inspection?.summary || null;
   const stats = inspection?.stats || null;
   const choices = useMemo(() => targetChoices(summary), [summary]);
@@ -239,28 +199,25 @@ export const GltfStudio: React.FC<{
   });
   const rigCurrent =
     !!previewManifest && status.builtKey === previewManifest.key;
+  // The wizard keeps what the preview learned (per file), so Submit knows three.js loads it.
+  const onPreviewStatusRef = useRef(onPreviewStatus);
+  onPreviewStatusRef.current = onPreviewStatus;
+  const onStatus = useCallback((s: PreviewStatus) => {
+    setStatus(s);
+    if (s.builtKey) onPreviewStatusRef.current({ loaded: true, error: null });
+    else if (s.error)
+      onPreviewStatusRef.current({ loaded: false, error: s.error });
+  }, []);
 
-  // The scene check the wizard blocks Submit on.
-  const check: GltfSceneCheck | null = useMemo(() => {
-    if (!glbJob) return null;
-    const errors = [
-      ...(readError ? [readError] : []),
-      ...(inspection?.errors || []),
-      ...(status.error ? [status.error] : [])
-    ];
-    return { errors, summary, stats };
-  }, [glbJob, readError, inspection, status.error, summary, stats]);
-  const checkKey = JSON.stringify(
-    check ? [check.errors, !!check.summary] : null
+  // The wizard's check, minus the hint to open this step (the preview shows its own progress).
+  const check: GltfSceneCheck | null = useMemo(
+    () =>
+      sceneCheck && {
+        ...sceneCheck,
+        errors: sceneCheck.errors.filter((e) => !STUDIO_HIDDEN.includes(e))
+      },
+    [sceneCheck]
   );
-  const onSceneCheckRef = useRef(onSceneCheck);
-  onSceneCheckRef.current = onSceneCheck;
-  useEffect(() => {
-    onSceneCheckRef.current(check);
-    // checkKey covers what the wizard reads.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    // No reset on unmount: the Review step (studio unmounted) still blocks on it.
-  }, [checkKey, summary, stats]);
 
   const attached = present.map((j) => ({ name: j.name, size: j.size }));
   const built = useMemo(
@@ -319,26 +276,38 @@ export const GltfStudio: React.FC<{
 
   // Import / export visualizer.json (the manifest object).
   const [importNote, setImportNote] = useState<string | null>(null);
+  const [importErrors, setImportErrors] = useState<string[]>([]);
   const importJson = async (f: File) => {
     setImportNote(null);
-    try {
-      const m = JSON.parse(await f.text());
-      if (!m || m.type !== "gltf") {
-        setImportNote(
-          `${f.name} isn't a 3D scene visualizer.json (no "type": "gltf").`
-        );
-        return;
-      }
-      setConfig(() => configFromManifest(m));
-      const sceneName = glbJob?.name;
+    setImportErrors([]);
+    if (f.size > IMPORT_MAX_BYTES) {
       setImportNote(
-        m.scene && sceneName && m.scene !== sceneName
-          ? `Imported. It was written for ${m.scene}; this product uses ${sceneName}.`
-          : "Imported."
+        `${f.name} is ${formatBytes(
+          f.size
+        )}; a visualizer.json is at most 256 KB.`
       );
-    } catch {
-      setImportNote(`${f.name} isn't valid JSON.`);
+      return;
     }
+    let text: string;
+    try {
+      text = await f.text();
+    } catch {
+      setImportNote(`Couldn't read ${f.name}.`);
+      return;
+    }
+    const parsed = parseVisualizerImport(text);
+    if ("errors" in parsed) {
+      setImportNote(`${f.name} wasn't imported:`);
+      setImportErrors(parsed.errors);
+      return;
+    }
+    setConfig(() => parsed.config);
+    const sceneName = glbJob?.name;
+    setImportNote(
+      parsed.scene && sceneName && parsed.scene !== sceneName
+        ? `Imported. It was written for ${parsed.scene}; this product uses ${sceneName}.`
+        : "Imported."
+    );
   };
   const exportJson = () => {
     const blob = new Blob([JSON.stringify(built.manifest, null, 2)], {
@@ -429,18 +398,26 @@ export const GltfStudio: React.FC<{
               <div className="relative aspect-video w-full">
                 <GltfPreview
                   className="absolute inset-0"
-                  bytes={bytes}
+                  bytes={previewBytes}
                   normalized={debounced ? debounced.normalized : null}
                   configKey={debounced ? debounced.key : ""}
                   inspect={inspect}
                   paused={paused}
-                  onStatus={setStatus}
+                  onStatus={onStatus}
                 />
                 {!bytes && (
                   <div className="absolute inset-0 flex items-center justify-center p-4 text-center font-body-bold text-sm text-white/70">
-                    {glbJob
-                      ? "Reading the scene…"
-                      : "Your scene plays here, moving with the demo groove."}
+                    {!glbJob
+                      ? "Your scene plays here, moving with the demo groove."
+                      : readError
+                      ? "Couldn't get the scene to check it. Re-pick the .glb with Replace."
+                      : "Reading the scene…"}
+                  </div>
+                )}
+                {bytes && inspection && inspection.errors.length > 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center p-4 text-center font-body-bold text-sm text-white/70">
+                    This .glb doesn&apos;t fit the rules yet (see Problems), so
+                    it isn&apos;t loaded.
                   </div>
                 )}
                 {bytes && !previewManifest && shown && (
@@ -449,7 +426,7 @@ export const GltfStudio: React.FC<{
                     it.
                   </div>
                 )}
-                {bytes && !shown && summary && (
+                {previewBytes && !shown && summary && (
                   <div className="absolute inset-0 flex items-center justify-center p-4 text-center font-body-bold text-sm text-white/70">
                     Fix the problems listed below to play the scene.
                   </div>
@@ -638,6 +615,15 @@ export const GltfStudio: React.FC<{
             >
               {importNote}
             </span>
+          )}
+          {importErrors.length > 0 && (
+            <ul className="w-full space-y-0.5">
+              {importErrors.map((e) => (
+                <li key={e} className="font-body-bold text-xs text-neon-pink">
+                  {e}
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       </div>

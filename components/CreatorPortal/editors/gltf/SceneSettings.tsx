@@ -22,9 +22,11 @@ import {
   hasErrors,
   IconButton,
   miniLabel,
+  newRowId,
   NumField,
   Segmented,
-  Select
+  Select,
+  useRowIds
 } from "./fields";
 
 const missing = (v: string) => `${v || "—"} (not in scene)`;
@@ -54,8 +56,11 @@ export const IdleEditor: React.FC<{
   choices: TargetChoices;
 }> = ({ idle, onChange, errors, choices }) => {
   const clips = idle?.clips || [];
-  const set = (next: Idle["clips"]) =>
+  const { ids, track } = useRowIds(clips);
+  const set = (next: Idle["clips"], nextIds: string[] = ids) => {
+    track(next, nextIds);
     onChange(next.length ? { clips: next } : undefined);
+  };
   return (
     <div className="space-y-2">
       <h3 className="sr-only">Idle</h3>
@@ -69,7 +74,7 @@ export const IdleEditor: React.FC<{
         const path = `audio.idle.clips[${i}]`;
         return (
           <div
-            key={i}
+            key={ids[i]}
             className="grid grid-cols-[1fr_6rem_auto] items-end gap-2"
           >
             <label className="block min-w-0">
@@ -101,7 +106,12 @@ export const IdleEditor: React.FC<{
             <IconButton
               label={`Remove idle clip ${i + 1}`}
               className="mb-0.5 hover:text-neon-pink"
-              onClick={() => set(clips.filter((_, j) => j !== i))}
+              onClick={() =>
+                set(
+                  clips.filter((_, j) => j !== i),
+                  ids.filter((_, j) => j !== i)
+                )
+              }
             >
               <X className="h-4 w-4" />
             </IconButton>
@@ -119,7 +129,12 @@ export const IdleEditor: React.FC<{
         disabled={
           clips.length >= DEFAULT_LIMITS.maxIdleClips || !choices.clips.length
         }
-        onClick={() => set([...clips, { clip: choices.clips[0] || "" }])}
+        onClick={() =>
+          set(
+            [...clips, { clip: choices.clips[0] || "" }],
+            [...ids, newRowId()]
+          )
+        }
       >
         <Plus className="h-3.5 w-3.5" /> Add idle clip
       </button>
@@ -140,7 +155,11 @@ export const MaterialsEditor: React.FC<{
   choices: TargetChoices;
 }> = ({ materials, onChange, errors, choices }) => {
   const list = materials || [];
-  const set = (next: Materials) => onChange(next.length ? next : undefined);
+  const { ids, track } = useRowIds(list);
+  const set = (next: Materials, nextIds: string[] = ids) => {
+    track(next, nextIds);
+    onChange(next.length ? next : undefined);
+  };
   const patch = (i: number, m: MaterialOverride) =>
     set(list.map((x, j) => (j === i ? m : x)));
   const options = [
@@ -160,7 +179,7 @@ export const MaterialsEditor: React.FC<{
         const outline = m.toon?.outline;
         return (
           <div
-            key={i}
+            key={ids[i]}
             className={cn(
               "space-y-2 rounded-md border p-2",
               hasErrors(errors, path)
@@ -191,7 +210,12 @@ export const MaterialsEditor: React.FC<{
               <IconButton
                 label={`Remove override ${i + 1}`}
                 className="mb-0.5 hover:text-neon-pink"
-                onClick={() => set(list.filter((_, j) => j !== i))}
+                onClick={() =>
+                  set(
+                    list.filter((_, j) => j !== i),
+                    ids.filter((_, j) => j !== i)
+                  )
+                }
               >
                 <X className="h-4 w-4" />
               </IconButton>
@@ -262,17 +286,20 @@ export const MaterialsEditor: React.FC<{
         className={addBtn}
         disabled={list.length >= DEFAULT_LIMITS.maxMaterialOverrides}
         onClick={() =>
-          set([
-            ...list,
-            {
-              material: list.some((x) => x.material === "*")
-                ? choices.materials.find(
-                    (n) => !list.some((x) => x.material === n)
-                  ) || ""
-                : "*",
-              toon: { steps: 3 }
-            }
-          ])
+          set(
+            [
+              ...list,
+              {
+                material: list.some((x) => x.material === "*")
+                  ? choices.materials.find(
+                      (n) => !list.some((x) => x.material === n)
+                    ) || ""
+                  : "*",
+                toon: { steps: 3 }
+              }
+            ],
+            [...ids, newRowId()]
+          )
         }
       >
         <Plus className="h-3.5 w-3.5" /> Add toon override
