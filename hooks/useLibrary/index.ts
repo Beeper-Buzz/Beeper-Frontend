@@ -56,5 +56,4 @@ export const useDigitalSummary = (slug: string, enabled = true) =>
   );
 
 /** Deep link the app opens (spec §3.2). */
-export const libraryDeepLink = (variantId: number) =>
-  `beeper://library/${variantId}`;
+export { libraryDeepLink } from "../../lib/fromApp";
