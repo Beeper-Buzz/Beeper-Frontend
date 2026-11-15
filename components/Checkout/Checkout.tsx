@@ -35,6 +35,14 @@ import {
   getPaymentMethods
 } from "../../hooks/useCheckout";
 import { IProducts } from "@spree/storefront-api-v2-sdk/types/interfaces/Product";
+import { useCartDigitalSlugs } from "../../hooks/useMarketplace";
+import {
+  cartHasDigital,
+  cartNeedsDelivery,
+  DIGITAL_ACCOUNT_MESSAGE,
+  isDigitalRequiresAccountError,
+  loginRedirectFor
+} from "../../lib/digitalCheckout";
 
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
@@ -55,6 +63,11 @@ const CheckoutForm = () => {
   const { data: productsData } = useProducts(1);
   const unavailableLines = useUnavailableCartLines(cartData);
   const hasUnavailable = unavailableLines.length > 0;
+  // Digital lines: an all-digital cart skips delivery (no shipping address,
+  // rate or cost), and a guest must sign in before buying any of them.
+  const digitalSlugs = useCartDigitalSlugs(cartData);
+  const needsDelivery = cartNeedsDelivery(cartData, digitalSlugs);
+  const guestNeedsAccount = !user && cartHasDigital(cartData, digitalSlugs);
   const queryClient = useQueryClient();
   const removeLineMutation = useMutation(
     (itemId: string) => removeItemFromCart(itemId),
@@ -135,6 +148,7 @@ const CheckoutForm = () => {
 
   useEffect(() => {
     if (
+      needsDelivery &&
       formData.country &&
       formData.state &&
       formData.city &&
@@ -160,7 +174,13 @@ const CheckoutForm = () => {
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [formData.country, formData.state, formData.city, formData.zipcode]);
+  }, [
+    needsDelivery,
+    formData.country,
+    formData.state,
+    formData.city,
+    formData.zipcode
+  ]);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -292,53 +312,56 @@ const CheckoutForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (hasUnavailable) return;
+    if (guestNeedsAccount) {
+      router.push(loginRedirectFor("/checkout"));
+      return;
+    }
     setProcessing(true);
     setError("");
 
+    const shipAddress = {
+      firstname: formData.firstName,
+      lastname: formData.lastName,
+      address1: formData.address1,
+      address2: formData.address2,
+      city: formData.city,
+      phone: formData.phone,
+      zipcode: formData.zipcode,
+      state_name: formData.state,
+      country_iso: formData.country
+    };
+    const billAddress =
+      needsDelivery && formData.sameAsShipping
+        ? shipAddress
+        : {
+            firstname: formData.billFirstName,
+            lastname: formData.billLastName,
+            address1: formData.billAddress1,
+            address2: formData.billAddress2,
+            city: formData.billCity,
+            phone: formData.billPhone,
+            zipcode: formData.billZipcode,
+            state_name: formData.billState,
+            country_iso: formData.billCountry
+          };
+
     try {
       await updateCheckoutMutation.mutateAsync({
-        order: {
-          email: formData.email,
-          ship_address_attributes: {
-            firstname: formData.firstName,
-            lastname: formData.lastName,
-            address1: formData.address1,
-            address2: formData.address2,
-            city: formData.city,
-            phone: formData.phone,
-            zipcode: formData.zipcode,
-            state_name: formData.state,
-            country_iso: formData.country
-          },
-          bill_address_attributes: formData.sameAsShipping
-            ? {
-                firstname: formData.firstName,
-                lastname: formData.lastName,
-                address1: formData.address1,
-                address2: formData.address2,
-                city: formData.city,
-                phone: formData.phone,
-                zipcode: formData.zipcode,
-                state_name: formData.state,
-                country_iso: formData.country
-              }
-            : {
-                firstname: formData.billFirstName,
-                lastname: formData.billLastName,
-                address1: formData.billAddress1,
-                address2: formData.billAddress2,
-                city: formData.billCity,
-                phone: formData.billPhone,
-                zipcode: formData.billZipcode,
-                state_name: formData.billState,
-                country_iso: formData.billCountry
-              }
-        }
+        order: needsDelivery
+          ? {
+              email: formData.email,
+              ship_address_attributes: shipAddress,
+              bill_address_attributes: billAddress
+            }
+          : { email: formData.email, bill_address_attributes: billAddress }
       });
 
       await advanceCheckoutMutation.mutateAsync();
 
-      const shippingMethodsResponse = await getShippingMethods();
+      // A digital-only order has no delivery step: no shipment to rate.
+      const shippingMethodsResponse = needsDelivery
+        ? await getShippingMethods()
+        : null;
       const firstShipment = shippingMethodsResponse?.data?.[0];
       const shippingRates = shippingMethodsResponse?.included?.filter(
         (item: any) => item.type === "shipping_rate"
@@ -364,13 +387,13 @@ const CheckoutForm = () => {
         if (!cardElement) throw new Error("Card element not found");
 
         const { token, error } = await stripe.createToken(cardElement, {
-          name: `${formData.firstName} ${formData.lastName}`,
-          address_line1: formData.billAddress1 || formData.address1,
-          address_line2: formData.billAddress2 || formData.address2,
-          address_city: formData.billCity || formData.city,
-          address_state: formData.billState || formData.state,
-          address_zip: formData.billZipcode || formData.zipcode,
-          address_country: formData.billCountry || formData.country
+          name: `${billAddress.firstname} ${billAddress.lastname}`,
+          address_line1: billAddress.address1,
+          address_line2: billAddress.address2,
+          address_city: billAddress.city,
+          address_state: billAddress.state_name,
+          address_zip: billAddress.zipcode,
+          address_country: billAddress.country_iso
         });
 
         if (error) throw new Error(error.message);
@@ -407,8 +430,14 @@ const CheckoutForm = () => {
       }
     } catch (err: any) {
       console.error("Checkout error:", err);
-      setError(checkoutErrorMessage(err));
       setProcessing(false);
+      if (isDigitalRequiresAccountError(err)) {
+        // The backend refused a guest order holding digital items.
+        setError(DIGITAL_ACCOUNT_MESSAGE);
+        router.push(loginRedirectFor("/checkout"));
+        return;
+      }
+      setError(checkoutErrorMessage(err));
     }
   };
 
@@ -448,17 +477,33 @@ const CheckoutForm = () => {
             Checkout
           </h1>
 
-          {!user && (
-            <p className="mb-8 font-title text-sm text-white/50">
-              Already have an account?{" "}
+          {guestNeedsAccount ? (
+            <div
+              role="status"
+              className="glass-panel mb-8 border-neon-magenta/40 px-4 py-3 font-title text-sm text-white/80"
+            >
+              {DIGITAL_ACCOUNT_MESSAGE}{" "}
               <Link
-                href="/login?redirect=/checkout"
+                href={loginRedirectFor("/checkout")}
                 className="font-semibold text-neon-cyan underline transition-colors hover:text-neon-cyan/80"
               >
-                Login
+                Sign in or create an account
               </Link>{" "}
-              to checkout faster.
-            </p>
+              and you&apos;ll come straight back here.
+            </div>
+          ) : (
+            !user && (
+              <p className="mb-8 font-title text-sm text-white/50">
+                Already have an account?{" "}
+                <Link
+                  href="/login?redirect=/checkout"
+                  className="font-semibold text-neon-cyan underline transition-colors hover:text-neon-cyan/80"
+                >
+                  Login
+                </Link>{" "}
+                to checkout faster.
+              </p>
+            )
           )}
 
           <UnavailableCartLines
@@ -550,207 +595,219 @@ const CheckoutForm = () => {
                 </div>
               </section>
 
-              {/* Shipping Address */}
-              <section className="glass-panel space-y-4 p-6">
-                <h2 className="font-pressstart text-[10px] text-neon-cyan">
-                  Shipping Address
-                </h2>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="firstName" className={labelClass}>
-                      First Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      required
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="lastName" className={labelClass}>
-                      Last Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      required
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="address1" className={labelClass}>
-                    Address *
-                  </label>
-                  <input
-                    type="text"
-                    id="address1"
-                    name="address1"
-                    value={formData.address1}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Street address"
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="address2" className={labelClass}>
-                    Apartment, suite, etc. (optional)
-                  </label>
-                  <input
-                    type="text"
-                    id="address2"
-                    name="address2"
-                    value={formData.address2}
-                    onChange={handleInputChange}
-                    className={inputClass}
-                  />
-                </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="city" className={labelClass}>
-                      City *
-                    </label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      required
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="state" className={labelClass}>
-                      State *
-                    </label>
-                    <input
-                      type="text"
-                      id="state"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="CA"
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="zipcode" className={labelClass}>
-                      ZIP Code *
-                    </label>
-                    <input
-                      type="text"
-                      id="zipcode"
-                      name="zipcode"
-                      value={formData.zipcode}
-                      onChange={handleInputChange}
-                      required
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="country" className={labelClass}>
-                      Country *
-                    </label>
-                    <select
-                      id="country"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      required
-                      className={inputClass}
-                    >
-                      <option value="US">United States</option>
-                      <option value="CA">Canada</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="phone" className={labelClass}>
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                    className={inputClass}
-                  />
-                </div>
-              </section>
-
-              {/* Shipping Rates */}
-              {estimatedShipping?.data && estimatedShipping.data.length > 0 && (
-                <section className="glass-panel p-6">
-                  <h2 className="mb-4 font-pressstart text-[10px] text-neon-cyan">
-                    Shipping Method
+              {/* Shipping Address (not for a digital-only order) */}
+              {needsDelivery && (
+                <section className="glass-panel space-y-4 p-6">
+                  <h2 className="font-pressstart text-[10px] text-neon-cyan">
+                    Shipping Address
                   </h2>
-                  <div className="space-y-2">
-                    {estimatedShipping.data.map((rate: any) => (
-                      <label
-                        key={rate.attributes.shipping_method_id}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg border border-glass-border p-3 transition-colors hover:bg-white/5"
-                      >
-                        <input
-                          type="radio"
-                          name="shippingRate"
-                          value={rate.attributes.shipping_method_id}
-                          checked={
-                            selectedShippingRate?.attributes
-                              ?.shipping_method_id ===
-                            rate.attributes.shipping_method_id
-                          }
-                          onChange={() => setSelectedShippingRate(rate)}
-                          className="accent-neon-cyan"
-                        />
-                        <span className="font-title text-sm text-white">
-                          {rate.attributes.name} -{" "}
-                          {rate.attributes.display_cost}
-                        </span>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="firstName" className={labelClass}>
+                        First Name *
                       </label>
-                    ))}
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="lastName" className={labelClass}>
+                        Last Name *
+                      </label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      />
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleRecalculateShipping}
-                    disabled={estimateShippingMutation.isLoading}
-                    className="neon-btn mt-3 !px-4 !py-2 !text-xs"
-                  >
-                    {estimateShippingMutation.isLoading
-                      ? "Calculating..."
-                      : "Recalculate Shipping"}
-                  </button>
+                  <div>
+                    <label htmlFor="address1" className={labelClass}>
+                      Address *
+                    </label>
+                    <input
+                      type="text"
+                      id="address1"
+                      name="address1"
+                      value={formData.address1}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="Street address"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="address2" className={labelClass}>
+                      Apartment, suite, etc. (optional)
+                    </label>
+                    <input
+                      type="text"
+                      id="address2"
+                      name="address2"
+                      value={formData.address2}
+                      onChange={handleInputChange}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="city" className={labelClass}>
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="state" className={labelClass}>
+                        State *
+                      </label>
+                      <input
+                        type="text"
+                        id="state"
+                        name="state"
+                        value={formData.state}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="CA"
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="zipcode" className={labelClass}>
+                        ZIP Code *
+                      </label>
+                      <input
+                        type="text"
+                        id="zipcode"
+                        name="zipcode"
+                        value={formData.zipcode}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="country" className={labelClass}>
+                        Country *
+                      </label>
+                      <select
+                        id="country"
+                        name="country"
+                        value={formData.country}
+                        onChange={handleInputChange}
+                        required
+                        className={inputClass}
+                      >
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className={labelClass}>
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      required
+                      className={inputClass}
+                    />
+                  </div>
                 </section>
               )}
+
+              {/* Shipping Rates */}
+              {needsDelivery &&
+                estimatedShipping?.data &&
+                estimatedShipping.data.length > 0 && (
+                  <section className="glass-panel p-6">
+                    <h2 className="mb-4 font-pressstart text-[10px] text-neon-cyan">
+                      Shipping Method
+                    </h2>
+                    <div className="space-y-2">
+                      {estimatedShipping.data.map((rate: any) => (
+                        <label
+                          key={rate.attributes.shipping_method_id}
+                          className="flex cursor-pointer items-center gap-2 rounded-lg border border-glass-border p-3 transition-colors hover:bg-white/5"
+                        >
+                          <input
+                            type="radio"
+                            name="shippingRate"
+                            value={rate.attributes.shipping_method_id}
+                            checked={
+                              selectedShippingRate?.attributes
+                                ?.shipping_method_id ===
+                              rate.attributes.shipping_method_id
+                            }
+                            onChange={() => setSelectedShippingRate(rate)}
+                            className="accent-neon-cyan"
+                          />
+                          <span className="font-title text-sm text-white">
+                            {rate.attributes.name} -{" "}
+                            {rate.attributes.display_cost}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRecalculateShipping}
+                      disabled={estimateShippingMutation.isLoading}
+                      className="neon-btn mt-3 !px-4 !py-2 !text-xs"
+                    >
+                      {estimateShippingMutation.isLoading
+                        ? "Calculating..."
+                        : "Recalculate Shipping"}
+                    </button>
+                  </section>
+                )}
 
               {/* Billing Address */}
               <section className="glass-panel space-y-4 p-6">
                 <h2 className="font-pressstart text-[10px] text-neon-cyan">
                   Billing Address
                 </h2>
-                <label className="flex cursor-pointer items-center gap-2 font-title text-sm text-white">
-                  <input
-                    type="checkbox"
-                    checked={formData.sameAsShipping}
-                    onChange={handleCheckboxChange}
-                    className="h-4 w-4 rounded accent-neon-cyan"
-                  />
-                  Same as shipping address
-                </label>
-                {!formData.sameAsShipping && (
+                {needsDelivery ? (
+                  <label className="flex cursor-pointer items-center gap-2 font-title text-sm text-white">
+                    <input
+                      type="checkbox"
+                      checked={formData.sameAsShipping}
+                      onChange={handleCheckboxChange}
+                      className="h-4 w-4 rounded accent-neon-cyan"
+                    />
+                    Same as shipping address
+                  </label>
+                ) : (
+                  <p className="font-title text-xs text-white/50">
+                    Everything in this order is a digital download, so
+                    there&apos;s nothing to ship. Your card&apos;s billing
+                    address is all we need.
+                  </p>
+                )}
+                {(!needsDelivery || !formData.sameAsShipping) && (
                   <>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
@@ -913,7 +970,11 @@ const CheckoutForm = () => {
                 disabled={processing || hasUnavailable}
                 className="neon-btn w-full !py-4 !text-base disabled:pointer-events-none disabled:opacity-50"
               >
-                {processing ? "Processing..." : "Place Order"}
+                {processing
+                  ? "Processing..."
+                  : guestNeedsAccount
+                  ? "Sign in to place order"
+                  : "Place Order"}
               </button>
             </form>
 
@@ -972,14 +1033,16 @@ const CheckoutForm = () => {
                       {display_item_total}
                     </span>
                   </div>
-                  <div className="flex justify-between font-title text-sm">
-                    <span className="text-white/50">Shipping:</span>
-                    <span className="font-ds-digital text-base tracking-wider text-white">
-                      {estimateShippingMutation.isLoading
-                        ? "Calculating..."
-                        : shippingCost}
-                    </span>
-                  </div>
+                  {needsDelivery && (
+                    <div className="flex justify-between font-title text-sm">
+                      <span className="text-white/50">Shipping:</span>
+                      <span className="font-ds-digital text-base tracking-wider text-white">
+                        {estimateShippingMutation.isLoading
+                          ? "Calculating..."
+                          : shippingCost}
+                      </span>
+                    </div>
+                  )}
                   {promo_total && (
                     <div className="flex justify-between font-title text-sm">
                       <span className="text-white/50">Discount:</span>

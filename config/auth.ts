@@ -276,14 +276,15 @@ const authConfig = {
       "/account",
       "/thank-you",
       "/update-email",
-      "/update-password"
+      "/update-password",
+      "/creator"
     ];
 
     // Check if current page is a protected route
     if (typeof window !== "undefined") {
       const currentPath = window.location.pathname;
-      const isProtectedRoute = protectedRoutes.some((route) =>
-        currentPath.startsWith(route)
+      const isProtectedRoute = protectedRoutes.some(
+        (route) => currentPath === route || currentPath.startsWith(`${route}/`)
       );
 
       // If on a protected route, redirect to home

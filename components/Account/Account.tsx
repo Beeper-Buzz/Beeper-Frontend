@@ -9,7 +9,9 @@ import {
   CreditCard,
   User,
   Mail,
-  Lock
+  Lock,
+  Library,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@lib/utils";
 import { Button } from "@components/ui";
@@ -54,6 +56,20 @@ const quickLinks = [
     description: "Add or edit payment methods here.",
     href: "/account/payment",
     icon: CreditCard
+  },
+  {
+    title: "Library",
+    description:
+      "Sample packs, effects and visualizers you own, ready for the Beeper app.",
+    href: "/account/library",
+    icon: Library
+  },
+  {
+    title: "Creator",
+    description:
+      "Apply to sell on Beeper, or open the creator studio if you already do.",
+    href: "/account/creator",
+    icon: Sparkles
   }
 ];
 
@@ -102,7 +118,7 @@ export const Account = () => {
         </h1>
 
         {/* Quick Links Grid */}
-        <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {quickLinks.map((link) => {
             const Icon = link.icon;
             return (

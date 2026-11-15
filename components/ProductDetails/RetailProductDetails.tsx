@@ -36,6 +36,8 @@ import { RecentlyViewed } from "../RecentlyViewed";
 import constants from "../../utilities/constants";
 import { ProductGallery } from "./ProductGallery";
 import { buildGallery } from "../../lib/productMedia";
+import { digitalKindOf } from "../../lib/marketplace";
+import { DigitalBlock } from "./DigitalBlock";
 
 interface RetailProductDetailsProps {
   wholesale?: boolean;
@@ -64,6 +66,8 @@ export const RetailProductDetails = ({
   const defaultVariantId = Array.isArray(defaultVariantData)
     ? defaultVariantData[0]?.id || ""
     : defaultVariantData?.id || "";
+  // Marketplace products carry `digital_kind`: no quantity, a download block.
+  const digitalKind = digitalKindOf(thisProduct?.data);
   const { data: favoriteCheck } = useCheckFavorite(defaultVariantId, !!user);
   const toggleFavorite = useToggleFavorite();
   const allProductImgs =
@@ -498,6 +502,18 @@ export const RetailProductDetails = ({
                     {thisProduct?.data?.attributes?.description}
                   </p>
 
+                  {digitalKind && (
+                    <DigitalBlock
+                      slug={productSlug}
+                      kind={digitalKind}
+                      variantId={String(defaultVariantId)}
+                      free={
+                        parseFloat(thisProduct?.data?.attributes?.price) === 0
+                      }
+                      signedIn={!!user}
+                    />
+                  )}
+
                   <hr className="my-6 border-glass-border" />
 
                   {/* Price */}
@@ -548,8 +564,8 @@ export const RetailProductDetails = ({
                     </div>
                   )}
 
-                  {/* Quantity selector */}
-                  <div className="mt-4">
+                  {/* Quantity selector (one copy of a download is enough) */}
+                  <div className={cn("mt-4", digitalKind && "hidden")}>
                     <span className="font-micro5 text-sm uppercase tracking-wider text-white/50">
                       Qty
                     </span>

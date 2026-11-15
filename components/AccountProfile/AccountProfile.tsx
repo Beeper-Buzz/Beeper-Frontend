@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { Formik, Form, Field } from "formik";
 import { object, string } from "yup";
@@ -175,15 +176,15 @@ export const AccountProfile = () => {
                     CREATOR STATUS
                   </h2>
                   <p className="text-xs text-white/40">
-                    Interested in selling on Beeper? Creator status is manually
-                    approved.{" "}
-                    <a
-                      href="mailto:hello@beeper.buzz?subject=Creator%20Application"
+                    Want to sell sample packs, effect presets or visualizers on
+                    Beeper?{" "}
+                    <Link
+                      href="/account/creator"
                       className="text-neon-cyan underline"
                     >
-                      Reach out
-                    </a>{" "}
-                    to apply.
+                      Apply to become a creator
+                    </Link>
+                    .
                   </p>
                 </div>
               )}

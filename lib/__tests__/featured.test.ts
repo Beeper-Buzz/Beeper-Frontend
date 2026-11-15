@@ -64,6 +64,27 @@ describe("fetchFeaturedProducts", () => {
     assert.match(calls[1], /include=[^&]*\bproduct_properties\b/);
   });
 
+  test("pages: page and per_page go to the query, meta comes back", async () => {
+    const calls: string[] = [];
+    const doc = await fetchFeaturedProducts({
+      baseUrl: "",
+      perPage: 24,
+      page: 2,
+      fetchImpl: fakeFetch(
+        (url) =>
+          url.includes("/taxons/")
+            ? { status: 200, body: { data: { id: "43" } } }
+            : {
+                status: 200,
+                body: { ...PRODUCTS, meta: { total_count: 30, total_pages: 2 } }
+              },
+        calls
+      )
+    });
+    assert.match(calls[1], /per_page=24&page=2/);
+    assert.deepEqual(doc?.meta, { total_count: 30, total_pages: 2 });
+  });
+
   test("custom permalink", async () => {
     const calls: string[] = [];
     await fetchFeaturedProducts({
