@@ -17,7 +17,7 @@ import {
   draftManifest,
   draftToInput,
   emptyDraft,
-  FILE_GROUPS,
+  fileGroupsFor,
   filesChanged,
   presetFile,
   ProductDraft,
@@ -30,7 +30,8 @@ import {
   canSubmitNow,
   willSubmit
 } from "../../lib/creator/reviewRules";
-import { uploadFile } from "../../lib/upload/directUpload";
+import { extensionOf, uploadFile } from "../../lib/upload/directUpload";
+import type { GltfSceneCheck } from "../../lib/manifests/visualizer";
 import {
   DIGITAL_KINDS,
   DigitalKind,
@@ -78,8 +79,8 @@ const KIND_INFO: Record<DigitalKind, { body: string; files: string }> = {
     files: "No files to upload: you set the effects here"
   },
   visualizer: {
-    body: "A GLSL scene that reacts to the bass, mids, highs and beat.",
-    files: "One .glsl file, up to 64 KB"
+    body: "A GLSL shader or a 3D scene that moves with the bass, beat and notes.",
+    files: "One .glsl file up to 64 KB, or one .glb scene up to 20 MB"
   }
 };
 
@@ -138,9 +139,11 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
   const setDraft = (fn: (d: ProductDraft) => ProductDraft) => setDraftState(fn);
 
   const allowed = useMemo(
-    () => (draft.kind ? FILE_GROUPS[draft.kind] : []),
-    [draft.kind]
+    () => fileGroupsFor(draft),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [draft.kind, draft.vizType]
   );
+  const isScene = draft.kind === "visualizer" && draft.vizType === "gltf";
   const files = useUploadQueue({ allowed, initial: existingJobs(product) });
   const image = useUploadQueue({ allowed: ["image"], max: 1 });
   const demo = useUploadQueue({ allowed: ["audio"], max: 1 });
@@ -149,6 +152,8 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
       if (j.file) pickedFiles.set(pickedKey(j.name, j.size), j.file);
   }, [files.jobs]);
   const [shaderErrors, setShaderErrors] = useState<string[]>([]);
+  // The 3D studio's GLB inspection; null until a scene is read.
+  const [gltfScene, setGltfScene] = useState<GltfSceneCheck | null>(null);
   const [submitNote, setSubmitNote] = useState<string | null>(null);
   const [presetError, setPresetError] = useState<unknown>(null);
 
@@ -164,7 +169,8 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
   const stepIndex = STEPS.findIndex((s) => s.id === step);
 
   const errors = stepErrors(draft, files.jobs as DraftFile[], {
-    shaderErrors: draft.kind === "visualizer" ? shaderErrors : []
+    shaderErrors: draft.kind === "visualizer" ? shaderErrors : [],
+    gltfScene: isScene ? gltfScene : null
   });
   const previewBusy = image.busy || demo.busy;
   const errorCount =
@@ -332,6 +338,12 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
       : false;
 
   const totalBytes = files.jobs.reduce((n, j) => n + j.size, 0);
+  const strayJobs = isScene
+    ? files.jobs.filter(
+        (j) =>
+          !["glb", "png", "jpg", "jpeg", "webp"].includes(extensionOf(j.name))
+      )
+    : [];
 
   return (
     <>
@@ -607,7 +619,7 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
               draft.kind === "effect_preset"
                 ? "Effects"
                 : draft.kind === "visualizer"
-                ? "Shader"
+                ? "Scene"
                 : "Samples"
             }
             aside={
@@ -619,7 +631,21 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
             }
           >
             <div className="space-y-4">
-              {allowed.length > 0 && (
+              {/* A 3D scene picks its .glb and poster in the studio. */}
+              {isScene && strayJobs.length > 0 && (
+                <div className="space-y-1">
+                  <p className="font-body-bold text-xs text-neon-amber">
+                    A 3D scene uses one .glb and an optional poster. Remove
+                    these:
+                  </p>
+                  <UploadList
+                    jobs={strayJobs}
+                    onRemove={files.remove}
+                    onRetry={files.retry}
+                  />
+                </div>
+              )}
+              {allowed.length > 0 && !isScene && (
                 <div className="space-y-2">
                   <FileDrop
                     id="pd-files"
@@ -665,9 +691,19 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                   files={files.jobs as DraftFile[]}
                   sourceFor={sourceFor}
                   onShaderErrors={setShaderErrors}
+                  sceneFiles={{
+                    jobs: files.jobs,
+                    add: files.add,
+                    remove: files.remove,
+                    retry: files.retry,
+                    rejected: files.rejected
+                  }}
+                  onSceneCheck={setGltfScene}
+                  typeLocked={!!product}
                 />
               )}
-              <StepProblems list={errors.files} />
+              {/* The studio lists its own problems, by field. */}
+              {!isScene && <StepProblems list={errors.files} />}
             </div>
           </Section>
         )}
@@ -767,9 +803,16 @@ const WizardBody: React.FC<{ product: CreatorProduct | null }> = ({
                 {draft.kind === "effect_preset" &&
                   `${(manifest.effects || []).length} effects`}
                 {draft.kind === "visualizer" &&
+                  !isScene &&
                   `${manifest.shader || "no shader"}, ${
                     (manifest.params || []).length
                   } parameters`}
+                {isScene &&
+                  `3D scene ${manifest.scene || "(no .glb yet)"}, ${
+                    (manifest.audio?.bindings || []).length
+                  } bindings, ${
+                    (manifest.audio?.noteClips?.rules || []).length
+                  } note rules${manifest.poster ? ", poster" : ""}`}
               </dd>
               <dt className="text-white/60">Cover</dt>
               <dd className="text-white">

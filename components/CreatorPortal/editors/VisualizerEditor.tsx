@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { Plus, X } from "lucide-react";
 import { cn } from "@lib/utils";
 import type {
@@ -7,10 +8,12 @@ import type {
 } from "../../../lib/creator/productDraft";
 import {
   checkShaderSource,
+  GltfSceneCheck,
   MAX_VIZ_PARAMS,
   VIZ_DRIVES,
   VIZ_PARAM_NAME_RE,
-  VizParamDraft
+  VizParamDraft,
+  VizSceneType
 } from "../../../lib/manifests/visualizer";
 import { extensionOf } from "../../../lib/upload/directUpload";
 import {
@@ -19,9 +22,83 @@ import {
   labelCls,
   numCls,
   NumInput,
-  selectCls
+  selectCls,
+  Skeleton
 } from "../kit";
+import type { UploadJob } from "../uploads";
 import { ShaderPreview } from "./ShaderPreview";
+import { Segmented } from "./gltf/fields";
+
+// three, the loader and the rig load only when a creator opens the 3D studio.
+const GltfStudio = dynamic(() => import("./gltf/GltfStudio"), {
+  ssr: false,
+  loading: () => <Skeleton className="h-96" />
+});
+
+/** The 3D studio's hooks into the wizard's upload queue. */
+export interface SceneFilesApi {
+  jobs: UploadJob[];
+  add: (files: File[]) => void;
+  remove: (key: string) => void;
+  retry: (key: string) => void;
+  rejected: string[];
+}
+
+/**
+ * Shader | 3D scene. A visualizer is one or the other; switching keeps both
+ * setups in the draft, and the file step accepts that type's files.
+ */
+export const VisualizerEditor: React.FC<{
+  draft: ProductDraft;
+  setDraft: (fn: (d: ProductDraft) => ProductDraft) => void;
+  files: DraftFile[];
+  sourceFor: (f: DraftFile) => Blob | string | null;
+  onShaderErrors?: (errors: string[]) => void;
+  sceneFiles: SceneFilesApi;
+  onSceneCheck: (check: GltfSceneCheck | null) => void;
+  /** The product exists: its scene type is set (the server versions the manifest). */
+  typeLocked?: boolean;
+}> = ({ sceneFiles, onSceneCheck, typeLocked, ...props }) => {
+  const { draft, setDraft } = props;
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Segmented<VizSceneType>
+          label="Scene type"
+          value={draft.vizType}
+          onChange={(v) => setDraft((d) => ({ ...d, vizType: v }))}
+          options={[
+            { value: "shader", label: "Shader" },
+            { value: "gltf", label: "3D scene" }
+          ]}
+        />
+        <p className="font-body-bold text-xs text-white/60">
+          {draft.vizType === "gltf"
+            ? "A GLB whose parts move with the music."
+            : "A GLSL fragment shader."}
+          {typeLocked
+            ? " Switching type replaces the scene in the next version."
+            : ""}
+        </p>
+      </div>
+      {draft.vizType === "gltf" ? (
+        <GltfStudio
+          draft={draft}
+          setDraft={setDraft}
+          jobs={sceneFiles.jobs}
+          sourceFor={props.sourceFor}
+          onAddFiles={sceneFiles.add}
+          onRemoveFile={sceneFiles.remove}
+          onRetryFile={sceneFiles.retry}
+          rejected={sceneFiles.rejected}
+          onSceneCheck={onSceneCheck}
+        />
+      ) : (
+        <ShaderEditor {...props} />
+      )}
+    </div>
+  );
+};
 
 const small = cn(inputCls, "px-2 py-1.5 text-[13px]");
 
@@ -34,7 +111,7 @@ vec4 beeperMain(vec2 uv) {
   return vec4(vec3(0.0, 1.0, 1.0) * ring + uBeat * 0.1, 1.0);
 }`;
 
-export const VisualizerEditor: React.FC<{
+const ShaderEditor: React.FC<{
   draft: ProductDraft;
   setDraft: (fn: (d: ProductDraft) => ProductDraft) => void;
   files: DraftFile[];
