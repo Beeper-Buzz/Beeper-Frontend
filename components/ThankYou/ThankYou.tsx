@@ -1,9 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { Smartphone } from "lucide-react";
 import { Layout } from "../Layout";
 import { useOrder } from "../../hooks";
+import { useCartDigitalSlugs } from "../../hooks/useMarketplace";
 import { useAuth } from "../../config/auth";
-import { Button } from "@components/ui";
+import { Button, buttonVariants } from "@components/ui";
+import { cn } from "@lib/utils";
+import { isFromApp, orderOpenInBeeperHref } from "@lib/fromApp";
 
 export const ThankYou = () => {
   const router = useRouter();
@@ -19,6 +23,14 @@ export const ThankYou = () => {
       console.log("Order completed:", orderNumber);
     }
   }, [orderNumber]);
+
+  // Arrived from the app (?from=app earlier this session): offer the way back
+  // into its Library. Read after mount; sessionStorage has no server value.
+  const [fromApp, setFromApp] = useState(false);
+  useEffect(() => setFromApp(isFromApp()), []);
+  // Looks the lines' products up only for app visitors.
+  const digitalSlugs = useCartDigitalSlugs(fromApp ? orderData : null);
+  const openInBeeper = orderOpenInBeeperHref(orderData, digitalSlugs, fromApp);
 
   const order = orderData?.data;
 
@@ -89,6 +101,18 @@ export const ThankYou = () => {
         </div>
 
         <div className="mt-10 flex justify-center gap-5 max-sm:flex-col max-sm:items-stretch">
+          {openInBeeper && (
+            <a
+              href={openInBeeper}
+              className={cn(
+                buttonVariants(),
+                "border border-neon-cyan/60 bg-neon-cyan/15 text-neon-cyan no-underline hover:bg-neon-cyan/25"
+              )}
+            >
+              <Smartphone aria-hidden />
+              Open in Beeper
+            </a>
+          )}
           <Button onClick={() => router.push("/")}>Continue Shopping</Button>
           {user ? (
             <Button
