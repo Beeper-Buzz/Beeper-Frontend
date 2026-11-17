@@ -8,7 +8,8 @@ import {
   MapPin,
   Heart,
   Library,
-  Sparkles
+  Sparkles,
+  BadgePercent
 } from "lucide-react";
 import { cn } from "@lib/utils";
 import { Layout } from "../../components/Layout";
@@ -20,6 +21,7 @@ const navItems = [
   { label: "Favorites", href: "/account/favorites", icon: Heart },
   { label: "Library", href: "/account/library", icon: Library },
   { label: "Creator", href: "/account/creator", icon: Sparkles },
+  { label: "Affiliate", href: "/account/affiliate", icon: BadgePercent },
   { label: "My Style", href: "/account/mystyle", icon: Palette },
   { label: "Profile", href: "/account/profile", icon: User },
   { label: "Account Details", href: "/account", icon: User }

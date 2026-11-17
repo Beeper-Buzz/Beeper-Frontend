@@ -124,9 +124,36 @@ export async function v1<T = unknown>(
 
 const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
+const fieldSentences = (fields: Record<string, unknown>) =>
+  Object.entries(fields).map(
+    ([field, msgs]) =>
+      `${sentence(field.replace(/_/g, " "))} ${
+        Array.isArray(msgs) ? msgs.join(", ") : String(msgs)
+      }`
+  );
+
 /**
- * A readable message from an error thrown by `v1`. Understands
- * `{ error }`, `{ errors: { field: [msg] } }` and `{ errors: [msg] }`.
+ * Per-field messages from a `v1` error (`{ fields: { code: ["is taken"] } }`),
+ * first message per field. Empty when the body has none.
+ */
+export function apiFieldErrors(e: unknown): Record<string, string> {
+  if (!isApiError(e)) return {};
+  const fields = (e.body as { fields?: unknown } | null)?.fields;
+  if (!fields || typeof fields !== "object" || Array.isArray(fields)) return {};
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(fields as Record<string, unknown>)) {
+    const first = Array.isArray(v) ? v[0] : v;
+    if (first !== undefined && first !== null && first !== "") {
+      out[k] = String(first);
+    }
+  }
+  return out;
+}
+
+/**
+ * A readable message from an error thrown by `v1`. Prefers per-field errors
+ * (`{ fields }` or `{ errors: { field: [msg] } }`), then `{ error }`,
+ * `{ errors: [msg] }` and `{ message }`.
  */
 export function apiErrorMessage(
   e: unknown,
@@ -137,21 +164,24 @@ export function apiErrorMessage(
     return "Can't reach Beeper. Check your connection and try again.";
   }
   const body = e.body as
-    | { error?: unknown; errors?: unknown; message?: unknown }
+    | { error?: unknown; errors?: unknown; message?: unknown; fields?: unknown }
     | null
     | undefined;
   if (body && typeof body === "object") {
+    if (
+      body.fields &&
+      typeof body.fields === "object" &&
+      !Array.isArray(body.fields)
+    ) {
+      const parts = fieldSentences(body.fields as Record<string, unknown>);
+      if (parts.length) return parts.join(". ");
+    }
     if (typeof body.error === "string" && body.error) return body.error;
     if (Array.isArray(body.errors) && body.errors.length) {
       return body.errors.map(String).join(". ");
     }
     if (body.errors && typeof body.errors === "object") {
-      const parts = Object.entries(body.errors as Record<string, unknown>).map(
-        ([field, msgs]) =>
-          `${sentence(field.replace(/_/g, " "))} ${
-            Array.isArray(msgs) ? msgs.join(", ") : String(msgs)
-          }`
-      );
+      const parts = fieldSentences(body.errors as Record<string, unknown>);
       if (parts.length) return parts.join(". ");
     }
     if (typeof body.message === "string" && body.message) return body.message;
