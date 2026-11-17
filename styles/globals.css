@@ -236,6 +236,10 @@
     @apply text-neon-cyan underline;
   }
 
+  .cms-body > :last-child {
+    @apply mb-0;
+  }
+
   .cms-body img {
     @apply my-6 h-auto max-w-full;
   }
