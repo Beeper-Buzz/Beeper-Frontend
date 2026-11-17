@@ -6,6 +6,7 @@ import { MainMenu } from "../components/MainMenu";
 import { Header } from "../components/Header";
 import { ComingSoon } from "../components/ComingSoon";
 import { FromAppCapture } from "../components/shared/FromAppCapture";
+import { RefCapture } from "../components/shared/RefCapture";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import * as tracking from "../config/tracking";
@@ -69,6 +70,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
               />
             </Head>
             <FromAppCapture />
+            <RefCapture />
             <ComingSoon />
           </Hydrate>
         </AuthProvider>
@@ -88,6 +90,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             />
           </Head>
           <FromAppCapture />
+          <RefCapture />
           <div className="m-0 flex min-h-screen w-full flex-col bg-background p-0 font-body text-body-md text-foreground">
             <Header darkMode={isDarkMode} />
             <MainMenu
