@@ -49,6 +49,8 @@ export const useAppPresenceQuery = (): AppPresence => {
     {
       staleTime: 5 * 60 * 1000,
       initialData: envPresence(),
+      // Seed renders at once but counts as stale, so mount still fetches.
+      initialDataUpdatedAt: 0,
       onError: (error) => {
         console.error("Failed to fetch app presence:", error.message);
       }
