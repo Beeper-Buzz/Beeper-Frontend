@@ -95,6 +95,22 @@ Done!
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
+## App Download Links and Announcement Banner
+
+The "get the Beeper app" callouts are driven from the admin, so launch day needs **no deploy and no image rebuild**.
+
+### Launch flip (TestFlight to App Store / Play)
+
+In the admin (dna-admin), go to Homepage Sections and edit the `app_links` record (seeded visible, with empty `ios_url` and `android_url`). Paste the App Store URL and the Play Store URL and save. The storefront reads it via `GET /api/public/homepage_sections?visible_only=true` and resolves each platform independently: **admin value, then env constant, then omit the platform entirely**. A platform with no URL renders nothing, so Android stays invisible until it has a link. Today only the iOS TestFlight link is real.
+
+### Env fallback (not the normal path)
+
+`NEXT_PUBLIC_IOS_APP_URL` and `NEXT_PUBLIC_ANDROID_APP_URL` exist only as a fallback for when the admin is unreachable. Changing _those_ **does** require `make build-frontend`, because `NEXT_PUBLIC_*` is inlined at build time. `make deploy-frontend` alone is not enough.
+
+### Announcement bar
+
+A second admin-managed record, `announcement_bar`, drives the site-wide banner: message, CTA label, CTA href, dismissible, and an optional start/end window.
+
 ## Deploy to Pi Cluster (MicroK8s)
 
 All deployment is run **from your Mac** via the Makefile in the parent `dna-infra` repo. You do not need to SSH into the Pis manually.
