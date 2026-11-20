@@ -17,6 +17,7 @@ import { useProductFeed, FeedType } from "@hooks/useProductFeed";
 import { LogoBlob } from "../LogoBlob/LogoBlob";
 import { ShopMarketplaceSplit } from "./ShopMarketplaceSplit";
 import { SpecsGrid } from "./SpecsGrid";
+import { AppCallout } from "../AppCallout";
 import { useFeaturedProducts } from "@hooks/useFeaturedProducts";
 import { pickGridMedia } from "@lib/productMedia";
 
@@ -302,6 +303,8 @@ export const DynamicHome = ({
 
         {/* 4. Specs Grid */}
         <SpecsGrid />
+
+        <AppCallout variant="section" />
 
         {/* 5. Newsletter CTA */}
         <Newsletter />
