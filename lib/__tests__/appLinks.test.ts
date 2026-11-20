@@ -61,4 +61,10 @@ describe("resolveAppLinks", () => {
       ["beta"]
     );
   });
+
+  test("a non-http(s) scheme is rejected and falls back to the env link", () => {
+    const links = resolveAppLinks({ ios_url: "javascript:alert(1)" });
+    assert.equal(links[0].kind, "beta");
+    assert.equal(links[0].href, "https://testflight.apple.com/join/Ys1jkVfk");
+  });
 });
