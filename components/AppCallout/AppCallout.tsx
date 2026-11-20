@@ -34,11 +34,18 @@ export const AppCallout: React.FC<{ variant: AppCalloutVariant }> = ({
   }, [key]);
 
   // Nothing to link to, or the visitor is already in the app: show nothing.
-  if (!mounted || fromApp || links.length === 0) return null;
+  // section/inline server-render from links and hide after mount for app
+  // visitors; bar reads localStorage so it waits for mount.
+  if (fromApp || links.length === 0) return null;
+  if (variant === "bar" && !mounted) return null;
 
   if (variant === "bar") {
     if (!banner || dismissed) return null;
     const href = banner.ctaHref ?? links[0].href;
+    // Label falls back to the first link's only when href did too; a custom
+    // href with no label gets no anchor rather than an invisible one.
+    const ctaLabel =
+      banner.ctaLabel || (banner.ctaHref ? null : links[0].label);
     const dismiss = () => {
       if (key) {
         try {
@@ -52,14 +59,16 @@ export const AppCallout: React.FC<{ variant: AppCalloutVariant }> = ({
     return (
       <div className="flex items-center justify-center gap-3 bg-black/60 px-4 py-2 text-center text-sm text-white">
         <span>{banner.message}</span>
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-bold underline"
-        >
-          {banner.ctaLabel}
-        </a>
+        {ctaLabel && (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold underline"
+          >
+            {ctaLabel}
+          </a>
+        )}
         {banner.dismissible && (
           <button
             type="button"
