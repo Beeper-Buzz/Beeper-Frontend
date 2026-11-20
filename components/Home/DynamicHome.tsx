@@ -37,6 +37,11 @@ function parseSettings(settings: any): any {
   return settings || {};
 }
 
+// Section types that live in Homepage Sections but are not rendered by the CMS
+// loop: AppCallout reads them through useAppPresence instead. Listing them here
+// keeps the "no renderer" warning meaningful for genuine typos.
+const NON_CMS_SECTION_TYPES = ["announcement_bar", "app_links"];
+
 // Section renderers for each type (used for CMS-driven sections)
 const SectionRenderers: Record<
   string,
@@ -313,6 +318,11 @@ export const DynamicHome = ({
         {cmsSections.length > 0 && (
           <div className="space-y-8 py-8">
             {cmsSections.map((section) => {
+              // Consumed by <AppCallout /> via useAppPresence, not by this
+              // loop — skip silently rather than warn on every render.
+              if (NON_CMS_SECTION_TYPES.includes(section.section_type)) {
+                return null;
+              }
               const Renderer = SectionRenderers[section.section_type];
               if (!Renderer) {
                 console.warn(

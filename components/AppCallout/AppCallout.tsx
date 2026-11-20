@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useAppPresence } from "@hooks/useAppPresence";
 import { isFromApp } from "@lib/fromApp";
+import { appCalloutCopy } from "@lib/appLinks";
 import { AppStoreButtons } from "./AppStoreButtons";
 
 export type AppCalloutVariant = "section" | "inline" | "bar";
@@ -39,13 +40,16 @@ export const AppCallout: React.FC<{ variant: AppCalloutVariant }> = ({
   if (fromApp || links.length === 0) return null;
   if (variant === "bar" && !mounted) return null;
 
+  // All wording is derived from the resolved links, so an admin pasting a store
+  // URL flips the copy too — no deploy. See lib/appLinks.ts.
+  const copy = appCalloutCopy(links);
+
   if (variant === "bar") {
     if (!banner || dismissed) return null;
     const href = banner.ctaHref ?? links[0].href;
-    // Label falls back to the first link's only when href did too; a custom
-    // href with no label gets no anchor rather than an invisible one.
-    const ctaLabel =
-      banner.ctaLabel || (banner.ctaHref ? null : links[0].label);
+    // Always produce a label: an admin who fills in the link and leaves the
+    // label blank still gets a visible, working anchor.
+    const ctaLabel = banner.ctaLabel || links[0]?.label || "Learn more";
     const dismiss = () => {
       if (key) {
         try {
@@ -86,9 +90,7 @@ export const AppCallout: React.FC<{ variant: AppCalloutVariant }> = ({
   if (variant === "inline") {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-4 text-center sm:flex-row">
-        <p className="font-body text-sm text-white/70">
-          The Beeper app beta is open on iPhone.
-        </p>
+        <p className="font-body text-sm text-white/70">{copy.body}</p>
         <AppStoreButtons links={links} />
       </div>
     );
@@ -103,12 +105,10 @@ export const AppCallout: React.FC<{ variant: AppCalloutVariant }> = ({
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="glass-panel mx-auto flex max-w-3xl flex-col items-center gap-5 p-8 text-center"
       >
-        <h2 className="font-microtechnic text-title-md">
-          The Beeper app is almost here
-        </h2>
+        <h2 className="font-microtechnic text-title-md">{copy.heading}</h2>
         <p className="font-body text-body-md text-white/70">
           A full music studio in your pocket: record, play the built-in synth,
-          and pair the Beeper over wireless MIDI. The beta is open on iPhone.
+          and pair the Beeper over wireless MIDI. {copy.body}
         </p>
         <AppStoreButtons links={links} />
       </motion.div>
