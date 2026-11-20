@@ -10,6 +10,7 @@ import { spreeServerGet } from "../../../lib/server/spreeServer";
 //   /api/public/live_stream                   -> /api/v1/live_stream
 //   /api/public/live_stream/:id               -> /api/v1/live_stream/:id
 //   /api/public/default_store                 -> /api/v2/storefront/default_store
+//   /api/public/homepage_sections?visible_only=true -> /api/v1/homepage_sections?visible_only=true
 //
 // Anything else is a 404. Do not add user-specific endpoints here.
 
@@ -53,6 +54,12 @@ const resolveRoute = (
     case "default_store":
       if (id) return null;
       return { path: "/api/v2/storefront/default_store", cache: CACHE_SHORT };
+    case "homepage_sections":
+      if (id || query.visible_only !== "true") return null;
+      return {
+        path: "/api/v1/homepage_sections?visible_only=true",
+        cache: CACHE_SHORT
+      };
     default:
       return null;
   }

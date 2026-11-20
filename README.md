@@ -95,6 +95,45 @@ Done!
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
+## App Download Links and Announcement Banner
+
+The "get the Beeper app" callouts are driven from the admin, so launch day needs **no deploy and no image rebuild**.
+
+### Launch flip (TestFlight to App Store / Play)
+
+Runbook. Do these in order.
+
+1. **Sign in to the admin** (`admin.beeper.buzz`, dna-admin) and go to **Homepage Sections**.
+2. **Create the App Links section.** There will almost certainly not be one — **do not go looking for a seeded record**. Click **New Section**, set **Section Type** to `App Links`, leave **Content** and **Settings (JSON)** blank, and tick **Visible on website**.
+   (A seed, `db/seeds/011_app_links.rb`, creates an empty `app_links` row, but it only runs as part of a full `rails db:seed` — which also loads Spree sample products — so it exists for fresh local/dev databases only and has never run against production.)
+   If a visible `app_links` section already exists, edit that one instead; only the lowest-`position` visible one is read.
+3. **Paste the URLs** into the **App store links** fieldset: **iOS App Store URL**, and **Google Play URL** if there is a Play listing. Save.
+   - URLs **must include the scheme** (`https://…`). A scheme-less URL such as `apps.apple.com/app/…` is rejected by the admin with an error naming the field; the storefront also refuses anything that is not an absolute `http(s)` URL.
+   - Leave a platform **blank** to omit it entirely. Android stays invisible until it has a link.
+4. **Wait for propagation.** The proxy caches for ~60 s (`s-maxage=60`), and an already-open tab holds its react-query result for up to 5 min. A hard reload shortens this to the proxy window.
+5. **Verify on `/home`** (not `/` — `pages/index.tsx` re-exports `home` without its `getStaticProps`). The buttons should read **Get the iOS app** / **Get the Android app**, and the surrounding copy should switch from "beta" to "out now" by itself.
+6. **Update the env fallback** at the next convenient deploy — see below. This is not optional; skipping it leaves a time bomb.
+
+Resolution is per platform and independent: **admin value, then env constant, then omit the platform entirely**. The buttons are plain text links by design — no Apple or Google badge artwork is shipped, and the labels deliberately avoid their badge-lockup wording.
+
+### Env fallback (not the normal path, and it goes stale)
+
+`NEXT_PUBLIC_IOS_APP_URL` and `NEXT_PUBLIC_ANDROID_APP_URL` are a **build-time fallback only**. They are inlined by `next build`, so changing them requires `make build-frontend` — `make deploy-frontend` alone is not enough.
+
+The fallback is used whenever the admin value is unusable, which happens in exactly three cases:
+
+1. The admin is **unreachable** (outage, 502 from the proxy, network failure).
+2. The `app_links` record is **hidden or absent** — it sits in the same Homepage Sections list as real content and is easy to delete or un-tick by mistake.
+3. The admin's URL for that platform is **blank, or fails the absolute `http(s)` check**.
+
+**After launch these constants are wrong.** `NEXT_PUBLIC_IOS_APP_URL` defaults to the TestFlight invite `https://testflight.apple.com/join/Ys1jkVfk`, and a TestFlight build expires 90 days after upload. Any of the three cases above will then silently present a dead beta invite as the app's main CTA, and nothing in the admin can correct it.
+
+So: once the flip is done, set `NEXT_PUBLIC_IOS_APP_URL` (and `NEXT_PUBLIC_ANDROID_APP_URL`, if there is a Play listing) to the real store URLs in `dna-infra`'s `secrets.yml` and in `.env.development`, and run `make build-frontend` at the next convenient deploy.
+
+### Announcement bar
+
+A second admin-managed record, `announcement_bar`, drives the site-wide banner: message, CTA label, CTA href, dismissible, and an optional start/end window.
+
 ## Deploy to Pi Cluster (MicroK8s)
 
 All deployment is run **from your Mac** via the Makefile in the parent `dna-infra` repo. You do not need to SSH into the Pis manually.

@@ -22,3 +22,11 @@ export const CONTACT_PHONE = process.env.NEXT_PUBLIC_PHONE || "+1-917-300-8103";
 
 export const LOGO_PATH =
   process.env.NEXT_PUBLIC_LOGO_PATH || "images/beeper-logo-v2.png";
+
+// Where the "get the Beeper app" callouts send people. The admin's app link
+// settings override these. iOS defaults to the TestFlight invite until the App
+// Store listing exists; Android has no default, so it is omitted until set.
+export const IOS_APP_URL =
+  process.env.NEXT_PUBLIC_IOS_APP_URL ||
+  "https://testflight.apple.com/join/Ys1jkVfk";
+export const ANDROID_APP_URL = process.env.NEXT_PUBLIC_ANDROID_APP_URL || "";
