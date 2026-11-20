@@ -38,6 +38,7 @@ Inputs the spec implies that no task's happy path exercises. Each has a test in 
 ### Task 1: Link resolution (`lib/appLinks.ts`)
 
 **Files:**
+
 - Modify: `utilities/branding.ts` (append)
 - Create: `lib/appLinks.ts`
 - Test: `lib/__tests__/appLinks.test.ts`
@@ -45,8 +46,10 @@ Inputs the spec implies that no task's happy path exercises. Each has a test in 
 - Modify: `.env.example`, `secret.example.yml`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces:
+
   ```ts
   export type AppPlatform = "ios" | "android";
   export type AppLinkKind = "beta" | "store";
@@ -56,8 +59,13 @@ Inputs the spec implies that no task's happy path exercises. Each has a test in 
     label: string;
     kind: AppLinkKind;
   }
-  export interface AppLinkOverride { ios_url?: string; android_url?: string }
-  export const resolveAppLinks: (override?: AppLinkOverride | null) => AppLink[];
+  export interface AppLinkOverride {
+    ios_url?: string;
+    android_url?: string;
+  }
+  export const resolveAppLinks: (
+    override?: AppLinkOverride | null
+  ) => AppLink[];
   ```
 
 - [ ] **Step 1: Branch from `origin/main`**
@@ -87,7 +95,9 @@ describe("resolveAppLinks", () => {
   });
 
   test("an admin override wins over env", () => {
-    const links = resolveAppLinks({ ios_url: "https://apps.apple.com/app/id1661874489" });
+    const links = resolveAppLinks({
+      ios_url: "https://apps.apple.com/app/id1661874489"
+    });
     assert.equal(links[0].kind, "store");
     assert.equal(links[0].label, "Download on the App Store");
     assert.equal(links[0].href, "https://apps.apple.com/app/id1661874489");
@@ -99,12 +109,16 @@ describe("resolveAppLinks", () => {
 
   test("android is omitted entirely when override and env are both empty", () => {
     const links = resolveAppLinks({ android_url: "" });
-    assert.deepEqual(links.map((l) => l.platform), ["ios"]);
+    assert.deepEqual(
+      links.map((l) => l.platform),
+      ["ios"]
+    );
   });
 
   test("an android override is labelled for Play", () => {
     const links = resolveAppLinks({
-      android_url: "https://play.google.com/store/apps/details?id=com.beeper.Buzz"
+      android_url:
+        "https://play.google.com/store/apps/details?id=com.beeper.Buzz"
     });
     const android = links.find((l) => l.platform === "android");
     assert.equal(android?.kind, "store");
@@ -114,13 +128,20 @@ describe("resolveAppLinks", () => {
   test("ios comes before android", () => {
     const links = resolveAppLinks({
       ios_url: "https://apps.apple.com/app/id1661874489",
-      android_url: "https://play.google.com/store/apps/details?id=com.beeper.Buzz"
+      android_url:
+        "https://play.google.com/store/apps/details?id=com.beeper.Buzz"
     });
-    assert.deepEqual(links.map((l) => l.platform), ["ios", "android"]);
+    assert.deepEqual(
+      links.map((l) => l.platform),
+      ["ios", "android"]
+    );
   });
 
   test("a malformed href is dropped rather than rendered", () => {
-    assert.deepEqual(resolveAppLinks({ ios_url: "not a url" }).map((l) => l.kind), ["beta"]);
+    assert.deepEqual(
+      resolveAppLinks({ ios_url: "not a url" }).map((l) => l.kind),
+      ["beta"]
+    );
   });
 });
 ```
@@ -136,7 +157,8 @@ Append, following the commented style already in that file:
 
 ```ts
 export const IOS_APP_URL =
-  process.env.NEXT_PUBLIC_IOS_APP_URL || "https://testflight.apple.com/join/Ys1jkVfk";
+  process.env.NEXT_PUBLIC_IOS_APP_URL ||
+  "https://testflight.apple.com/join/Ys1jkVfk";
 export const ANDROID_APP_URL = process.env.NEXT_PUBLIC_ANDROID_APP_URL || "";
 ```
 
@@ -172,11 +194,13 @@ git commit -m "[Feature]: Resolve Beeper app store links, changes:
 ### Task 2: Banner and override selection (`lib/announcement.ts`)
 
 **Files:**
+
 - Create: `lib/announcement.ts`
 - Test: `lib/__tests__/announcement.test.ts`
 - Modify: `package.json` (the `test` script's file list)
 
 **Interfaces:**
+
 - Consumes: `AppLinkOverride` from `lib/appLinks.ts` (Task 1).
 - Produces:
   ```ts
@@ -188,8 +212,13 @@ git commit -m "[Feature]: Resolve Beeper app store links, changes:
     dismissible: boolean;
     updatedAt: string;
   }
-  export const selectAnnouncement: (sections: unknown, now?: Date) => Announcement | null;
-  export const selectAppLinkOverride: (sections: unknown) => AppLinkOverride | null;
+  export const selectAnnouncement: (
+    sections: unknown,
+    now?: Date
+  ) => Announcement | null;
+  export const selectAppLinkOverride: (
+    sections: unknown
+  ) => AppLinkOverride | null;
   ```
 
 Both accept `unknown` deliberately: the payload crosses a network boundary from a JSON column with no schema.
@@ -202,9 +231,15 @@ import { describe, test } from "node:test";
 import { selectAnnouncement, selectAppLinkOverride } from "../announcement";
 
 const bar = (over = {}) => ({
-  id: 1, section_type: "announcement_bar", position: 0, is_visible: true,
-  content: "", created_at: "", updated_at: "2026-11-20T00:00:00Z",
-  settings: { message: "Beta is open", dismissible: true }, ...over
+  id: 1,
+  section_type: "announcement_bar",
+  position: 0,
+  is_visible: true,
+  content: "",
+  created_at: "",
+  updated_at: "2026-11-20T00:00:00Z",
+  settings: { message: "Beta is open", dismissible: true },
+  ...over
 });
 
 describe("selectAnnouncement", () => {
@@ -232,50 +267,91 @@ describe("selectAnnouncement", () => {
   });
 
   test("returns null when settings is an unparsed Ruby hash string", () => {
-    assert.equal(selectAnnouncement([bar({ settings: '{"message"=>"x"}' })]), null);
+    assert.equal(
+      selectAnnouncement([bar({ settings: '{"message"=>"x"}' })]),
+      null
+    );
   });
 
   test("returns null when the message is missing or blank", () => {
-    assert.equal(selectAnnouncement([bar({ settings: { message: "  " } })]), null);
+    assert.equal(
+      selectAnnouncement([bar({ settings: { message: "  " } })]),
+      null
+    );
   });
 
   test("honours a one-sided start bound", () => {
-    const s = [bar({ settings: { message: "m", starts_at: "2026-12-01T00:00:00Z" } })];
+    const s = [
+      bar({ settings: { message: "m", starts_at: "2026-12-01T00:00:00Z" } })
+    ];
     assert.equal(selectAnnouncement(s, new Date("2026-11-20T00:00:00Z")), null);
-    assert.equal(selectAnnouncement(s, new Date("2026-12-02T00:00:00Z"))?.message, "m");
+    assert.equal(
+      selectAnnouncement(s, new Date("2026-12-02T00:00:00Z"))?.message,
+      "m"
+    );
   });
 
   test("honours a one-sided end bound", () => {
-    const s = [bar({ settings: { message: "m", ends_at: "2026-11-01T00:00:00Z" } })];
+    const s = [
+      bar({ settings: { message: "m", ends_at: "2026-11-01T00:00:00Z" } })
+    ];
     assert.equal(selectAnnouncement(s, new Date("2026-11-20T00:00:00Z")), null);
   });
 
   test("an unparseable date does not hide a visible banner", () => {
     const s = [bar({ settings: { message: "m", starts_at: "whenever" } })];
-    assert.equal(selectAnnouncement(s, new Date("2026-11-20T00:00:00Z"))?.message, "m");
+    assert.equal(
+      selectAnnouncement(s, new Date("2026-11-20T00:00:00Z"))?.message,
+      "m"
+    );
   });
 
   test("a skipped out-of-window bar does not shadow a later valid one", () => {
     const sections = [
-      bar({ id: 2, position: 0, settings: { message: "expired", ends_at: "2026-01-01T00:00:00Z" } }),
+      bar({
+        id: 2,
+        position: 0,
+        settings: { message: "expired", ends_at: "2026-01-01T00:00:00Z" }
+      }),
       bar({ id: 3, position: 1, settings: { message: "live" } })
     ];
-    assert.equal(selectAnnouncement(sections, new Date("2026-11-20T00:00:00Z"))?.message, "live");
+    assert.equal(
+      selectAnnouncement(sections, new Date("2026-11-20T00:00:00Z"))?.message,
+      "live"
+    );
   });
 });
 
 describe("selectAppLinkOverride", () => {
   test("reads urls from the lowest-position visible app_links row", () => {
     const sections = [
-      bar({ id: 4, section_type: "app_links", position: 2, settings: { ios_url: "b" } }),
-      bar({ id: 5, section_type: "app_links", position: 0, settings: { ios_url: "a" } })
+      bar({
+        id: 4,
+        section_type: "app_links",
+        position: 2,
+        settings: { ios_url: "b" }
+      }),
+      bar({
+        id: 5,
+        section_type: "app_links",
+        position: 0,
+        settings: { ios_url: "a" }
+      })
     ];
-    assert.deepEqual(selectAppLinkOverride(sections), { ios_url: "a", android_url: "" });
+    assert.deepEqual(selectAppLinkOverride(sections), {
+      ios_url: "a",
+      android_url: ""
+    });
   });
 
   test("returns null when there is no app_links row or settings are unusable", () => {
     assert.equal(selectAppLinkOverride([bar()]), null);
-    assert.equal(selectAppLinkOverride([bar({ section_type: "app_links", settings: "{}=>x" })]), null);
+    assert.equal(
+      selectAppLinkOverride([
+        bar({ section_type: "app_links", settings: "{}=>x" })
+      ]),
+      null
+    );
   });
 });
 ```
@@ -313,11 +389,13 @@ git commit -m "[Feature]: Select the announcement bar and app link overrides, ch
 ### Task 3: Admin section types and seed (`beeper-admin`)
 
 **Files:**
+
 - Modify: `app/models/homepage_section.rb` (the `SECTION_TYPES` array)
 - Create: `db/seeds/010_app_links.rb` (bump the number if `010_` is taken on the branch)
 - Test: `test/models/homepage_section_test.rb`
 
 **Interfaces:**
+
 - Produces: `section_type` values `"announcement_bar"` and `"app_links"`, readable at `GET /api/v1/homepage_sections?visible_only=true`.
 
 - [ ] **Step 1: Branch from the deployed remote**
@@ -384,12 +462,14 @@ git commit -m "[Feature]: Add announcement bar and app links section types, chan
 The raw `settings` textarea renders a stored Hash through `to_s` and does not round-trip. These two types get discrete fields instead; every other type keeps the textarea untouched.
 
 **Files:**
+
 - Modify: `app/controllers/spree/admin/homepage_sections_controller.rb` (`homepage_section_params`, plus a new private `composed_settings`)
 - Modify: `app/views/spree/admin/homepage_sections/new.html.erb`, `edit.html.erb`
 - Modify: `config/locales/en.yml`
 - Test: `test/controllers/spree/admin/homepage_sections_controller_test.rb`
 
 **Interfaces:**
+
 - Consumes: the section types from Task 3.
 - Produces: `settings` persisted as a real Hash with keys `message`, `cta_label`, `cta_href`, `dismissible`, `starts_at`, `ends_at` (announcement_bar) or `ios_url`, `android_url` (app_links).
 
@@ -467,19 +547,26 @@ git commit -m "[Feature]: Edit banner and app link settings as real fields, chan
 ### Task 5: Proxy route, fetch hook and context (`beeper-frontend`)
 
 **Files:**
+
 - Modify: `pages/api/public/[...path].ts` (`resolveRoute`, and the comment block listing routes)
 - Create: `hooks/useAppPresence/useAppPresence.ts`, `hooks/useAppPresence/index.ts`
 - Modify: `hooks/queryKeys.ts`, `hooks/index.ts`
 - Create: `components/AppCallout/AppPresenceProvider.tsx`
 
 **Interfaces:**
+
 - Consumes: `selectAnnouncement`, `selectAppLinkOverride` (Task 2); `resolveAppLinks`, `AppLink`, `Announcement` (Tasks 1–2).
 - Produces:
+
   ```ts
-  export interface AppPresence { banner: Announcement | null; links: AppLink[] }
-  export const useAppPresence: () => AppPresence;          // context reader
+  export interface AppPresence {
+    banner: Announcement | null;
+    links: AppLink[];
+  }
+  export const useAppPresence: () => AppPresence; // context reader
   export const AppPresenceProvider: React.FC<{ children: React.ReactNode }>;
   ```
+
   Every placement calls `useAppPresence()`. It never returns `undefined` and never throws.
 
 - [ ] **Step 1: Add `homepage_sections` to the proxy allowlist**
@@ -526,11 +613,13 @@ git commit -m "[Feature]: Fetch app links and the announcement bar once per page
 ### Task 6: The callout component (`beeper-frontend`)
 
 **Files:**
+
 - Create: `components/AppCallout/AppCallout.tsx`, `components/AppCallout/AppStoreButtons.tsx`, `components/AppCallout/index.ts`
 - Modify: `components/index.ts`, `components/components.ts`
 - Add: official badge artwork under `public/images/AppIcons/`
 
 **Interfaces:**
+
 - Consumes: `useAppPresence()` (Task 5).
 - Produces: `<AppCallout variant="section" | "inline" | "bar" />`, `<AppStoreButtons links={AppLink[]} />`.
 
@@ -573,12 +662,14 @@ git commit -m "[Feature]: Add the Beeper app callout component, changes:
 ### Task 7: Mount the callouts (`beeper-frontend`)
 
 **Files:**
+
 - Modify: `pages/_app.tsx:88-89` (provider + bar)
 - Modify: `components/Home/DynamicHome.tsx` (between `<SpecsGrid />` and `<Newsletter />`)
 - Modify: `components/ProductDetails/RetailProductDetails.tsx` (after the Add to Cart button, ~line 618)
 - Modify: `components/ComingSoon/ComingSoon.tsx` (after the copy block, before `<SocialLinks />`)
 
 **Interfaces:**
+
 - Consumes: `AppCallout`, `AppPresenceProvider`.
 
 - [ ] **Step 1: Wrap the shell and add the bar**
@@ -617,6 +708,7 @@ git commit -m "[Feature]: Show the app callout on the homepage, PDPs, splash and
 ### Task 8: Cleanup and launch documentation (`beeper-frontend`)
 
 **Files:**
+
 - Delete: `public/ipa/BeeperBuzz.ipa`
 - Modify: `README.md`
 
@@ -629,7 +721,7 @@ Expected: no hits outside `docs/`.
 
 - [ ] **Step 2: Document the launch flip in `README.md`**
 
-A short section: the store URLs are managed in the admin under Homepage Sections → the `app_links` record; at launch, paste the App Store and Play URLs there and save; no deploy or image rebuild is needed. Note that `NEXT_PUBLIC_IOS_APP_URL` / `NEXT_PUBLIC_ANDROID_APP_URL` exist only as a fallback for when the admin is unreachable, and that changing *those* does require `make build-frontend` because `NEXT_PUBLIC_*` is inlined at build time.
+A short section: the store URLs are managed in the admin under Homepage Sections → the `app_links` record; at launch, paste the App Store and Play URLs there and save; no deploy or image rebuild is needed. Note that `NEXT_PUBLIC_IOS_APP_URL` / `NEXT_PUBLIC_ANDROID_APP_URL` exist only as a fallback for when the admin is unreachable, and that changing _those_ does require `make build-frontend` because `NEXT_PUBLIC_*` is inlined at build time.
 
 - [ ] **Step 3: Run the full check**
 

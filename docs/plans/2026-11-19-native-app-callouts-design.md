@@ -128,11 +128,12 @@ short of C, and without C's migration or its new admin surface to maintain.
 
 The file is already the declared "single source of truth for storefront branding
 strings … everything here is env-overridable." Two values are added, named by
-*platform* rather than by store, so the beta-to-launch flip is a value change:
+_platform_ rather than by store, so the beta-to-launch flip is a value change:
 
 ```ts
 export const IOS_APP_URL =
-  process.env.NEXT_PUBLIC_IOS_APP_URL || "https://testflight.apple.com/join/Ys1jkVfk";
+  process.env.NEXT_PUBLIC_IOS_APP_URL ||
+  "https://testflight.apple.com/join/Ys1jkVfk";
 export const ANDROID_APP_URL = process.env.NEXT_PUBLIC_ANDROID_APP_URL || "";
 ```
 
@@ -186,12 +187,12 @@ badge markup exists once.
 
 ### 3. Placements
 
-| Surface | File | Position | Variant |
-|---|---|---|---|
-| Homepage | `components/Home/DynamicHome.tsx` | between `<SpecsGrid />` and `<Newsletter />` | `section` |
-| PDP | `components/ProductDetails/RetailProductDetails.tsx` | directly after the Add to Cart button, inside the info panel | `inline` |
-| Global bar | `pages/_app.tsx` | above `<Header />`, inside the shell flex column | `bar` |
-| Splash | `components/ComingSoon/ComingSoon.tsx` | under the tagline, above `<SocialLinks />` | `section` or bare buttons, builder's call |
+| Surface    | File                                                 | Position                                                     | Variant                                   |
+| ---------- | ---------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------- |
+| Homepage   | `components/Home/DynamicHome.tsx`                    | between `<SpecsGrid />` and `<Newsletter />`                 | `section`                                 |
+| PDP        | `components/ProductDetails/RetailProductDetails.tsx` | directly after the Add to Cart button, inside the info panel | `inline`                                  |
+| Global bar | `pages/_app.tsx`                                     | above `<Header />`, inside the shell flex column             | `bar`                                     |
+| Splash     | `components/ComingSoon/ComingSoon.tsx`               | under the tagline, above `<SocialLinks />`                   | `section` or bare buttons, builder's call |
 
 The bar renders in normal flow above the sticky header, so it scrolls away rather
 than stacking. The header's own `top-0` is left alone.
