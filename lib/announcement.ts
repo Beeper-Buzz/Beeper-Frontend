@@ -7,6 +7,7 @@
 // `settings` is treated as unusable rather than parsed. `null` means "show
 // nothing" / "use the env fallbacks"; neither function ever throws.
 
+import { validUrl } from "./appLinks";
 import type { AppLinkOverride } from "./appLinks";
 
 export interface Announcement {
@@ -82,7 +83,8 @@ export const selectAnnouncement = (
       id: typeof row.id === "number" ? row.id : 0,
       message,
       ctaLabel: orNull(settings.cta_label),
-      ctaHref: orNull(settings.cta_href),
+      // Admin-authored: only an absolute http(s) URL may reach an anchor.
+      ctaHref: validUrl(text(settings.cta_href)),
       dismissible: settings.dismissible !== false,
       updatedAt: typeof row.updated_at === "string" ? row.updated_at : ""
     };

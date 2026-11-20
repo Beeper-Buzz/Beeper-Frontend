@@ -32,6 +32,26 @@ describe("selectAnnouncement", () => {
     assert.equal(selectAnnouncement([bar({ is_visible: false })]), null);
   });
 
+  test("drops a non-http(s) cta_href but still renders the banner", () => {
+    for (const href of [
+      "javascript:alert(1)",
+      "data:text/html,x",
+      "/relative"
+    ]) {
+      const banner = selectAnnouncement([
+        bar({ settings: { message: "Beta is open", cta_href: href } })
+      ]);
+      assert.equal(banner?.message, "Beta is open");
+      assert.equal(banner?.ctaHref, null);
+    }
+    assert.equal(
+      selectAnnouncement([
+        bar({ settings: { message: "m", cta_href: " https://x.co/a " } })
+      ])?.ctaHref,
+      "https://x.co/a"
+    );
+  });
+
   test("returns null for an empty, non-array or missing payload", () => {
     assert.equal(selectAnnouncement([]), null);
     assert.equal(selectAnnouncement(null), null);

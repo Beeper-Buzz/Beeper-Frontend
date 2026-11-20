@@ -41,7 +41,7 @@ const LABELS: Record<AppPlatform, Record<AppLinkKind, string>> = {
 };
 
 /** The trimmed value if it is an absolute http(s) URL, else null. */
-const validUrl = (value: string | undefined | null): string | null => {
+export const validUrl = (value: string | undefined | null): string | null => {
   const trimmed = typeof value === "string" ? value.trim() : "";
   if (!trimmed) return null;
   try {
