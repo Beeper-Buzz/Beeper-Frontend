@@ -38,6 +38,7 @@ import { ProductGallery } from "./ProductGallery";
 import { buildGallery } from "../../lib/productMedia";
 import { digitalKindOf } from "../../lib/marketplace";
 import { DigitalBlock } from "./DigitalBlock";
+import { AppCallout } from "../AppCallout";
 
 interface RetailProductDetailsProps {
   wholesale?: boolean;
@@ -630,6 +631,8 @@ export const RetailProductDetails = ({
                       ? "FAILED — TRY AGAIN"
                       : "ADD TO CART"}
                   </button>
+
+                  <AppCallout variant="inline" />
                 </div>
 
                 {/* Product Properties / Specs — Glass Panel */}
