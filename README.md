@@ -34,6 +34,10 @@ Style components with Tailwind CSS utility classes and the shadcn/ui primitives 
   of a `next` build error. Try running `$(npm bin)/next build` to see the
   exact error.
 
+## CMS pages (/creators)
+
+`/creators` is built from the admin's **Page Sections → Creators** tab (`GET /api/v1/homepage_sections?page_key=creators`). Editors add, reorder, hide and rewrite sections there; ISR picks changes up within 60 s. Section types and the `settings` JSON they read: `hero`, `revenue_share`, `features`, `steps`, `products` (live Marketplace taxon), `faq`, `call_to_action`, `content`. With nothing published, or the admin unreachable, the page falls back to `data/cms/creators.json` — the same file the admin seeds from (`rake beeper:cms:seed_page[creators]`), so keep the two copies in sync.
+
 ## Deployment
 
 - Create pipeline in Heroku

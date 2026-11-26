@@ -253,3 +253,51 @@
 .mt-btn:active {
   transform: scale(0.95);
 }
+
+/* === Creators earnings fader (a Beeper cap-sense slider) === */
+.creators-fader {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.creators-fader::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.creators-fader::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.creators-fader::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 18px;
+  margin-top: -6px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 255, 255, 0.8);
+  background: #0a0020;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+}
+
+.creators-fader::-moz-range-thumb {
+  width: 28px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 255, 255, 0.8);
+  background: #0a0020;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+}
+
+.creators-fader:focus-visible {
+  outline: 2px solid #00ffff;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
