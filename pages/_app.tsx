@@ -11,6 +11,8 @@ import { AppCallout, AppPresenceProvider } from "../components/AppCallout";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import * as tracking from "../config/tracking";
+import { useWholesaleMode } from "../hooks/useWholesaleMode";
+import { Toaster } from "../components/ui/toaster";
 
 // Styles
 import "../styles/globals.css";
@@ -25,7 +27,16 @@ import "./app.css";
 
 const isDarkMode = (process.env.NEXT_PUBLIC_DARK_MODE || "false") === "true";
 
-export default function MyApp({ Component, pageProps }: AppProps) {
+// Rendered inside AuthProvider so it can read the signed-in account's
+// `is_wholesale` flag (always false until an account has the wholesale role).
+const PageWithMode = ({ Component, pageProps }: AppProps) => {
+  const router = useRouter();
+  const wholesale = useWholesaleMode();
+  return <Component {...pageProps} key={router.asPath} wholesale={wholesale} />;
+};
+
+export default function MyApp(appProps: AppProps) {
+  const { Component, pageProps } = appProps;
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -36,7 +47,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         }
       })
   );
-  const [wholesale, setWholesale] = useState(false);
   const router = useRouter();
   const isMaint = process.env.NEXT_PUBLIC_IS_MAINT_MODE || "true";
 
@@ -81,10 +91,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     );
   }
 
+  // Hydrate wraps AuthProvider so SSR pages can seed the "auth-user" query
+  // (see pages/[slug].tsx) before AuthProvider decides to render.
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Hydrate state={pageProps.dehydratedState}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <AuthProvider>
           <Head>
             <title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
             <meta
@@ -109,15 +121,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                 animationType={"slide"}
                 right={false}
               />
-              <Component
-                {...pageProps}
-                key={router.asPath}
-                wholesale={wholesale}
-              />
+              <PageWithMode {...appProps} />
             </div>
           </AppPresenceProvider>
-        </Hydrate>
-      </AuthProvider>
+          <Toaster />
+        </AuthProvider>
+      </Hydrate>
     </QueryClientProvider>
   );
 }

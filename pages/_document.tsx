@@ -55,6 +55,9 @@ class MyDocument extends Document {
   render() {
     const { page, props: nextProps } = this.props.__NEXT_DATA__;
     const robots = robotsContent(page, nextProps?.pageProps);
+    // Review link pages carry a secret token in the URL: GA gets a redacted URL, and the
+    // Facebook pixel doesn't load at all (config/tracking.ts).
+    const privatePage = tracking.isPrivatePage(page);
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://beeper.buzz";
     const siteTitle =
       process.env.NEXT_PUBLIC_PAGE_TITLE ||
@@ -72,16 +75,19 @@ class MyDocument extends Document {
     const twitterSlug = process.env.NEXT_PUBLIC_TWITTER_SLUG || "beeper.buzz";
     const facebookSlug = process.env.NEXT_PUBLIC_FACEBOOK_SLUG || "beeper.buzz";
 
-    const OpenGraphObject = `
-        "@context": "http://schema.org",
-        "@type": "Organization",
-        "url": "${siteUrl}",
-        "contactPoint": [{
+    // Built as an object and serialized so the JSON-LD is always valid.
+    const OpenGraphObject = JSON.stringify({
+      "@context": "http://schema.org",
+      "@type": "Organization",
+      url: siteUrl,
+      contactPoint: [
+        {
           "@type": "ContactPoint",
-          "telephone": "${sitePhone}",
-          "contactType": "General Inquiry"
-        }]
-      `;
+          telephone: sitePhone,
+          contactType: "General Inquiry"
+        }
+      ]
+    }).replace(/</g, "\\u003c");
 
     const FacebookPixelObject = `
         !function(f,b,e,v,n,t,s)
@@ -150,7 +156,10 @@ class MyDocument extends Document {
               `
             }}
           />
-          <script type="application/ld+json">{OpenGraphObject}</script>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: OpenGraphObject }}
+          />
           {/* Stripe — defer until needed (checkout page loads it) */}
           <script src="https://js.stripe.com/v3/" defer></script>
           {/* Analytics — all async/defer, non-blocking */}
@@ -167,9 +176,11 @@ class MyDocument extends Document {
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
+                var gaPath = window.location.pathname.replace(/^\\/review\\/[^/]+/, '/review/[token]');
                 gtag('config', "${tracking.GA_TRACKING_CODE}", {
                   'send_page_view': true,
-                  'page_path': window.location.pathname,
+                  'page_path': gaPath,
+                  'page_location': window.location.origin + gaPath,
                   'debug_mode': ${tracking.GA_DEBUG_MODE},
                 });
               `
@@ -180,15 +191,21 @@ class MyDocument extends Document {
             defer
             src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}&libraries=places`}
           />
-          <script dangerouslySetInnerHTML={{ __html: FacebookPixelObject }} />
-          <noscript>
-            <img
-              height="1"
-              width="1"
-              style={{ display: "none" }}
-              src={`https://www.facebook.com/tr?id=${tracking.FB_PIXEL_ID}&ev=PageView&noscript=1`}
-            />
-          </noscript>
+          {!privatePage && (
+            <>
+              <script
+                dangerouslySetInnerHTML={{ __html: FacebookPixelObject }}
+              />
+              <noscript>
+                <img
+                  height="1"
+                  width="1"
+                  style={{ display: "none" }}
+                  src={`https://www.facebook.com/tr?id=${tracking.FB_PIXEL_ID}&ev=PageView&noscript=1`}
+                />
+              </noscript>
+            </>
+          )}
         </Head>
         <body>
           <style

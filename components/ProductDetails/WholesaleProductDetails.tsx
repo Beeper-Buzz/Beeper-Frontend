@@ -36,6 +36,7 @@ import { RecentlyViewed } from "../RecentlyViewed";
 import { ProductGallery } from "./ProductGallery";
 import { buildGallery } from "../../lib/productMedia";
 import constants from "../../utilities/constants";
+import { RatingSummary, ReviewsSection } from "../Reviews";
 
 interface WholesaleProductDetailsProps {
   wholesale?: boolean;
@@ -56,6 +57,10 @@ export const WholesaleProductDetails = ({
     isError,
     error: productError
   } = useProduct(`${productSlug.toLowerCase().replace("/", "")}`);
+  const reviewProductId = productSlug
+    .split(/[?#]/)[0]
+    .toLowerCase()
+    .replace("/", "");
 
   const defaultVariantData =
     thisProduct?.data?.relationships?.default_variant?.data;
@@ -389,6 +394,14 @@ export const WholesaleProductDetails = ({
                   <h1 className="neon-text-magenta font-microtechnic text-lg leading-relaxed md:text-xl">
                     {thisProduct?.data?.attributes?.name}
                   </h1>
+                  <RatingSummary
+                    attributes={thisProduct?.data?.attributes}
+                    wholesale
+                    productId={reviewProductId}
+                    productName={thisProduct?.data?.attributes?.name}
+                    align="center"
+                    className="mt-3"
+                  />
 
                   {/* Favorite Button */}
                   <button
@@ -589,6 +602,14 @@ export const WholesaleProductDetails = ({
                 </div>
               </motion.div>
             </div>
+
+            {/* Reviews: all channels, with a "Wholesale only" filter */}
+            <ReviewsSection
+              productId={reviewProductId}
+              productName={thisProduct?.data?.attributes?.name}
+              wholesale
+              className="mt-16"
+            />
 
             {/* Related / Recommended / Recently Viewed */}
             <motion.div

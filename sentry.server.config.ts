@@ -1,6 +1,7 @@
 // Node-side Sentry (getStaticProps, getServerSideProps, API routes).
 // See sentry.client.config.ts for why the SDK is pinned to 7.x.
 import * as Sentry from "@sentry/nextjs";
+import { redactSentryBreadcrumb, redactSentryEvent } from "./config/tracking";
 
 // Server-only, so the public DSN is not required here — but fall back to it so
 // a single env var is enough to turn reporting on.
@@ -15,6 +16,10 @@ if (dsn) {
       process.env.DEPLOY_ENV ||
       "development",
     tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
-    sendDefaultPii: false
+    sendDefaultPii: false,
+    // Review email links carry a secret token in the URL (/review/[token]).
+    beforeSend: redactSentryEvent,
+    beforeSendTransaction: redactSentryEvent,
+    beforeBreadcrumb: redactSentryBreadcrumb
   });
 }

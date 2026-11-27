@@ -2,13 +2,20 @@ import React from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useQueryClient, useMutation } from "react-query";
-import { Heart, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { QueryKeys } from "@hooks/queryKeys";
 import { AddItem } from "@spree/storefront-api-v2-sdk/types/interfaces/endpoints/CartClass";
 import { addItemToCart } from "@hooks/useCart";
 import { useToggleFavorite, useCheckFavorite } from "@hooks/useFavorites";
 import { useAuth } from "@config/auth";
+import { useWholesaleMode } from "@hooks/useWholesaleMode";
+import {
+  formatAverage,
+  getProductRating,
+  pluralize,
+  REVIEWS_ENABLED
+} from "@lib/reviews";
 import { cn } from "@lib/utils";
 import constants from "@utilities/constants";
 import { MediaItem, staticMedia } from "@lib/productMedia";
@@ -45,6 +52,11 @@ export const ProductCard = ({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const wholesale = useWholesaleMode();
+  // Hidden at 0 ratings and while reviews are switched off.
+  const rating = REVIEWS_ENABLED
+    ? getProductRating(item.attributes, wholesale)
+    : null;
   const variantId = item.relationships.default_variant.data.id;
 
   const { data: favoriteCheck } = useCheckFavorite(variantId, !!user);
@@ -155,6 +167,23 @@ export const ProductCard = ({
             ${item.attributes.price}
           </span>
         </div>
+        {rating && (
+          <span
+            role="img"
+            className="flex w-max items-center gap-1 whitespace-nowrap font-mono text-xs tabular-nums text-white/50"
+            aria-label={`Rated ${formatAverage(
+              rating.average
+            )} out of 5 from ${pluralize(rating.count, "review")}`}
+          >
+            <Star
+              className="h-3 w-3 fill-neon-cyan text-neon-cyan"
+              aria-hidden="true"
+            />
+            <span aria-hidden="true">
+              {formatAverage(rating.average)} ({rating.count})
+            </span>
+          </span>
+        )}
       </div>
     </Link>
   );

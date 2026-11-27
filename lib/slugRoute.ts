@@ -38,7 +38,9 @@ export const RESERVED_SLUGS = [
   "_next",
   "creator-application",
   "creators",
-  "creator"
+  "creator",
+  // Review request email links live at /review/[token].
+  "review"
 ];
 
 // Product slugs (FriendlyId) and handles only use these. Everything else, like

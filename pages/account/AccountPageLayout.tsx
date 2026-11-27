@@ -9,13 +9,18 @@ import {
   Heart,
   Library,
   Sparkles,
-  BadgePercent
+  BadgePercent,
+  Star
 } from "lucide-react";
 import { cn } from "@lib/utils";
+import { REVIEWS_ENABLED } from "@lib/reviews";
 import { Layout } from "../../components/Layout";
 
 const navItems = [
   { label: "Order History", href: "/account/orders", icon: Package },
+  ...(REVIEWS_ENABLED
+    ? [{ label: "Reviews", href: "/account/reviews", icon: Star }]
+    : []),
   { label: "Addresses", href: "/account/addresses", icon: MapPin },
   { label: "Payment Methods", href: "/account/payment", icon: CreditCard },
   { label: "Favorites", href: "/account/favorites", icon: Heart },

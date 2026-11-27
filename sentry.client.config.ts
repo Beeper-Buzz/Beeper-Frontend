@@ -4,6 +4,7 @@
 // `next: ^13.2.0 || ^14 || ^15`, and this app is on Next 13.1.1. Upgrading the
 // SDK means upgrading Next first.
 import * as Sentry from "@sentry/nextjs";
+import { redactSentryBreadcrumb, redactSentryEvent } from "./config/tracking";
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 
@@ -22,6 +23,10 @@ if (dsn) {
     ),
     // The storefront renders customer addresses and order contents; do not let
     // the SDK attach request bodies, cookies or IPs on its own.
-    sendDefaultPii: false
+    sendDefaultPii: false,
+    // Review email links carry a secret token in the URL (/review/[token]).
+    beforeSend: redactSentryEvent,
+    beforeSendTransaction: redactSentryEvent,
+    beforeBreadcrumb: redactSentryBreadcrumb
   });
 }

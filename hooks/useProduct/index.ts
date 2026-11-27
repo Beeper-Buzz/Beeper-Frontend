@@ -17,9 +17,20 @@ import {
 const PRODUCT_INCLUDE =
   "default_variant,variants,option_types,product_properties,taxons,images,variants.option_values,variants.images";
 
-const fetchProduct = async (slug: string): Promise<IProduct> => {
-  const storage = (await import("../../config/storage")).default;
-  const token = await storage.getToken();
+export interface FetchProductOptions {
+  /** Lets a server-side prefetch give up (pages/[slug].tsx). */
+  signal?: AbortSignal;
+}
+
+const fetchProduct = async (
+  slug: string,
+  options: FetchProductOptions = {}
+): Promise<IProduct> => {
+  // localStorage only exists in the browser; a server-side prefetch is anonymous.
+  const token =
+    typeof window !== "undefined"
+      ? await (await import("../../config/storage")).default.getToken()
+      : undefined;
   // Use relative URL on client (proxied via Next.js rewrite), full URL on server
   const spreeUrl =
     typeof window !== "undefined"
@@ -36,7 +47,8 @@ const fetchProduct = async (slug: string): Promise<IProduct> => {
         headers: {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token.access_token}` : ""
-        }
+        },
+        signal: options.signal
       });
       if (res.status >= 200 && res.status <= 299) return res.json();
       const body = await res.text().catch(() => "");

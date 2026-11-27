@@ -39,6 +39,8 @@ import { buildGallery } from "../../lib/productMedia";
 import { digitalKindOf } from "../../lib/marketplace";
 import { DigitalBlock } from "./DigitalBlock";
 import { AppCallout } from "../AppCallout";
+import { useWholesaleMode } from "../../hooks/useWholesaleMode";
+import { ProductJsonLd, RatingSummary, ReviewsSection } from "../Reviews";
 
 interface RetailProductDetailsProps {
   wholesale?: boolean;
@@ -52,6 +54,8 @@ export const RetailProductDetails = ({
   const router = useRouter();
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const { user } = useAuth();
+  // Wholesale accounts see this page too: their reviews cover all channels.
+  const wholesaleMode = useWholesaleMode();
   const productSlug =
     (router.query.slug as string) || (router.query.productSlug as string) || "";
   const {
@@ -401,6 +405,11 @@ export const RetailProductDetails = ({
             {process.env.NEXT_PUBLIC_SITE_TITLE}
           </title>
         </Head>
+        {/* Retail reviews only, so none for wholesale accounts. */}
+        <ProductJsonLd
+          product={wholesaleMode ? undefined : (thisProduct as any)}
+          productId={productSlug}
+        />
 
         {/* Dark gradient page wrapper */}
         <div
@@ -445,6 +454,13 @@ export const RetailProductDetails = ({
                   <h1 className="neon-text-magenta font-microtechnic text-lg leading-relaxed md:text-xl">
                     {thisProduct?.data?.attributes?.name}
                   </h1>
+                  <RatingSummary
+                    attributes={thisProduct?.data?.attributes}
+                    wholesale={wholesaleMode}
+                    productId={productSlug}
+                    productName={thisProduct?.data?.attributes?.name}
+                    className="mt-3"
+                  />
 
                   {/* Pre-order badge (if applicable) */}
                   {thisProduct?.data?.attributes?.available_on &&
@@ -670,6 +686,14 @@ export const RetailProductDetails = ({
                 )}
               </motion.div>
             </div>
+
+            {/* Reviews (renders nothing while NEXT_PUBLIC_REVIEWS_ENABLED is off) */}
+            <ReviewsSection
+              productId={productSlug}
+              productName={thisProduct?.data?.attributes?.name}
+              wholesale={wholesaleMode}
+              className="mt-16"
+            />
 
             {/* Related / Recommended / Recently Viewed */}
             <motion.div
