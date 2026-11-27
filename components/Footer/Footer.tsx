@@ -12,6 +12,7 @@ import {
 import { SocialLinks } from "../SocialLinks";
 import { AnimatedLogo } from "../Logo/AnimatedLogo";
 import { SHORT_TITLE } from "@utilities/branding";
+import { StoreRatingBadge } from "../Reviews/StoreReviews/StoreRatingBadge";
 import hardcodedColumns from "./footer.json";
 
 export type CLASSESTYPE = {
@@ -175,6 +176,9 @@ export const Footer: React.FC<FootProps> = ({ classes, footerData }) => {
       <div className="section-container">
         <div className="my-6 border-t border-glass-border" />
       </div>
+
+      {/* Store rating (renders nothing while reviews are off or at 0 ratings) */}
+      <StoreRatingBadge className="mb-4" />
 
       <SocialLinks isDark />
 

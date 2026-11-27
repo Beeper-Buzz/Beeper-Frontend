@@ -1,7 +1,12 @@
 import React from "react";
 import { BadgeCheck, ThumbsUp } from "lucide-react";
 import { Rating } from "@components/ui";
-import { describeBipolar, formatReviewDate, pluralize } from "@lib/reviews";
+import {
+  describeBipolar,
+  formatReviewDate,
+  pluralize,
+  STORE_NAME
+} from "@lib/reviews";
 import type {
   Review,
   ReviewAttributeSummary,
@@ -18,8 +23,6 @@ interface ReviewCardProps {
   /** The signed-in viewer wrote this one: no vote or report buttons. */
   isOwn?: boolean;
 }
-
-const STORE_NAME = process.env.NEXT_PUBLIC_SHORT_TITLE || "Beeper";
 
 /** "Fit: Runs small", "Quality: 4/5", in the summary's attribute order. */
 const attributeLines = (

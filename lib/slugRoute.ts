@@ -40,7 +40,9 @@ export const RESERVED_SLUGS = [
   "creators",
   "creator",
   // Review request email links live at /review/[token].
-  "review"
+  "review",
+  // The store reviews page (pages/reviews.tsx).
+  "reviews"
 ];
 
 // Product slugs (FriendlyId) and handles only use these. Everything else, like

@@ -45,6 +45,12 @@ export interface DnaFetchOptions {
   reviewToken?: string;
   headers?: Record<string, string>;
   signal?: AbortSignal;
+  /**
+   * Absolute origin to call instead of the default (same origin in the
+   * browser, `NEXT_PUBLIC_SPREE_API_URL` on the server). Server-only callers
+   * such as `dnaAdminFetch` use it to reach the admin directly.
+   */
+  baseUrl?: string;
 }
 
 export type DnaFieldErrors = Record<string, string[]>;
@@ -102,10 +108,16 @@ export const buildQueryString = (query?: DnaQuery): string => {
   return qs ? `?${qs}` : "";
 };
 
-export const dnaApiUrl = (path: string, query?: DnaQuery): string => {
+export const dnaApiUrl = (
+  path: string,
+  query?: DnaQuery,
+  baseUrl?: string
+): string => {
   // Same origin in the browser (proxied by next.config.js rewrites).
   const base =
-    typeof window !== "undefined"
+    baseUrl !== undefined
+      ? baseUrl.replace(/\/+$/, "")
+      : typeof window !== "undefined"
       ? ""
       : (
           process.env.NEXT_PUBLIC_SPREE_API_URL || "http://localhost:8080"
@@ -200,7 +212,8 @@ export async function dnaFetch<T>(
     bearerToken,
     reviewToken,
     headers: extraHeaders,
-    signal
+    signal,
+    baseUrl
   } = options;
 
   const headers: Record<string, string> = { Accept: "application/json" };
@@ -229,7 +242,7 @@ export async function dnaFetch<T>(
 
   let response: Response;
   try {
-    response = await fetch(dnaApiUrl(path, query), {
+    response = await fetch(dnaApiUrl(path, query, baseUrl), {
       method,
       headers: { ...headers, ...extraHeaders },
       body: requestBody,

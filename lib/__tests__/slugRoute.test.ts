@@ -195,6 +195,8 @@ describe("resolveSlug: without asking the backend", () => {
     assert.ok(RESERVED_SLUGS.includes("category"));
     assert.ok(RESERVED_SLUGS.includes("tag"));
     assert.ok(RESERVED_SLUGS.includes("community-guidelines"));
+    assert.ok(RESERVED_SLUGS.includes("review"));
+    assert.ok(RESERVED_SLUGS.includes("reviews"));
   });
 
   it("file-like and odd paths are not found", async () => {

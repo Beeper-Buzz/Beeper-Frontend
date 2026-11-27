@@ -18,4 +18,6 @@ export * from "./useRecentlyViewed";
 export * from "./useFeaturedProducts";
 export * from "./useAppPresence";
 export * from "./useReviews";
+export * from "./useStoreReviews";
+export * from "./useQuestions";
 export * from "./useWholesaleMode";
