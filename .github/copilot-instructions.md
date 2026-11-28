@@ -224,6 +224,8 @@ Access via `process.env.NEXT_PUBLIC_*`:
 - `NEXT_PUBLIC_DARK_MODE` - Dark mode toggle
 - `NEXT_PUBLIC_IS_MAINT_MODE` - Maintenance mode
 - `NEXT_PUBLIC_LOGO_PATH` - Logo image path
+- `NEXT_PUBLIC_CHAT_ENABLED` - the storefront chat widget (`components/Chat`); off unless `true`. Lazy-loaded, so it costs nothing when off
+- `NEXT_PUBLIC_VISITOR_TRACKING` - visit pings to dna-admin (`POST /api/v1/storefront/visits`) for its live Visitors screen; unset follows `NEXT_PUBLIC_CHAT_ENABLED`, `true`/`false` overrides it. Both wait for consent (`lib/chat/consent.ts`)
 
 ## Common Tasks
 

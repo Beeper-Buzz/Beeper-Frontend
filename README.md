@@ -13,6 +13,19 @@ _Gotchas:_
 
 - Does the backend (`dna-admin`) have menus, products, live streams
 - Do you have the backend url & api key in `.env`?
+- The storefront chat widget and visitor tracking are off by default. `NEXT_PUBLIC_CHAT_ENABLED=true`
+  turns on the chat bubble (`components/Chat`), which talks to dna-admin's
+  `/api/v1/storefront/chat` endpoints directly on `NEXT_PUBLIC_SPREE_API_URL` (not through
+  `/api/public`: they are keyed by the visitor's own token, need no storefront key, and are rate
+  limited per visitor IP); the backend's CORS must allow the `X-Visitor-Token` header. `NEXT_PUBLIC_VISITOR_TRACKING` (default: on with chat) sends
+  `POST /api/v1/storefront/visits` on each page and every 60 s while the tab is visible, with the
+  guest cart's order token, for the admin's live Visitors screen. A `?chat=<token>` link from a
+  reply email opens the widget on that conversation.
+- Consent: the boilerplate has no cookie or consent banner, so chat and tracking run without one
+  and store only a random visitor token in localStorage (no cookies). A fork that adds a banner
+  calls `requireConsent()` from `lib/chat/consent.ts` before the app renders, then
+  `grantConsent()` or `denyConsent()`; nothing is stored, pinged or polled before consent, and a
+  refusal turns both off.
 
 ## Styles
 
