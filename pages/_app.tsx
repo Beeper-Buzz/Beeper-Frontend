@@ -8,6 +8,8 @@ import { ComingSoon } from "../components/ComingSoon";
 import { FromAppCapture } from "../components/shared/FromAppCapture";
 import { RefCapture } from "../components/shared/RefCapture";
 import { AppCallout, AppPresenceProvider } from "../components/AppCallout";
+import { StorefrontChat } from "../components/Chat";
+import { captureUtmParams } from "../hooks/useUtmParams";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import * as tracking from "../config/tracking";
@@ -22,6 +24,9 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "../components/Terms/ElectronicSignaturesModal.css";
 import "../components/Terms/FinancialPrivacyModal.css";
 import "./app.css";
+
+// Full-screen routes where the chat bubble would cover the experience (tracking still runs).
+const CHAT_HIDDEN_ROUTES = ["/tv/[streamId]"];
 
 const isDarkMode = (process.env.NEXT_PUBLIC_DARK_MODE || "false") === "true";
 
@@ -46,6 +51,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     if (jssStyles) {
       jssStyles.parentElement?.removeChild(jssStyles);
     }
+    captureUtmParams();
   }, []);
 
   useEffect(() => {
@@ -113,6 +119,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                 {...pageProps}
                 key={router.asPath}
                 wholesale={wholesale}
+              />
+              {/* Chat widget and visit tracking: nothing loads unless their flags are on. */}
+              <StorefrontChat
+                hideWidget={CHAT_HIDDEN_ROUTES.includes(router.pathname)}
               />
             </div>
           </AppPresenceProvider>
